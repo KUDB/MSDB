@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _MSDB_BITSTRINGSTREAM_H_
-#define _MSDB_BITSTRINGSTREAM_H_
+#ifndef _MSDB_BITSTREAM_H_
+#define _MSDB_BITSTREAM_H_
 
 #include <pch.h>
 
@@ -85,7 +85,7 @@ namespace core
 		vector_iobs() : _container(nullptr) {};
 	};
 
-	template <class _Block, class _Traits, size_t _BlockBytes = sizeof(_Block), size_t _BlockBits = sizeof(_Block)* CHAR_BIT>
+	template <class _Block, class _Traits, size_t _BlockBytes = sizeof(_Block), size_t _BlockBits = sizeof(_Block) * CHAR_BIT>
 	class vector_obitstream : virtual public vector_iobs<_Block, _Traits>
 	{
 	public:
@@ -161,11 +161,7 @@ namespace core
 		// Return total number of used bits
 		_NODISCARD size_type sizebits() const noexcept
 		{
-			if (this->bitPos)
-			{
-				return (this->_container->size() - 1) * _BlockBits * CHAR_BIT + this->bitPos;
-			}
-			return this->_container->size() * _BlockBits;
+			return (this->_container->size() - 1) * _BlockBits + this->bitPos;
 		}
 
 		// Return total number of bytes capacity
@@ -181,7 +177,7 @@ namespace core
 
 		_NODISCARD size_type getOutBitPos() const noexcept
 		{
-			return (this->_container->size() - 1) * _BlockBytes * CHAR_BIT + this->bitPos;
+			return (this->_container->size() - 1) * _BlockBits + this->bitPos;
 		}
 
 		_NODISCARD size_type getOutBitPosInBlock() const noexcept
@@ -295,7 +291,7 @@ namespace core
 		container_type* _container;
 	};
 
-	template <class _Block, class _Traits, size_t _BlockBytes = sizeof(_Block), size_t _BlockBits = sizeof(_Block)* CHAR_BIT>
+	template <class _Block, class _Traits, size_t _BlockBytes = sizeof(_Block), size_t _BlockBits = sizeof(_Block) * CHAR_BIT>
 	class vector_ibitstream : virtual public vector_iobs<_Block, _Traits>
 	{
 	public:
@@ -373,7 +369,6 @@ namespace core
 
 		bool eof()
 		{
-			// this->bitPos == _BlockBytes ?
 			if ((pos_type)this->_container->size() <= this->blockPos)
 			{
 				return true;
@@ -384,7 +379,7 @@ namespace core
 
 		_NODISCARD size_type getInBitPos() const noexcept
 		{
-			return this->blockPos * _BlockBytes * CHAR_BIT + this->bitPos;
+			return this->blockPos * _BlockBits + this->bitPos;
 		}
 
 		_NODISCARD size_type getInBitPosInBlock() const noexcept
@@ -526,7 +521,7 @@ namespace core
 		container_type* _container;
 	};
 
-	template <class _Block, class _Traits, size_t _BlockBytes = sizeof(_Block), size_t _BlockBits = sizeof(_Block)* CHAR_BIT>
+	template <class _Block, class _Traits, size_t _BlockBytes = sizeof(_Block), size_t _BlockBits = sizeof(_Block) * CHAR_BIT>
 	class vector_iobitstream : public vector_ibitstream<_Block, _Traits>,
 		public vector_obitstream<_Block, _Traits>
 	{
@@ -855,4 +850,4 @@ namespace core
 	//const unsigned char iobs_base::rmask[9] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00 };
 }		// core
 }		// msdb
-#endif	// _MSDB_BITSTRINGSTREAM_H_
+#endif	// _MSDB_BITSTREAM_H_

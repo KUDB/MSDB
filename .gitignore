@@ -204,6 +204,9 @@ fabric.properties
 *.editorconfig
 test/packages.config
 
+# Intellisense files
+cpp.hint
+
 # User-specific files
 *.rsuser
 *.suo

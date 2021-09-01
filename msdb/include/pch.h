@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _MSDB_STDAFX_H_
-#define _MSDB_STDAFX_H_
+#ifndef _MSDB_PCH_H_
+#define _MSDB_PCH_H_
 
 #include <iostream>
 #include <cstdint>
@@ -70,4 +70,9 @@ namespace sinks = boost::log::sinks;
 namespace keywords = boost::log::keywords;
 namespace attrs = boost::log::attributes;
 
-#endif	// _MSDB_STDAFX_H_
+////////////////////////////////////////
+// MSDB
+//
+#include <io/bitstream.h>
+
+#endif	// _MSDB_PCH_H_

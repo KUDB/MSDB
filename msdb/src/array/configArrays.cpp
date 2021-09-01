@@ -6,6 +6,49 @@ namespace msdb
 {
 namespace core
 {
+namespace configjobs
+{
+void getArrayDesc(tinyxml2::XMLNode* root, void* list)
+{
+	_MSDB_TRY_BEGIN
+		arrayDescs* aList = reinterpret_cast<arrayDescs*>(list);
+	pArrayDesc aDesc;
+	configArray(root).getArrayDesc(aDesc);
+	aList->push_back(aDesc);
+	_MSDB_CATCH_ALL
+		_MSDB_RETHROW
+		_MSDB_CATCH_END
+}
+
+void getAttributeDescList(tinyxml2::XMLNode* root, void* list)
+{
+	_MSDB_TRY_BEGIN
+		dimensionDescs* dims = reinterpret_cast<dimensionDescs*>(list);
+	pDimensionDesc dDesc;
+	configDiemnsion(root).getDimensionDesc(dDesc);
+	dims->push_back(dDesc);
+	_MSDB_CATCH_ALL
+		_MSDB_RETHROW
+		_MSDB_CATCH_END
+}
+
+void getDimensionDescList(tinyxml2::XMLNode* root, void* list)
+{
+	_MSDB_TRY_BEGIN
+	{
+		attributeDescs * attrs = reinterpret_cast<attributeDescs*>(list);
+		pAttributeDesc aDesc;
+		configAttribute(root).getAttributeDesc(aDesc);
+		attrs->push_back(aDesc);
+	}
+		_MSDB_CATCH_ALL
+	{
+		_MSDB_RETHROW
+	}
+		_MSDB_CATCH_END
+}
+}
+
 ConfigType configDiemnsion::getType()
 {
 	return ConfigType::DIMENSION;
@@ -60,49 +103,6 @@ ConfigType configArrayList::getType()
 void configArrayList::getArrayDescList(arrayDescs* list)
 {
 	this->xmlChildExplore(this->_root, reinterpret_cast<void*>(list), &configjobs::getArrayDesc);
-}
-
-namespace configjobs
-{
-void getArrayDesc(tinyxml2::XMLNode* root, void* list)
-{
-	_MSDB_TRY_BEGIN
-		arrayDescs* aList = reinterpret_cast<arrayDescs*>(list);
-	pArrayDesc aDesc;
-	configArray(root).getArrayDesc(aDesc);
-	aList->push_back(aDesc);
-	_MSDB_CATCH_ALL
-		_MSDB_RETHROW
-		_MSDB_CATCH_END
-}
-
-void getAttributeDescList(tinyxml2::XMLNode* root, void* list)
-{
-	_MSDB_TRY_BEGIN
-		dimensionDescs* dims = reinterpret_cast<dimensionDescs*>(list);
-	pDimensionDesc dDesc;
-	configDiemnsion(root).getDimensionDesc(dDesc);
-	dims->push_back(dDesc);
-	_MSDB_CATCH_ALL
-		_MSDB_RETHROW
-		_MSDB_CATCH_END
-}
-
-void getDimensionDescList(tinyxml2::XMLNode* root, void* list)
-{
-	_MSDB_TRY_BEGIN
-	{
-		attributeDescs * attrs = reinterpret_cast<attributeDescs*>(list);
-		pAttributeDesc aDesc;
-		configAttribute(root).getAttributeDesc(aDesc);
-		attrs->push_back(aDesc);
-	}
-		_MSDB_CATCH_ALL
-	{
-		_MSDB_RETHROW
-	}
-		_MSDB_CATCH_END
-}
 }
 }		// core
 }		// msdb
