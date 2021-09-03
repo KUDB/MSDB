@@ -1,4 +1,4 @@
-#include "../pch.h"
+#include <pch_test.h>
 
 int main(int ac, char* av[])
 {
