@@ -4,9 +4,13 @@
 
 #include <pch.h>
 #include <api_cpp/cpp_array.h>
+#include <array/attributeId.h>
+#include <query/query.h>
 
 namespace msdb
 {
+using msdbQuery = core::query;
+
 class Query
 {
 public:
@@ -30,6 +34,7 @@ public:
 
 protected:
 	Status status_;		// Initial status: READY
+	std::shared_ptr<msdbQuery> qry_;
 };
 
 class AFLQuery : public Query

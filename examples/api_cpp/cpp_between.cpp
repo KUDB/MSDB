@@ -18,6 +18,13 @@ int main()
 		// Query failed
 		return 0;
 	}
+	auto dimBuffer = ra.getDimBuffer();
+	auto attr_01_buffer = ra.getAttrBuffer<uint8_t>(0);
+
+	for(int i = 0; i < dimBuffer->size(); ++i)
+	{
+		std::cout << "[" << dimBuffer->at(i).toString() << "]: " << attr_01_buffer->at(i);
+	}
 
 	ra.close();
 

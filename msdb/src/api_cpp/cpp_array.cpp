@@ -1,6 +1,7 @@
 #include <pch.h>
-#include <api_cpp/cpp_array.h>
 #include <array/arrayMgr.h>
+#include <query/query.h>
+#include <api_cpp/cpp_array.h>
 
 namespace msdb
 {
@@ -17,17 +18,19 @@ Array::Array(Context context, std::string arrName)
 		core::arrayMgr::instance()->getArrayId(arrName));
 }
 
-ResultArray::ResultArray(Context context, core::pArray arr)
-	: context_(context), arr_(arr)
+ResultArray::ResultArray(Context context, core::pArray arr, core::pQuery qry)
+	: context_(context), arrDesc_(arr->getDesc()), qry_(qry)
 {
+}
+
+std::shared_ptr<std::vector<core::coor>> ResultArray::getDimBuffer()
+{
+	return this->qry_->getDimBuffer();
 }
 
 void ResultArray::close()
 {
-	if (this->arr_ != nullptr)
-	{
-		this->arr_->flush();
-		this->arr_ = nullptr;
-	}
+	this->arrDesc_ = nullptr;
+	this->qry_ = nullptr;
 }
 }		// msdb

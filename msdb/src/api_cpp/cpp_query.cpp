@@ -13,7 +13,8 @@ Query::Query()
 
 ResultArray Query::execute()
 {
-	return ResultArray(Context(), nullptr);
+	// TODO::execute()
+	return ResultArray(Context(), nullptr, nullptr);
 }
 
 /* ************************ */

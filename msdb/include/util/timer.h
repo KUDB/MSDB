@@ -19,6 +19,7 @@ enum class workType
 	PARALLEL,
 	LOGGING,
 	ARRAY_CONSTRUCTING,
+	COPY,
 	OTHERS,
 	TIMER_STOP
 };
