@@ -23,11 +23,13 @@ public:
 	bool hasAttributeIndex(arrayId arrId, attributeId attrId);
 	bool hasDimensionIndex(arrayId arrId, dimensionId dimId);
 
+	arrayId getArrayId(std::string arrName);
 	pArrayDesc getArrayDesc(arrayId arrId);
 	pAttrIndex getAttributeIndex(arrayId arrId, attributeId attrId);
 	pDimensionIndex getDimensionIndex(arrayId arrId, dimensionId dimId);
 
 	void setArrayDesc(arrayId arrId, pArrayDesc desc);
+	void setArrayName(std::string arrName, arrayId arrId);
 	void setAttributeIndex(arrayId arrId, attributeId attrId, pAttrIndex aIndex);
 	void setDimensionIndex(arrayId arrId, dimensionId dimId, pDimensionIndex dIndex);
 
@@ -59,6 +61,7 @@ public:
 
 		// Register array at the arrayMgr.
 		this->setArrayDesc(arrId, arrDesc);
+		this->setArrayName(arrName, arrId);
 
 		return arr;
 	}
@@ -69,12 +72,14 @@ public:
 		std::shared_ptr<Aty_> arr = std::make_shared<Aty_>(arrDesc);
 
 		this->setArrayDesc(arrDesc->id_, arrDesc);
+		this->setArrayName(arrDesc->name_, arrDesc->id_);
 
 		return arr;
 	}
 
 public:
 	std::map<arrayId, pArrayDesc> arrDescs_;
+	std::map<std::string, arrayId> arrNames_;
 	std::map<arrayId, std::map<attributeId, pAttrIndex>> attrIndies_;
 	std::map<arrayId, std::map<dimensionId, pDimensionIndex>> dimIndies_;
 

@@ -29,6 +29,13 @@ bool arrayMgr::hasDimensionIndex(arrayId arrId, dimensionId dimId)
 		this->dimIndies_[arrId].find(dimId) != this->dimIndies_[arrId].end();
 }
 
+arrayId arrayMgr::getArrayId(std::string arrName)
+{
+	assert(this->arrNames_.find(arrName) != this->arrNames_.end());
+
+	return this->arrNames_[arrName];
+}
+
 pArrayDesc arrayMgr::getArrayDesc(arrayId arrId)
 {
 	assert(arrId != INVALID_ARRAY_ID);
@@ -64,10 +71,15 @@ pDimensionIndex arrayMgr::getDimensionIndex(arrayId arrId, dimensionId dimId)
 
 	return (this->dimIndies_[arrId])[dimId];
 }
-void arrayMgr::setArrayDesc(arrayId id, pArrayDesc desc)
+void arrayMgr::setArrayDesc(arrayId arrId, pArrayDesc desc)
 {
-	assert(id != INVALID_ARRAY_ID);
-	this->arrDescs_[id] = desc;
+	assert(arrId != INVALID_ARRAY_ID);
+	this->arrDescs_[arrId] = desc;
+}
+void arrayMgr::setArrayName(std::string arrName, arrayId arrId)
+{
+	assert(arrId != INVALID_ARRAY_ID);
+	this->arrNames_[arrName] = arrId;
 }
 void arrayMgr::setAttributeIndex(arrayId id, attributeId attrId, pAttrIndex aIndex)
 {
