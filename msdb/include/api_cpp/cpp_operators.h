@@ -9,6 +9,9 @@
 
 namespace msdb
 {
+/* ************************ */
+/* AFLOperator				*/
+/* ************************ */
 class AFLOperator
 {
 public:
@@ -27,6 +30,9 @@ private:
 	core::pArrayDesc arrDesc_;
 };
 
+/* ************************ */
+/* Load						*/
+/* ************************ */
 class LoadOpr : public AFLOperator
 {
 public:
@@ -37,6 +43,9 @@ public:
 };
 std::shared_ptr<LoadOpr> Load(Array arr);
 
+/* ************************ */
+/* Between					*/
+/* ************************ */
 class BetweenOpr : public AFLOperator
 {
 public:
@@ -52,5 +61,21 @@ private:
 };
 std::shared_ptr<BetweenOpr> Between(Array arr, Domain d);
 std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d);
+
+/* ************************ */
+/* ToBuffer					*/
+/* ************************ */
+class CopyToBufferOpr : public AFLOperator
+{
+public:
+	CopyToBufferOpr(std::shared_ptr<AFLOperator> qry);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
+};
+std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry);
 }		// msdb
 #endif	// _MSDB_API_CPP_OPERATORS_H_

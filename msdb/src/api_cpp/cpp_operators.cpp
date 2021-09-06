@@ -2,6 +2,7 @@
 #include <api_cpp/cpp_operators.h>
 #include <op/load/load_plan.h>
 #include <op/between/between_plan.h>
+#include <op/copy_to_buffer/copy_to_buffer_plan.h>
 
 namespace msdb
 {
@@ -70,5 +71,28 @@ std::shared_ptr<BetweenOpr> Between(Array arr, Domain d)
 std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d)
 {
 	return std::make_shared<BetweenOpr>(qry, d);
+}
+
+/* ************************ */
+/* ToBuffer					*/
+/* ************************ */
+CopyToBufferOpr::CopyToBufferOpr(std::shared_ptr<AFLOperator> qry)
+	: childQry_(qry), AFLOperator(qry->getArrayDesc())
+{
+}
+std::shared_ptr<core::opPlan> CopyToBufferOpr::getPlan()
+{
+	auto qryPlan = std::make_shared<core::copy_to_buffer_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamPlan>(childQry_->getPlan())
+	};
+	qryPlan->setParamSet(std::make_shared<core::copy_to_buffer_pset>(params));
+	
+	return qryPlan;
+}
+std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry)
+{
+	return std::shared_ptr<CopyToBufferOpr>();
 }
 }		// msdb
