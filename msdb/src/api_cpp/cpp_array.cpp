@@ -8,18 +8,18 @@ namespace msdb
 Array::Array(Context context, core::arrayId arrId)
 	: context_(context)
 {
-	this->desc_ = core::arrayMgr::instance()->getArrayDesc(arrId);
+	this->arrDesc_ = core::arrayMgr::instance()->getArrayDesc(arrId);
 }
 
 Array::Array(Context context, std::string arrName)
 	: context_(context)
 {
-	this->desc_ = core::arrayMgr::instance()->getArrayDesc(
+	this->arrDesc_ = core::arrayMgr::instance()->getArrayDesc(
 		core::arrayMgr::instance()->getArrayId(arrName));
 }
 
-ResultArray::ResultArray(Context context, core::pArray arr, core::pQuery qry)
-	: context_(context), arrDesc_(arr->getDesc()), qry_(qry)
+ResultArray::ResultArray(Context context, core::pQuery qry)
+	: context_(context), arrDesc_(qry->getArrayDesc()), qry_(qry)
 {
 }
 

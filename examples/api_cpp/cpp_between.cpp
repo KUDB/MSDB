@@ -6,12 +6,13 @@
 int main()
 {
 	msdb::Context ctx;
-	auto qry = msdb::Between(
+	auto afl = msdb::Between(
 		msdb::Load(
 			msdb::Array(ctx, DUMMY_PATH(star_1024x1024))),
 		msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 128, 128 }))
 	);
 
+	auto qry = msdb::Query(afl);
 	auto ra = qry.execute();
 	if (qry.getStatus() == msdb::Query::Status::FAIL)
 	{

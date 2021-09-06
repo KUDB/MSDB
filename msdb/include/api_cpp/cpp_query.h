@@ -4,6 +4,7 @@
 
 #include <pch.h>
 #include <api_cpp/cpp_array.h>
+#include <api_cpp/cpp_operators.h>
 #include <array/attributeId.h>
 #include <query/query.h>
 
@@ -23,7 +24,7 @@ public:
 	};
 
 public:
-	Query();
+	Query(std::shared_ptr<AFLOperator> afl);
 
 public:
 	ResultArray execute();
@@ -34,13 +35,7 @@ public:
 
 protected:
 	Status status_;		// Initial status: READY
-	std::shared_ptr<msdbQuery> qry_;
-};
-
-class AFLQuery : public Query
-{
-public:
-	AFLQuery();
+	core::pQuery qry_;
 };
 }		// msdb
 #endif	// _MSDB_API_CPP_QUERY_H_

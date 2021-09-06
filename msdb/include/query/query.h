@@ -4,12 +4,14 @@
 
 #include <pch.h>
 #include <util/timer.h>
+#include <util/status.h>
 #include <array/arrayDesc.h>
 
 namespace msdb
 {
 namespace core
 {
+class opPlan;
 class query;
 using pQuery = std::shared_ptr<query>;
 
@@ -22,11 +24,18 @@ struct outBuffer
 class query : std::enable_shared_from_this<query>
 {
 public:
-	query();
+	query(std::shared_ptr<opPlan> qryPlan);
 
 public:
+	/** Submit the query to query manager */
+	status submit();
+
+	/** Process the query */
+	status process();
+
 	pTimer getTimer();
-	void setOutArrayDesc(pArrayDesc);
+	void setArrayDesc(pArrayDesc arrDesc);
+	pArrayDesc getArrayDesc();
 	void setDimBuffer(std::shared_ptr<std::vector<coor>> buffer);
 	void setAttrBuffer(attributeId attrId, outBuffer buffer);
 	std::shared_ptr<std::vector<coor>> getDimBuffer();
@@ -41,6 +50,7 @@ protected:
 	pArrayDesc arrDesc_;
 	std::shared_ptr<std::vector<coor>> dimBuffer_;
 	std::map<attributeId, outBuffer> attrBuffers_;
+	std::shared_ptr<opPlan> qryPlan_;
 };
 }		// core
 }		// msdb

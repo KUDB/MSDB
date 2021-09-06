@@ -15,15 +15,21 @@ public:
 	Array(Context context, core::arrayId arrId);
 	Array(Context context, std::string arrName);
 
+public:
+	inline core::pArrayDesc getDesc()
+	{
+		return this->arrDesc_;
+	}
+
 private:
 	Context context_;
-	core::pArrayDesc desc_;
+	core::pArrayDesc arrDesc_;
 };
 
 class ResultArray
 {
 public:
-	ResultArray(Context context, core::pArray arr, core::pQuery qry);
+	ResultArray(Context context, core::pQuery qry);
 
 	std::shared_ptr<std::vector<core::coor>> getDimBuffer();
 	template <typename Ty_>

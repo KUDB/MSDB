@@ -6,21 +6,19 @@ namespace msdb
 /* ************************ */
 /* Query					*/
 /* ************************ */
-Query::Query()
+Query::Query(std::shared_ptr<AFLOperator> afl)
+	: status_(Status::READY), qry_(std::make_shared<core::query>(afl->getPlan()))
 {
-	this->status_ = Status::READY;
+
 }
 
 ResultArray Query::execute()
 {
-	// TODO::execute()
-	return ResultArray(Context(), nullptr, nullptr);
-}
+	if (this->qry_->submit().isOk())
+	{
+		return ResultArray(Context(), this->qry_);
+	}
 
-/* ************************ */
-/* AFLQuery					*/
-/* ************************ */
-AFLQuery::AFLQuery()
-{
+	return ResultArray(Context(), this->qry_);
 }
 }		// msdb

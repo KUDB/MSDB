@@ -33,7 +33,7 @@ public:
 	virtual cpBitmap getPlanBlockBitmap(chunkId cid) const;
 	virtual const char* name() = 0;
 
-	virtual pArray execute(std::vector<pArray>&inputArrays, pQuery q) = 0;
+	virtual pArray execute(std::vector<pArray>&inputArrays, pQuery qry) = 0;
 
 protected:
 	pArrayDesc aDesc_;
