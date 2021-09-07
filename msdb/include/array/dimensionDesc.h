@@ -6,11 +6,21 @@
 #include <util/coordinate.h>
 #include <array/dimensionId.h>
 #include <array/dimension.h>
+#include <xml/tinyxml2.h>
 
 namespace msdb
 {
 namespace core
 {
+#define _MSDB_STR_DIMENSION_DESCS_	"DIMENSION_DESCRIPTIONS"
+#define _MSDB_STR_DIM_DESC_			"DIMENSION_DESCRIPTION"
+#define _MSDB_STR_DIM_ID_			"DIMENSION_ID"
+#define _MSDB_STR_DIM_NAME_			"DIMENSION_NAME"
+#define _MSDB_STR_DIM_START_		"DIMENSION_START"
+#define _MSDB_STR_DIM_END_			"DIMENSION_END"
+#define _MSDB_STR_DIM_CHUNK_SIZE_	"DIMENSION_CHUNK_SIZE"
+#define _MSDB_STR_DIM_BLOCK_SIZE_	"DIMENSION_BLOCK_SIZE"
+
 class dimensionDesc;
 using pDimensionDesc = std::shared_ptr<dimensionDesc>;
 
@@ -46,6 +56,12 @@ public:
 public:
 	position_t getLength();
 	size_t getChunkNum();
+
+	/**
+	 * Save/load in XML file
+	 */
+	tinyxml2::XMLElement* convertToXMLDoc(tinyxml2::XMLElement* node);
+	static pDimensionDesc buildDescFromXML(tinyxml2::XMLElement* node);
 
 public:
 	dimensionId id_;
