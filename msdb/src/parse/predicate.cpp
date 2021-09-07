@@ -51,6 +51,18 @@ singlePredicate::eFunc singlePredicate::findEvaluateFunc(eleType type)
 	return func_ptr[static_cast<int>(type)];
 }
 
+andPredicate::andPredicate(pTerm lhs, pTerm rhs)
+	: predicate(lhs, rhs), evaluateFunc(nullptr)
+{
+}
+
+void andPredicate::setEvaluateFunc(eleType eType)
+{
+	this->evaluateFunc = this->findEvaluateFunc(eType);
+	this->lTerm->setEvaluateFunc(eType);
+	this->rTerm->setEvaluateFunc(eType);
+}
+
 bool andPredicate::evaluate(pItemItr iit)
 {
 	return (this->*evaluateFunc)(iit);

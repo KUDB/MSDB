@@ -24,21 +24,23 @@ public:
 	virtual boost::any getValue() = 0;
 };
 
-class expressionAttributeId : public expression
+class expressionAttribute : public expression
 {
 public:
-	using value_type = attributeId;
+	using value_type = int64_t;
 
 public:
-	expressionAttributeId(attributeId value);
-	~expressionAttributeId();
+	expressionAttribute(attributeId attrId);
+	expressionAttribute(std::string attrName);
+	~expressionAttribute();
 
 public:
 	virtual boost::any getValue(pItemItr iit) override;
 	virtual boost::any getValue() override;
 
 private:
-	attributeId value_;
+	attributeId attrId_;
+	std::string attrName_;
 };
 
 class expressionConst : public expression

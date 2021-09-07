@@ -74,6 +74,22 @@ std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d)
 }
 
 /* ************************ */
+/* Filter					*/
+/* ************************ */
+FilterOpr::FilterOpr(std::shared_ptr<AFLOperator> qry, std::shared_ptr<PredicateImpl> pred)
+	: childQry_(qry), pred_(pred), AFLOperator(qry->getArrayDesc())
+{
+}
+std::shared_ptr<core::opPlan> FilterOpr::getPlan()
+{
+	return std::shared_ptr<core::opPlan>();
+}
+std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm)
+{
+	return std::make_shared<FilterOpr>(qry, std::make_shared<PredicateImpl>(std::make_shared<core::singlePredicate>(singleTerm->getTerm())));
+}
+
+/* ************************ */
 /* ToBuffer					*/
 /* ************************ */
 CopyToBufferOpr::CopyToBufferOpr(std::shared_ptr<AFLOperator> qry)

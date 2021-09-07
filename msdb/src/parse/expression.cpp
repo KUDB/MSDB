@@ -11,18 +11,22 @@ expression::expression()
 expression::~expression()
 {
 }
-expressionAttributeId::expressionAttributeId(attributeId value)
-	: value_(value)
+expressionAttribute::expressionAttribute(attributeId attrId)
+	: attrId_(attrId)
 {
 }
-expressionAttributeId::~expressionAttributeId()
+expressionAttribute::expressionAttribute(std::string attrName)
+	: attrName_(attrName), attrId_(INVALID_ATTRIBUTE_ID)
 {
 }
-boost::any expressionAttributeId::getValue(pItemItr iit)
+expressionAttribute::~expressionAttribute()
+{
+}
+boost::any expressionAttribute::getValue(pItemItr iit)
 {
 	return (**iit);
 }
-boost::any expressionAttributeId::getValue()
+boost::any expressionAttribute::getValue()
 {
 	_MSDB_THROW(
 		_MSDB_EXCEPTIONS_MSG(

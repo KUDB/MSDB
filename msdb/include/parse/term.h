@@ -90,8 +90,8 @@ private:
 	eFunc findEvaluateFunc(termType type)
 	{
 		static bool (term:: * func_ptr[6])(const int64_t, const int64_t) = {
-			&term::evaluateEqual<Ty_>,
-			&term::evaluateNotEqual<Ty_>,
+			& term::evaluateEqual<Ty_>,
+			& term::evaluateNotEqual<Ty_>,
 			& term::evaluateGreater<Ty_>,
 			& term::evaluateGreaterEqual<Ty_>,
 			& term::evaluateLess<Ty_>,

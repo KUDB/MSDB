@@ -5,7 +5,9 @@
 #include <pch.h>
 #include <api_cpp/cpp_array.h>
 #include <api_cpp/cpp_domain.h>
+#include <api_cpp/cpp_predicate.h>
 #include <query/opPlan.h>
+#include <parse/predicate.h>
 
 namespace msdb
 {
@@ -61,6 +63,24 @@ private:
 };
 std::shared_ptr<BetweenOpr> Between(Array arr, Domain d);
 std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d);
+
+/* ************************ */
+/* Filter					*/
+/* ************************ */
+class FilterOpr : public AFLOperator
+{
+public:
+	FilterOpr(std::shared_ptr<AFLOperator> qry, std::shared_ptr<PredicateImpl> pred);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
+	std::shared_ptr<PredicateImpl> pred_;
+};
+std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm);
+
 
 /* ************************ */
 /* ToBuffer					*/
