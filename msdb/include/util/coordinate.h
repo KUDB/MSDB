@@ -1372,13 +1372,13 @@ public:
 	using self_type = itemRangeIterator<Dty_, element>;
 	using base_type = itemIterator<Dty_, element>;
 
-	using coordinate_type = base_type::coordinate_type;
-	using size_type = base_type::size_type;
-	using dim_type = base_type::dim_type;
-	using dim_pointer = base_type::dim_pointer;
-	using dim_const_pointer = base_type::dim_const_pointer;
-	using dim_reference = base_type::dim_reference;
-	using dim_const_reference = base_type::dim_const_reference;
+	using typename base_type::coordinate_type;
+	using typename base_type::size_type;
+	using typename base_type::dim_type;
+	using typename base_type::dim_pointer;
+	using typename base_type::dim_const_pointer;
+	using typename base_type::dim_reference;
+	using typename base_type::dim_const_reference;
 
 public:
 	itemRangeIterator(void* ptr, 
