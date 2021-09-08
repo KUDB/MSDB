@@ -1,6 +1,7 @@
 #include <pch.h>
 #include <query/query.h>
 #include <query/queryMgr.h>
+#include <query/opPlan.h>
 
 namespace msdb
 {
@@ -18,6 +19,15 @@ status query::submit()
 }
 status query::process()
 {
+	_MSDB_TRY_BEGIN
+	{
+		this->qryPlan_->process(shared_from_this());
+	}
+	_MSDB_CATCH_ALL
+	{
+		// TODO:: Log error
+	}
+	_MSDB_CATCH_END
 	return status(statusSectionCode::OK, (statusSubCodeType)statusOkCode::OK);
 }
 

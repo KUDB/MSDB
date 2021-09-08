@@ -1,6 +1,9 @@
 #include <pch.h>
 #include <query/opPlan.h>
 #include <util/logger.h>
+#include <query/query.h>
+#include <array/arrayMgr.h>
+#include <array/memBlockArray.h>
 
 namespace msdb
 {
@@ -68,6 +71,20 @@ pAction opPlan::getAction()
 parameters opPlan::getParam()
 {
 	return this->inParamSet_->getParam();
+}
+pArray opPlan::process(std::shared_ptr<query> qry)
+{
+	std::vector<pArray> inArr;
+	if (this->parentPlan_)
+	{
+		inArr.push_back(this->parentPlan_->process(qry));
+	}
+	else
+	{
+		inArr.push_back(arrayMgr::instance()->makeArray<memBlockArray>(this->inferSchema()));
+	}
+
+	return this->getAction()->execute(inArr, qry);
 }
 void opPlan::setParentPlan(pPlan parentPlan)
 {
