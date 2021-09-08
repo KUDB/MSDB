@@ -21,70 +21,85 @@ public:
 
 private:
 	template<typename Ty_>
-	void inserting(std::vector<pArray>& inputArrays)
+	void inserting(pArray inArr)
 	{
-		Ty_* fileData;
-		std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[1]->getParam()));
-		std::ifstream in(filePath, std::ios::binary);
-
-		// Get file size
-		in.seekg(0, std::ios::end);
-		size_t fileLength = (size_t)in.tellg();
-		in.seekg(0, std::ios::beg);
-
-		in.read((char*)(fileData), fileLength);
-		in.close();
-
-		pArray inArr = inputArrays[0];
-		auto chunkItr = inArr->getChunkIterator();
-		while (!chunkItr->isEnd())
+		auto dims = inArr->getDesc()->getDimDescs()->getDims();
+		size_t capacity = 1;
+		for (int i = 0; i < dims.size(); ++i)
 		{
-			if (chunkItr->isExist())
+			capacity *= dims[i];
+		}
+		size_t bufferSize = sizeof(Ty_) * capacity;
+
+		Ty_* fileData = new Ty_[bufferSize];
+
+		_MSDB_TRY_BEGIN
+		{
+			std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[1]->getParam()));
+			std::ifstream in(filePath, std::ios::binary);
+
+			// Get file size
+			in.seekg(0, std::ios::end);
+			size_t fileLength = (size_t)in.tellg();
+			in.seekg(0, std::ios::beg);
+
+			in.read((char*)(fileData), fileLength);
+			in.close();
+
+			auto attrDesc = inArr->getDesc()->attrDescs_->at(0);
+
+			auto chunkItr = inArr->getChunkIterator();
+			while (!chunkItr->isEnd())
 			{
-				auto inChunk = (**chunkItr);
-				auto chunkRange = inChunk->getChunkRange();
-
-				//auto outChunk = outArr->makeChunk(attr->id_, inChunk->getId());
-				//outChunk->setChunkDesc(inChunk->getDesc());
-				//outChunk->copyBlockBitmap(inChunk->getBlockBitmap());
-				//outChunk->bufferCopy(inChunk);
-
-				auto blockItr = inChunk->getBlockIterator();
-				while (!blockItr->isEnd())
+				inArr->makeChunk(attrDesc->id_, chunkItr->seqPos());
+				if (chunkItr->isExist())
 				{
-					if (blockItr->isExist())
+					auto inChunk = (**chunkItr);
+					inChunk->bufferAlloc();
+					inChunk->makeAllBlocks();
+					
+					auto blockItr = inChunk->getBlockIterator();
+					while (!blockItr->isEnd())
 					{
-						auto inBlock = (**blockItr);
-						//auto outBlock = outChunk->makeBlock(inBlock->getId());
-
-						auto itemItr = inBlock->getItemIterator();
-						size_t dSize = inBlock->getDSize();
-						dimension blockDims = inBlock->getDesc()->dims_;
-
-						size_t block_num = 1;
-						for (int d = (int)dSize - 1; d >= 0; d--)
+						if (blockItr->isExist())
 						{
-							block_num *= blockDims[d];
+							auto inBlock = (**blockItr);
+							//auto outBlock = outChunk->makeBlock(inBlock->getId());
+
+							auto itemItr = inBlock->getItemIterator();
+							size_t dSize = inBlock->getDSize();
+							dimension blockDims = inBlock->getDesc()->dims_;
+
+							size_t block_num = 1;
+							for (int d = (int)dSize - 1; d >= 0; d--)
+							{
+								block_num *= blockDims[d];
+							}
+
+							for (size_t i = 0; i < block_num; i++)
+							{
+								size_t pos = itemItr->seqPos();
+								(**itemItr).set<Ty_>(fileData[pos]);
+								++(*itemItr);
+							}
 						}
 
-						for (size_t i = 0; i < block_num; i++)
-						{
-							// TODO ##########################
-							size_t pos = itemItr->seqPos();
-							(**itemItr).set<Ty_>(fileData[pos]);
-
-							++(*itemItr);
-						}				
+						++(*blockItr);
 					}
-
-					++(*blockItr);
 				}
+
+				++(*chunkItr);
 			}
 
-			++(*chunkItr);
 		}
-	}
+		_MSDB_CATCH_ALL
+		{
 
+		}
+		_MSDB_CATCH_END
+
+		delete[] fileData;
+	}
 };
 }		// core
 }		// msdb

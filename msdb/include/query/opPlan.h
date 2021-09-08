@@ -42,6 +42,7 @@ private:
 	pBitmapTree inArrBitmap_;
 	pBitmapTree outArrBitmap_;
 	pPlan parentPlan_;
+	std::vector<pPlan> childPlans_;
 };
 }		// core
 }		// msdb

@@ -64,6 +64,9 @@ class PredicateImpl
 public:
 	PredicateImpl(std::shared_ptr<core::predicate> pred);
 
+public:
+	std::shared_ptr<core::predicate> getPredicate();
+
 private:
 	std::shared_ptr<core::predicate> pred_;
 };

@@ -88,6 +88,11 @@ PredicateImpl::PredicateImpl(std::shared_ptr<core::predicate> pred)
 {
 }
 
+std::shared_ptr<core::predicate> PredicateImpl::getPredicate()
+{
+	return this->pred_;
+}
+
 //std::shared_ptr<PredicateImpl> operator&(std::shared_ptr<TermImpl> a, std::shared_ptr<TermImpl> b)
 //{
 //	return std::make_shared<PredicateImpl>(std::make_shared<core::andPredicate>(a, b));

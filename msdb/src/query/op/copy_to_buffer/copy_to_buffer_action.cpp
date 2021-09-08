@@ -86,6 +86,7 @@ void copy_to_buffer_action::dimensionEncode(pArray inArr, pQuery qry)
 		if (cItr->isExist())
 		{
 			pChunk inChunk = (**cItr);
+			auto chunkCoor = inChunk->getDesc()->sp_;
 			auto bItr = inChunk->getBlockIterator();
 			while (!bItr->isEnd())
 			{
@@ -93,11 +94,15 @@ void copy_to_buffer_action::dimensionEncode(pArray inArr, pQuery qry)
 				{
 					pBlock inBlock = (**bItr);
 					auto itemItr = inBlock->getItemIterator();
+					auto blockCoor = inBlock->getDesc()->getSp();
+
+					auto sp = chunkCoor + blockCoor;
 					while (!itemItr->isEnd())
 					{
 						if (itemItr->isExist())
 						{
-							dimBuffer->push_back(itemItr->coor());
+							auto seq = itemItr->seqPos();
+							dimBuffer->push_back(itemItr->coor() + sp);
 						}
 						++(*itemItr);
 					}

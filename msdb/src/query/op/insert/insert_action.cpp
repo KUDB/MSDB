@@ -33,31 +33,31 @@ pArray insert_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 		switch (attr->type_)
 		{
 		case eleType::CHAR:
-			inserting<char>(inputArrays);
+			inserting<char>(inArr);
 			break;
 		case eleType::INT8:
-			inserting<int8_t>(inputArrays);
+			inserting<int8_t>(inArr);
 			break;
 		case eleType::INT16:
-			inserting<int16_t>(inputArrays);
+			inserting<int16_t>(inArr);
 			break;
 		case eleType::INT32:
-			inserting<int32_t>(inputArrays);
+			inserting<int32_t>(inArr);
 			break;
 		case eleType::INT64:
-			inserting<int64_t>(inputArrays);
+			inserting<int64_t>(inArr);
 			break;
 		case eleType::UINT8:
-			inserting<uint8_t>(inputArrays);
+			inserting<uint8_t>(inArr);
 			break;
 		case eleType::UINT16:
-			inserting<uint16_t>(inputArrays);
+			inserting<uint16_t>(inArr);
 			break;
 		case eleType::UINT32:
-			inserting<uint32_t>(inputArrays);
+			inserting<uint32_t>(inArr);
 			break;
 		case eleType::UINT64:
-			inserting<uint64_t>(inputArrays);
+			inserting<uint64_t>(inArr);
 			break;
 		default:
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));

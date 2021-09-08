@@ -4,6 +4,7 @@
 #include <op/load/load_plan.h>
 #include <op/between/between_plan.h>
 #include <op/copy_to_buffer/copy_to_buffer_plan.h>
+#include <op/naive_filter/naive_filter_plan.h>
 
 namespace msdb
 {
@@ -107,7 +108,15 @@ FilterOpr::FilterOpr(std::shared_ptr<AFLOperator> qry, std::shared_ptr<Predicate
 }
 std::shared_ptr<core::opPlan> FilterOpr::getPlan()
 {
-	return std::shared_ptr<core::opPlan>();
+	auto qryPlan = std::make_shared<core::naive_filter_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+		std::make_shared<core::opParamPredicate>(this->pred_->getPredicate())
+	};
+	qryPlan->setParamSet(std::make_shared<core::naive_filter_plan_pset>(params));
+
+	return qryPlan;
 }
 std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm)
 {

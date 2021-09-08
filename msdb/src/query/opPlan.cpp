@@ -24,6 +24,7 @@ void opPlan::setParamSet(pParamSet paramSet)
 		{
 			auto childPlan = std::static_pointer_cast<opParamPlan::paramType>(param->getParam());
 			childPlan->setParentPlan(shared_from_this());
+			this->childPlans_.push_back(childPlan);
 		}
 	}
 }
@@ -75,9 +76,12 @@ parameters opPlan::getParam()
 pArray opPlan::process(std::shared_ptr<query> qry)
 {
 	std::vector<pArray> inArr;
-	if (this->parentPlan_)
+	if (this->childPlans_.size())
 	{
-		inArr.push_back(this->parentPlan_->process(qry));
+		for (auto p : this->childPlans_)
+		{
+			inArr.push_back(p->process(qry));
+		}
 	}
 	else
 	{
