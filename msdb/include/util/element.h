@@ -3,6 +3,8 @@
 #define _MSDB_ELEMENT_H_
 
 #include <pch.h>
+#include <boost/assign/list_of.hpp>
+#include <boost/unordered_map.hpp>
 
 namespace msdb
 {
@@ -31,6 +33,36 @@ enum class eleType
 	FLOAT,
 	DOUBLE
 };
+
+static const boost::unordered_map<eleType, const char*> eleTypeToString = boost::assign::map_list_of
+	(eleType::EMPTY,	"EMPTY")
+	(eleType::BOOL,		"BOOL")
+	(eleType::CHAR,		"CHAR")
+	(eleType::INT8,		"INT8")
+	(eleType::INT16,	"INT16")
+	(eleType::INT32,	"INT32")
+	(eleType::INT64,	"INT64")
+	(eleType::UINT8,	"UINT8")
+	(eleType::UINT16,	"UINT16")
+	(eleType::UINT32,	"UINT32")
+	(eleType::UINT64,	"UINT64")
+	(eleType::FLOAT,	"FLOAT")
+	(eleType::DOUBLE,	"DOUBLE");
+
+static const boost::unordered_map<const char* , eleType> stringToEleType = boost::assign::map_list_of
+	("EMPTY",	eleType::EMPTY)
+	("BOOL",	eleType::BOOL)
+	("CHAR",	eleType::CHAR)
+	("INT8",	eleType::INT8)
+	("INT16",	eleType::INT16)
+	("INT32",	eleType::INT32)
+	("INT64",	eleType::INT64)
+	("UINT8",	eleType::UINT8)
+	("UINT16",	eleType::UINT16)
+	("UINT32",	eleType::UINT32)
+	("UINT64",	eleType::UINT64)
+	("FLOAT",	eleType::FLOAT)
+	("DOUBLE",	eleType::DOUBLE);
 
 // Use stableElement if you need to hold a value.
 class element

@@ -1,6 +1,9 @@
 #include <pch.h>
+#include <typeinfo>
 #include <array/attributeDesc.h>
 #include <util/element.h>
+#include <system/exceptions.h>
+#include <xml/xmlFile.h>
 
 namespace msdb
 {
@@ -22,6 +25,26 @@ attributeDescs::attributeDescs(const attributeDescs& mit)
 	{
 		this->push_back(std::make_shared<attributeDesc>(*desc));
 	}
+}
+
+tinyxml2::XMLElement* attributeDesc::convertToXMLDoc(tinyxml2::XMLElement* node)
+{
+	node->SetAttribute(_MSDB_STR_ATTR_ID_, this->id_);
+	node->SetAttribute(_MSDB_STR_ATTR_NAME_, this->name_.c_str());
+	node->SetAttribute(_MSDB_STR_ATTR_TYPE_, eleTypeToString.at(this->type_));
+	node->SetAttribute(_MSDB_STR_ATTR_TYPE_SIZE_, this->typeSize_);
+
+	return node;
+}
+
+pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
+{
+	auto id = node->IntAttribute(_MSDB_STR_ATTR_ID_);
+	auto name = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_NAME_));
+	auto eleTypeName = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_TYPE_));
+	auto typeSize = node->IntAttribute(_MSDB_STR_ATTR_TYPE_SIZE_);
+
+	return std::make_shared<attributeDesc>(id, name, stringToEleType.at(eleTypeName));
 }
 }		// core
 }		// msdb

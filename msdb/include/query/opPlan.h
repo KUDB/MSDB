@@ -5,11 +5,14 @@
 #include <pch.h>
 #include <query/opParamSet.h>
 #include <query/opAction.h>
+#include <util/status.h>
 
 namespace msdb
 {
 namespace core
 {
+class query;
+
 class opPlan : public std::enable_shared_from_this<opPlan>
 {
 public:
@@ -22,7 +25,8 @@ public:
 	virtual pBitmapTree inferInBitmap();
 	virtual pAction getAction();
 	parameters getParam();
-
+	virtual pArray process(std::shared_ptr<query> qry);
+	
 protected:
 	virtual pBitmapTree inferBottomUpBitmap();
 	friend pBitmapTree opPlanParamSet::getSourcePlanBottomUpBitmap();

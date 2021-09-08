@@ -33,6 +33,7 @@ enum class opParamType
 	INTLIST,
 	PREDICATE,
 	COOR,
+	STRING,
 };
 
 class opParam : public std::enable_shared_from_this<opParam>
@@ -142,6 +143,22 @@ public:
 
 private:
 	std::shared_ptr<coor> coor_;
+};
+
+class opParamString : public opParam
+{
+public:
+	using paramType = std::string;
+
+public:
+	opParamString(std::shared_ptr<std::string> str);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	std::shared_ptr<std::string> str_;
 };
 
 class opParamPredicate : public opParam

@@ -6,11 +6,16 @@
 #include <array/arrayId.h>
 #include <array/attributeDesc.h>
 #include <array/dimensionDesc.h>
+#include <xml/tinyxml2.h>
 
 namespace msdb
 {
 namespace core
 {
+#define _MSDB_STR_ARRAY_DESC_		"ARRAY_DESCRIPTION"
+#define _MSDB_STR_ARR_ID_			"ARRAY_ID"
+#define _MSDB_STR_ARR_NAME_			"ARRAY_NAME"
+
 class arrayDesc;
 
 using pArrayDesc = std::shared_ptr<arrayDesc>;
@@ -29,6 +34,14 @@ public:
 	pAttributeDescs getAttrDescs();
 
 	size_t getDSize();
+
+	/**
+	 * Save/load in XML file
+	 */
+	tinyxml2::XMLElement* convertToXMLDoc(std::shared_ptr<tinyxml2::XMLDocument> doc);
+	static pArrayDesc buildDescFromXML(std::shared_ptr<tinyxml2::XMLDocument> doc);
+	static pDimensionDescs buildDimensionDescsFromXML(tinyxml2::XMLElement*);
+	static pAttributeDescs buildAttributeDescsFromXML(tinyxml2::XMLElement*);
 
 public:
 	arrayId id_;

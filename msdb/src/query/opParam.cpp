@@ -158,6 +158,19 @@ opParamType opParamCoorPlaceholder::type()
 	return opParamType::COOR;
 }
 
+opParamString::opParamString(std::shared_ptr<std::string> str)
+	: opParam(), str_(str)
+{
+}
+opParam::void_pointer opParamString::getParam()
+{
+	return this->str_;
+}
+opParamType opParamString::type()
+{
+	return opParamType::STRING;
+}
+
 //////////////////////////////
 // opParamPlan
 opParamPlan::opParamPlan(pPlan plan)
