@@ -23,7 +23,18 @@ private:
 	template<typename Ty_>
 	void inserting(std::vector<pArray>& inputArrays)
 	{
-		Ty_* data;
+		Ty_* fileData;
+		std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[1]->getParam()));
+		std::ifstream in(filePath, std::ios::binary);
+
+		// Get file size
+		in.seekg(0, std::ios::end);
+		size_t fileLength = (size_t)in.tellg();
+		in.seekg(0, std::ios::beg);
+
+		in.read((char*)(fileData), fileLength);
+		in.close();
+
 		pArray inArr = inputArrays[0];
 		auto chunkItr = inArr->getChunkIterator();
 		while (!chunkItr->isEnd())
@@ -60,7 +71,7 @@ private:
 						{
 							// TODO ##########################
 							size_t pos = itemItr->seqPos();
-							(**itemItr).set<Ty_>(data[pos]);
+							(**itemItr).set<Ty_>(fileData[pos]);
 
 							++(*itemItr);
 						}				

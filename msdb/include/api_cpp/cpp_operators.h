@@ -33,6 +33,22 @@ private:
 };
 
 /* ************************ */
+/* Insert					*/
+/* ************************ */
+class InsertOpr : public AFLOperator
+{
+public:
+	InsertOpr(Array arr, std::string filePath);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+
+private:
+	std::string filePath_;
+};
+std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath);
+
+/* ************************ */
 /* Load						*/
 /* ************************ */
 class LoadOpr : public AFLOperator
