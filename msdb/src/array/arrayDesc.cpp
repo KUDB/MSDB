@@ -141,7 +141,7 @@ bool arrayDesc::operator==(const arrayDesc& right_)
 	
 	for (int i = 0; i < leftDim->size(); i++)
 	{
-		if (!(leftDim->at(0) == rightDim->at(0))) return false;
+		if (!(*leftDim->at(i) == *rightDim->at(i))) return false;
 	}
 
 	pAttributeDescs leftAttr = this->attrDescs_;
@@ -150,7 +150,7 @@ bool arrayDesc::operator==(const arrayDesc& right_)
 
 	for (int i = 0; i < leftAttr->size(); i++)
 	{
-		if (!(leftAttr->at(0) == rightAttr->at(0))) return false;
+		if (!(*leftAttr->at(i) == *rightAttr->at(i))) return false;
 	}
 
 	return true;

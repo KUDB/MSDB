@@ -2,12 +2,12 @@
 
 namespace msdb
 {
-namespace star1024x1024
+namespace dummy
 {
 core::pDimensionDescs dimensionDescBuilder(std::vector<std::string> dimNames,
-	core::dimension& dims,
-	core::dimension& chunkDims,
-	core::dimension& blockDims)
+										   core::dimension& dims,
+										   core::dimension& chunkDims,
+										   core::dimension& blockDims)
 {
 	core::pDimensionDescs dimDescs = std::make_shared<core::dimensionDescs>();
 	core::dimensionId nums = dimNames.size();
@@ -19,7 +19,7 @@ core::pDimensionDescs dimensionDescBuilder(std::vector<std::string> dimNames,
 	return dimDescs;
 }
 core::pAttributeDescs attributeDescBuilder(std::vector<std::string> attrNames,
-	std::vector<core::eleType> attrTypes)
+										   std::vector<core::eleType> attrTypes)
 {
 	core::pAttributeDescs attrDescs = std::make_shared<core::attributeDescs>();
 	core::attributeId nums = attrNames.size();
@@ -30,11 +30,13 @@ core::pAttributeDescs attributeDescBuilder(std::vector<std::string> attrNames,
 	}
 	return attrDescs;
 }
-core::pArrayDesc getDummyArrayDesc_SIMPLE_2D()
+
+namespace star1024x1024
+{
+core::pArrayDesc getDummyArrayDesc()
 {
 	// Dummy array descriptions
-	core::arrayId aid = 100;
-	std::string arrayName = "SIMPLE_2D";
+	core::arrayId aid = 1100;
 	core::dimension dims(1024, 1024);
 	core::dimension chunkDims(128, 128);
 	core::dimension blockDims(32, 32);
@@ -43,7 +45,8 @@ core::pArrayDesc getDummyArrayDesc_SIMPLE_2D()
 	core::pDimensionDescs dimDescs = dimensionDescBuilder({ "Y", "X" }, dims, chunkDims, blockDims);
 	core::pAttributeDescs attrDescs = attributeDescBuilder({ "ATTR_1" }, { core::eleType::CHAR });
 
-	return std::make_shared<core::arrayDesc>(aid, arrayName.c_str(), dimDescs, attrDescs);
+	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 }		// star1024x1024
+}		// dummy
 }		// msdb

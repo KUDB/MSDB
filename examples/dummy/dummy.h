@@ -11,19 +11,24 @@
 
 namespace msdb
 {
+namespace dummy
+{
+core::pDimensionDescs dimensionDescBuilder(
+	std::vector<std::string> dimNames, core::dimension& dims,
+	core::dimension& chunkDims, core::dimension& blockDims
+);
+core::pAttributeDescs attributeDescBuilder(
+	std::vector<std::string> attrNames,
+	std::vector<core::eleType> attrTypes
+);
+
 namespace star1024x1024
 {
-	core::pDimensionDescs dimensionDescBuilder(
-		std::vector<std::string> dimNames, core::dimension& dims,
-		core::dimension& chunkDims, core::dimension& blockDims
-	);
-	core::pAttributeDescs attributeDescBuilder(
-		std::vector<std::string> attrNames,
-		std::vector<core::eleType> attrTypes
-	);
-
-	core::pArrayDesc getDummyArrayDesc_SIMPLE_2D();
+static const std::string arrName = "star1024x1024";
+static const std::string filePath = DUMMY_PATH(star1024x1024.txt);
+core::pArrayDesc getDummyArrayDesc();
 }		// star1024x1024
+}		// dummy
 }		// msdb
 
 #endif	// _MSDB_EXAMPLE_DUMMY_H_

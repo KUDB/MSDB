@@ -19,7 +19,7 @@ AFLOperator::AFLOperator(core::pArrayDesc arrDesc)
 /* Insert					*/
 /* ************************ */
 InsertOpr::InsertOpr(Array arr, std::string filePath)
-	: AFLOperator(arr.getDesc())
+	: filePath_(filePath), AFLOperator(arr.getDesc())
 {
 }
 std::shared_ptr<core::opPlan> InsertOpr::getPlan()
@@ -134,6 +134,6 @@ std::shared_ptr<core::opPlan> CopyToBufferOpr::getPlan()
 }
 std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry)
 {
-	return std::shared_ptr<CopyToBufferOpr>();
+	return std::make_shared<CopyToBufferOpr>(qry);
 }
 }		// msdb

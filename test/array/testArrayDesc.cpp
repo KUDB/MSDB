@@ -19,7 +19,7 @@ TEST(arrayDesc, xml_save)
 	EXPECT_TRUE(std::filesystem::exists(expectFilePath));
 
 	auto loadArrDesc = core::storageMgr::instance()->loadArrayDesc(expectFilePath);
-	EXPECT_EQ(*arrDesc, *loadArrDesc);
+	EXPECT_TRUE(*arrDesc == *loadArrDesc);
 }
 }		// test
 }		// msdb

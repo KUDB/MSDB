@@ -21,7 +21,7 @@ struct outBuffer
 	uint64_t size_;
 };
 
-class query : std::enable_shared_from_this<query>
+class query : public std::enable_shared_from_this<query>
 {
 public:
 	query(std::shared_ptr<opPlan> qryPlan);
