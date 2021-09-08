@@ -28,13 +28,16 @@ public:
 	pAttrIndex getAttributeIndex(arrayId arrId, attributeId attrId);
 	pDimensionIndex getDimensionIndex(arrayId arrId, dimensionId dimId);
 
-	void setArrayDesc(arrayId arrId, pArrayDesc desc);
-	void setArrayName(std::string arrName, arrayId arrId);
+	void registArray(pArrayDesc arrDesc);
 	void setAttributeIndex(arrayId arrId, attributeId attrId, pAttrIndex aIndex);
 	void setDimensionIndex(arrayId arrId, dimensionId dimId, pDimensionIndex dIndex);
 
 	void flushAttributeIndex(arrayId arrId, attributeId attrId);
 	void flushDimensionIndex(arrayId arrId, dimensionId dimId);
+
+	void saveAllArrayDesc();
+	void loadAllArrayDesc();
+	void saveArrayDesc(arrayId arrId);
 
 	template <class Aty_>
 	pArray makeArray(const arrayId arrId, const std::string arrName,
@@ -60,8 +63,7 @@ public:
 		std::shared_ptr<Aty_> arr = std::make_shared<Aty_>(arrDesc);
 
 		// Register array at the arrayMgr.
-		this->setArrayDesc(arrId, arrDesc);
-		this->setArrayName(arrName, arrId);
+		this->registArray(arrDesc);
 
 		return arr;
 	}
@@ -71,11 +73,14 @@ public:
 	{
 		std::shared_ptr<Aty_> arr = std::make_shared<Aty_>(arrDesc);
 
-		this->setArrayDesc(arrDesc->id_, arrDesc);
-		this->setArrayName(arrDesc->name_, arrDesc->id_);
+		this->registArray(arrDesc);
 
 		return arr;
 	}
+
+private:
+	void setArrayDesc(arrayId arrId, pArrayDesc desc);
+	void setArrayName(std::string arrName, arrayId arrId);
 
 public:
 	std::map<arrayId, pArrayDesc> arrDescs_;

@@ -1,6 +1,7 @@
 #include <pch.h>
 #include <system/storageMgr.h>
 #include <system/exceptions.h>
+#include <array/arrayMgr.h>
 #include <array/chunkId.h>
 #include <array/configArrays.h>
 #include <util/logger.h>
@@ -10,8 +11,8 @@ namespace msdb
 namespace core
 {
 const char* strBasePath =	"../storage/";
-const char* strConfigPath = "../storage/config/";
-const char* strArrayPath =	"../storage/array/";
+const char* strConfigPath = "config/";
+const char* strArrayPath =	"array/";
 
 const char* strIndexFolder = "indies";
 const char* strIndexFilExtension = ".msdbindex";
@@ -19,55 +20,63 @@ const char* strIndexFilExtension = ".msdbindex";
 const char* strArrayConfigFile = "arrays.xml";
 const char* strChunkFilExtension = ".chunk";
 
-//void msdb::core::storageMgr::getConfigFile(std::string path)
-//{
-//	std::fstream fs;
-//	fs.open(path, std::fstream::in | std::fstream::out | std::fstream::app | std::fstream::binary);
-//
-//	fs.close();
-//	return;
-//}
+const std::string storageMgr::extArrayConfig = ".msdbarray";
 
 storageMgr::storageMgr()
 {
 	std::cout << "current dir: " << std::filesystem::current_path() << std::endl;
 
 	this->basePath_ = filePath(strBasePath);
-	this->configPath_ = filePath(strConfigPath);
+	this->configPath_ = filePath(std::string(strConfigPath, strConfigPath).c_str());
 	this->arrayPath_ = filePath(strArrayPath);
 
 	this->indexFolder_ = filePath(strIndexFolder);
+
+	this->initSystemConfig();
 }
 
 storageMgr::~storageMgr()
 {
 }
 
-config* storageMgr::loadConfigFile(ConfigType type)
+
+void storageMgr::saveArrayDesc(pArrayDesc arrDesc)
 {
-	tinyxml2::XMLDocument xmlDoc;
+	auto pXmlDoc = std::make_shared<tinyxml2::XMLDocument>();
+	auto pXmlEle = arrDesc->convertToXMLDoc(pXmlDoc);
+	pXmlDoc->LinkEndChild(pXmlEle);
 
-	switch (type)
-	{
-	case ConfigType::ARRAYLIST:
-		xmlDoc.LoadFile(strArrayConfigFile);
-		return new configArrayList(xmlDoc.FirstChild());
-	default:
-		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_UNKNOWN_ERROR, MSDB_ER_UNKNOWN_ERROR));
-	}
+	auto path = this->getBasePath() / filePath(std::to_string(arrDesc->id_) + this->extArrayConfig);
+	auto strPath = path.c_str();
 
-	return nullptr;
+	pXmlDoc->SaveFile(path.u8string().c_str());
 }
 
-void storageMgr::saveConfigFile(config* cFile)
+void storageMgr::initSystemConfig()
 {
-	switch(cFile->getType())
+}
+
+std::vector<pArrayDesc> storageMgr::loadAllArrayDescs()
+{
+	std::vector<pArrayDesc> arrDescList;
+
+	auto path = this->getBasePath() / filePath("*" + this->extArrayConfig);
+	auto arrayFiles = this->getFiles(path);
+
+	for (auto f : arrayFiles)
 	{
-	case ConfigType::ARRAYLIST:
-		break;
-	default:
-		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_UNKNOWN_ERROR, MSDB_ER_UNKNOWN_ERROR));
+		arrDescList.push_back(this->loadArrayDesc(f));
 	}
+
+	return arrDescList;
+}
+
+pArrayDesc storageMgr::loadArrayDesc(filePath descPath)
+{
+	auto pXmlDoc = std::make_shared<tinyxml2::XMLDocument>();
+	pXmlDoc->LoadFile(descPath.u8string().c_str());
+
+	return arrayDesc::buildDescFromXML(pXmlDoc);
 }
 
 void storageMgr::loadAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj)
@@ -151,6 +160,11 @@ void storageMgr::saveChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSe
 	_MSDB_CATCH_END
 }
 
+filePath storageMgr::getBasePath()
+{
+	return this->basePath_;
+}
+
 filePath storageMgr::getArrayPath(arrayId arrId)
 {
 	return this->arrayPath_ / this->getArrayFolder(arrId);
@@ -220,6 +234,16 @@ bool storageMgr::isDir(filePath& fp)
 bool storageMgr::isExists(filePath& fp)
 {
 	return std::filesystem::exists(fp);
+}
+std::vector<filePath> storageMgr::getFiles(filePath& fp)
+{
+	std::vector<filePath> out;
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fp))
+	{
+		out.push_back(entry.path());
+	}
+
+	return out;
 }
 }		// core
 }		// msdb

@@ -1,5 +1,6 @@
 #include <pch.h>
 #include <array/arrayMgr.h>
+#include <system/storageMgr.h>
 
 namespace msdb
 {
@@ -7,6 +8,7 @@ namespace core
 {
 arrayMgr::arrayMgr()
 {
+	this->loadAllArrayDesc();
 }
 
 arrayMgr::~arrayMgr()
@@ -81,6 +83,11 @@ void arrayMgr::setArrayName(std::string arrName, arrayId arrId)
 	assert(arrId != INVALID_ARRAY_ID);
 	this->arrNames_[arrName] = arrId;
 }
+void arrayMgr::registArray(pArrayDesc arrDesc)
+{
+	this->setArrayDesc(arrDesc->id_, arrDesc);
+	this->setArrayName(arrDesc->name_, arrDesc->id_);
+}
 void arrayMgr::setAttributeIndex(arrayId id, attributeId attrId, pAttrIndex aIndex)
 {
 	assert(id != INVALID_ARRAY_ID);
@@ -100,6 +107,26 @@ void arrayMgr::flushDimensionIndex(arrayId arrId, dimensionId dimId)
 {
 	assert(arrId != INVALID_ARRAY_ID);
 	(this->dimIndies_[arrId]).erase(dimId);
+}
+void arrayMgr::saveAllArrayDesc()
+{
+	for (auto arr : this->arrDescs_)
+	{
+		storageMgr::instance()->saveArrayDesc(arr.second);
+	}
+}
+void arrayMgr::loadAllArrayDesc()
+{
+	auto arrDescList = storageMgr::instance()->loadAllArrayDescs();
+
+	for (auto desc : arrDescList)
+	{
+		this->registArray(desc);
+	}
+}
+void arrayMgr::saveArrayDesc(arrayId arrId)
+{
+	storageMgr::instance()->saveArrayDesc(this->getArrayDesc(arrId));
 }
 //bool arrayMgr::init()
 //{

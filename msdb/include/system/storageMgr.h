@@ -10,6 +10,7 @@
 #include <io/bitstream.h>
 #include <io/serializable.h>
 #include <system/config.h>
+#include <array/arrayDesc.h>
 
 namespace msdb
 {
@@ -37,8 +38,12 @@ private:
 	~storageMgr();
 
 public:
-	config* loadConfigFile(ConfigType type);
-	void saveConfigFile(config* cFile);
+	//config* loadConfigFile(ConfigType type);
+	//void saveConfigFile(config* cFile);
+	void initSystemConfig();
+	std::vector<pArrayDesc> loadAllArrayDescs();
+	pArrayDesc loadArrayDesc(filePath descPath);
+	void saveArrayDesc(pArrayDesc arrDesc);
 
 	void loadAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj);
 	void saveAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj);
@@ -47,6 +52,7 @@ public:
 	void saveChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSerializable serialObj);
 
 protected:
+	filePath getBasePath();
 	filePath getArrayPath(arrayId arrId);
 	filePath getArrayFolder(arrayId arrId);
 	filePath getArrayIndexPath(arrayId arrId);
@@ -61,7 +67,7 @@ protected:
 	static bool isFile(filePath& fp);
 	static bool isDir(filePath& fp);
 	static bool isExists(filePath& fp);
-
+	static std::vector<filePath> getFiles(filePath& fp);
 	//const filePath& getConfigPath();
 	//const filePath& getArrayPath();
 
@@ -76,6 +82,9 @@ protected:
 
 	// Folders
 	filePath indexFolder_;
+
+private:
+	static const std::string extArrayConfig;
 
 protected:
 	friend singleton<storageMgr>;
