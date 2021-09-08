@@ -3,6 +3,7 @@
 #define _MSDB_API_CPP_OPERATORS_H_
 
 #include <pch.h>
+#include <array/arrayDesc.h>
 #include <api_cpp/cpp_array.h>
 #include <api_cpp/cpp_domain.h>
 #include <api_cpp/cpp_predicate.h>
@@ -71,21 +72,16 @@ class BuildOpr : public AFLOperator
 {
 public:
 	using id_t = uint32_t;
-	using id_t = uint32_t;
 	using dimension_type = int64_t;
 	using position_t = int64_t;
-	
+
 public:
 	BuildOpr(std::shared_ptr<AFLOperator> qry, Domain d);
 
 public:
-	BuildOpr& AddAxis(id_t dimId, std::string name, Coordinate dim, position_t chunkSize, position_t blockSize)
-	{
-		//arrDesc_->dimDescs_->push_back();
-		return *this;
-	}
-	std::shared_ptr<BuildOpr> AddAttribute(id_t attrId, std::string name, core::eleType eType);
-	std::shared_ptr<BuildOpr> Finalize(id_t arrId, std::string name);
+	BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize);
+	BuildOpr& AddAttribute(id_t attrId, std::string name, core::eleType eType);
+	BuildOpr& SetArray(id_t arrId, std::string name);
 
 private:
 	core::pArrayDesc arrDesc_;
