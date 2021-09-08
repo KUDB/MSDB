@@ -3,6 +3,8 @@
 #include <op/load/load_plan.h>
 #include <op/between/between_plan.h>
 #include <op/copy_to_buffer/copy_to_buffer_plan.h>
+#include <array/dimensionDesc.h>
+#include <array/attributeDesc.h>
 
 namespace msdb
 {
@@ -71,6 +73,24 @@ std::shared_ptr<BetweenOpr> Between(Array arr, Domain d)
 std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d)
 {
 	return std::make_shared<BetweenOpr>(qry, d);
+}
+
+/* ************************ */
+/* Build					*/
+/* ************************ */
+BuildOpr::BuildOpr(std::shared_ptr<AFLOperator> qry, Domain d)
+	: childQry_(qry), domain_(d), AFLOperator(qry->getArrayDesc())
+{
+}
+
+BuildOpr& AddAxis(uint32_t dimId, std::string name, Coordinate dim, int64_t chunkSize, int64_t blockSize)
+{
+
+}
+
+std::shared_ptr<BuildOpr> Build(std::shared_ptr<AFLOperator> qry, Domain d)
+{
+	return std::make_shared<BuildOpr>(qry, d);
 }
 
 /* ************************ */

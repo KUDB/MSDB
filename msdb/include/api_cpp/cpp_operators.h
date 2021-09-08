@@ -65,6 +65,36 @@ std::shared_ptr<BetweenOpr> Between(Array arr, Domain d);
 std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d);
 
 /* ************************ */
+/* Build					*/
+/* ************************ */
+class BuildOpr : public AFLOperator
+{
+public:
+	using id_t = uint32_t;
+	using id_t = uint32_t;
+	using dimension_type = int64_t;
+	using position_t = int64_t;
+	
+public:
+	BuildOpr(std::shared_ptr<AFLOperator> qry, Domain d);
+
+public:
+	BuildOpr& AddAxis(id_t dimId, std::string name, Coordinate dim, position_t chunkSize, position_t blockSize)
+	{
+		//arrDesc_->dimDescs_->push_back();
+		return *this;
+	}
+	std::shared_ptr<BuildOpr> AddAttribute(id_t attrId, std::string name, core::eleType eType);
+	std::shared_ptr<BuildOpr> Finalize(id_t arrId, std::string name);
+
+private:
+	core::pArrayDesc arrDesc_;
+	std::shared_ptr<AFLOperator> childQry_;
+	Domain domain_;
+};
+std::shared_ptr<BuildOpr> Build(std::shared_ptr<AFLOperator> qry, Domain d);
+
+/* ************************ */
 /* Filter					*/
 /* ************************ */
 class FilterOpr : public AFLOperator
