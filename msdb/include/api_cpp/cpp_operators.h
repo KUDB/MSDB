@@ -49,6 +49,19 @@ private:
 std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath);
 
 /* ************************ */
+/* Save 					*/
+/* ************************ */
+class SaveOpr : public AFLOperator
+{
+public:
+	SaveOpr(Array arr);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+};
+std::shared_ptr<SaveOpr> Save(Array arr);
+
+/* ************************ */
 /* Load						*/
 /* ************************ */
 class LoadOpr : public AFLOperator
