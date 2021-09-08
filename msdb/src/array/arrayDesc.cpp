@@ -135,8 +135,23 @@ bool arrayDesc::operator==(const arrayDesc& right_)
 	if (this->id_ != right_.id_) return false;
 	if (this->name_ != right_.name_) return false;
 
-	//if (*this->dimDescs_ != right_.dimDescs_) return false;
-	//if (*this->attrDescs_ != right_.attrDescs_) return false;
+	pDimensionDescs leftDim = this->dimDescs_;
+	pDimensionDescs rightDim = right_.dimDescs_;
+	if (leftDim->size() != rightDim->size()) return false;
+	
+	for (int i = 0; i < leftDim->size(); i++)
+	{
+		if (!(leftDim->at(0) == rightDim->at(0))) return false;
+	}
+
+	pAttributeDescs leftAttr = this->attrDescs_;
+	pAttributeDescs rightAttr = right_.attrDescs_;
+	if (leftAttr->size() != rightAttr->size()) return false;
+
+	for (int i = 0; i < leftAttr->size(); i++)
+	{
+		if (!(leftAttr->at(0) == rightAttr->at(0))) return false;
+	}
 
 	return true;
 }

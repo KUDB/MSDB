@@ -56,5 +56,15 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 
 	return std::make_shared<attributeDesc>(id, name, attrType);
 }
+
+bool attributeDesc::operator==(const attributeDesc& right_)
+{
+	if (this->id_ != right_.id_) return false;
+	if (this->name_ != right_.name_) return false;
+	if (this->type_ != right_.type_) return false;
+	if (this->typeSize_ != right_.typeSize_) return false;
+
+	return true;
+}
 }		// core
 }		// msdb

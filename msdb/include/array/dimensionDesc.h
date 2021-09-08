@@ -63,6 +63,8 @@ public:
 	tinyxml2::XMLElement* convertToXMLDoc(tinyxml2::XMLElement* node);
 	static pDimensionDesc buildDescFromXML(tinyxml2::XMLElement* node);
 
+	bool operator == (const dimensionDesc& right_);
+
 public:
 	dimensionId id_;
 	std::string name_;
