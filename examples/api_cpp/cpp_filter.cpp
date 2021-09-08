@@ -8,7 +8,7 @@ int main()
 	auto afl = msdb::Filter(
 		msdb::Load(
 			msdb::Array(ctx, DUMMY_PATH(star_1024x1024))),
-		msdb::Attribute("attr1") == 0
+		msdb::Term("attr1") == 0
 	);
 
 	auto qry = msdb::Query(afl);

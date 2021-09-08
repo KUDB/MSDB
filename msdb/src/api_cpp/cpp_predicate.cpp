@@ -6,7 +6,7 @@ namespace msdb
 /* ************************ */
 /* Expression				*/
 /* ************************ */
-std::shared_ptr<ExpressionAttributeImpl> Attribute(std::string attrName)
+std::shared_ptr<ExpressionAttributeImpl> Term(std::string attrName)
 {
 	return std::make_shared<ExpressionAttributeImpl>(attrName);
 }

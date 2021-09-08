@@ -33,4 +33,25 @@ void ResultArray::close()
 	this->arrDesc_ = nullptr;
 	this->qry_ = nullptr;
 }
+Dimension::Dimension(std::string name, uint64_t start, uint64_t end, uint64_t chunkSize, uint64_t blockSize)
+	: dimDesc_(std::make_shared<core::dimensionDesc>(
+	0, name, start, end, chunkSize, blockSize))
+{
+}
+std::shared_ptr<core::dimensionDesc> Dimension::getDesc()
+{
+	return this->dimDesc_;
+}
+Attribute::Attribute(std::string name, core::eleType type)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type))
+{
+}
+std::shared_ptr<core::attributeDesc> Attribute::getDesc()
+{
+	return this->attrDesc_;
+}
+Attribute::operator core::attributeDesc()
+{
+	return *this->attrDesc_;
+}
 }		// msdb

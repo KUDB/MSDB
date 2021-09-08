@@ -72,24 +72,20 @@ std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d);
 class BuildOpr : public AFLOperator
 {
 public:
-	using id_t = uint32_t;
-	using dimension_type = int64_t;
-	using position_t = int64_t;
+	BuildOpr(const core::arrayId aid, const std::string name, 
+			 core::pDimensionDescs dims,
+			 core::pAttributeDescs attrs);
 
 public:
-	BuildOpr(std::shared_ptr<AFLOperator> qry, Domain d);
+	virtual std::shared_ptr<core::opPlan> getPlan();
 
 public:
-	BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize);
-	BuildOpr& AddAttribute(id_t attrId, std::string name, core::eleType eType);
-	BuildOpr& SetArray(id_t arrId, std::string name);
-
-private:
-	core::pArrayDesc arrDesc_;
-	std::shared_ptr<AFLOperator> childQry_;
-	Domain domain_;
+	//BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize);
+	//BuildOpr& AddAttribute(id_t attrId, std::string name, core::eleType eType);
+	//BuildOpr& SetArray(id_t arrId, std::string name);
 };
-std::shared_ptr<BuildOpr> Build(std::shared_ptr<AFLOperator> qry, Domain d);
+std::shared_ptr<BuildOpr> Build(core::arrayId aid, std::string name,
+								std::vector<Dimension>, std::vector<Attribute>);
 
 /* ************************ */
 /* Filter					*/

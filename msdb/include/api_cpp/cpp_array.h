@@ -46,5 +46,33 @@ private:
 	core::pArrayDesc arrDesc_;
 	core::pQuery qry_;
 };
+
+class Dimension
+{
+public:
+	Dimension(std::string name, 
+			  uint64_t start, uint64_t end, 
+			  uint64_t chunkSize, uint64_t blockSize);
+
+public:
+	std::shared_ptr<core::dimensionDesc> getDesc();
+
+private:
+	std::shared_ptr<core::dimensionDesc> dimDesc_;
+};
+
+class Attribute
+{
+public:
+	Attribute(std::string name, core::eleType type);
+
+public:
+	std::shared_ptr<core::attributeDesc> getDesc();
+
+	operator core::attributeDesc();
+
+private:
+	std::shared_ptr<core::attributeDesc> attrDesc_;
+};
 }		// msdb
 #endif	// _MSDB_CPP_ARRAY_H_
