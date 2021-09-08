@@ -86,12 +86,14 @@ BuildOpr::BuildOpr(std::shared_ptr<AFLOperator> qry, Domain d)
 BuildOpr& BuildOpr::AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize)
 {
 	arrDesc_->dimDescs_->push_back(std::make_shared<core::dimensionDesc>(dimId, axis, dim.getCoor().at(0), dim.getCoor().at(1), chunkSize, blockSize));
+	core::arrayMgr::instance()->setArrayDesc(arrDesc_->id_, arrDesc_);
 	return *this;
 }
 
 BuildOpr& BuildOpr::AddAttribute(id_t attrId, std::string name, core::eleType eType)
 {
 	arrDesc_->attrDescs_->push_back(std::make_shared<core::attributeDesc>(attrId, name, eType));
+	core::arrayMgr::instance()->setArrayDesc(arrDesc_->id_, arrDesc_);
 	return *this;
 }
 
@@ -99,6 +101,7 @@ BuildOpr& BuildOpr::SetArray(id_t arrId, std::string name)
 {
 	arrDesc_->id_ = arrId;
 	arrDesc_->name_ = name;
+	core::arrayMgr::instance()->setArrayDesc(arrId, arrDesc_);
 	return *this;
 }
 

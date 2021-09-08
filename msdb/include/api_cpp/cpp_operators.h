@@ -4,6 +4,7 @@
 
 #include <pch.h>
 #include <array/arrayDesc.h>
+#include <array/arrayMgr.h>
 #include <api_cpp/cpp_array.h>
 #include <api_cpp/cpp_domain.h>
 #include <api_cpp/cpp_predicate.h>
