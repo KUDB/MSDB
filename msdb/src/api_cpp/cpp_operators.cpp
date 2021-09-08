@@ -1,6 +1,7 @@
 #include <pch.h>
 #include <api_cpp/cpp_operators.h>
 #include <op/insert/insert_plan.h>
+#include <op/save/save_plan.h>
 #include <op/load/load_plan.h>
 #include <op/between/between_plan.h>
 #include <op/copy_to_buffer/copy_to_buffer_plan.h>
@@ -38,6 +39,30 @@ std::shared_ptr<core::opPlan> InsertOpr::getPlan()
 std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath)
 {
 	return std::make_shared<InsertOpr>(arr, filePath);
+}
+
+/* ************************ */
+/* Save						*/
+/* ************************ */
+SaveOpr::SaveOpr(Array arr)
+	: AFLOperator(arr.getDesc())
+{
+}
+
+std::shared_ptr<core::opPlan> SaveOpr::getPlan()
+{
+	auto qryPlan = std::make_shared<core::load_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamArray>(this->getArrayDesc())
+	};
+	qryPlan->setParamSet(std::make_shared<core::save_array_pset>(params));
+
+	return qryPlan;
+}
+std::shared_ptr<SaveOpr> Save(Array arr)
+{
+	return std::make_shared<SaveOpr>(arr);
 }
 
 /* ************************ */
