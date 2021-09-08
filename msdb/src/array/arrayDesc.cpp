@@ -84,20 +84,25 @@ tinyxml2::XMLElement* arrayDesc::convertToXMLDoc(std::shared_ptr<tinyxml2::XMLDo
 }
 std::shared_ptr<arrayDesc> arrayDesc::buildDescFromXML(std::shared_ptr<tinyxml2::XMLDocument> doc)
 {
-	auto nodeRoot = xmlErrorHandler(doc->FirstChild());
-	if (nodeRoot == nullptr)
+	_MSDB_TRY_BEGIN
 	{
-		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_IO_ERROR, MSDB_ER_XML_FILE_READ_ERROR));
+		auto nodeArrDesc = xmlErrorHandler(doc->FirstChildElement(_MSDB_STR_ARRAY_DESC_));
+
+		auto aid = nodeArrDesc->IntAttribute(_MSDB_STR_ARR_ID_);
+		auto arrName = xmlErrorHandler(nodeArrDesc->Attribute(_MSDB_STR_ARR_NAME_));
+
+		auto dimDescs = buildDimensionDescsFromXML(nodeArrDesc);
+		auto attrDescs = buildAttributeDescsFromXML(nodeArrDesc);
+
+		return std::make_shared<arrayDesc>(aid, arrName, dimDescs, attrDescs);
 	}
-	auto nodeArrDesc = xmlErrorHandler(nodeRoot->FirstChildElement(_MSDB_STR_ARRAY_DESC_));
+	_MSDB_CATCH_ALL
+	{
+		// TODO:: Log error
+	}
+	_MSDB_CATCH_END
 
-	auto aid = nodeArrDesc->IntAttribute(_MSDB_STR_ARR_ID_);
-	auto arrName = xmlErrorHandler(nodeArrDesc->Attribute(_MSDB_STR_ARR_NAME_));
-
-	auto dimDescs = buildDimensionDescsFromXML(nodeArrDesc);
-	auto attrDescs = buildAttributeDescsFromXML(nodeArrDesc);
-
-	return std::make_shared<arrayDesc>(aid, arrName, dimDescs, attrDescs);
+	return nullptr;
 }
 pDimensionDescs arrayDesc::buildDimensionDescsFromXML(tinyxml2::XMLElement* nodeArrDesc)
 {
@@ -107,7 +112,7 @@ pDimensionDescs arrayDesc::buildDimensionDescsFromXML(tinyxml2::XMLElement* node
 	do
 	{
 		dimDescs->push_back(dimensionDesc::buildDescFromXML(nodeDimDesc));
-		nodeDimDesc = nodeDimDescc->NextSiblingElement(_MSDB_STR_DIM_DESC_);
+		nodeDimDesc = nodeDimDesc->NextSiblingElement();
 	} while (nodeDimDesc != nullptr);
 	
 	return dimDescs;
@@ -120,10 +125,35 @@ pAttributeDescs arrayDesc::buildAttributeDescsFromXML(tinyxml2::XMLElement* node
 	do
 	{
 		attrDescs->push_back(attributeDesc::buildDescFromXML(nodeAttrDesc));
-		nodeAttrDesc = nodeAttrDescc->NextSiblingElement(_MSDB_STR_ATTR_DESC_);
+		nodeAttrDesc = nodeAttrDesc->NextSiblingElement();
 	} while (nodeAttrDesc != nullptr);
 
 	return attrDescs;
+}
+bool arrayDesc::operator==(const arrayDesc& right_)
+{
+	if (this->id_ != right_.id_) return false;
+	if (this->name_ != right_.name_) return false;
+
+	pDimensionDescs leftDim = this->dimDescs_;
+	pDimensionDescs rightDim = right_.dimDescs_;
+	if (leftDim->size() != rightDim->size()) return false;
+	
+	for (int i = 0; i < leftDim->size(); i++)
+	{
+		if (!(leftDim->at(0) == rightDim->at(0))) return false;
+	}
+
+	pAttributeDescs leftAttr = this->attrDescs_;
+	pAttributeDescs rightAttr = right_.attrDescs_;
+	if (leftAttr->size() != rightAttr->size()) return false;
+
+	for (int i = 0; i < leftAttr->size(); i++)
+	{
+		if (!(leftAttr->at(0) == rightAttr->at(0))) return false;
+	}
+
+	return true;
 }
 }		// core
 }		// msdb

@@ -1,6 +1,7 @@
 #include <pch.h>
 #include <system/storageMgr.h>
 #include <system/exceptions.h>
+#include <array/arrayMgr.h>
 #include <array/chunkId.h>
 #include <array/configArrays.h>
 #include <util/logger.h>
@@ -10,8 +11,8 @@ namespace msdb
 namespace core
 {
 const char* strBasePath =	"../storage/";
-const char* strConfigPath = "../storage/config/";
-const char* strArrayPath =	"../storage/array/";
+const char* strConfigPath = "config/";
+const char* strArrayPath =	"array/";
 
 const char* strIndexFolder = "indies";
 const char* strIndexFilExtension = ".msdbindex";
@@ -19,58 +20,75 @@ const char* strIndexFilExtension = ".msdbindex";
 const char* strArrayConfigFile = "arrays.xml";
 const char* strChunkFilExtension = ".chunk";
 
-//void msdb::core::storageMgr::getConfigFile(std::string path)
-//{
-//	std::fstream fs;
-//	fs.open(path, std::fstream::in | std::fstream::out | std::fstream::app | std::fstream::binary);
-//
-//	fs.close();
-//	return;
-//}
+const std::string storageMgr::extArrayConfig = ".msdbarray";
 
 storageMgr::storageMgr()
 {
 	std::cout << "current dir: " << std::filesystem::current_path() << std::endl;
 
 	this->basePath_ = filePath(strBasePath);
-	this->configPath_ = filePath(strConfigPath);
+	this->configPath_ = filePath(std::string(strConfigPath, strConfigPath).c_str());
 	this->arrayPath_ = filePath(strArrayPath);
 
 	this->indexFolder_ = filePath(strIndexFolder);
+
+	this->initSystemConfig();
 }
 
 storageMgr::~storageMgr()
 {
 }
 
-config* storageMgr::loadConfigFile(ConfigType type)
-{
-	tinyxml2::XMLDocument xmlDoc;
 
-	switch (type)
+void storageMgr::saveArrayDesc(pArrayDesc arrDesc)
+{
+	if (!isExists(this->getBasePath()))
 	{
-	case ConfigType::ARRAYLIST:
-		xmlDoc.LoadFile(strArrayConfigFile);
-		return new configArrayList(xmlDoc.FirstChild());
-	default:
-		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_UNKNOWN_ERROR, MSDB_ER_UNKNOWN_ERROR));
+		createDirs(this->getBasePath());
 	}
 
-	return nullptr;
+	auto pXmlDoc = std::make_shared<tinyxml2::XMLDocument>();
+	auto pXmlEle = arrDesc->convertToXMLDoc(pXmlDoc);
+	pXmlDoc->LinkEndChild(pXmlEle);
+
+	auto path = this->getBasePath() / filePath(std::to_string(arrDesc->id_) + this->extArrayConfig);
+	auto strPath = path.c_str();
+
+	pXmlDoc->SaveFile(path.u8string().c_str());
 }
 
-void storageMgr::saveConfigFile(config* cFile)
+void storageMgr::initSystemConfig()
 {
-	switch(cFile->getType())
-	{
-	case ConfigType::ARRAYLIST:
-		break;
-	default:
-		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_UNKNOWN_ERROR, MSDB_ER_UNKNOWN_ERROR));
-	}
 }
 
-void storageMgr::loadAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj)
+std::vector<pArrayDesc> storageMgr::loadAllArrayDescs()
+{
+	std::vector<pArrayDesc> arrDescList;
+
+	//auto path = this->getBasePath() / filePath("*" + this->extArrayConfig);
+	auto path = this->getBasePath();
+	auto arrayFiles = this->getFiles(path);
+
+	for (auto f : arrayFiles)
+	{
+		if (f.extension() == this->extArrayConfig)
+		{
+			arrDescList.push_back(this->loadArrayDesc(f));
+		}
+	}
+
+	return arrDescList;
+}
+
+pArrayDesc storageMgr::loadArrayDesc(const filePath descPath)
+{
+	auto pXmlDoc = std::make_shared<tinyxml2::XMLDocument>();
+	pXmlDoc->LoadFile(descPath.u8string().c_str());
+
+	return arrayDesc::buildDescFromXML(pXmlDoc);
+}
+
+void storageMgr::loadAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj)
 {
 	std::ifstream fs;
 	this->getIfstream(fs, this->getArrayIndexPath(arrId) / std::to_string(attrId),
@@ -79,7 +97,7 @@ void storageMgr::loadAttrIndex(arrayId arrId, attributeId attrId, pSerializable 
 	fs.close();
 }
 
-void storageMgr::saveAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj)
+void storageMgr::saveAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj)
 {
 	std::ofstream fs;
 	this->getOfstream(fs, this->getArrayIndexPath(arrId) / std::to_string(attrId), 
@@ -89,7 +107,7 @@ void storageMgr::saveAttrIndex(arrayId arrId, attributeId attrId, pSerializable 
 	fs.close();
 }
 
-void storageMgr::loadChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSerializable serialObj)
+void storageMgr::loadChunk(const arrayId arrId, const attributeId attrId, const chunkId chkId, pSerializable serialObj)
 {
 	_MSDB_TRY_BEGIN
 	{
@@ -129,7 +147,7 @@ void storageMgr::loadChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSe
 // StorageMgr do not know the struct of chunk.
 // Instead, it can deal with serializable objects.
 // So, we seperate 'pChunk' into 'chunkId' and 'pSerializable'.
-void storageMgr::saveChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSerializable serialObj)
+void storageMgr::saveChunk(const arrayId arrId, const attributeId attrId, const chunkId chkId, pSerializable serialObj)
 {
 	_MSDB_TRY_BEGIN
 	{
@@ -151,22 +169,27 @@ void storageMgr::saveChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSe
 	_MSDB_CATCH_END
 }
 
-filePath storageMgr::getArrayPath(arrayId arrId)
+filePath storageMgr::getBasePath()
+{
+	return this->basePath_;
+}
+
+filePath storageMgr::getArrayPath(const arrayId arrId)
 {
 	return this->arrayPath_ / this->getArrayFolder(arrId);
 }
 
-filePath storageMgr::getArrayFolder(arrayId arrId)
+filePath storageMgr::getArrayFolder(const arrayId arrId)
 {
 	return filePath(std::to_string(arrId));
 }
 
-filePath storageMgr::getArrayIndexPath(arrayId arrId)
+filePath storageMgr::getArrayIndexPath(const arrayId arrId)
 {
 	return this->getArrayPath(arrId) / this->indexFolder_;
 }
 
-filePath storageMgr::getChunkPath(arrayId arrId, attributeId attrId, chunkId chkId)
+filePath storageMgr::getChunkPath(const arrayId arrId, const attributeId attrId, const chunkId chkId)
 {
 	return this->getArrayPath(arrId) / std::to_string(attrId) / std::to_string(chkId);
 }
@@ -197,29 +220,48 @@ void storageMgr::getIfstream(std::ifstream& fs, filePath fPath, const char* ext)
 	}
 }
 
-bool storageMgr::createDirs(filePath& fp)
+bool storageMgr::createDirs(const filePath& fp)
 {
 	return std::filesystem::create_directories(fp);
 }
 
-bool storageMgr::removeFile(filePath& fp)
+bool storageMgr::removeFile(const filePath& fp)
 {
 	return std::filesystem::remove(fp);
 }
 
-bool storageMgr::isFile(filePath& fp)
+bool storageMgr::isFile(const filePath& fp)
 {
 	return std::filesystem::is_regular_file(fp);
 }
 
-bool storageMgr::isDir(filePath& fp)
+bool storageMgr::isDir(const filePath& fp)
 {
 	return std::filesystem::is_directory(fp);
 }
 
-bool storageMgr::isExists(filePath& fp)
+bool storageMgr::isExists(const filePath& fp)
 {
 	return std::filesystem::exists(fp);
+}
+std::vector<filePath> storageMgr::getFiles(const filePath& fp)
+{
+	std::vector<filePath> out;
+
+	_MSDB_TRY_BEGIN
+	{
+		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fp))
+		{
+			out.push_back(entry.path());
+		}
+	}
+	_MSDB_CATCH_ALL
+	{
+
+	}
+	_MSDB_CATCH_END
+	
+	return out;
 }
 }		// core
 }		// msdb

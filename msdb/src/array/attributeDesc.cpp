@@ -41,10 +41,30 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 {
 	auto id = node->IntAttribute(_MSDB_STR_ATTR_ID_);
 	auto name = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_NAME_));
-	auto eleTypeName = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_TYPE_));
+	auto eleTypeName = std::string(xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_TYPE_)));
 	auto typeSize = node->IntAttribute(_MSDB_STR_ATTR_TYPE_SIZE_);
+	core::eleType attrType;
 
-	return std::make_shared<attributeDesc>(id, name, stringToEleType.at(eleTypeName));
+	for (auto bucket : eleTypeToString)
+	{
+		if (strcmp(bucket.second, eleTypeName.c_str()) == 0)
+		{
+			attrType = bucket.first;
+			break;
+		}
+	}
+
+	return std::make_shared<attributeDesc>(id, name, attrType);
+}
+
+bool attributeDesc::operator==(const attributeDesc& right_)
+{
+	if (this->id_ != right_.id_) return false;
+	if (this->name_ != right_.name_) return false;
+	if (this->type_ != right_.type_) return false;
+	if (this->typeSize_ != right_.typeSize_) return false;
+
+	return true;
 }
 }		// core
 }		// msdb

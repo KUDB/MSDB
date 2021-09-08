@@ -107,5 +107,17 @@ dimension dimensionDescs::getBlockSpace()
 {
 	return dimension(this->getChunkDims()) / this->getBlockDims();
 }
+
+bool dimensionDesc::operator==(const dimensionDesc& right_)
+{
+	if (this->id_ != right_.id_) return false;
+	if (this->name_ != right_.name_) return false;
+	if (this->start_ != right_.start_) return false;
+	if (this->end_ != right_.end_) return false;
+	if (this->chunkSize_ != right_.chunkSize_) return false;
+	if (this->blockSize_ != right_.blockSize_) return false;
+
+	return true;
+}
 }		// core
 }		// msdb

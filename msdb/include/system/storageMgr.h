@@ -10,6 +10,7 @@
 #include <io/bitstream.h>
 #include <io/serializable.h>
 #include <system/config.h>
+#include <array/arrayDesc.h>
 
 namespace msdb
 {
@@ -37,34 +38,36 @@ private:
 	~storageMgr();
 
 public:
-	config* loadConfigFile(ConfigType type);
-	void saveConfigFile(config* cFile);
+	//config* loadConfigFile(ConfigType type);
+	//void saveConfigFile(config* cFile);
+	void initSystemConfig();
+	std::vector<pArrayDesc> loadAllArrayDescs();
+	pArrayDesc loadArrayDesc(const filePath descPath);
+	void saveArrayDesc(pArrayDesc arrDesc);
 
-	void loadAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj);
-	void saveAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj);
+	void loadAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj);
+	void saveAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj);
 
-	void loadChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSerializable serialObj);
-	void saveChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSerializable serialObj);
+	void loadChunk(const arrayId arrId, const attributeId attrId, const chunkId chkId, pSerializable serialObj);
+	void saveChunk(const arrayId arrId, const attributeId attrId, const chunkId chkId, pSerializable serialObj);
 
 protected:
-	filePath getArrayPath(arrayId arrId);
-	filePath getArrayFolder(arrayId arrId);
-	filePath getArrayIndexPath(arrayId arrId);
-	filePath getChunkPath(arrayId arrId, attributeId attrId, chunkId chkId);
+	filePath getBasePath();
+	filePath getArrayPath(const arrayId arrId);
+	filePath getArrayFolder(const arrayId arrId);
+	filePath getArrayIndexPath(const arrayId arrId);
+	filePath getChunkPath(const arrayId arrId, const attributeId attrId, const chunkId chkId);
 
 	void getOfstream(std::ofstream& fs, filePath fPath, const char* ext);
 	void getIfstream(std::ifstream& fs, filePath fPath, const char* ext);
 
 	// STD::FILESYSTEM
-	static bool createDirs(filePath& fp);
-	static bool removeFile(filePath& fp);
-	static bool isFile(filePath& fp);
-	static bool isDir(filePath& fp);
-	static bool isExists(filePath& fp);
-
-	//const filePath& getConfigPath();
-	//const filePath& getArrayPath();
-
+	static bool createDirs(const filePath& fp);
+	static bool removeFile(const filePath& fp);
+	static bool isFile(const filePath& fp);
+	static bool isDir(const filePath& fp);
+	static bool isExists(const filePath& fp);
+	static std::vector<filePath> getFiles(const filePath& fp);
 
 protected:
 	//bool init();
@@ -76,6 +79,9 @@ protected:
 
 	// Folders
 	filePath indexFolder_;
+
+private:
+	static const std::string extArrayConfig;
 
 protected:
 	friend singleton<storageMgr>;
