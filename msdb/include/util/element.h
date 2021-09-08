@@ -49,7 +49,7 @@ static const boost::unordered_map<eleType, const char*> eleTypeToString = boost:
 	(eleType::FLOAT,	"FLOAT")
 	(eleType::DOUBLE,	"DOUBLE");
 
-static const boost::unordered_map<const char* , eleType> stringToEleType = boost::assign::map_list_of
+static const std::map<const char*, eleType> stringToEleType = boost::assign::map_list_of
 	("EMPTY",	eleType::EMPTY)
 	("BOOL",	eleType::BOOL)
 	("CHAR",	eleType::CHAR)

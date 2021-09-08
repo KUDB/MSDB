@@ -42,6 +42,11 @@ storageMgr::~storageMgr()
 
 void storageMgr::saveArrayDesc(pArrayDesc arrDesc)
 {
+	if (!isExists(this->getBasePath()))
+	{
+		createDirs(this->getBasePath());
+	}
+
 	auto pXmlDoc = std::make_shared<tinyxml2::XMLDocument>();
 	auto pXmlEle = arrDesc->convertToXMLDoc(pXmlDoc);
 	pXmlDoc->LinkEndChild(pXmlEle);
@@ -60,18 +65,22 @@ std::vector<pArrayDesc> storageMgr::loadAllArrayDescs()
 {
 	std::vector<pArrayDesc> arrDescList;
 
-	auto path = this->getBasePath() / filePath("*" + this->extArrayConfig);
+	//auto path = this->getBasePath() / filePath("*" + this->extArrayConfig);
+	auto path = this->getBasePath();
 	auto arrayFiles = this->getFiles(path);
 
 	for (auto f : arrayFiles)
 	{
-		arrDescList.push_back(this->loadArrayDesc(f));
+		if (f.extension() == this->extArrayConfig)
+		{
+			arrDescList.push_back(this->loadArrayDesc(f));
+		}
 	}
 
 	return arrDescList;
 }
 
-pArrayDesc storageMgr::loadArrayDesc(filePath descPath)
+pArrayDesc storageMgr::loadArrayDesc(const filePath descPath)
 {
 	auto pXmlDoc = std::make_shared<tinyxml2::XMLDocument>();
 	pXmlDoc->LoadFile(descPath.u8string().c_str());
@@ -79,7 +88,7 @@ pArrayDesc storageMgr::loadArrayDesc(filePath descPath)
 	return arrayDesc::buildDescFromXML(pXmlDoc);
 }
 
-void storageMgr::loadAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj)
+void storageMgr::loadAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj)
 {
 	std::ifstream fs;
 	this->getIfstream(fs, this->getArrayIndexPath(arrId) / std::to_string(attrId),
@@ -88,7 +97,7 @@ void storageMgr::loadAttrIndex(arrayId arrId, attributeId attrId, pSerializable 
 	fs.close();
 }
 
-void storageMgr::saveAttrIndex(arrayId arrId, attributeId attrId, pSerializable serialObj)
+void storageMgr::saveAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj)
 {
 	std::ofstream fs;
 	this->getOfstream(fs, this->getArrayIndexPath(arrId) / std::to_string(attrId), 
@@ -98,7 +107,7 @@ void storageMgr::saveAttrIndex(arrayId arrId, attributeId attrId, pSerializable 
 	fs.close();
 }
 
-void storageMgr::loadChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSerializable serialObj)
+void storageMgr::loadChunk(const arrayId arrId, const attributeId attrId, const chunkId chkId, pSerializable serialObj)
 {
 	_MSDB_TRY_BEGIN
 	{
@@ -138,7 +147,7 @@ void storageMgr::loadChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSe
 // StorageMgr do not know the struct of chunk.
 // Instead, it can deal with serializable objects.
 // So, we seperate 'pChunk' into 'chunkId' and 'pSerializable'.
-void storageMgr::saveChunk(arrayId arrId, attributeId attrId, chunkId chkId, pSerializable serialObj)
+void storageMgr::saveChunk(const arrayId arrId, const attributeId attrId, const chunkId chkId, pSerializable serialObj)
 {
 	_MSDB_TRY_BEGIN
 	{
@@ -165,22 +174,22 @@ filePath storageMgr::getBasePath()
 	return this->basePath_;
 }
 
-filePath storageMgr::getArrayPath(arrayId arrId)
+filePath storageMgr::getArrayPath(const arrayId arrId)
 {
 	return this->arrayPath_ / this->getArrayFolder(arrId);
 }
 
-filePath storageMgr::getArrayFolder(arrayId arrId)
+filePath storageMgr::getArrayFolder(const arrayId arrId)
 {
 	return filePath(std::to_string(arrId));
 }
 
-filePath storageMgr::getArrayIndexPath(arrayId arrId)
+filePath storageMgr::getArrayIndexPath(const arrayId arrId)
 {
 	return this->getArrayPath(arrId) / this->indexFolder_;
 }
 
-filePath storageMgr::getChunkPath(arrayId arrId, attributeId attrId, chunkId chkId)
+filePath storageMgr::getChunkPath(const arrayId arrId, const attributeId attrId, const chunkId chkId)
 {
 	return this->getArrayPath(arrId) / std::to_string(attrId) / std::to_string(chkId);
 }
@@ -211,38 +220,47 @@ void storageMgr::getIfstream(std::ifstream& fs, filePath fPath, const char* ext)
 	}
 }
 
-bool storageMgr::createDirs(filePath& fp)
+bool storageMgr::createDirs(const filePath& fp)
 {
 	return std::filesystem::create_directories(fp);
 }
 
-bool storageMgr::removeFile(filePath& fp)
+bool storageMgr::removeFile(const filePath& fp)
 {
 	return std::filesystem::remove(fp);
 }
 
-bool storageMgr::isFile(filePath& fp)
+bool storageMgr::isFile(const filePath& fp)
 {
 	return std::filesystem::is_regular_file(fp);
 }
 
-bool storageMgr::isDir(filePath& fp)
+bool storageMgr::isDir(const filePath& fp)
 {
 	return std::filesystem::is_directory(fp);
 }
 
-bool storageMgr::isExists(filePath& fp)
+bool storageMgr::isExists(const filePath& fp)
 {
 	return std::filesystem::exists(fp);
 }
-std::vector<filePath> storageMgr::getFiles(filePath& fp)
+std::vector<filePath> storageMgr::getFiles(const filePath& fp)
 {
 	std::vector<filePath> out;
-	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fp))
-	{
-		out.push_back(entry.path());
-	}
 
+	_MSDB_TRY_BEGIN
+	{
+		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fp))
+		{
+			out.push_back(entry.path());
+		}
+	}
+	_MSDB_CATCH_ALL
+	{
+
+	}
+	_MSDB_CATCH_END
+	
 	return out;
 }
 }		// core

@@ -43,6 +43,8 @@ public:
 	static pDimensionDescs buildDimensionDescsFromXML(tinyxml2::XMLElement*);
 	static pAttributeDescs buildAttributeDescsFromXML(tinyxml2::XMLElement*);
 
+	bool operator == (const arrayDesc& right_);
+
 public:
 	arrayId id_;
 	std::string name_;
