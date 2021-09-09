@@ -32,7 +32,7 @@ public:
 public:
 	pDimensionDescs getDimDescs();
 	pAttributeDescs getAttrDescs();
-
+	std::string toString(std::string strIndent = "");
 	size_t getDSize();
 
 	/**

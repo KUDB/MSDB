@@ -222,7 +222,7 @@ std::string BuildOpr::toString(int depth)
 	std::string strChildIndent = this->getIndentString(depth + 1);
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << "Build(" << std::endl;
-	ss << ")";
+	ss << this->getArrayDesc()->toString(strChildIndent) << ")";
 
 	return ss.str();
 }

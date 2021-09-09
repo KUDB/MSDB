@@ -16,7 +16,7 @@ Query::Query(std::shared_ptr<AFLOperator> afl)
 	 * 
 	 * - Note: except 'consume' operator, which does not use the output result.
 	 */
-	if(typeid(*afl) != typeid(CopyToBufferOpr) && typeid(*afl) != typeid(BuildOpr))
+	if(typeid(*afl) != typeid(CopyToBufferOpr) && typeid(*afl) != typeid(BuildOpr) && typeid(*afl) != typeid(SaveOpr))
 	{
 		afl = CopyToBuffer(afl);
 	}

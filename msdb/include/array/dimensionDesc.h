@@ -56,6 +56,7 @@ public:
 public:
 	position_t getLength();
 	size_t getChunkNum();
+	std::string toString();
 
 	/**
 	 * Save/load in XML file

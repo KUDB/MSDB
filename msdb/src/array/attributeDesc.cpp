@@ -57,6 +57,13 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 	return std::make_shared<attributeDesc>(id, name, attrType);
 }
 
+std::string attributeDesc::toString()
+{
+	std::stringstream ss;
+	ss << "id: " << this->id_ << ", name: " << this->name_ << ", type: " << eleTypeToString.at(this->type_);
+	return ss.str();
+}
+
 bool attributeDesc::operator==(const attributeDesc& right_)
 {
 	if (this->id_ != right_.id_) return false;

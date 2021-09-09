@@ -24,7 +24,7 @@ const std::string storageMgr::extArrayConfig = ".msdbarray";
 
 storageMgr::storageMgr()
 {
-	std::cout << "current dir: " << std::filesystem::current_path() << std::endl;
+	//std::cout << "current dir: " << std::filesystem::current_path() << std::endl;
 
 	this->basePath_ = filePath(strBasePath);
 	this->configPath_ = filePath(std::string(strConfigPath, strConfigPath).c_str());

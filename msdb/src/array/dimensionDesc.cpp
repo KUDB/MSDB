@@ -34,6 +34,13 @@ size_t dimensionDesc::getChunkNum()
 	return this->getLength() / this->chunkSize_;
 }
 
+std::string dimensionDesc::toString()
+{
+	std::stringstream ss;
+	ss << "id: " << this->id_ << ", name: " << this->name_ << ", (" << this->start_ << "~" << this->end_ << "), cs: " << this->chunkSize_ << ", bs: " << this->blockSize_;
+	return ss.str();
+}
+
 /**
  * Save/load in XML file
  */

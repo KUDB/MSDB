@@ -49,6 +49,36 @@ pAttributeDescs arrayDesc::getAttrDescs()
 {
 	return this->attrDescs_;
 }
+std::string arrayDesc::toString(std::string strIndent)
+{
+	std::stringstream ss;
+	ss << strIndent << "id: " << this->id_ << ", name: " << this->name_ << std::endl;
+
+	ss << strIndent << "<" << std::endl;
+	for (int i = 0; i < this->attrDescs_->size(); ++i)
+	{
+		ss << strIndent << "    " << this->attrDescs_->at(i)->toString();
+		if (i != this->attrDescs_->size() - 1)
+		{
+			ss << ", ";
+		}
+		ss << std::endl;
+	}
+	ss << strIndent << ">" << std::endl;
+	ss << strIndent << "[" << std::endl;
+	for (int i = 0; i < this->dimDescs_->size(); ++i)
+	{
+		ss << strIndent << "    " <<  this->dimDescs_->at(i)->toString();
+		if (i != this->dimDescs_->size() - 1)
+		{
+			ss << ", ";
+		}
+		ss << std::endl;
+	}
+	ss << strIndent << "]";
+
+	return ss.str();
+}
 size_t arrayDesc::getDSize()
 {
 	return this->dimDescs_->size();

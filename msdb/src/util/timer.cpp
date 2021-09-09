@@ -98,7 +98,7 @@ void timer::nextJob(size_t threadId, const std::string& nextJobName, workType ne
 
 void timer::pause(size_t threadId)
 {
-	this->nextJob(threadId, "Pause", workType::TIMER_STOP);
+	this->nextJob(threadId, "pause", workType::TIMER_STOP);
 }
 
 void timer::resume(size_t threadId, const std::string& nextJobName, workType nextJobType)

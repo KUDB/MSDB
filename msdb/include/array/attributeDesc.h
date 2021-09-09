@@ -41,7 +41,7 @@ public:
 	 */
 	tinyxml2::XMLElement* convertToXMLDoc(tinyxml2::XMLElement* node);
 	static pAttributeDesc buildDescFromXML(tinyxml2::XMLElement* node);
-
+	std::string toString();
 	bool operator == (const attributeDesc& right_);
 
 public:
