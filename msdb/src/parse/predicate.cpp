@@ -31,6 +31,11 @@ bool singlePredicate::evaluate(pItemItr iit)
 	return (this->*evaluateFunc)(iit);
 }
 
+std::string singlePredicate::toString()
+{
+	return this->lTerm->toString();
+}
+
 singlePredicate::eFunc singlePredicate::findEvaluateFunc(eleType type)
 {
 	static bool (singlePredicate:: * func_ptr[12])(pItemItr) =
@@ -66,6 +71,13 @@ void andPredicate::setEvaluateFunc(eleType eType)
 bool andPredicate::evaluate(pItemItr iit)
 {
 	return (this->*evaluateFunc)(iit);
+}
+
+std::string andPredicate::toString()
+{
+	std::stringstream ss;
+	ss << this->lTerm->toString() << " AND " << this->rTerm->toString();
+	return ss.str();
 }
 
 andPredicate::eFunc andPredicate::findEvaluateFunc(eleType type)
@@ -104,6 +116,13 @@ void orPredicate::setEvaluateFunc(eleType eType)
 bool orPredicate::evaluate(pItemItr iit)
 {
 	return (this->*evaluateFunc)(iit);
+}
+
+std::string orPredicate::toString()
+{
+	std::stringstream ss;
+	ss << this->lTerm->toString() << " OR " << this->rTerm->toString();
+	return ss.str();
 }
 
 orPredicate::eFunc orPredicate::findEvaluateFunc(eleType type)

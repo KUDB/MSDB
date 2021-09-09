@@ -32,6 +32,7 @@ private:
 		size_t bufferSize = sizeof(Ty_) * capacity;
 
 		Ty_* fileData = new Ty_[bufferSize];
+		auto globalItr = coorItr(dims);
 
 		_MSDB_TRY_BEGIN
 		{
@@ -57,40 +58,21 @@ private:
 					auto inChunk = (**chunkItr);
 					inChunk->bufferAlloc();
 					inChunk->makeAllBlocks();
-					
+					auto chunkGlobalCoor = inChunk->getDesc()->sp_;
 					auto blockItr = inChunk->getBlockIterator();
 					while (!blockItr->isEnd())
 					{
 						if (blockItr->isExist())
 						{
 							auto inBlock = (**blockItr);
-							//auto outBlock = outChunk->makeBlock(inBlock->getId());
-
 							auto itemItr = inBlock->getItemIterator();
-							size_t dSize = inBlock->getDSize();
-							dimension blockDims = inBlock->getDesc()->dims_;
+							auto blockGlobalCoor = chunkGlobalCoor + inBlock->getDesc()->getSp();
 
-							size_t block_num = 1;
-							for (int d = (int)dSize - 1; d >= 0; d--)
+							while (!itemItr->isEnd())
 							{
-								block_num *= blockDims[d];
-							}
+								auto mySeqPos = globalItr.coorToSeq(itemItr->coor() + blockGlobalCoor);
 
-							auto blockCoor = blockItr->coor();
-							for (size_t i = 0; i < block_num; i++)
-							{
-								auto itemCoor = itemItr->coor();
-								size_t seqPos = 0;
-								size_t offset = 1;
-								for (int d = (int)dSize - 1; d >= 0; d--)
-								{
-									int globalCoor = chunkItr->getSp()[d] + blockCoor[d]* blockDims[d] + itemCoor[d];
-
-									seqPos += globalCoor * offset;
-									offset *= dims[d];
-								}
-
-								(**itemItr).set<Ty_>(fileData[seqPos]);
+								(**itemItr).set<Ty_>(fileData[mySeqPos]);
 								++(*itemItr);
 							}
 						}
@@ -101,7 +83,6 @@ private:
 
 				++(*chunkItr);
 			}
-
 		}
 		_MSDB_CATCH_ALL
 		{

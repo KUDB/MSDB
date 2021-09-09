@@ -47,6 +47,8 @@ private:
 	core::pQuery qry_;
 };
 
+void printResultArray(ResultArray& ra);
+
 class DefDimension
 {
 public:

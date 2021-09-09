@@ -20,6 +20,33 @@ AFLOperator::AFLOperator(core::pArrayDesc arrDesc)
 {
 }
 
+std::string AFLOperator::toString(int depth)
+{
+	if (depth == 0)
+	{
+		return "AFL>";
+	}
+	return "";
+}
+
+std::string AFLOperator::getIndentString(unsigned int depth)
+{
+	std::stringstream ss;
+
+	ss << "\t";
+	for (int i = 0; i < depth; ++i)
+	{
+		ss << "    ";
+	}
+
+	return ss.str();
+}
+
+std::string AFLOperator::getStrStart()
+{
+	return "AFL>";
+}
+
 /* ************************ */
 /* Insert					*/
 /* ************************ */
@@ -39,6 +66,17 @@ std::shared_ptr<core::opPlan> InsertOpr::getPlan()
 
 	return qryPlan;
 }
+std::string InsertOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Insert(" << std::endl;
+	ss << strChildIndent << "\"" <<this->getArrayDesc()->name_ << "\"" << std::endl;
+	ss << strChildIndent << "\"" << this->filePath_ << "\")";
+
+	return ss.str();
+}
 std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath)
 {
 	return std::make_shared<InsertOpr>(arr, filePath);
@@ -47,25 +85,35 @@ std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath)
 /* ************************ */
 /* Save						*/
 /* ************************ */
-SaveOpr::SaveOpr(Array arr)
-	: AFLOperator(arr.getDesc())
+SaveOpr::SaveOpr(std::shared_ptr<AFLOperator> qry)
+	: childQry_(qry), AFLOperator(qry->getArrayDesc())
 {
 }
 
 std::shared_ptr<core::opPlan> SaveOpr::getPlan()
 {
-	auto qryPlan = std::make_shared<core::load_plan>();
+	auto qryPlan = std::make_shared<core::save_plan>();
 
 	core::parameters params = {
-		std::make_shared<core::opParamArray>(this->getArrayDesc())
+		std::make_shared<core::opParamPlan>(childQry_->getPlan())
 	};
-	qryPlan->setParamSet(std::make_shared<core::save_array_pset>(params));
+	qryPlan->setParamSet(std::make_shared<core::save_plan_pset>(params));
 
 	return qryPlan;
 }
-std::shared_ptr<SaveOpr> Save(Array arr)
+std::string SaveOpr::toString(int depth)
 {
-	return std::make_shared<SaveOpr>(arr);
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Save(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << ")";
+
+	return ss.str();
+}
+std::shared_ptr<SaveOpr> Save(std::shared_ptr<AFLOperator> qry)
+{
+	return std::make_shared<SaveOpr>(qry);
 }
 
 /* ************************ */
@@ -86,6 +134,15 @@ std::shared_ptr<core::opPlan> LoadOpr::getPlan()
 	qryPlan->setParamSet(std::make_shared<core::load_array_pset>(params));
 
 	return qryPlan;
+}
+std::string LoadOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Load(" << this->getArrayDesc()->name_ << ")";
+
+	return ss.str();
 }
 std::shared_ptr<LoadOpr> Load(Array arr)
 {
@@ -118,6 +175,16 @@ std::shared_ptr<core::opPlan> BetweenOpr::getPlan()
 
 	return qryPlan;
 }
+std::string BetweenOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Between(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << "," << std::endl;
+	ss << strChildIndent << this->domain_.toString() << ")";
+	return ss.str();
+}
 std::shared_ptr<BetweenOpr> Between(Array arr, Domain d)
 {
 	return std::make_shared<BetweenOpr>(arr, d);
@@ -147,6 +214,17 @@ std::shared_ptr<core::opPlan> BuildOpr::getPlan()
 	qryPlan->setParamSet(std::make_shared<core::build_array_pset>(params));
 
 	return qryPlan;
+}
+
+std::string BuildOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Build(" << std::endl;
+	ss << ")";
+
+	return ss.str();
 }
 
 std::shared_ptr<BuildOpr> Build(const core::arrayId aid, const std::string name, 
@@ -220,6 +298,17 @@ std::shared_ptr<core::opPlan> FilterOpr::getPlan()
 
 	return qryPlan;
 }
+std::string FilterOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Filter(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << "," << std::endl;
+	ss << strChildIndent << this->pred_->toString() << ")";
+
+	return ss.str();
+}
 std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm)
 {
 	return std::make_shared<FilterOpr>(qry, std::make_shared<PredicateImpl>(std::make_shared<core::singlePredicate>(singleTerm->getTerm())));
@@ -242,6 +331,16 @@ std::shared_ptr<core::opPlan> CopyToBufferOpr::getPlan()
 	qryPlan->setParamSet(std::make_shared<core::copy_to_buffer_pset>(params));
 	
 	return qryPlan;
+}
+std::string CopyToBufferOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "CopyToBuffer(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << ")";
+
+	return ss.str();
 }
 std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry)
 {

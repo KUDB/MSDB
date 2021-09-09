@@ -19,6 +19,7 @@ int main()
 
 	auto qry = msdb::Query(afl);
 	auto ra = qry.execute();
+	std::cout << qry.getTimer()->getDetailResult() << std::endl;
 	if (qry.getStatus() == msdb::Query::Status::FAIL)
 	{
 		// Query failed

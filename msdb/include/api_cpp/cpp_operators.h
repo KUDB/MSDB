@@ -30,6 +30,12 @@ public:
 		return this->arrDesc_;
 	}
 
+	virtual std::string toString(int depth);
+
+protected:
+	static std::string getIndentString(unsigned int depth);
+	static std::string getStrStart();
+
 private:
 	core::pArrayDesc arrDesc_;
 };
@@ -44,6 +50,7 @@ public:
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
 
 private:
 	std::string filePath_;
@@ -56,12 +63,16 @@ std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath);
 class SaveOpr : public AFLOperator
 {
 public:
-	SaveOpr(Array arr);
+	SaveOpr(std::shared_ptr<AFLOperator> qry);
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
 };
-std::shared_ptr<SaveOpr> Save(Array arr);
+std::shared_ptr<SaveOpr> Save(std::shared_ptr<AFLOperator> qry);
 
 /* ************************ */
 /* Load						*/
@@ -73,6 +84,7 @@ public:
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
 };
 std::shared_ptr<LoadOpr> Load(Array arr);
 
@@ -87,6 +99,7 @@ public:
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
@@ -107,6 +120,7 @@ public:
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
 
 public:
 	//BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize);
@@ -126,6 +140,7 @@ public:
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
@@ -144,6 +159,7 @@ public:
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;

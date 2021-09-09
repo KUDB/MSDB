@@ -32,6 +32,8 @@ public:
 	{
 		return this->status_;
 	}
+	core::pTimer getTimer();
+	std::string strStatus();
 
 protected:
 	Status status_;		// Initial status: READY

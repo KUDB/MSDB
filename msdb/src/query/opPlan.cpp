@@ -88,7 +88,9 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 		inArr.push_back(arrayMgr::instance()->makeArray<memBlockArray>(this->inferSchema()));
 	}
 
-	return this->getAction()->execute(inArr, qry);
+	auto outArr = this->getAction()->execute(inArr, qry);
+	qry->setArrayDesc(outArr->getDesc());
+	return outArr;
 }
 void opPlan::setParentPlan(pPlan parentPlan)
 {

@@ -18,7 +18,7 @@ between_action::~between_action()
 
 const char* between_action::name()
 {
-	return "between_action";
+	return "between";
 }
 
 pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)

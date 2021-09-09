@@ -25,6 +25,7 @@ core::pAttributeDescs attributeDescBuilder(
 namespace star1024x1024
 {
 static const std::string arrName = "star1024x1024";
+static const core::arrayId aid = 1100;
 static const std::string filePath = DUMMY_PATH(star1024x1024.txt);
 core::pArrayDesc getDummyArrayDesc();
 }		// star1024x1024

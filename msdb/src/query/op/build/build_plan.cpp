@@ -40,8 +40,14 @@ const char* build_action::name()
 
 pArray build_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
+	//========================================//
+	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
+	//========================================//
 	auto arr = inputArrays[0];
 	arrayMgr::instance()->registArray(arr->getDesc());
+	//========================================//
+	qry->getTimer()->pause(0);
+	//========================================//
 	return arr;
 }
 }

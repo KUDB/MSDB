@@ -20,11 +20,15 @@ insert_action::~insert_action()
 
 const char* insert_action::name()
 {
-	return "insert_action";
+	return "insert";
 }
 
 pArray insert_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
+	//========================================//
+	qry->getTimer()->nextJob(0, this->name(), workType::IO);
+	//========================================//
+
 	pArray inArr = inputArrays[0];
 	// pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
 
@@ -63,6 +67,10 @@ pArray insert_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
 		}
 	}
+
+	//========================================//
+	qry->getTimer()->pause(0);
+	//========================================//
 
 	return inArr;
 }

@@ -53,5 +53,37 @@ void term::setEvaluateFunc(eleType eType)
 	}
 	
 }
+std::string term::toString()
+{
+	std::stringstream ss;
+	ss << this->lhs_->toString() << " ";
+
+	switch (this->tType_)
+	{
+	case termType::EQUAL:
+		ss << "==";
+		break;
+	case termType::GREATER:
+		ss << "<";
+		break;
+	case termType::GREATER_EQUAL:
+		ss << "<=";
+		break;
+	case termType::LESS:
+		ss << ">";
+		break;
+	case termType::LESS_EQUAL:
+		ss << ">=";
+		break;
+	case termType::NOT_EQUAL:
+		ss << "!=";
+		break;
+	default:
+		break;
+	}
+
+	ss << " " << this->rhs_->toString();
+	return ss.str();
+}
 }		// core
 }		// msdb

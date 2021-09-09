@@ -13,4 +13,8 @@ Domain::Domain(Coordinate start, Coordinate end)
 {
 
 }
+std::string Domain::toString()
+{
+	return this->range_.toString();
+}
 }		// msdb

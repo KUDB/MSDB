@@ -48,6 +48,8 @@ public:
 		return this->range_.getEp();
 	}
 
+	std::string toString();
+
 private:
 	core::coordinateRange<Dty_> range_;
 };

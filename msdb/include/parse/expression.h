@@ -22,6 +22,7 @@ public:
 public:
 	virtual boost::any getValue(pItemItr iit) = 0;
 	virtual boost::any getValue() = 0;
+	virtual std::string toString() = 0;
 };
 
 class expressionAttribute : public expression
@@ -37,6 +38,7 @@ public:
 public:
 	virtual boost::any getValue(pItemItr iit) override;
 	virtual boost::any getValue() override;
+	virtual std::string toString();
 
 private:
 	attributeId attrId_;
@@ -50,6 +52,7 @@ public:
 
 public:
 	virtual boost::any getValue(pItemItr iit) override;
+	virtual std::string toString();
 
 };
 class expressionInteger : public expressionConst
@@ -63,6 +66,7 @@ public:
 public:
 	//virtual boost::any getValue(pItemItr iit) override;
 	virtual boost::any getValue() override;
+	virtual std::string toString();
 
 private:
 	int64_t value_;

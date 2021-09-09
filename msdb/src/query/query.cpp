@@ -8,7 +8,7 @@ namespace msdb
 namespace core
 {
 query::query(std::shared_ptr<opPlan> qryPlan)
-	: qryPlan_(qryPlan), timer_(std::make_shared<timer>())
+	: qryPlan_(qryPlan), timer_(std::make_shared<timer>()), arrDesc_(nullptr), dimBuffer_(std::make_shared<std::vector<coor>>())
 {
 
 }
@@ -21,6 +21,7 @@ status query::process()
 {
 	_MSDB_TRY_BEGIN
 	{
+		this->arrDesc_ = this->qryPlan_->inferSchema();
 		this->qryPlan_->process(shared_from_this());
 	}
 	_MSDB_CATCH_ALL
@@ -37,7 +38,7 @@ pTimer query::getTimer()
 }
 void query::setArrayDesc(pArrayDesc arrDesc)
 {
-	if(arrDesc_ != nullptr)
+	if(arrDesc_ == nullptr)
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ARRAY));
 	}

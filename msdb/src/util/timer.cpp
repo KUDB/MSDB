@@ -8,7 +8,7 @@ namespace msdb
 namespace core
 {
 extern std::vector<const char*> strTimerWorkType = {
-	"IDLE", "IO", "COMPUTING", "PARALLEL", "LOGGING", "ARRAY_CONSTRUCTING", "OTHERS", "TIMER_STOP"
+	"IDLE", "IO", "COMPUTING", "PARALLEL", "LOGGING", "ARRAY_CONSTRUCTING", "COPY", "OTHERS", "TIMER_STOP"
 };
 
 timer::timer()
@@ -264,6 +264,174 @@ size_t timer::getMyJobId(size_t threadId)
 	}
 
 	return 0;
+}
+
+double timer::getExecutionTime()
+{
+	//////////////////////////////
+	// LOCK
+	std::lock_guard<std::mutex> guard(this->mutexJobUpdate_);
+	std::map<size_t, float> thread;
+	for (int i = 0; i < this->records_.size(); i++)
+	{
+		if (thread.find(this->records_[i].threadId) != thread.end())
+		{
+			thread.find(this->records_[i].threadId)->second += this->records_[i].time_.count();
+		}
+		else
+		{
+			thread.insert(std::make_pair(this->records_[i].threadId, this->records_[i].time_.count()));
+		}
+	}
+
+	if (thread.empty())
+	{
+		return 0.0;
+	}
+	//////////////////////////////
+
+	return thread[0];
+}
+
+std::string timer::getResult()
+{
+	return std::string();
+}
+
+std::string timer::getDetailResult()
+{
+	std::stringstream ss;
+	ss << "########################################" << std::endl;
+	ss << "# Query execution time report" << std::endl;
+	ss << "#" << std::endl;
+	//////////////////////////////
+	// LOCK
+	std::lock_guard<std::mutex> guard(this->mutexJobUpdate_);
+
+	std::map<size_t, float> thread;
+	std::map<std::string, float> job;
+	std::map<std::string, float> mainThreadJob;
+	std::map<std::string, float> workType;
+
+	std::map<std::string, float> jobWork;
+
+	bool printDetail = true;
+
+	if (printDetail)
+	{
+		ss << "+------+-------+-------+------------------------+" << std::endl;
+		ss << " Thread\tJob Id\tTime\t[Job name / Work type]" << "" << std::endl;
+		ss << "+------+-------+-------+------------------------+" << std::endl;
+	}
+	for (int i = 0; i < this->records_.size(); i++)
+	{
+		if (printDetail)
+		{
+			ss << " " << 
+				this->records_[i].threadId << "\t" <<
+				this->records_[i].jobId << "\t" <<
+				boost::str(boost::format("%1$.5f") % this->records_[i].time_.count()) << "\t" <<
+				"[" << jobName_[this->records_[i].jobId] << " / " <<
+				strTimerWorkType[static_cast<int>(this->records_[i].stype_)] << "]" << std::endl;
+		}
+
+		if (thread.find(this->records_[i].threadId) != thread.end())
+		{
+			thread.find(this->records_[i].threadId)->second += this->records_[i].time_.count();
+		}
+		else
+		{
+			thread.insert(std::make_pair(this->records_[i].threadId, this->records_[i].time_.count()));
+		}
+
+		if (job.find(jobName_[this->records_[i].jobId]) != job.end())
+		{
+			job.find(jobName_[this->records_[i].jobId])->second += this->records_[i].time_.count();
+		}
+		else
+		{
+			job.insert(std::make_pair(jobName_[this->records_[i].jobId], this->records_[i].time_.count()));
+		}
+
+		if (this->records_[i].threadId == 0)
+		{
+			if (mainThreadJob.find(jobName_[this->records_[i].jobId]) != mainThreadJob.end())
+			{
+				mainThreadJob.find(jobName_[this->records_[i].jobId])->second += this->records_[i].time_.count();
+			}
+			else
+			{
+				mainThreadJob.insert(std::make_pair(jobName_[this->records_[i].jobId], this->records_[i].time_.count()));
+			}
+		}
+
+		if (workType.find(strTimerWorkType[static_cast<int>(this->records_[i].stype_)]) != workType.end())
+		{
+			workType.find(strTimerWorkType[static_cast<int>(this->records_[i].stype_)])->second += this->records_[i].time_.count();
+		}
+		else
+		{
+			workType.insert(std::make_pair(strTimerWorkType[static_cast<int>(this->records_[i].stype_)], this->records_[i].time_.count()));
+		}
+
+		if (jobWork.find(jobName_[this->records_[i].jobId] + " / " + strTimerWorkType[static_cast<int>(this->records_[i].stype_)]) != jobWork.end())
+		{
+			jobWork.find(jobName_[this->records_[i].jobId] + " / " + strTimerWorkType[static_cast<int>(this->records_[i].stype_)])->second += this->records_[i].time_.count();
+		}
+		else
+		{
+			jobWork.insert(std::make_pair(jobName_[this->records_[i].jobId] + " / " + strTimerWorkType[static_cast<int>(this->records_[i].stype_)], this->records_[i].time_.count()));
+		}
+	}
+
+	if (printDetail)
+	{
+		ss << "+------+-------+-------+------------------------+" << std::endl;
+	}
+
+	ss << std::endl;
+	ss << "=====threadId=====" << std::endl;
+	for (auto it = thread.begin(); it != thread.end(); it++) {
+		ss <<
+			boost::format("%1$.5f") % it->second << " [" <<
+			it->first << "]" << std::endl;
+	}
+
+	ss << std::endl;
+	ss << "=====jobName=====" << std::endl;
+	for (auto it = job.begin(); it != job.end(); it++) {
+		ss <<
+			boost::format("%1$.5f") % it->second << " [" <<
+			it->first << "]" << std::endl;
+	}
+
+	ss << std::endl;
+	ss << "=====MainThreadJobName=====" << std::endl;
+	for (auto it = mainThreadJob.begin(); it != mainThreadJob.end(); it++)
+	{
+		ss <<
+			boost::format("%1$.5f") % it->second << " [" <<
+			it->first << "]" << std::endl;
+	}
+
+	ss << std::endl;
+	ss << "=====WorkType=====" << std::endl;
+	for (auto it = workType.begin(); it != workType.end(); it++) {
+		ss <<
+			boost::format("%1$.5f") % it->second << " [" <<
+			it->first << "]" << std::endl;
+	}
+
+	ss << std::endl;
+	ss << "=====jobName, WorkType=====" << std::endl;
+	for (auto it = jobWork.begin(); it != jobWork.end(); it++) {
+		ss <<
+			boost::format("%1$.5f") % it->second << " [" <<
+			it->first << "]" << std::endl;
+	}
+	//////////////////////////////
+
+	return ss.str();
 }
 
 std::mutex timer::mutexJobId_;

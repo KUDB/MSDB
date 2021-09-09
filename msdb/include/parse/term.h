@@ -31,6 +31,7 @@ public:
 
 public:
 	void setEvaluateFunc(eleType eType);
+	virtual std::string toString();
 
 	template <typename Ty_>
 	bool evaluate(pItemItr iit)

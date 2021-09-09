@@ -22,6 +22,7 @@ public:
 public:
 	virtual void setEvaluateFunc(eleType eType) = 0;
 	virtual bool evaluate(pItemItr iit) = 0;
+	virtual std::string toString() = 0;
 
 protected:
 	pTerm lTerm;
@@ -36,6 +37,7 @@ public:
 public:
 	virtual void setEvaluateFunc(eleType eType) override;
 	virtual bool evaluate(pItemItr iit) override;
+	virtual std::string toString();
 
 	template <typename Ty_>
 	bool evaluateImpl(pItemItr iit)
@@ -57,6 +59,7 @@ public:
 public:
 	virtual void setEvaluateFunc(eleType eType) override;
 	virtual bool evaluate(pItemItr iit) override;
+	virtual std::string toString();
 
 	template <typename Ty_>
 	bool evaluateImpl(pItemItr iit)
@@ -77,8 +80,8 @@ public:
 
 public:
 	virtual void setEvaluateFunc(eleType eType) override;
-
 	virtual bool evaluate(pItemItr iit) override;
+	virtual std::string toString();
 
 	template <typename Ty_>
 	bool evaluateImpl(pItemItr iit)

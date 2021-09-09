@@ -18,7 +18,7 @@ load_action::~load_action()
 }
 const char* load_action::name()
 {
-	return "load_action";
+	return "load";
 }
 pArray load_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {

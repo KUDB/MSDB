@@ -36,7 +36,6 @@ namespace star1024x1024
 core::pArrayDesc getDummyArrayDesc()
 {
 	// Dummy array descriptions
-	core::arrayId aid = 1100;
 	core::dimension dims(1024, 1024);
 	core::dimension chunkDims(128, 128);
 	core::dimension blockDims(32, 32);

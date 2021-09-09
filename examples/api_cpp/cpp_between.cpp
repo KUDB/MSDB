@@ -5,11 +5,14 @@
 
 int main()
 {
+	auto arrDesc = msdb::dummy::star1024x1024::getDummyArrayDesc();
+	msdb::core::arrayMgr::instance()->registArray(arrDesc);
+
 	msdb::Context ctx;
 	auto afl = msdb::Between(
 		msdb::Load(
-			msdb::Array(ctx, DUMMY_PATH(star_1024x1024))),
-		msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 128, 128 }))
+			msdb::Array(ctx, msdb::dummy::star1024x1024::arrName)),
+		msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 2, 2 }))
 	);
 
 	auto qry = msdb::Query(afl);
@@ -22,9 +25,9 @@ int main()
 	auto dimBuffer = ra.getDimBuffer();
 	auto attr_01_buffer = ra.getAttrBuffer<uint8_t>(0);
 
-	for(int i = 0; i < dimBuffer->size(); ++i)
+	for (int i = 0; i < dimBuffer->size(); ++i)
 	{
-		std::cout << "[" << dimBuffer->at(i).toString() << "]: " << attr_01_buffer->at(i);
+		std::cout << dimBuffer->at(i).toString() << ": " << static_cast<int>(attr_01_buffer->at(i)) << std::endl;
 	}
 
 	ra.close();

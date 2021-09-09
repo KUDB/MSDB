@@ -33,6 +33,19 @@ void ResultArray::close()
 	this->arrDesc_ = nullptr;
 	this->qry_ = nullptr;
 }
+void printResultArray(ResultArray& ra)
+{
+	auto dimBuffer = ra.getDimBuffer();
+	auto attr_01_buffer = ra.getAttrBuffer<uint8_t>(0);
+
+	for (int i = 0; i < dimBuffer->size(); ++i)
+	{
+		std::cout << dimBuffer->at(i).toString() << ": " << static_cast<int>(attr_01_buffer->at(i)) << std::endl;
+	}
+	ra.close();
+	std::cout << std::endl;
+}
+
 DefDimension::DefDimension(std::string name, uint64_t start, uint64_t end, uint64_t chunkSize, uint64_t blockSize)
 	: dimDesc_(std::make_shared<core::dimensionDesc>(
 	0, name, start, end, chunkSize, blockSize))

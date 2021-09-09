@@ -46,6 +46,10 @@ public:
 	size_t getMyJobId(size_t threadId);
 	// TODO:: Job, Job name, getJobId
 
+	double getExecutionTime();
+	std::string getResult();
+	std::string getDetailResult();
+
 protected:
 	void _start_NoLock_(size_t threadId, const std::string& nextJobName, workType nextWorkType);
 	void _nextWork_NoLock_(size_t threadId, workType nextWorkType);

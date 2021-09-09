@@ -16,13 +16,14 @@ save_action::~save_action()
 }
 const char* save_action::name()
 {
-	return "save_action";
+	return "save";
 }
 pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
 	assert(inputArrays.size() == 1);
 	//========================================//
-	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
+	qry->getTimer()->nextJob(0, this->name(), workType::IO);
+	//========================================//
 
 	size_t mSizeTotal = 0;
 	pArray sourceArr = inputArrays[0];
@@ -34,16 +35,10 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 		while (!cit->isEnd())
 		{
-			//========================================//
-			qry->getTimer()->nextWork(0, workType::IO);
-
 			pSerializable serialChunk
 				= std::static_pointer_cast<serializable>(**cit);
 			storageMgr::instance()->saveChunk(arrId, attr->id_, (**cit)->getId(),
 											  serialChunk);
-
-			//========================================//
-			qry->getTimer()->nextWork(0, workType::COMPUTING);
 
 			mSizeTotal += serialChunk->getSerializedSize();
 			//std::cout << serialChunk->getSerializedSize() << std::endl;
@@ -52,6 +47,8 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	}
 
 	BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+
+	//========================================//
 	qry->getTimer()->pause(0);
 	//========================================//
 

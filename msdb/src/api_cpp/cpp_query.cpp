@@ -16,7 +16,7 @@ Query::Query(std::shared_ptr<AFLOperator> afl)
 	 * 
 	 * - Note: except 'consume' operator, which does not use the output result.
 	 */
-	if(typeid(*afl) != typeid(CopyToBufferOpr))
+	if(typeid(*afl) != typeid(CopyToBufferOpr) && typeid(*afl) != typeid(BuildOpr))
 	{
 		afl = CopyToBuffer(afl);
 	}
@@ -27,9 +27,41 @@ ResultArray Query::execute()
 {
 	if (this->qry_->submit().isOk())
 	{
+		this->status_ = Status::COMPLETE;
 		return ResultArray(Context(), this->qry_);
 	}
 
+	this->status_ = Status::FAIL;
 	return ResultArray(Context(), this->qry_);
+}
+core::pTimer Query::getTimer()
+{
+	return this->qry_->getTimer();
+}
+std::string Query::strStatus()
+{
+	auto dimBuffer = this->qry_->getDimBuffer();
+
+	std::stringstream ss;
+	ss << "Query ";
+	switch (this->status_)
+	{
+	case Status::READY:
+		ss << "READY, ";
+		break;
+	case Status::COMPLETE:
+		ss << "COMPLETE, ";
+		break;
+	case Status::FAIL:
+		ss << "FAIL, ";
+		break;
+	case Status::INPROGRESS:
+		ss << "INPROGRESS, ";
+		break;
+	default:
+		break;
+	};
+	ss << dimBuffer->size() << " cells (" << boost::format("%1$.5f") % this->qry_->getTimer()->getExecutionTime() << " sec)" << std::endl;
+	return ss.str();
 }
 }		// msdb

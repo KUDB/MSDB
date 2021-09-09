@@ -66,6 +66,7 @@ public:
 
 public:
 	std::shared_ptr<core::predicate> getPredicate();
+	std::string toString();
 
 private:
 	std::shared_ptr<core::predicate> pred_;
