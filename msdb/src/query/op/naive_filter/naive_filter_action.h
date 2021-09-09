@@ -89,9 +89,10 @@ private:
 				}
 
 				chunkFilteredValue += blockFilteredValue;
-				++(*inBlockItr);
-				++(*outBlockItr);
 			}
+
+			++(*inBlockItr);
+			++(*outBlockItr);
 		}
 
 		outFilteredValue = chunkFilteredValue;

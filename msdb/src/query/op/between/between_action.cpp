@@ -48,10 +48,15 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 				if (chunkRange.isIntersect(betweenRange))
 				{
-					//std::cout << "Intersect" << std::endl;
+					/**
+					 * Intersect chunk
+					 *
+					 * Note: Do not copy blockBitmap from inChunk to outChunk.
+					 *       makeBlock() of the outChunk automatically set
+					 *       the exist block bit in its blockBitmap.
+					 */
 					auto outChunk = outArr->makeChunk(attr->id_, inChunk->getId());
 					outChunk->setChunkDesc(inChunk->getDesc());
-					outChunk->copyBlockBitmap(inChunk->getBlockBitmap());
 					outChunk->bufferCopy(inChunk);
 					//outChunk->bufferRef(inChunk);
 
