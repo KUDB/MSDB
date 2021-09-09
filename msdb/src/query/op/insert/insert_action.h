@@ -76,10 +76,21 @@ private:
 								block_num *= blockDims[d];
 							}
 
+							auto blockCoor = blockItr->coor();
 							for (size_t i = 0; i < block_num; i++)
 							{
-								size_t pos = itemItr->seqPos();
-								(**itemItr).set<Ty_>(fileData[pos]);
+								auto itemCoor = itemItr->coor();
+								size_t seqPos = 0;
+								size_t offset = 1;
+								for (int d = (int)dSize - 1; d >= 0; d--)
+								{
+									int globalCoor = chunkItr->getSp()[d] + blockCoor[d]* blockDims[d] + itemCoor[d];
+
+									seqPos += globalCoor * offset;
+									offset *= dims[d];
+								}
+
+								(**itemItr).set<Ty_>(fileData[seqPos]);
 								++(*itemItr);
 							}
 						}
