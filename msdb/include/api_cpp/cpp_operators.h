@@ -3,6 +3,8 @@
 #define _MSDB_API_CPP_OPERATORS_H_
 
 #include <pch.h>
+#include <array/arrayDesc.h>
+#include <array/arrayMgr.h>
 #include <api_cpp/cpp_array.h>
 #include <api_cpp/cpp_domain.h>
 #include <api_cpp/cpp_predicate.h>
@@ -92,6 +94,27 @@ private:
 };
 std::shared_ptr<BetweenOpr> Between(Array arr, Domain d);
 std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d);
+
+/* ************************ */
+/* Build					*/
+/* ************************ */
+class BuildOpr : public AFLOperator
+{
+public:
+	BuildOpr(const core::arrayId aid, const std::string name, 
+			 core::pDimensionDescs dims,
+			 core::pAttributeDescs attrs);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+
+public:
+	//BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize);
+	//BuildOpr& AddAttribute(id_t attrId, std::string name, core::eleType eType);
+	//BuildOpr& SetArray(id_t arrId, std::string name);
+};
+std::shared_ptr<BuildOpr> Build(core::arrayId aid, std::string name,
+								std::vector<DefDimension>, std::vector<DefAttribute>);
 
 /* ************************ */
 /* Filter					*/

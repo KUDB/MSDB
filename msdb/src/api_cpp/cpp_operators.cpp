@@ -6,6 +6,9 @@
 #include <op/between/between_plan.h>
 #include <op/copy_to_buffer/copy_to_buffer_plan.h>
 #include <op/naive_filter/naive_filter_plan.h>
+#include <op/build/build_plan.h>
+#include <array/dimensionDesc.h>
+#include <array/attributeDesc.h>
 
 namespace msdb
 {
@@ -123,6 +126,80 @@ std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d)
 {
 	return std::make_shared<BetweenOpr>(qry, d);
 }
+
+/* ************************ */
+/* Build					*/
+/* ************************ */
+BuildOpr::BuildOpr(const core::arrayId aid, const std::string name, 
+				   core::pDimensionDescs dims, core::pAttributeDescs attrs)
+	: AFLOperator(std::make_shared<core::arrayDesc>(aid, name, dims, attrs))
+{
+
+}
+
+std::shared_ptr<core::opPlan> BuildOpr::getPlan()
+{
+	auto qryPlan = std::make_shared<core::build_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamArray>(this->getArrayDesc())
+	};
+	qryPlan->setParamSet(std::make_shared<core::build_array_pset>(params));
+
+	return qryPlan;
+}
+
+std::shared_ptr<BuildOpr> Build(const core::arrayId aid, const std::string name, 
+								std::vector<DefDimension> dims, 
+								std::vector<DefAttribute> attrs)
+{
+	core::pDimensionDescs outDims = std::make_shared<core::dimensionDescs>();
+	core::dimensionId dId = 0;
+	for(auto d : dims)
+	{
+		auto pDim = d.getDesc();
+		pDim->id_ = dId++;
+		outDims->push_back(pDim);
+	}
+
+	core::pAttributeDescs outAttrs = std::make_shared<core::attributeDescs>();
+	core::attributeId aId = 0;
+	for (auto a : attrs)
+	{
+		auto pAttr = a.getDesc();
+		pAttr->id_ = aId++;
+		outAttrs->push_back(pAttr);
+	}
+
+	return std::make_shared<BuildOpr>(aid, name, outDims, outAttrs);
+}
+
+//BuildOpr& BuildOpr::AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize)
+//{
+//	//arrDesc_->dimDescs_->push_back(std::make_shared<core::dimensionDesc>(dimId, axis, dim.getCoor().at(0), dim.getCoor().at(1), chunkSize, blockSize));
+//	//core::arrayMgr::instance()->setArrayDesc(arrDesc_->id_, arrDesc_);
+//	return *this;
+//}
+//
+//BuildOpr& BuildOpr::AddAttribute(id_t attrId, std::string name, core::eleType eType)
+//{
+//	//arrDesc_->attrDescs_->push_back(std::make_shared<core::attributeDesc>(attrId, name, eType));
+//	//core::arrayMgr::instance()->setArrayDesc(arrDesc_->id_, arrDesc_);
+//	return *this;
+//}
+//
+//BuildOpr& BuildOpr::SetArray(id_t arrId, std::string name)
+//{
+//	//arrDesc_->id_ = arrId;
+//	//arrDesc_->name_ = name;
+//	//core::arrayMgr::instance()->setArrayDesc(arrId, arrDesc_);
+//	return *this;
+//}
+
+//std::shared_ptr<BuildOpr> Build()
+//{
+//	return std::make_shared<BuildOpr>();
+//}
 
 /* ************************ */
 /* Filter					*/
