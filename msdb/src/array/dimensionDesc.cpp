@@ -7,9 +7,9 @@ namespace msdb
 {
 namespace core
 {
-dimensionDesc::dimensionDesc(dimensionId id, std::string name,
-							 dimension_type start, dimension_type end, 
-							 position_t chunkSize, position_t blockSize)
+dimensionDesc::dimensionDesc(const dimensionId id, const std::string name,
+							 const dimension_type start, const dimension_type end,
+							 const position_t chunkSize, const position_t blockSize)
 	: id_(id), name_(name), start_(start), end_(end), 
 	chunkSize_(chunkSize), blockSize_(blockSize)
 {

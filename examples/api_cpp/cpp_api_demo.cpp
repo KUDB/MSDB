@@ -1,6 +1,6 @@
 #include <iostream>
 #include <api_cpp/msdb.h>
-#include <dummy/dummy.h>
+#include <dummy.h>
 #include <array/arrayMgr.h>
 #include <thread>
 #include <windows.h>
@@ -11,7 +11,7 @@ int main()
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Build(
-			0, msdb::dummy::star1024x1024::arrName,
+			0, msdb::dummy::data_star1024x1024::arrName,
 			{
 				msdb::DefDimension("Y", 0, 1024, 128, 32),
 				msdb::DefDimension("X", 0, 1024, 128, 32)
@@ -34,8 +34,8 @@ int main()
 		msdb::Context ctx;
 		auto afl = msdb::Save(
 			msdb::Insert(
-				msdb::Array(ctx, msdb::dummy::star1024x1024::arrName),
-				msdb::dummy::star1024x1024::filePath
+				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
+				msdb::dummy::data_star1024x1024::filePath
 			)
 		);
 
@@ -54,7 +54,7 @@ int main()
 		msdb::Context ctx;
 		auto afl = msdb::Between(
 			msdb::Load(
-				msdb::Array(ctx, msdb::dummy::star1024x1024::arrName)
+				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 			),
 			msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
 		);
@@ -74,7 +74,7 @@ int main()
 		msdb::Context ctx;
 		auto afl = msdb::Between(
 			msdb::Load(
-				msdb::Array(ctx, msdb::dummy::star1024x1024::arrName)
+				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 			),
 			msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))
 		);
@@ -95,7 +95,7 @@ int main()
 		auto afl = msdb::Between(
 			msdb::Filter(
 				msdb::Load(
-					msdb::Array(ctx, msdb::dummy::star1024x1024::arrName)
+					msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 				),
 				msdb::Attribute("ATTR_1") > 10),
 				msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))
@@ -117,7 +117,7 @@ int main()
 		auto afl = msdb::Between(
 			msdb::Filter(
 				msdb::Load(
-					msdb::Array(ctx, msdb::dummy::star1024x1024::arrName)
+					msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 				),
 				msdb::Attribute("ATTR_1") >= 7),
 			msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))
@@ -139,7 +139,7 @@ int main()
 		auto afl = msdb::Between(
 			msdb::Filter(
 				msdb::Load(
-					msdb::Array(ctx, msdb::dummy::star1024x1024::arrName)
+					msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 				),
 				msdb::Attribute("ATTR_1") == 7),
 			msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))

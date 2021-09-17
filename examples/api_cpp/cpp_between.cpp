@@ -5,13 +5,13 @@
 
 int main()
 {
-	auto arrDesc = msdb::dummy::star1024x1024::getDummyArrayDesc();
+	auto arrDesc = msdb::dummy::data_star1024x1024::getDummyArrayDesc();
 	msdb::core::arrayMgr::instance()->registArray(arrDesc);
 
 	msdb::Context ctx;
 	auto afl = msdb::Between(
 		msdb::Load(
-			msdb::Array(ctx, msdb::dummy::star1024x1024::arrName)),
+			msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)),
 		msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 2, 2 }))
 	);
 
