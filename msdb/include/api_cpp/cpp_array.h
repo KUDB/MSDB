@@ -6,9 +6,13 @@
 #include <array/array.h>
 #include <query/query.h>
 #include <api_cpp/cpp_context.h.>
+#include <compression/compressionType.h>
 
 namespace msdb
 {
+using typename core::eleType;
+using typename core::compressionType;
+
 class Array
 {
 public:
@@ -66,7 +70,7 @@ private:
 class DefAttribute
 {
 public:
-	DefAttribute(std::string name, core::eleType type);
+	DefAttribute(std::string name, eleType type, compressionType compType);
 
 public:
 	std::shared_ptr<core::attributeDesc> getDesc();

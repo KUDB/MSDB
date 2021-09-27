@@ -55,8 +55,8 @@ std::shared_ptr<core::dimensionDesc> DefDimension::getDesc()
 {
 	return this->dimDesc_;
 }
-DefAttribute::DefAttribute(std::string name, core::eleType type)
-	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type))
+DefAttribute::DefAttribute(std::string name, eleType type, compressionType compType)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, compType))
 {
 }
 std::shared_ptr<core::attributeDesc> DefAttribute::getDesc()

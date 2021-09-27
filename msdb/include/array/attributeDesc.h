@@ -5,6 +5,7 @@
 #include <pch.h>
 #include <array/attributeId.h>
 #include <util/element.h>
+#include <compression/compressionType.h>
 #include <xml/tinyxml2.h>
 
 namespace msdb
@@ -17,6 +18,7 @@ namespace core
 #define _MSDB_STR_ATTR_NAME_		"ATTRIBUTE_NAME"
 #define _MSDB_STR_ATTR_TYPE_		"ATTRIBUTE_TYPE"
 #define _MSDB_STR_ATTR_TYPE_SIZE_	"ATTRIBUTE_TYPE_SIZE"
+#define _MSDB_STR_ATTR_COMP_TYPE_	"ATTRIBUTE_COMPRESSION_TYPE"
 
 class attributeDesc;
 using pAttributeDesc = std::shared_ptr<attributeDesc>;
@@ -34,8 +36,17 @@ public:
 class attributeDesc
 {
 public:
-	attributeDesc(attributeId id, std::string name, eleType type);
+	attributeDesc(attributeId id, std::string name, eleType type, compressionType compType = compressionType::NONE);
 
+public:
+	inline void setCompType(compressionType compType)
+	{
+		this->compType_ = compType;
+	}
+	inline compressionType getCompType()
+	{
+		return this->compType_;
+	}
 	/**
 	 * Save/load in XML file
 	 */
@@ -49,6 +60,7 @@ public:
 	std::string name_;
 	eleType type_;
 	size_t typeSize_;
+	compressionType compType_;	// compression type, default:NONE
 };
 }		// core
 }		// msdb

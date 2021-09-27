@@ -79,10 +79,6 @@ std::string arrayDesc::toString(std::string strIndent)
 
 	return ss.str();
 }
-size_t arrayDesc::getDSize()
-{
-	return this->dimDescs_->size();
-}
 
 /**
  * Save/load in XML file
@@ -93,7 +89,7 @@ tinyxml2::XMLElement* arrayDesc::convertToXMLDoc(std::shared_ptr<tinyxml2::XMLDo
 
 	desc->SetAttribute(_MSDB_STR_ARR_ID_, this->id_);
 	desc->SetAttribute(_MSDB_STR_ARR_NAME_, this->name_.c_str());
-
+	
 	auto dimDescs = doc->NewElement(_MSDB_STR_DIMENSION_DESCS_);
 	auto attrDescs = doc->NewElement(_MSDB_STR_ATTRIBUTE_DESCS_);
 
@@ -120,7 +116,7 @@ std::shared_ptr<arrayDesc> arrayDesc::buildDescFromXML(std::shared_ptr<tinyxml2:
 
 		auto aid = nodeArrDesc->IntAttribute(_MSDB_STR_ARR_ID_);
 		auto arrName = xmlErrorHandler(nodeArrDesc->Attribute(_MSDB_STR_ARR_NAME_));
-
+		
 		auto dimDescs = buildDimensionDescsFromXML(nodeArrDesc);
 		auto attrDescs = buildAttributeDescsFromXML(nodeArrDesc);
 

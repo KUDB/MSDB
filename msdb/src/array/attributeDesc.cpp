@@ -9,12 +9,6 @@ namespace msdb
 {
 namespace core
 {
-attributeDesc::attributeDesc(attributeId id, std::string name, eleType type)
-	: id_(id), name_(name), type_(type)
-{
-	this->typeSize_ = getEleSize(type);
-}
-
 attributeDescs::attributeDescs()
 {
 }
@@ -27,12 +21,19 @@ attributeDescs::attributeDescs(const attributeDescs& mit)
 	}
 }
 
+attributeDesc::attributeDesc(attributeId id, std::string name, eleType type, compressionType compType)
+	: id_(id), name_(name), type_(type), compType_(compType)
+{
+	this->typeSize_ = getEleSize(type);
+}
+
 tinyxml2::XMLElement* attributeDesc::convertToXMLDoc(tinyxml2::XMLElement* node)
 {
 	node->SetAttribute(_MSDB_STR_ATTR_ID_, this->id_);
 	node->SetAttribute(_MSDB_STR_ATTR_NAME_, this->name_.c_str());
 	node->SetAttribute(_MSDB_STR_ATTR_TYPE_, eleTypeToString.at(this->type_));
 	node->SetAttribute(_MSDB_STR_ATTR_TYPE_SIZE_, this->typeSize_);
+	node->SetAttribute(_MSDB_STR_ATTR_COMP_TYPE_, compressionTypeToString(this->compType_));
 
 	return node;
 }
@@ -54,13 +55,26 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 		}
 	}
 
-	return std::make_shared<attributeDesc>(id, name, attrType);
+	auto strCompType = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_COMP_TYPE_));
+	auto compType = compressionType::NONE;
+
+	for (int i = 0; i < sizeof(compressionTypeStrings) / sizeof(const char*); ++i)
+	{
+		if (strcmp(strCompType, compressionTypeStrings[i]) == 0)
+		{
+			compType = (compressionType)i;
+			break;
+		}
+	}
+
+	return std::make_shared<attributeDesc>(id, name, attrType, compType);
 }
 
 std::string attributeDesc::toString()
 {
 	std::stringstream ss;
 	ss << "id: " << this->id_ << ", name: " << this->name_ << ", type: " << eleTypeToString.at(this->type_);
+	ss << ", comp type: " << compressionTypeToString(this->compType_);
 	return ss.str();
 }
 
@@ -70,6 +84,7 @@ bool attributeDesc::operator==(const attributeDesc& right_)
 	if (this->name_ != right_.name_) return false;
 	if (this->type_ != right_.type_) return false;
 	if (this->typeSize_ != right_.typeSize_) return false;
+	if (this->compType_ != right_.compType_) return false;
 
 	return true;
 }

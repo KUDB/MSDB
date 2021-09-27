@@ -98,7 +98,6 @@ std::shared_ptr<core::opPlan> SaveOpr::getPlan()
 		std::make_shared<core::opParamPlan>(childQry_->getPlan())
 	};
 	qryPlan->setParamSet(std::make_shared<core::save_plan_pset>(params));
-
 	return qryPlan;
 }
 std::string SaveOpr::toString(int depth)

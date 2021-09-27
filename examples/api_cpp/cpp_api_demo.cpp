@@ -17,7 +17,7 @@ int main()
 				msdb::DefDimension("X", 0, 1024, 128, 32)
 			},
 			{
-				msdb::DefAttribute("ATTR_1", msdb::core::eleType::CHAR)
+				msdb::DefAttribute("ATTR_1", msdb::eleType::CHAR, msdb::compressionType::RAW)
 			});
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;

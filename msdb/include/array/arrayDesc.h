@@ -33,7 +33,10 @@ public:
 	pDimensionDescs getDimDescs();
 	pAttributeDescs getAttrDescs();
 	std::string toString(std::string strIndent = "");
-	size_t getDSize();
+	inline size_t getDSize()
+	{
+		return this->dimDescs_->size();
+	}
 
 	/**
 	 * Save/load in XML file
