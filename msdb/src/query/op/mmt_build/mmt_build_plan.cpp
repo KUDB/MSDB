@@ -20,6 +20,8 @@ pAction mmt_build_plan::makeAction()
 	return std::make_shared<mmt_build_action>();
 }
 
+//////////////////////////////
+// ParamSets
 mmt_build_array_pset::mmt_build_array_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
 {
@@ -33,6 +35,13 @@ pArrayDesc mmt_build_array_pset::inferSchema()
 	pArrayDesc aInferDesc = std::make_shared<opParamArray::paramType>(*aSourceDesc);
 	
 	return aInferDesc;
+}
+
+mmt_build_plan_pset::mmt_build_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
+{
+	assert(this->params_.size() == 2);
+	assert(this->params_[1]->type() == opParamType::CONST_TYPE);		// Target refine level
 }
 }		// core
 }		// msdb

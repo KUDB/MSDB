@@ -30,8 +30,8 @@ namespace msdb
 /* ************************ */
 /* BuildIndexOpr			*/
 /* ************************ */
-BuildIndexOpr::BuildIndexOpr(Array arr, attrIndexType indexType)
-	: indexType_(indexType), AFLOperator(arr.getDesc())
+BuildIndexOpr::BuildIndexOpr(std::shared_ptr<AFLOperator> qry, attrIndexType indexType, core::eleDefault paramOne)
+	: childQry_(qry), indexType_(indexType), paramOne_(paramOne), AFLOperator(qry->getArrayDesc())
 {
 }
 
@@ -43,10 +43,11 @@ std::shared_ptr<core::opPlan> BuildIndexOpr::getPlan()
 	{
 		auto qryPlan = std::make_shared<core::mmt_build_plan>();
 		core::parameters params = {
-			std::make_shared<core::opParamArray>(this->getArrayDesc())
+			std::make_shared<core::opParamPlan>(this->childQry_->getPlan()),
+			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 		};
 		qryPlan->setParamSet(
-			std::make_shared<core::mmt_build_array_pset>(params));
+			std::make_shared<core::mmt_build_plan_pset>(params));
 		return qryPlan;
 		break;
 	}
@@ -54,10 +55,11 @@ std::shared_ptr<core::opPlan> BuildIndexOpr::getPlan()
 	{
 		auto qryPlan = std::make_shared<core::compass_index_build_plan>();
 		core::parameters params = {
-			std::make_shared<core::opParamArray>(this->getArrayDesc())
+			std::make_shared<core::opParamPlan>(this->childQry_->getPlan()),
+			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 		};
 		qryPlan->setParamSet(
-			std::make_shared<core::compass_index_build_array_pset>(params));
+			std::make_shared<core::compass_index_build_plan_pset>(params));
 		return qryPlan;
 		break;
 	}
@@ -71,14 +73,14 @@ std::string BuildIndexOpr::toString(int depth)
 	std::string strChildIndent = this->getIndentString(depth + 1);
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << this->getPlan()->name() << "(" << std::endl;
-	ss << this->getArrayDesc()->name_ << ")";
+	ss << this->childQry_->toString(depth + 1) << "," << this->paramOne_ << ")";
 
 	return ss.str();
 }
 
-std::shared_ptr<BuildIndexOpr> BuildIndex(Array arr, attrIndexType indexType)
+std::shared_ptr<BuildIndexOpr> BuildIndex(std::shared_ptr<AFLOperator> qry, attrIndexType indexType, core::eleDefault paramOne)
 {
-	return std::make_shared<BuildIndexOpr>(arr, indexType);
+	return std::make_shared<BuildIndexOpr>(qry, indexType, paramOne);
 }
 
 /* ************************ */
@@ -174,15 +176,13 @@ std::shared_ptr<core::opPlan> CompOneParamOpr::getPlan()
 	{
 	case compressionType::COMPASS:
 	{
-		auto qryPlan = std::make_shared<core::compass_decode_plan>();
+		auto qryPlan = std::make_shared<core::compass_encode_plan>();
 		core::parameters params = {
 				std::make_shared<core::opParamPlan>(childQry_->getPlan()),
-				std::make_shared<core::opParamConst>(
-					std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE)),
-			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 		};
 		qryPlan->setParamSet(
-			std::make_shared<core::compass_decode_plan_pset>(params));
+			std::make_shared<core::compass_encode_plan_pset>(params));
 		return qryPlan;
 		break;
 	}
@@ -190,10 +190,8 @@ std::shared_ptr<core::opPlan> CompOneParamOpr::getPlan()
 	{
 		auto qryPlan = std::make_shared<core::spiht_decode_plan>();
 		core::parameters params = {
-			std::make_shared<core::opParamPlan>(childQry_->getPlan()),
-			std::make_shared<core::opParamConst>(
-				std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE)),
-			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+				std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 		};
 		qryPlan->setParamSet(
 			std::make_shared<core::spiht_decode_plan_pset>(params));
@@ -210,8 +208,7 @@ std::string CompOneParamOpr::toString(int depth)
 	std::string strChildIndent = this->getIndentString(depth + 1);
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << "Comp(" << std::endl;
-	ss << this->childQry_->toString(depth + 1) << ",";
-	ss << this->paramOne_ << ")";
+	ss << this->childQry_->toString(depth + 1) << "," << this->paramOne_ << ")";
 
 	return ss.str();
 }
@@ -229,21 +226,20 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 	{
 	case compressionType::SEACOW:
 	{
-		auto wtQryPlan = std::make_shared<core::se_compression_plan>();
+		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
 			core::parameters params = {
 					std::make_shared<core::opParamPlan>(childQry_->getPlan()),
 					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 			};
 			wtQryPlan->setParamSet(
-				std::make_shared<core::se_compression_plan_pset>(params));
+				std::make_shared<core::wavelet_encode_plan_pset>(params));
 		}
 
 		auto seQryPlan = std::make_shared<core::se_compression_plan>();
 		{
 			core::parameters params = {
-					std::make_shared<core::opParamPlan>(wtQryPlan),
-					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramTwo_, _ELE_DEFAULT_TYPE))
+					std::make_shared<core::opParamPlan>(wtQryPlan)
 			};
 			seQryPlan->setParamSet(
 				std::make_shared<core::se_compression_plan_pset>(params));
@@ -252,24 +248,23 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 	}
 	case compressionType::SEACOW_HUFFMAN:
 	{
-		auto wtQryPlan = std::make_shared<core::se_compression_plan>();
+		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
 			core::parameters params = {
 					std::make_shared<core::opParamPlan>(childQry_->getPlan()),
 					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 			};
 			wtQryPlan->setParamSet(
-				std::make_shared<core::se_compression_plan_pset>(params));
+				std::make_shared<core::wavelet_encode_plan_pset>(params));
 		}
 
-		auto seQryPlan = std::make_shared<core::se_compression_plan>();
+		auto seQryPlan = std::make_shared<core::se_huffman_encode_plan>();
 		{
 			core::parameters params = {
-					std::make_shared<core::opParamPlan>(wtQryPlan),
-					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramTwo_, _ELE_DEFAULT_TYPE))
+					std::make_shared<core::opParamPlan>(wtQryPlan)
 			};
 			seQryPlan->setParamSet(
-				std::make_shared<core::se_compression_plan_pset>(params));
+				std::make_shared<core::se_huffman_encode_plan_pset>(params));
 		}
 		return seQryPlan;
 		break;
@@ -284,9 +279,7 @@ std::string CompTwoParamOpr::toString(int depth)
 	std::string strChildIndent = this->getIndentString(depth + 1);
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << "Comp(" << std::endl;
-	ss << this->childQry_->toString(depth + 1) << ",";
-	ss << this->paramOne_ << ",";
-	ss << this->paramTwo_ << ")";
+	ss << this->childQry_->toString(depth + 1) << "," << this->paramOne_ << "," << this->paramTwo_ << ")";
 
 	return ss.str();
 }
@@ -386,7 +379,7 @@ std::string DecompOpr::toString(int depth)
 	std::string strChildIndent = this->getIndentString(depth + 1);
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << this->getPlan()->name() << "(" << std::endl;
-	ss << this->getArrayDesc()->name_ << ")";
+	ss << strChildIndent << this->getArrayDesc()->name_ << ")";
 
 	return ss.str();
 }
@@ -447,8 +440,7 @@ std::string DecompOneParamOpr::toString(int depth)
 	std::string strChildIndent = this->getIndentString(depth + 1);
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << this->getPlan()->name() << "(" << std::endl;
-	ss << this->getArrayDesc()->name_ << ",";
-	ss << this->paramOne_ << ")";
+	ss << strChildIndent << this->getArrayDesc()->name_ << "," << this->paramOne_ << ")";
 
 	return ss.str();
 }
@@ -525,9 +517,7 @@ std::string DecompTwoParamOpr::toString(int depth)
 	std::string strChildIndent = this->getIndentString(depth + 1);
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << this->getPlan()->name() << "(" << std::endl;
-	ss << this->getArrayDesc()->name_ << ",";
-	ss << this->paramOne_ << ",";
-	ss << this->paramTwo_ << ")";
+	ss << strChildIndent << this->getArrayDesc()->name_ << "," << this->paramOne_ << "," << this->paramTwo_ << ")";
 
 	return ss.str();
 }

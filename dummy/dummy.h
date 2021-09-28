@@ -31,6 +31,8 @@ static const std::string filePath = DUMMY_PATH(Binary_Star_STSCI_H_p1942a_f_1024
 static const core::dimension dims(1024, 1024);
 static const core::dimension chunkDims(128, 128);
 static const core::dimension blockDims(32, 32);
+static const int wtLevel = 3;
+static const int mmtLevel = 3;
 
 core::pArrayDesc getDummyArrayDesc();
 }		// data_star1024x1024

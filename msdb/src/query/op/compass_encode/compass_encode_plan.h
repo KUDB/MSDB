@@ -25,6 +25,12 @@ class compass_encode_array_pset : public opArrayParamSet
 public:
 	compass_encode_array_pset(parameters& pSet);
 };
+
+class compass_encode_plan_pset : public opPlanParamSet
+{
+public:
+	compass_encode_plan_pset(parameters& pSet);
+};
 }		// core
 }		// msdb
 #endif	// _MSDB_OP_COMPASS_ENCODE_PLAN_H_

@@ -28,6 +28,8 @@ public:
 	build_array_pset(parameters& pSet);
 };
 
+//////////////////////////////
+// ParamSets
 class build_action : public opAction
 {
 public:

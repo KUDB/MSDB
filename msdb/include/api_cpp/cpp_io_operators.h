@@ -13,7 +13,7 @@ namespace msdb
 class BuildIndexOpr : public AFLOperator
 {
 public:
-	BuildIndexOpr(Array arr, attrIndexType indexType);
+	BuildIndexOpr(std::shared_ptr<AFLOperator> qry, attrIndexType indexType, core::eleDefault paramOne);
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
@@ -22,9 +22,10 @@ public:
 private:
 	std::shared_ptr<AFLOperator> childQry_;
 	attrIndexType indexType_;
+	core::eleDefault paramOne_;
 };
 
-std::shared_ptr<BuildIndexOpr> BuildIndex(Array arr, attrIndexType compType);
+std::shared_ptr<BuildIndexOpr> BuildIndex(std::shared_ptr<AFLOperator> qry, attrIndexType compType, core::eleDefault paramOne);
 
 /* ************************ */
 /* CompOpr					*/

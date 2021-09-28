@@ -20,6 +20,8 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class compass_index_build_array_pset : public opArrayParamSet
 {
 public:
@@ -27,6 +29,11 @@ public:
 
 public:
 	virtual pArrayDesc inferSchema() override;
+};
+class compass_index_build_plan_pset : public opPlanParamSet
+{
+public:
+	compass_index_build_plan_pset(parameters& pSet);
 };
 }		// core
 }		// msdb

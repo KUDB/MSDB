@@ -19,12 +19,18 @@ pAction compass_encode_plan::makeAction()
 }
 
 //////////////////////////////
-// pset
+// ParamSets
 compass_encode_array_pset::compass_encode_array_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
 {
 	assert(this->params_.size() == 2);
-	assert(this->params_[0]->type() == opParamType::ARRAY);			// Source array
+	assert(this->params_[1]->type() == opParamType::CONST_TYPE);	// Target Bin Numbers
+}
+
+compass_encode_plan_pset::compass_encode_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
+{
+	assert(this->params_.size() == 2);
 	assert(this->params_[1]->type() == opParamType::CONST_TYPE);	// Target Bin Numbers
 }
 }		// core
