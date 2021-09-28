@@ -1,49 +1,33 @@
 #include <pch.h>
-#include <op/save/save_action.h>
+#include <op/encode_raw/encode_raw_action.h>
 #include <array/memArray.h>
 #include <system/storageMgr.h>
 #include <util/logger.h>
-
-#include <op/encode_raw/encode_raw_action.h>
 
 namespace msdb
 {
 namespace core
 {
-save_action::save_action()
+encode_raw_action::encode_raw_action()
 {
 }
-save_action::~save_action()
+encode_raw_action::~encode_raw_action()
 {
 }
-const char* save_action::name()
+const char* encode_raw_action::name()
 {
-	return "save";
+	return "encode_raw";
 }
-pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
+pArray encode_raw_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
 	assert(inputArrays.size() == 1);
+	//========================================//
+	qry->getTimer()->nextJob(0, this->name(), workType::IO);
+	//========================================//
 
 	size_t mSizeTotal = 0;
 	pArray sourceArr = inputArrays[0];
 	arrayId arrId = sourceArr->getId();
-
-	//========================================//
-	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
-	//========================================//
-
-	for (auto attr : *sourceArr->getDesc()->attrDescs_)
-	{
-		switch (attr->compType_)
-		{
-		default:
-
-		}
-	}
-
-	//========================================//
-	qry->getTimer()->nextJob(0, this->name(), workType::IO);
-	//========================================//
 
 	for (auto attr : *sourceArr->getDesc()->attrDescs_)
 	{
@@ -54,7 +38,7 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 			pSerializable serialChunk
 				= std::static_pointer_cast<serializable>(**cit);
 			storageMgr::instance()->saveChunk(arrId, attr->id_, (**cit)->getId(),
-													serialChunk);
+											  serialChunk);
 
 			mSizeTotal += serialChunk->getSerializedSize();
 			//std::cout << serialChunk->getSerializedSize() << std::endl;
