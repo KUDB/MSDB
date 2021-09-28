@@ -22,6 +22,16 @@ core::pAttributeDescs attributeDescBuilder(
 	std::vector<core::eleType> attrTypes
 );
 
+static const int arr_id_seacow = 10;
+static const int arr_id_seacow_huffman = 11;
+static const int arr_id_spiht = 20;
+static const int arr_id_compass = 25;
+static const int arr_id_lzw = 30;
+static const int arr_id_huffman = 35;
+static const int arr_id_adapt_huffman = 36;
+static const int arr_id_lzw_huffman = 40;
+static const int arr_id_zip = 45;
+
 namespace data_star1024x1024
 {
 static const std::string arrName = "star1024x1024";
@@ -33,6 +43,7 @@ static const core::dimension chunkDims(128, 128);
 static const core::dimension blockDims(32, 32);
 static const int wtLevel = 3;
 static const int mmtLevel = 3;
+static const int compassBins = 128;
 
 core::pArrayDesc getDummyArrayDesc();
 }		// data_star1024x1024
