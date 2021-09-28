@@ -1,6 +1,6 @@
 #include <iostream>
 #include <api_cpp/msdb.h>
-#include <dummy/dummy.h>
+#include <dummy.h>
 #include <array/arrayMgr.h>
 
 int main()
