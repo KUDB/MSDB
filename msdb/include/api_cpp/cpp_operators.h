@@ -165,5 +165,22 @@ private:
 	std::shared_ptr<AFLOperator> childQry_;
 };
 std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry);
+
+/* ************************ */
+/* Consume					*/
+/* ************************ */
+class ConsumeOpr : public AFLOperator
+{
+public:
+	ConsumeOpr(std::shared_ptr<AFLOperator> qry);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
+};
+std::shared_ptr<ConsumeOpr> Consume(std::shared_ptr<AFLOperator> qry);
 }		// msdb
 #endif	// _MSDB_API_CPP_OPERATORS_H_

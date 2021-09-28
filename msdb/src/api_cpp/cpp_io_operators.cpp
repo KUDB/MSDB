@@ -298,13 +298,13 @@ std::shared_ptr<CompOpr> Comp(
 }
 std::shared_ptr<CompOneParamOpr> Comp(
 	std::shared_ptr<AFLOperator> qry, compressionType compType,
-							  int paramOne)
+	core::eleDefault paramOne)
 {
 	return std::make_shared<CompOneParamOpr>(qry, compType, paramOne);
 }
 std::shared_ptr<CompTwoParamOpr> Comp(
 	std::shared_ptr<AFLOperator> qry, compressionType compType,
-	int paramOne, int paramTwo)
+	core::eleDefault paramOne, core::eleDefault paramTwo)
 {
 	return std::make_shared<CompTwoParamOpr>(qry, compType, paramOne, paramTwo);
 }

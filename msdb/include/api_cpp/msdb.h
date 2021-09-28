@@ -8,5 +8,6 @@
 #include "cpp_array.h"
 #include "cpp_query.h"
 #include "cpp_operators.h"
+#include "cpp_io_operators.h"
 
 #endif	// _MSDB_CPP_MSDB_H_

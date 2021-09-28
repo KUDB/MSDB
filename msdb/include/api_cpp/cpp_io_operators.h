@@ -8,7 +8,7 @@
 namespace msdb
 {
 /* ************************ */
-/* BuildIndexOpr					*/
+/* BuildIndexOpr			*/
 /* ************************ */
 class BuildIndexOpr : public AFLOperator
 {

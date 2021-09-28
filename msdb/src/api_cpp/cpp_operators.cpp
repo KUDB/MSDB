@@ -7,6 +7,7 @@
 #include <op/copy_to_buffer/copy_to_buffer_plan.h>
 #include <op/naive_filter/naive_filter_plan.h>
 #include <op/build/build_plan.h>
+#include <op/consume/consume_plan.h>
 #include <array/dimensionDesc.h>
 #include <array/attributeDesc.h>
 
@@ -344,5 +345,38 @@ std::string CopyToBufferOpr::toString(int depth)
 std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry)
 {
 	return std::make_shared<CopyToBufferOpr>(qry);
+}
+
+/* ************************ */
+/* Consume					*/
+/* ************************ */
+ConsumeOpr::ConsumeOpr(std::shared_ptr<AFLOperator> qry)
+	: childQry_(qry), AFLOperator(qry->getArrayDesc())
+{
+}
+std::shared_ptr<core::opPlan> ConsumeOpr::getPlan()
+{
+	auto qryPlan = std::make_shared<core::consume_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamPlan>(childQry_->getPlan())
+	};
+	qryPlan->setParamSet(std::make_shared<core::consume_plan_pset>(params));
+
+	return qryPlan;
+}
+std::string ConsumeOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Consume(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << ")";
+
+	return ss.str();
+}
+std::shared_ptr<ConsumeOpr> Consume(std::shared_ptr<AFLOperator> qry)
+{
+	return std::make_shared<ConsumeOpr>(qry);
 }
 }		// msdb
