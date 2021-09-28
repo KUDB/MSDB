@@ -20,10 +20,17 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class zip_save_array_pset : public opArrayParamSet
 {
 public:
 	zip_save_array_pset(parameters& pSet);
+};
+class zip_save_plan_pset : public opPlanParamSet
+{
+public:
+	zip_save_plan_pset(parameters& pSet);
 };
 }		// core
 }		// msdb

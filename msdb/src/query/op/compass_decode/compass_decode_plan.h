@@ -20,10 +20,17 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class compass_decode_array_pset : public opArrayParamSet
 {
 public:
 	compass_decode_array_pset(parameters& pSet);
+};
+class compass_decode_plan_pset : public opPlanParamSet
+{
+public:
+	compass_decode_plan_pset(parameters& pSet);
 };
 }		// core
 }		// msdb

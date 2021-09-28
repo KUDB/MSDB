@@ -9,7 +9,10 @@ namespace msdb
 {
 namespace core
 {
-ENUM_MACRO(compressionType, NONE, RAW, SEACOW, SEACOW_HUFFMAN, SPIHT, COMPASS, HUFFMAN, LZW_HUFFMAN, LZW);
+ENUM_MACRO(compressionType, 
+		   NONE, RAW, SEACOW, SEACOW_HUFFMAN, 
+		   SPIHT, COMPASS, HUFFMAN, ADAPTHUFFMAN,
+		   LZW_HUFFMAN, LZW, ZIP);
 }		// core
 }		// msdb
 #endif	// _MSDB_COMPRESSIONTYPE_H_

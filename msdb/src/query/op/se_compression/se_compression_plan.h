@@ -21,10 +21,18 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class se_compression_array_pset : public opArrayParamSet
 {
 public:
 	se_compression_array_pset(parameters& pSet);
+};
+
+class se_compression_plan_pset : public opPlanParamSet
+{
+public:
+	se_compression_plan_pset(parameters& pSet);
 };
 }		// core
 }		// msdb

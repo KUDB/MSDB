@@ -7,11 +7,13 @@
 #include <query/query.h>
 #include <api_cpp/cpp_context.h.>
 #include <compression/compressionType.h>
+#include <index/attributeIndex.h>
 
 namespace msdb
 {
 using typename core::eleType;
 using typename core::compressionType;
+using typename core::attrIndexType;
 
 class Array
 {
@@ -70,7 +72,7 @@ private:
 class DefAttribute
 {
 public:
-	DefAttribute(std::string name, eleType type, compressionType compType);
+	DefAttribute(std::string name, eleType type, compressionType compType = compressionType::NONE);
 
 public:
 	std::shared_ptr<core::attributeDesc> getDesc();

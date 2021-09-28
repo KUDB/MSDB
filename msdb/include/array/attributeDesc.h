@@ -39,6 +39,7 @@ public:
 	attributeDesc(attributeId id, std::string name, eleType type, compressionType compType = compressionType::NONE);
 
 public:
+	// TODO:: set comp type at compression operator actions
 	inline void setCompType(compressionType compType)
 	{
 		this->compType_ = compType;

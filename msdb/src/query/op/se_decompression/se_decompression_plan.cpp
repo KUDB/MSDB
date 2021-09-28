@@ -18,7 +18,7 @@ se_decompression_plan::~se_decompression_plan()
 
 const char* se_decompression_plan::name()
 {
-	return "se_decompression_plan";
+	return "se_decompression";
 }
 
 pAction se_decompression_plan::makeAction()

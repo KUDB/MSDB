@@ -16,7 +16,7 @@ se_compression_plan::~se_compression_plan()
 
 const char* se_compression_plan::name()
 {
-	return "se_compression_plan";
+	return "se_compression";
 }
 
 pAction se_compression_plan::makeAction()
@@ -26,6 +26,11 @@ pAction se_compression_plan::makeAction()
 
 se_compression_array_pset::se_compression_array_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
+{
+	assert(this->params_.size() == 1);
+}
+se_compression_plan_pset::se_compression_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
 {
 	assert(this->params_.size() == 1);
 }

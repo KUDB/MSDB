@@ -20,10 +20,18 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class lzw_encode_array_pset : public opArrayParamSet
 {
 public:
 	lzw_encode_array_pset(parameters& pSet);
+};
+
+class lzw_encode_plan_pset : public opPlanParamSet
+{
+public:
+	lzw_encode_plan_pset(parameters& pSet);
 };
 }		// core
 }		// msdb

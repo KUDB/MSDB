@@ -17,8 +17,16 @@ pAction huffman_encode_plan::makeAction()
 {
 	return std::make_shared<huffman_encode_action>();
 }
+
+//////////////////////////////
+// ParamSets
 huffman_encode_array_pset::huffman_encode_array_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
+{
+
+}
+huffman_encode_plan_pset::huffman_encode_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
 {
 
 }

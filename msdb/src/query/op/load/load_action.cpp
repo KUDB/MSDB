@@ -1,5 +1,5 @@
 #include <pch.h>
-#include <op/encode_raw/decode_raw_action.h>
+#include <op/load/load_action.h>
 #include <array/memBlockArray.h>
 #include <array/blockChunk.h>
 #include <system/storageMgr.h>
@@ -10,17 +10,17 @@ namespace msdb
 {
 namespace core
 {
-decode_raw_action::decode_raw_action()
+load_action::load_action()
 {
 }
-decode_raw_action::~decode_raw_action()
+load_action::~load_action()
 {
 }
-const char* decode_raw_action::name()
+const char* load_action::name()
 {
-	return "decode_raw";
+	return "load";
 }
-pArray decode_raw_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
+pArray load_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
 	//========================================//
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
@@ -36,7 +36,7 @@ pArray decode_raw_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 	for (auto attr : *outArr->getDesc()->attrDescs_)
 	{
-		this->decode_rawAttribute(outArr, attr, qry);
+		this->loadAttribute(outArr, attr, qry);
 	}
 
 	//----------------------------------------//
@@ -46,7 +46,7 @@ pArray decode_raw_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	return outArr;
 }
 
-void decode_raw_action::decode_rawAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry)
+void load_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry)
 {
 	size_t currentThreadId = 0;
 
@@ -69,15 +69,16 @@ void decode_raw_action::decode_rawAttribute(pArray outArr, pAttributeDesc attrDe
 			if (blockBitmap)
 			{
 				outChunk->copyBlockBitmap(blockBitmap);
-			} else
+			}
+			else
 			{
 				// If there were no bitmap, set all blocks as true.
 				outChunk->replaceBlockBitmap(std::make_shared<bitmap>(outChunk->getBlockCapacity(), true));
 			}
 			outChunk->makeBlocks();
 
-			io_service_->post(boost::bind(&decode_raw_action::decode_rawChunk, this,
-							  outArr, outChunk, attrDesc->id_, qry, currentThreadId));
+			io_service_->post(boost::bind(&load_action::loadChunk, this,
+										  outArr, outChunk, attrDesc->id_, qry, currentThreadId));
 		}
 
 		++(*cit);
@@ -93,7 +94,7 @@ void decode_raw_action::decode_rawAttribute(pArray outArr, pAttributeDesc attrDe
 	this->getArrayStatus(outArr);
 }
 
-void decode_raw_action::decode_rawChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId)
+void load_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId)
 {
 	auto threadId = getThreadId();
 
@@ -104,7 +105,7 @@ void decode_raw_action::decode_rawChunk(pArray outArr, pChunk outChunk, attribut
 	pSerializable serialChunk
 		= std::static_pointer_cast<serializable>(outChunk);
 	storageMgr::instance()->loadChunk(outArr->getId(), attrId, outChunk->getId(),
-									  serialChunk);
+											serialChunk);
 
 	//----------------------------------------//
 	qry->getTimer()->pause(threadId);

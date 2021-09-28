@@ -26,5 +26,11 @@ compass_decode_array_pset::compass_decode_array_pset(parameters& pSet)
 	assert(this->params_.size() == 2);
 	assert(this->params_[1]->type() == opParamType::CONST_TYPE);		// Target numBins
 }
+compass_decode_plan_pset::compass_decode_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
+{
+	assert(this->params_.size() == 2);
+	assert(this->params_[1]->type() == opParamType::CONST_TYPE);		// Target numBins
+}
 }		// core
 }		// msdb

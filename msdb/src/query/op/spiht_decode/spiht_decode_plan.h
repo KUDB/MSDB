@@ -20,10 +20,22 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class spiht_decode_array_pset : public opArrayParamSet
 {
 public:
 	spiht_decode_array_pset(parameters& pSet);
+
+public:
+	virtual pArrayDesc inferSchema() override;
+	virtual pBitmapTree inferBottomUpBitmap() override;
+};
+
+class spiht_decode_plan_pset : public opPlanParamSet
+{
+public:
+	spiht_decode_plan_pset(parameters& pSet);
 
 public:
 	virtual pArrayDesc inferSchema() override;

@@ -20,10 +20,17 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class adapt_huffman_encode_array_pset : public opArrayParamSet
 {
 public:
 	adapt_huffman_encode_array_pset(parameters& pSet);
+};
+class adapt_huffman_encode_plan_pset : public opPlanParamSet
+{
+public:
+	adapt_huffman_encode_plan_pset(parameters& pSet);
 };
 }		// core
 }		// msdb

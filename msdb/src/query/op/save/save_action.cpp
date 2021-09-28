@@ -37,7 +37,7 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 		switch (attr->compType_)
 		{
 		default:
-
+			break;
 		}
 	}
 
