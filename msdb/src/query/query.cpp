@@ -24,9 +24,10 @@ status query::process()
 		this->arrDesc_ = this->qryPlan_->inferSchema();
 		this->qryPlan_->process(shared_from_this());
 	}
-	_MSDB_CATCH_ALL
+		_MSDB_CATCH_ALL
 	{
 		// TODO:: Log error
+		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}
 	_MSDB_CATCH_END
 	return status(statusSectionCode::OK, (statusSubCodeType)statusOkCode::OK);

@@ -128,7 +128,7 @@ private:
 		}
 
 #ifndef NDEBUG
-		BOOST_LOG_TRIVIAL(trace) << "Max value: " << static_cast<int>(maxValue) << ", maxValueBits: " << static_cast<int>(maxValueBits);
+		//BOOST_LOG_TRIVIAL(trace) << "Max value: " << static_cast<int>(maxValue) << ", maxValueBits: " << static_cast<int>(maxValueBits);
 #endif
 		return maxValueBits;
 	}

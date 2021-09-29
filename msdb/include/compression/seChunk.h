@@ -190,26 +190,26 @@ public:
 		}
 
 #ifndef NDEBUG
-		{
-			std::stringstream ss;
-			for (auto b : this->rBitFromMMT)
-			{
-				ss << static_cast<int>(b) << ", ";
-			}
-			BOOST_LOG_TRIVIAL(trace) << ss.str();
-		}
-		{
-			std::stringstream ss;
-			for (auto b : this->rBitFromDelta)
-			{
-				ss << static_cast<int>(b) << ", ";
-			}
-			BOOST_LOG_TRIVIAL(trace) << ss.str();
-		}
+		//{
+		//	std::stringstream ss;
+		//	for (auto b : this->rBitFromMMT)
+		//	{
+		//		ss << static_cast<int>(b) << ", ";
+		//	}
+		//	BOOST_LOG_TRIVIAL(trace) << ss.str();
+		//}
+		//{
+		//	std::stringstream ss;
+		//	for (auto b : this->rBitFromDelta)
+		//	{
+		//		ss << static_cast<int>(b) << ", ";
+		//	}
+		//	BOOST_LOG_TRIVIAL(trace) << ss.str();
+		//}
 
-		BOOST_LOG_TRIVIAL(debug) << "avg gaps: " << static_cast<double>(std::accumulate(gaps.begin(), gaps.end(), 0.0) / gaps.size());
-		BOOST_LOG_TRIVIAL(debug) << "avg from MMT: " << static_cast<double>(std::accumulate(rBitFromMMT.begin(), rBitFromMMT.end(), 0.0) / rBitFromMMT.size());
-		BOOST_LOG_TRIVIAL(debug) << "avg from Delta: " << static_cast<double>(std::accumulate(rBitFromDelta.begin(), rBitFromDelta.end(), 0.0) / rBitFromDelta.size());
+		//BOOST_LOG_TRIVIAL(debug) << "avg gaps: " << static_cast<double>(std::accumulate(gaps.begin(), gaps.end(), 0.0) / gaps.size());
+		//BOOST_LOG_TRIVIAL(debug) << "avg from MMT: " << static_cast<double>(std::accumulate(rBitFromMMT.begin(), rBitFromMMT.end(), 0.0) / rBitFromMMT.size());
+		//BOOST_LOG_TRIVIAL(debug) << "avg from Delta: " << static_cast<double>(std::accumulate(rBitFromDelta.begin(), rBitFromDelta.end(), 0.0) / rBitFromDelta.size());
 #endif
 	}
 

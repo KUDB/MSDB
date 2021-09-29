@@ -120,7 +120,7 @@ void seChunk::serializeGap(bstream& bs, int64_t gap)
 	if (gap < 0)
 	{
 		bs << setw(1) << 0x1;
-		BOOST_LOG_TRIVIAL(debug) << "GAP < 0";
+		//BOOST_LOG_TRIVIAL(debug) << "GAP < 0";
 	} else
 	{
 		bs << setw(1) << 0x0;

@@ -55,7 +55,7 @@ void bitmap::print() const
 		}
 	}
 
-	BOOST_LOG_TRIVIAL(debug) << ss.str();
+	//BOOST_LOG_TRIVIAL(debug) << ss.str();
 }
 
 std::vector<bool>::reference bitmap::operator[](size_t seqPos)

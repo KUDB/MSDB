@@ -11,7 +11,7 @@ mmt_load_plan::mmt_load_plan()
 }
 const char* mmt_load_plan::name()
 {
-	return "mmt_load_plan";
+	return "mmt_load";
 }
 
 pAction mmt_load_plan::makeAction()

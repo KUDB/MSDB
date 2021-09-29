@@ -18,7 +18,7 @@ mmt_save_action::~mmt_save_action()
 
 const char* mmt_save_action::name()
 {
-	return "mmt_save_action";
+	return "mmt_save";
 }
 
 pArray mmt_save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)

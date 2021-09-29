@@ -18,7 +18,7 @@ mmt_load_action::~mmt_load_action()
 
 const char* mmt_load_action::name()
 {
-	return "mmt_load_action";
+	return "mmt_load";
 }
 
 pArray mmt_load_action::execute(std::vector<pArray>& inputArrays, pQuery qry)

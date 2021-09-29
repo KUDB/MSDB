@@ -12,7 +12,7 @@ mmt_save_plan::mmt_save_plan()
 
 const char* mmt_save_plan::name()
 {
-	return "mmt_save_plan";
+	return "mmt_save";
 }
 pAction mmt_save_plan::makeAction()
 {
