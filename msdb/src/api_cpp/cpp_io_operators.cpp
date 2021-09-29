@@ -23,6 +23,8 @@
 #include <op/wavelet_decode/wavelet_decode_plan.h>
 
 #include <op/mmt_build/mmt_build_plan.h>
+#include <op/mmt_save/mmt_save_plan.h>
+#include <op/mmt_load/mmt_load_plan.h>
 #include <op/compass_index_build/compass_index_build_plan.h>
 
 namespace msdb
@@ -81,6 +83,116 @@ std::string BuildIndexOpr::toString(int depth)
 std::shared_ptr<BuildIndexOpr> BuildIndex(std::shared_ptr<AFLOperator> qry, attrIndexType indexType, core::eleDefault paramOne)
 {
 	return std::make_shared<BuildIndexOpr>(qry, indexType, paramOne);
+}
+
+/* ************************ */
+/* SaveIndexOpr				*/
+/* ************************ */
+SaveIndexOpr::SaveIndexOpr(Array arr, attrIndexType indexType)
+	: indexType_(indexType), AFLOperator(arr.getDesc())
+{
+}
+
+std::shared_ptr<core::opPlan> SaveIndexOpr::getPlan()
+{
+	switch (this->indexType_)
+	{
+	case attrIndexType::MMT:
+	{
+		auto qryPlan = std::make_shared<core::mmt_save_plan>();
+		core::parameters params = {
+			std::make_shared<core::opParamArray>(this->getArrayDesc())
+		};
+		qryPlan->setParamSet(
+			std::make_shared<core::mmt_save_array_pset>(params));
+		return qryPlan;
+		break;
+	}
+	//case attrIndexType::COMPASS:
+	//{
+	//	auto qryPlan = std::make_shared<core::compass_index_build_plan>();
+	//	core::parameters params = {
+	//		std::make_shared<core::opParamPlan>(this->childQry_->getPlan()),
+	//		std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::compass_index_build_plan_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
+	default:
+		return nullptr;
+	};
+}
+std::string SaveIndexOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << this->getPlan()->name() << "(" << std::endl;
+	ss << strChildIndent << this->getArrayDesc()->name_ << "," << this->getPlan()->name() << ")";
+
+	return ss.str();
+}
+
+std::shared_ptr<SaveIndexOpr> SaveIndex(Array arr, attrIndexType indexType)
+{
+	return std::make_shared<SaveIndexOpr>(arr, indexType);
+}
+
+/* ************************ */
+/* LoadIndexOpr				*/
+/* ************************ */
+LoadIndexOpr::LoadIndexOpr(Array arr, attrIndexType indexType)
+	: indexType_(indexType), AFLOperator(arr.getDesc())
+{
+}
+
+std::shared_ptr<core::opPlan> LoadIndexOpr::getPlan()
+{
+	switch (this->indexType_)
+	{
+	case attrIndexType::MMT:
+	{
+		auto qryPlan = std::make_shared<core::mmt_load_plan>();
+		core::parameters params = {
+			std::make_shared<core::opParamArray>(this->getArrayDesc())
+		};
+		qryPlan->setParamSet(
+			std::make_shared<core::mmt_load_array_pset>(params));
+		return qryPlan;
+		break;
+	}
+	//case attrIndexType::COMPASS:
+	//{
+	//	auto qryPlan = std::make_shared<core::compass_index_build_plan>();
+	//	core::parameters params = {
+	//		std::make_shared<core::opParamPlan>(this->childQry_->getPlan()),
+	//		std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::compass_index_build_plan_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
+	default:
+		return nullptr;
+	};
+}
+std::string LoadIndexOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << this->getPlan()->name() << "(" << std::endl;
+	ss << strChildIndent << this->getArrayDesc()->name_ << "," << this->getPlan()->name() << ")";
+
+	return ss.str();
+}
+
+std::shared_ptr<LoadIndexOpr> LoadIndex(Array arr, attrIndexType indexType)
+{
+	return std::make_shared<LoadIndexOpr>(arr, indexType);
 }
 
 /* ************************ */

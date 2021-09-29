@@ -23,7 +23,7 @@ enum class statusOkCode : statusSubCodeType
 };
 enum class statusErrCode : statusSubCodeType
 {
-	ERR
+	UNKNOWN
 };
 
 enum class statusInprocessCode : statusSubCodeType

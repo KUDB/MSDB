@@ -28,6 +28,42 @@ private:
 std::shared_ptr<BuildIndexOpr> BuildIndex(std::shared_ptr<AFLOperator> qry, attrIndexType compType, core::eleDefault paramOne);
 
 /* ************************ */
+/* SaveIndexOpr				*/
+/* ************************ */
+class SaveIndexOpr : public AFLOperator
+{
+public:
+	SaveIndexOpr(Array arr, attrIndexType indexType);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	attrIndexType indexType_;
+};
+
+std::shared_ptr<SaveIndexOpr> SaveIndex(Array arr, attrIndexType compType);
+
+/* ************************ */
+/* LoadIndexOpr				*/
+/* ************************ */
+class LoadIndexOpr : public AFLOperator
+{
+public:
+	LoadIndexOpr(Array arr, attrIndexType indexType);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	attrIndexType indexType_;
+};
+
+std::shared_ptr<LoadIndexOpr> LoadIndex(Array arr, attrIndexType compType);
+
+/* ************************ */
 /* CompOpr					*/
 /* ************************ */
 class CompOpr : public AFLOperator
