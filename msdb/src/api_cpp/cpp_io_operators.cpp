@@ -300,14 +300,25 @@ std::shared_ptr<core::opPlan> CompOneParamOpr::getPlan()
 	}
 	case compressionType::SPIHT:
 	{
-		auto qryPlan = std::make_shared<core::spiht_decode_plan>();
-		core::parameters params = {
-				std::make_shared<core::opParamPlan>(childQry_->getPlan()),
-				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::spiht_decode_plan_pset>(params));
-		return qryPlan;
+		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
+		{
+			core::parameters params = {
+					std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+			};
+			wtQryPlan->setParamSet(
+				std::make_shared<core::wavelet_encode_plan_pset>(params));
+		}
+
+		auto spihtQryPlan = std::make_shared<core::spiht_encode_plan>();
+		{
+			core::parameters params = {
+					std::make_shared<core::opParamPlan>(wtQryPlan)
+			};
+			spihtQryPlan->setParamSet(
+				std::make_shared<core::spiht_encode_plan_pset>(params));
+		}
+		return spihtQryPlan;
 		break;
 	}
 	default:
@@ -526,7 +537,7 @@ std::shared_ptr<core::opPlan> DecompOneParamOpr::getPlan()
 				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 			};
 			spQryPlan->setParamSet(
-				std::make_shared<core::spiht_decode_plan_pset>(params));
+				std::make_shared<core::spiht_decode_array_pset>(params));
 		}
 
 		auto wtQryPlan = std::make_shared<core::wavelet_decode_plan>();
@@ -535,8 +546,8 @@ std::shared_ptr<core::opPlan> DecompOneParamOpr::getPlan()
 				std::make_shared<core::opParamPlan>(spQryPlan),
 				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
 			};
-			spQryPlan->setParamSet(
-				std::make_shared<core::wavelet_decode_array_pset>(params));
+			wtQryPlan->setParamSet(
+				std::make_shared<core::wavelet_decode_plan_pset>(params));
 		}
 
 		return wtQryPlan;
@@ -575,7 +586,6 @@ std::shared_ptr<core::opPlan> DecompTwoParamOpr::getPlan()
 			core::parameters params = {
 					std::make_shared<core::opParamArray>(this->getArrayDesc()),
 					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramTwo_, _ELE_DEFAULT_TYPE))
-
 			};
 			seQryPlan->setParamSet(
 				std::make_shared<core::se_decompression_array_pset>(params));

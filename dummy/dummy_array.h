@@ -75,6 +75,7 @@ static const int compassBins = 128;
 static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
+static const core::eleType typeAttr_0 = core::eleType::UINT8;
 
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
@@ -102,7 +103,29 @@ static const core::dimension dims(1024, 1024);
 static const core::dimension chunkDims(128, 128);
 static const core::dimension blockDims(32, 32);
 
+static const int wtLevel = 3;
+static const int mmtLevel = 3;
+static const int compassBins = 128;
+
+static const std::string nameDim_0 = "Y";
+static const std::string nameDim_1 = "X";
+static const std::string nameAttr_0 = "ATTR_1";
+static const core::eleType typeAttr_0 = core::eleType::UINT8;
+
+std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
+std::shared_ptr<AFLOperator> getArrayBuildAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getInsertAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getLoadAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getBuildIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getSaveIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getLoadIndexAFL(
+	compressionType compType, attrIndexType idxType);
 }		// data_solar1024x1024
 
 namespace data_saturn1024x1024
@@ -115,7 +138,29 @@ static const core::dimension dims(1024, 1024);
 static const core::dimension chunkDims(128, 128);
 static const core::dimension blockDims(32, 32);
 
+static const int wtLevel = 3;
+static const int mmtLevel = 3;
+static const int compassBins = 128;
+
+static const std::string nameDim_0 = "Y";
+static const std::string nameDim_1 = "X";
+static const std::string nameAttr_0 = "ATTR_1";
+static const core::eleType typeAttr_0 = core::eleType::UINT8;
+
+std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
+std::shared_ptr<AFLOperator> getArrayBuildAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getInsertAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getLoadAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getBuildIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getSaveIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getLoadIndexAFL(
+	compressionType compType, attrIndexType idxType);
 }		// data_saturn1024x1024
 
 namespace data_mars4096x2048
@@ -128,7 +173,29 @@ static const core::dimension dims(2048, 4096);
 static const core::dimension chunkDims(128, 128);
 static const core::dimension blockDims(32, 32);
 
+static const int wtLevel = 3;
+static const int mmtLevel = 3;
+static const int compassBins = 128;
+
+static const std::string nameDim_0 = "Y";
+static const std::string nameDim_1 = "X";
+static const std::string nameAttr_0 = "ATTR_1";
+static const core::eleType typeAttr_0 = core::eleType::UINT8;
+
+std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
+std::shared_ptr<AFLOperator> getArrayBuildAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getInsertAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getLoadAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getBuildIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getSaveIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getLoadIndexAFL(
+	compressionType compType, attrIndexType idxType);
 }		// data_mars4096x2048
 
 namespace data_mercury20480x10240
@@ -141,7 +208,29 @@ static const core::dimension dims(10240, 20480);
 static const core::dimension chunkDims(256, 256);
 static const core::dimension blockDims(64, 64);
 
+static const int wtLevel = 3;
+static const int mmtLevel = 3;
+static const int compassBins = 128;
+
+static const std::string nameDim_0 = "Y";
+static const std::string nameDim_1 = "X";
+static const std::string nameAttr_0 = "ATTR_1";
+static const core::eleType typeAttr_0 = core::eleType::UINT8;
+
+std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
+std::shared_ptr<AFLOperator> getArrayBuildAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getInsertAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getLoadAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getBuildIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getSaveIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getLoadIndexAFL(
+	compressionType compType, attrIndexType idxType);
 }		// data_mercury20480x10240
 
 namespace data_lunar102400x40960
@@ -154,7 +243,29 @@ static const core::dimension dims(40960, 102400);
 static const core::dimension chunkDims(512, 512);
 static const core::dimension blockDims(128, 128);
 
+static const int wtLevel = 3;
+static const int mmtLevel = 3;
+static const int compassBins = 128;
+
+static const std::string nameDim_0 = "Y";
+static const std::string nameDim_1 = "X";
+static const std::string nameAttr_0 = "ATTR_1";
+static const core::eleType typeAttr_0 = core::eleType::UINT16;
+
+std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
+std::shared_ptr<AFLOperator> getArrayBuildAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getInsertAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getLoadAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getBuildIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getSaveIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getLoadIndexAFL(
+	compressionType compType, attrIndexType idxType);
 }		// data_lunar102400x40960
 }		// dummy
 }		// msdb

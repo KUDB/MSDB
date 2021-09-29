@@ -94,6 +94,7 @@ int main()
 	//exeExperiment(numTest, compressionType::SEACOW_HUFFMAN, attrIndexType::MMT);
 	exeExperiment(numTest, compressionType::SPIHT);
 	//exeExperiment(numTest, compressionType::COMPASS, attrIndexType::COMPASS);	
+	//exeExperiment(numTest, compressionType::COMPASS);
 	//exeExperiment(numTest, compressionType::HUFFMAN);
 	//exeExperiment(numTest, compressionType::ADAPTHUFFMAN);
 	//exeExperiment(numTest, compressionType::LZW_HUFFMAN);
