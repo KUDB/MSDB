@@ -43,6 +43,14 @@ public:
 	{
 		return std::static_pointer_cast<std::vector<Ty_>>(this->qry_->getAttrBuffer<Ty_>(attrId));
 	}
+	inline core::pQuery getQuery()
+	{
+		return this->qry_;
+	}
+	inline core::pArrayDesc getArrayDesc()
+	{
+		return this->arrDesc_;
+	}
 
 public:
 	void close();
