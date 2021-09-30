@@ -25,6 +25,8 @@ private:
 	void attributeFilter(pArray outArr, pArray inArr, pAttributeDesc attrDesc, pPredicate inPredicate)
 	{
 		int64_t attrFilteredValues = 0;
+		int64_t readChunks = 0;
+		int64_t readBlocks = 0;
 
 		auto inChunkItr = inArr->getChunkIterator();
 		//auto outChunkItr = outArr->getChunkIterator();
@@ -43,13 +45,16 @@ private:
 				//outChunk->bufferRef(inChunk);
 				
 				int64_t chunkFilteredValue = 0;
-				auto isEmptyChunk = this->chunkFilter<Ty_>(outChunk, inChunk, inPredicate, chunkFilteredValue);
+				int64_t readChunkBlocks = 0;
+				auto isEmptyChunk = this->chunkFilter<Ty_>(outChunk, inChunk, inPredicate, chunkFilteredValue, readChunkBlocks);
 				if(isEmptyChunk)
 				{
 					outArr->freeChunk(inChunk->getId());
 				}
 
 				attrFilteredValues += chunkFilteredValue;
+				readBlocks += readChunkBlocks;
+				readChunks++;
 			}
 			++(*inChunkItr);
 			//++(*outChunkItr);
@@ -57,14 +62,17 @@ private:
 
 		BOOST_LOG_TRIVIAL(debug) << "=====";
 		BOOST_LOG_TRIVIAL(debug) << "Attr filtered value: " << attrFilteredValues;
+		BOOST_LOG_TRIVIAL(debug) << "Chunks: " << readChunks;
+		BOOST_LOG_TRIVIAL(debug) << "Blocks: " << readBlocks;
 		BOOST_LOG_TRIVIAL(debug) << "=====";
 	}
 
 	template <class Ty_>
-	bool chunkFilter(pChunk outChunk, pChunk inChunk, pPredicate inPredicate, int64_t& outFilteredValue)
+	bool chunkFilter(pChunk outChunk, pChunk inChunk, pPredicate inPredicate, int64_t& outFilteredValue, int64_t& outReadChunkBlocks)
 	{
 		bool isEmptyChunk = true;
 		int64_t chunkFilteredValue = 0;
+		int64_t readBlocks = 0;
 
 		auto inBlockItr = inChunk->getBlockIterator();
 		auto outBlockItr = outChunk->getBlockIterator();
@@ -89,6 +97,7 @@ private:
 				}
 
 				chunkFilteredValue += blockFilteredValue;
+				++readBlocks;
 			}
 
 			++(*inBlockItr);
@@ -96,6 +105,7 @@ private:
 		}
 
 		outFilteredValue = chunkFilteredValue;
+		outReadChunkBlocks = readBlocks;
 		return isEmptyChunk;
 	}
 

@@ -148,6 +148,21 @@ private:
 };
 std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm);
 
+class IndexFilterOpr : public AFLOperator
+{
+public:
+	IndexFilterOpr(std::shared_ptr<AFLOperator> qry, std::shared_ptr<PredicateImpl> pred);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
+	std::shared_ptr<PredicateImpl> pred_;
+};
+std::shared_ptr<IndexFilterOpr> IndexFilter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm);
+
 
 /* ************************ */
 /* ToBuffer					*/

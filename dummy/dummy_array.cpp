@@ -301,7 +301,7 @@ core::pArrayDesc getDummyArrayDesc() {
 
 std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 {
-	auto idName = getArrayIdName(compType, msdb::dummy::data_star1024x1024::aid, msdb::dummy::data_star1024x1024::arrName);
+	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
 	std::string aname = idName.second;
 
@@ -313,7 +313,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
 		});
 	return afl;
 }
@@ -388,7 +388,7 @@ core::pArrayDesc getDummyArrayDesc()
 
 std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 {
-	auto idName = getArrayIdName(compType, msdb::dummy::data_star1024x1024::aid, msdb::dummy::data_star1024x1024::arrName);
+	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
 	std::string aname = idName.second;
 
@@ -400,7 +400,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
 		});
 	return afl;
 }
@@ -475,7 +475,7 @@ core::pArrayDesc getDummyArrayDesc()
 
 std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 {
-	auto idName = getArrayIdName(compType, msdb::dummy::data_star1024x1024::aid, msdb::dummy::data_star1024x1024::arrName);
+	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
 	std::string aname = idName.second;
 
@@ -487,7 +487,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
 		});
 	return afl;
 }
@@ -562,7 +562,7 @@ core::pArrayDesc getDummyArrayDesc()
 
 std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 {
-	auto idName = getArrayIdName(compType, msdb::dummy::data_star1024x1024::aid, msdb::dummy::data_star1024x1024::arrName);
+	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
 	std::string aname = idName.second;
 
@@ -574,7 +574,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
 		});
 	return afl;
 }
@@ -649,7 +649,7 @@ core::pArrayDesc getDummyArrayDesc()
 
 std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 {
-	auto idName = getArrayIdName(compType, msdb::dummy::data_star1024x1024::aid, msdb::dummy::data_star1024x1024::arrName);
+	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
 	std::string aname = idName.second;
 
@@ -661,7 +661,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
 		});
 	return afl;
 }
@@ -736,7 +736,7 @@ core::pArrayDesc getDummyArrayDesc()
 
 std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 {
-	auto idName = getArrayIdName(compType, msdb::dummy::data_star1024x1024::aid, msdb::dummy::data_star1024x1024::arrName);
+	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
 	std::string aname = idName.second;
 
@@ -748,7 +748,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
 		});
 	return afl;
 }

@@ -6,6 +6,7 @@
 #include <op/between/between_plan.h>
 #include <op/copy_to_buffer/copy_to_buffer_plan.h>
 #include <op/naive_filter/naive_filter_plan.h>
+#include <op/index_filter/index_filter_plan.h>
 #include <op/build/build_plan.h>
 #include <op/consume/consume_plan.h>
 #include <array/dimensionDesc.h>
@@ -313,6 +314,39 @@ std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_
 {
 	return std::make_shared<FilterOpr>(qry, std::make_shared<PredicateImpl>(std::make_shared<core::singlePredicate>(singleTerm->getTerm())));
 }
+
+IndexFilterOpr::IndexFilterOpr(std::shared_ptr<AFLOperator> qry, std::shared_ptr<PredicateImpl> pred)
+	: childQry_(qry), pred_(pred), AFLOperator(qry->getArrayDesc())
+{
+}
+std::shared_ptr<core::opPlan> IndexFilterOpr::getPlan()
+{
+	auto qryPlan = std::make_shared<core::index_filter_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+		std::make_shared<core::opParamPredicate>(this->pred_->getPredicate())
+	};
+	qryPlan->setParamSet(std::make_shared<core::index_filter_plan_pset>(params));
+
+	return qryPlan;
+}
+std::string IndexFilterOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "IndexFilter(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << "," << std::endl;
+	ss << strChildIndent << this->pred_->toString() << ")";
+
+	return ss.str();
+}
+std::shared_ptr<IndexFilterOpr> IndexFilter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm)
+{
+	return std::make_shared<IndexFilterOpr>(qry, std::make_shared<PredicateImpl>(std::make_shared<core::singlePredicate>(singleTerm->getTerm())));
+}
+
 
 /* ************************ */
 /* ToBuffer					*/

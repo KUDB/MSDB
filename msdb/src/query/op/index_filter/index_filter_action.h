@@ -37,6 +37,7 @@ private:
 		{
 			if (inChunkItr->isExist())
 			{
+				//ss << "CHUNK [" << inChunkItr->seqPos() << "]: EXISt / ";
 				auto inChunk = (**inChunkItr);
 				auto outChunk = outArr->makeChunk(attrDesc->id_, inChunk->getId());
 				//outChunk->bufferRef(inChunk);
@@ -57,7 +58,7 @@ private:
 				//ss << "[" << inChunkItr->seqPos() << "]: true / ";
 			} else
 			{
-				//ss << "[" << inChunkItr->seqPos() << "]: false / ";
+				//ss << "CHUNK [" << inChunkItr->seqPos() << "]: NULL / ";
 			}
 
 			++(*inChunkItr);
@@ -114,7 +115,6 @@ private:
 	bool blockFilter(pBlock outBlock, pBlock inBlock, pPredicate inPredicate, int64_t& outFilteredValue)
 	{
 		int64_t filteredValue = 0;
-
 		bool isEmpty = true;
 
 		auto inBlockItemItr = inBlock->getItemIterator();

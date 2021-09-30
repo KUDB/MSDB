@@ -9,10 +9,13 @@ namespace msdb
 namespace experiments
 {
 static const int filterExpId = 5000;
-static const int filterValueSeed = 21020;
+static const int filterValueSeed = 2021;
+static const int valueLimit = 256;
 static const int numTest = 3;
 
 std::shared_ptr<FilterOpr> makeFilterEqQry(
+	std::shared_ptr<AFLOperator> opt, std::string attrName, int64_t value);
+std::shared_ptr<IndexFilterOpr> makeIndexFilterEqQry(
 	std::shared_ptr<AFLOperator> opt, std::string attrName, int64_t value);
 
 std::shared_ptr<FilterOpr> makeFilterLessQry(
@@ -22,6 +25,26 @@ std::vector<core::pTimer> exeFilterTest(
 	const int numTest, std::shared_ptr<AFLOperator> childQry, std::string attrName);
 
 namespace data_star1024x1024
+{
+std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType);
+}
+namespace data_solar1024x1024
+{
+std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType);
+}
+namespace data_saturn1024x1024
+{
+std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType);
+}
+namespace data_mars4096x2048
+{
+std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType);
+}
+namespace data_mercury20480x10240
+{
+std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType);
+}
+namespace data_lunar102400x40960
 {
 std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType);
 }
