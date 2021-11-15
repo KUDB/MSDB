@@ -15,7 +15,7 @@ se_compression_action::~se_compression_action()
 }
 const char* se_compression_action::name()
 {
-	return "se_compression_action";
+	return "se_compression";
 }
 pArray se_compression_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {

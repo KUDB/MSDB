@@ -12,7 +12,8 @@ public:
 	using Dty_ = int64_t;
 
 public:
-	Coordinate(std::vector<Dty_> vecInt);
+	//Coordinate(std::vector<Dty_> vecInt);
+	Coordinate(core::coordinate<Dty_> coor);
 
 public:
 	inline core::coordinate<Dty_> getCoor() const
