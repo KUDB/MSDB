@@ -34,6 +34,8 @@ enum class opParamType
 	PREDICATE,
 	COOR,
 	STRING,
+	ENUM,
+	MEMORY
 };
 
 class opParam : public std::enable_shared_from_this<opParam>
@@ -176,6 +178,47 @@ public:
 private:
 	std::shared_ptr<predicate> predicates_;
 };
+
+
+class opParamEnum : public opParam
+{
+public:
+	using paramType = int64_t;
+
+public:
+	opParamEnum(std::shared_ptr<std::string> str);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	std::shared_ptr<std::string> str_;
+};
+
+// Make 
+// std::shared_ptr<Ty> ptr(new Ty[10], std::default_delete<Ty[]>());
+class opParamMemory : public opParam
+{
+public:
+	using paramType = void;
+
+public:
+	opParamMemory(std::shared_ptr<void> mem);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	std::shared_ptr<void> mem_;
+};
+
+template <typename Ty_>
+std::shared_ptr<Ty_> makeParamMemory(size_t bytes)
+{
+	return std::shared_ptr<Ty_>(new Ty_[bytes / sizeof(Ty_)], std::default_delete<Ty_[]>());
+}
 
 //////////////////////////////
 // Placeholder classes

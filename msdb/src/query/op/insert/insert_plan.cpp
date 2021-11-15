@@ -16,7 +16,7 @@ insert_plan::~insert_plan()
 
 const char* insert_plan::name()
 {
-	return "insert_plan";
+	return "insert";
 }
 
 pAction insert_plan::makeAction()
@@ -24,12 +24,20 @@ pAction insert_plan::makeAction()
 	return std::make_shared<insert_action>();
 }
 
-insert_array_pset::insert_array_pset(parameters& pSet)
+insert_array_file_pset::insert_array_file_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
 {
-	assert(this->params_.size() == 2);
-	assert(this->params_[0]->type() == opParamType::ARRAY);
-	assert(this->params_[1]->type() == opParamType::STRING);
+	assert(this->params_.size() == 3);
+	assert(this->params_[1]->type() == opParamType::ENUM);
+	assert(this->params_[2]->type() == opParamType::STRING);
+}
+insert_array_memory_pset::insert_array_memory_pset(parameters& pSet)
+	: opArrayParamSet(pSet)
+{
+	assert(this->params_.size() == 4);
+	assert(this->params_[1]->type() == opParamType::ENUM);
+	assert(this->params_[2]->type() == opParamType::MEMORY);
+	assert(this->params_[3]->type() == opParamType::CONST_TYPE);
 }
 }		// core
 }		// msdb

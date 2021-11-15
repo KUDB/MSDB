@@ -60,11 +60,13 @@ std::shared_ptr<core::opPlan> InsertOpr::getPlan()
 {
 	auto qryPlan = std::make_shared<core::insert_plan>();
 
+	
 	core::parameters params = {
 		std::make_shared<core::opParamArray>(this->getArrayDesc()),
+		std::make_shared<core::opParamEnum>(std::make_shared<std::string>(core::opInsertTypeToString(core::opInsertType::FILE))),
 		std::make_shared<core::opParamString>(std::make_shared<std::string>(this->filePath_))
 	};
-	qryPlan->setParamSet(std::make_shared<core::insert_array_pset>(params));
+	qryPlan->setParamSet(std::make_shared<core::insert_array_file_pset>(params));
 
 	return qryPlan;
 }

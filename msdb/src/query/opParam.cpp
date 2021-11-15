@@ -137,6 +137,9 @@ opParamType opParamIntList::type()
 {
 	return opParamType::INTLIST;
 }
+
+//////////////////////////////
+// opParamCoor
 opParamCoor::opParamCoor(std::shared_ptr<coor> coordinate)
 	: opParam(), coor_(coordinate)
 {
@@ -158,6 +161,8 @@ opParamType opParamCoorPlaceholder::type()
 	return opParamType::COOR;
 }
 
+//////////////////////////////
+// opParamString
 opParamString::opParamString(std::shared_ptr<std::string> str)
 	: opParam(), str_(str)
 {
@@ -192,6 +197,36 @@ opParamPlanPlaceholder::opParamPlanPlaceholder()
 opParamType opParamPlanPlaceholder::type()
 {
 	return opParamType::PLAN;
+}
+
+//////////////////////////////
+// opParamEnum
+opParamEnum::opParamEnum(std::shared_ptr<std::string> str)
+	: str_(str)
+{
+}
+opParam::void_pointer opParamEnum::getParam()
+{
+	return this->str_;
+}
+opParamType opParamEnum::type()
+{
+	return opParamType::ENUM;
+}
+
+//////////////////////////////
+// opParamMemory
+opParamMemory::opParamMemory(std::shared_ptr<void> mem)
+	: mem_(mem)
+{
+}
+opParam::void_pointer opParamMemory::getParam()
+{
+	return this->mem_;
+}
+opParamType opParamMemory::type()
+{
+	return opParamType::MEMORY;
 }
 }		// core
 }		// msdb

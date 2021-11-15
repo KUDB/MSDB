@@ -20,33 +20,50 @@ public:
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery q) override;
 
 private:
+	size_t getBufferSize(dimension inArrDim, size_t typeSize);
+
 	template<typename Ty_>
-	void inserting(pArray inArr)
+	void insertFromFile(pArray inArr)
 	{
-		auto dims = inArr->getDesc()->getDimDescs()->getDims();
-		size_t capacity = 1;
-		for (int i = 0; i < dims.size(); ++i)
-		{
-			capacity *= dims[i];
-		}
-		size_t bufferSize = sizeof(Ty_) * capacity;
-
+		size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getDims(), sizeof(Ty_));
 		Ty_* fileData = new Ty_[bufferSize];
-		auto globalItr = coorItr(dims);
 
+		std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[1]->getParam()));
+		std::ifstream in(filePath, std::ios::binary);
+
+		// Get file size
+		in.seekg(0, std::ios::end);
+		size_t fileLength = (size_t)in.tellg();
+		in.seekg(0, std::ios::beg);
+
+		in.read((char*)(fileData), fileLength);
+		in.close();
+
+		this->insertData(inArr, fileData, fileLength);
+
+		delete[] fileData;
+	}
+
+	//////////////////////////////
+	// TODO::Implement insert body "insertFromMemory" function
+	template <typename Ty_>
+	void insertFromMemory(pArray inArr)
+	{
+		size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getDims(), sizeof(Ty_));
+		Ty_* fileData = new Ty_[bufferSize];
+
+		this->insertData(inArr, fileData, 0);
+
+		delete[] fileData;
+	}
+
+	template<typename Ty_>
+	void insertData(pArray inArr, Ty_* data, size_t size)
+	{
 		_MSDB_TRY_BEGIN
 		{
-			std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[1]->getParam()));
-			std::ifstream in(filePath, std::ios::binary);
-
-			// Get file size
-			in.seekg(0, std::ios::end);
-			size_t fileLength = (size_t)in.tellg();
-			in.seekg(0, std::ios::beg);
-
-			in.read((char*)(fileData), fileLength);
-			in.close();
-
+			auto dims = inArr->getDesc()->getDimDescs()->getDims();
+			auto globalItr = coorItr(dims);
 			auto attrDesc = inArr->getDesc()->attrDescs_->at(0);
 
 			auto chunkItr = inArr->getChunkIterator();
@@ -72,7 +89,10 @@ private:
 							{
 								auto mySeqPos = globalItr.coorToSeq(itemItr->coor() + blockGlobalCoor);
 
-								(**itemItr).set<Ty_>(fileData[mySeqPos]);
+								if (mySeqPos < size)
+								{
+									(**itemItr).set<Ty_>(data[mySeqPos]);
+								}
 								++(*itemItr);
 							}
 						}
@@ -84,13 +104,11 @@ private:
 				++(*chunkItr);
 			}
 		}
-		_MSDB_CATCH_ALL
+			_MSDB_CATCH_ALL
 		{
 
 		}
 		_MSDB_CATCH_END
-
-		delete[] fileData;
 	}
 };
 }		// core

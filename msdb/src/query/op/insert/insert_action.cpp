@@ -37,31 +37,31 @@ pArray insert_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 		switch (attr->type_)
 		{
 		case eleType::CHAR:
-			inserting<char>(inArr);
+			insertFromFile<char>(inArr);
 			break;
 		case eleType::INT8:
-			inserting<int8_t>(inArr);
+			insertFromFile<int8_t>(inArr);
 			break;
 		case eleType::INT16:
-			inserting<int16_t>(inArr);
+			insertFromFile<int16_t>(inArr);
 			break;
 		case eleType::INT32:
-			inserting<int32_t>(inArr);
+			insertFromFile<int32_t>(inArr);
 			break;
 		case eleType::INT64:
-			inserting<int64_t>(inArr);
+			insertFromFile<int64_t>(inArr);
 			break;
 		case eleType::UINT8:
-			inserting<uint8_t>(inArr);
+			insertFromFile<uint8_t>(inArr);
 			break;
 		case eleType::UINT16:
-			inserting<uint16_t>(inArr);
+			insertFromFile<uint16_t>(inArr);
 			break;
 		case eleType::UINT32:
-			inserting<uint32_t>(inArr);
+			insertFromFile<uint32_t>(inArr);
 			break;
 		case eleType::UINT64:
-			inserting<uint64_t>(inArr);
+			insertFromFile<uint64_t>(inArr);
 			break;
 		default:
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
@@ -73,6 +73,16 @@ pArray insert_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	//========================================//
 
 	return inArr;
+}
+size_t insert_action::getBufferSize(dimension inArrDim, size_t typeSize)
+{
+	size_t capacity = 1;
+	size_t dSize = inArrDim.size();
+	for (int i = 0; i < dSize; ++i)
+	{
+		capacity *= inArrDim[i];
+	}
+	return typeSize * capacity;
 }
 }		// core
 }		// msdb
