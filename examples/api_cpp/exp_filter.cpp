@@ -22,11 +22,11 @@ std::shared_ptr<FilterOpr> makeFilterLessQry(std::shared_ptr<AFLOperator> opt, s
 std::vector<core::pTimer> exeFilterTest(
 	const int numTest, std::shared_ptr<AFLOperator> childQry, std::string attrName)
 {
-	srand(filterValueSeed);
+	srand(filter::filterValueSeed);
 	std::vector<core::pTimer> result;
-	for (int i = 0; i < numTest; ++i)
+	for (int i = 0; i < filter::numTest; ++i)
 	{
-		int64_t v = (unsigned char)rand() % valueLimit;
+		int64_t v = (unsigned char)rand() % filter::valueLimit;
 		auto afl = Consume(makeFilterEqQry(childQry, attrName, v));
 		
 		std::cout << "=====" << std::endl;
@@ -40,18 +40,18 @@ std::vector<core::pTimer> exeFilterTest(
 		//std::cout << qry.getTimer()->getDetailResult() << std::endl;
 
 		//result.push_back(ra.getQuery()->getTimer());
-		dummy::tearDownQuery(ra.getQuery(), filterExpId, i, ra.getArrayDesc()->id_, 0);
+		dummy::tearDownQuery(ra.getQuery(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
 	}
 	return result;
 }
 std::vector<core::pTimer> exeIndexFilterTest(
 	const int numTest, std::shared_ptr<AFLOperator> childQry, std::string attrName)
 {
-	srand(filterValueSeed);
+	srand(filter::filterValueSeed);
 	std::vector<core::pTimer> result;
 	for (int i = 0; i < numTest; ++i)
 	{
-		int64_t v = (unsigned char)rand() % valueLimit;
+		int64_t v = (unsigned char)rand() % filter::valueLimit;
 		auto afl = Consume(makeIndexFilterEqQry(childQry, attrName, v));
 
 		std::cout << "=====" << std::endl;
@@ -65,7 +65,7 @@ std::vector<core::pTimer> exeIndexFilterTest(
 		//std::cout << qry.getTimer()->getDetailResult() << std::endl;
 
 		//result.push_back(ra.getQuery()->getTimer());
-		dummy::tearDownQuery(ra.getQuery(), filterExpId, i, ra.getArrayDesc()->id_, 0);
+		dummy::tearDownQuery(ra.getQuery(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
 	}
 	return result;
 }
@@ -78,6 +78,7 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 	switch (compType)
 	{
+	case compressionType::COMPASS:
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{
@@ -99,6 +100,7 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 	switch (compType)
 	{
+	case compressionType::COMPASS:
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{
@@ -120,6 +122,7 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 	switch (compType)
 	{
+	case compressionType::COMPASS:
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{
@@ -141,6 +144,7 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 	switch (compType)
 	{
+	case compressionType::COMPASS:
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{
@@ -162,6 +166,7 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 	switch (compType)
 	{
+	case compressionType::COMPASS:
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{
@@ -183,6 +188,8 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 	switch (compType)
 	{
+	// TODO:: Erase comment in COMPASS
+	//case compressionType::COMPASS:
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{

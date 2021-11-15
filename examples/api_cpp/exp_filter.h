@@ -8,10 +8,13 @@ namespace msdb
 {
 namespace experiments
 {
+namespace filter
+{
 static const int filterExpId = 5000;
 static const int filterValueSeed = 2021;
 static const int valueLimit = 256;
 static const int numTest = 3;
+}		// filter
 
 std::shared_ptr<FilterOpr> makeFilterEqQry(
 	std::shared_ptr<AFLOperator> opt, std::string attrName, int64_t value);
