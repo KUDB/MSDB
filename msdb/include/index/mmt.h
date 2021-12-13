@@ -3,7 +3,7 @@
 #define _MSDB_MMT_H_
 
 #include <pch.h>
-#include <array/array.h>
+#include <array/arrayUtil.h>
 #include <index/mmtNode.h>
 #include <io/serializable.h>
 #include <util/coordinate.h>

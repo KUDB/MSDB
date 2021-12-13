@@ -69,8 +69,8 @@ public:
 	//////////////////////////////
 	// Operators
 	//////////////////////////////
-	pChunk operator*() { return this->chunks_->at((chunkId)this->seqPos_); }
-	pChunk operator->() { return this->chunks_->at((chunkId)this->seqPos_); }
+	pChunk operator*() { return this->chunks_->at((chunkId)this->seqPos_); }		// TODO::attrId
+	pChunk operator->() { return this->chunks_->at((chunkId)this->seqPos_); }		// TODO::attrId
 
 protected:
 	chunkContainer* chunks_;

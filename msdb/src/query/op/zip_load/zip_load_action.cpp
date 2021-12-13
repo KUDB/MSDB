@@ -51,9 +51,9 @@ void zip_load_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQue
 	qry->getTimer()->nextWork(0, workType::PARALLEL);
 	//----------------------------------------//
 
-	this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(iterateMode::EXIST);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 	while (!cit->isEnd())
 	{
 		if (cit->isExist())

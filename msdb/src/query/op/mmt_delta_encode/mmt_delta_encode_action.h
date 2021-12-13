@@ -44,7 +44,7 @@ void mmt_delta_encode_action::saveAttribute(std::shared_ptr<wavelet_encode_array
 		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_TYPE_DIFF));
 	}
 	auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<position_t, Ty_>>(arrIndex);
-	auto cit = inArr->getChunkIterator(iterateMode::EXIST);
+	auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 	size_t wtLevel = inArr->getMaxLevel();
 	dimension chunkDim = inArr->getDesc()->getDimDescs()->getChunkDims();
 	dimension synopsisDim = chunkDim / pow(2, wtLevel + 1);

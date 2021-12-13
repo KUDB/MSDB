@@ -59,7 +59,7 @@ pArray spiht_decode_action::execute(std::vector<pArray>& inputArrays, pQuery qry
 void spiht_decode_action::decodeAttribute(std::shared_ptr<wavelet_encode_array> outArr, 
 										  pAttributeDesc attrDesc, pQuery qry)
 {
-	auto cit = outArr->getChunkIterator(iterateMode::ALL);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 	auto attrId = attrDesc->id_;
 
 	//========================================//
@@ -67,7 +67,7 @@ void spiht_decode_action::decodeAttribute(std::shared_ptr<wavelet_encode_array> 
 	//----------------------------------------//
 
 	size_t currentThreadId = 0;
-	this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+	this->threadCreate();
 
 	while (!cit->isEnd())
 	{

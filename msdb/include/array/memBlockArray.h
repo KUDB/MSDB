@@ -21,7 +21,7 @@ public:
 public:
 	virtual pChunk makeChunk(const attributeId attrId, const chunkId cId) override;
 	virtual pChunk makeChunk(const chunkDesc& desc) override;
-	virtual void freeChunk(const chunkId cId) override;
+	virtual void freeChunk(const attributeId attrId, const chunkId cId) override;
 };
 }		// core
 }		// msdb

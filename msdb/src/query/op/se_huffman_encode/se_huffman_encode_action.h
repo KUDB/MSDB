@@ -33,7 +33,7 @@ private:
 	{
 		size_t mSizeTotal = 0;
 		auto arrId = inArr->getId();
-		auto cit = inArr->getChunkIterator(iterateMode::EXIST);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 		bool hasNegative = false;
 
 		auto arrIndex = arrayMgr::instance()->getAttributeIndex(inArr->getId(), attrDesc->id_);

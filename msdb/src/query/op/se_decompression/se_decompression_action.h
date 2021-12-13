@@ -47,7 +47,7 @@ private:
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_TYPE_DIFF));
 		}
 		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<position_t, Ty_>>(arrIndex);
-		auto cit = outArr->getChunkIterator(iterateMode::ALL);
+		auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr);
 
 		//----------------------------------------//
@@ -55,7 +55,7 @@ private:
 		//----------------------------------------//
 
 		size_t currentThreadId = 0;
-		this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+		this->threadCreate();
 
 		while (!cit->isEnd())
 		{

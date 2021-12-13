@@ -49,34 +49,38 @@ void opAction::getArrayStatus(pArray arr)
 	size_t numChunks = 0, numBlocks = 0, serialSize = 0;
 	std::stringstream ss;
 
-	auto cit = arr->getChunkIterator();
-	while(!cit->isEnd())
+	for (auto attr : *arr->getDesc()->attrDescs_)
 	{
-		if(cit->isExist())
+		auto cit = arr->getChunkIterator(attr->id_);
+		while (!cit->isEnd())
 		{
-			++numChunks;
-			serialSize += (*cit)->getSerializedSize();
-			ss << cit->seqPos() << "/" << (*cit)->getSerializedSize() << ", ";
-			auto bit = (*cit)->getBlockIterator();
-			while(!bit->isEnd())
+			if (cit->isExist())
 			{
-				
-				if(bit->isExist())
+				++numChunks;
+				serialSize += (*cit)->getSerializedSize();
+				ss << cit->seqPos() << "/" << (*cit)->getSerializedSize() << ", ";
+				auto bit = (*cit)->getBlockIterator();
+				while (!bit->isEnd())
 				{
-					++numBlocks;
-				}
 
-				++(*bit);
+					if (bit->isExist())
+					{
+						++numBlocks;
+					}
+
+					++(*bit);
+				}
 			}
+
+			++(*cit);
 		}
 
-		++(*cit);
+		//BOOST_LOG_TRIVIAL(info) << "- Chunks: " << ss.str();
+		BOOST_LOG_TRIVIAL(info) << "Attribute: " << attr->id_;
+		BOOST_LOG_TRIVIAL(info) << "- Num chunks: " << numChunks;
+		BOOST_LOG_TRIVIAL(info) << "- Num blocks: " << numBlocks;
+		BOOST_LOG_TRIVIAL(info) << "- Serialized size: " << serialSize;
 	}
-
-	//BOOST_LOG_TRIVIAL(info) << "- Chunks: " << ss.str();
-	BOOST_LOG_TRIVIAL(info) << "- Num chunks: " << numChunks;
-	BOOST_LOG_TRIVIAL(info) << "- Num blocks: " << numBlocks;
-	BOOST_LOG_TRIVIAL(info) << "- Serialized size: " << serialSize;
 }
 
 cpBitmap opAction::getPlanBlockBitmap(chunkId cid) const
@@ -104,6 +108,10 @@ void opAction::threadCreate(size_t threadNums)
 	this->threadExist_ = true;
 	this->threadNums_ = threadNums;
 }
+void opAction::threadCreate()
+{
+	this->threadCreate(this->getDefaultThreadNum());
+}
 void opAction::threadStop()
 {
 	this->io_service_->stop();
@@ -111,6 +119,13 @@ void opAction::threadStop()
 void opAction::threadJoin()
 {
 	this->threadpool_.join_all();
+}
+const int opAction::getDefaultThreadNum()
+{
+	////////////////////////////////////////
+	// TODO:: Change Default Thread Num for opAction
+	return 1;
+	////////////////////////////////////////
 }
 }		// core
 }		// msdb

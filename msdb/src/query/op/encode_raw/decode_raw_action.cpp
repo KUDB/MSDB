@@ -54,9 +54,9 @@ void decode_raw_action::decode_rawAttribute(pArray outArr, pAttributeDesc attrDe
 	qry->getTimer()->nextWork(0, workType::PARALLEL);
 	//----------------------------------------//
 
-	this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(iterateMode::ALL);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 
 	while (!cit->isEnd())
 	{

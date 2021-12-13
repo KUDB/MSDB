@@ -33,13 +33,13 @@ private:
 		//----------------------------------------//
 		auto outChunkBitmap = this->inferBottomUpBitmap(outArr->getDesc(), inArr->getChunkBitmap());
 		outArr->replaceChunkBitmap(outChunkBitmap);
-		auto ocItr = outArr->getChunkIterator(iterateMode::ALL);
+		auto ocItr = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 
 		//----------------------------------------//
 		qry->getTimer()->nextWork(0, workType::PARALLEL);
 		//----------------------------------------//
 		size_t currentThreadId = 0;
-		this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+		this->threadCreate();
 
 		while (!ocItr->isEnd())
 		{
@@ -49,7 +49,7 @@ private:
 				outChunk->bufferAlloc();
 
 				io_service_->post(boost::bind(&wavelet_decode_action::parallelChunkDecode<Ty_>, this,
-								  outArr, outChunk, inArr->getChunkIterator(),
+								  outArr, outChunk, inArr->getChunkIterator(attrDesc->id_),
 								  ocItr->coor(),
 								  w, maxLevel, qry, currentThreadId));
 			}
@@ -70,7 +70,7 @@ private:
 		{
 			if(ocItr->isExist() && (**ocItr)->getBlockBitmap()->isEmpty())
 			{
-				outArr->freeChunk(ocItr->seqPos());
+				outArr->freeChunk(attrDesc->id_, ocItr->seqPos());
 			}
 			++(*ocItr);
 		}

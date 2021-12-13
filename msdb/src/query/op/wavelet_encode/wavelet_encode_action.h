@@ -28,7 +28,7 @@ private:
 	void attributeEncode(pArray outArr, pArray inArr, pAttributeDesc attrDesc,
 						 pWavelet w, size_t maxLevel, pQuery q)
 	{
-		auto cItr = inArr->getChunkIterator();
+		auto cItr = inArr->getChunkIterator(attrDesc->id_);
 		auto dSize = cItr->dSize();
 		auto cSize = cItr->getSeqEnd();
 

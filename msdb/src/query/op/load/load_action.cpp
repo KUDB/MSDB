@@ -54,9 +54,9 @@ void load_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery q
 	qry->getTimer()->nextWork(0, workType::PARALLEL);
 	//----------------------------------------//
 
-	this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(iterateMode::ALL);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 
 	while (!cit->isEnd())
 	{

@@ -31,7 +31,7 @@ pArray huffman_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 
 	for (auto attr : *sourceArr->getDesc()->attrDescs_)
 	{
-		auto cit = sourceArr->getChunkIterator(iterateMode::EXIST);
+		auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
 		while (!cit->isEnd())
 		{
 			auto outChunk = this->makeOutChunk((**cit));

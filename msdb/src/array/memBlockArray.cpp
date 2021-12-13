@@ -12,15 +12,20 @@ memBlockArray::memBlockArray(pArrayDesc desc)
 }
 memBlockArray::~memBlockArray()
 {
-	auto cit = this->getChunkIterator();
-	while (!cit->isEnd())
+	for (auto attr : *this->getDesc()->attrDescs_)
 	{
-		if (cit->isExist())
+		auto cit = this->getChunkIterator(attr->id_);
+		while (!cit->isEnd())
 		{
-			this->freeChunk(cit->seqPos());
+			if (cit->isExist())
+			{
+				this->freeChunk(attr->id_, cit->seqPos());
+			}
+			++(*cit);
 		}
-		++(*cit);
+		this->chunks_[attr->id_].clear();
 	}
+	
 	this->chunks_.clear();
 }
 pChunk memBlockArray::makeChunk(const attributeId attrId, const chunkId cId)
@@ -37,14 +42,16 @@ pChunk memBlockArray::makeChunk(const chunkDesc& desc)
 	this->insertChunk(desc.attrDesc_->id_, chunkObj);
 	return chunkObj;
 }
-void memBlockArray::freeChunk(const chunkId cId)
+void memBlockArray::freeChunk(const attributeId attrId, const chunkId cId)
 {
-	if (this->chunks_[cId] != nullptr)
+	assert(this->chunks_.find(attrId) != this->chunks_.end());
+	if (this->chunks_[attrId][cId] != nullptr)
 	{
-		this->chunks_[cId]->flush();
+		this->chunks_[attrId][cId]->flush();
 	}
-	this->chunks_[cId] = nullptr;
-	this->chunkBitmap_->setNull(cId);
+	this->setChunkNull(attrId, cId);
+	//this->chunks_[cId] = nullptr;
+	//this->overallChunkBitmap_->setNull(cId);
 }
 }		// core
 }		// msdb

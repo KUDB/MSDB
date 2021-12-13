@@ -60,13 +60,14 @@ private:
 	template<typename Ty_>
 	void insertData(pArray inArr, Ty_* data, size_t size)
 	{
+		// TODO::Attribute Id
 		_MSDB_TRY_BEGIN
 		{
 			auto dims = inArr->getDesc()->getDimDescs()->getDims();
 			auto globalItr = coorItr(dims);
 			auto attrDesc = inArr->getDesc()->attrDescs_->at(0);
 
-			auto chunkItr = inArr->getChunkIterator();
+			auto chunkItr = inArr->getChunkIterator(attrDesc->id_);
 			while (!chunkItr->isEnd())
 			{
 				inArr->makeChunk(attrDesc->id_, chunkItr->seqPos());

@@ -43,7 +43,7 @@ public:
 		}
 		//auto arrMMTIndex = std::static_pointer_cast<mmt>(attrIndex);
 		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<position_t, Ty_>>(attrIndex);
-		auto cit = inArr->getChunkIterator(iterateMode::EXIST);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 		size_t wtLevel = inArr->getMaxLevel();
 		dimension chunkDim = inArr->getDesc()->getDimDescs()->getChunkDims();
 		dimension synopsisDim = chunkDim / pow(2, wtLevel + 1);
@@ -53,7 +53,7 @@ public:
 		qry->getTimer()->nextWork(0, workType::PARALLEL);
 		//----------------------------------------//
 		size_t currentThreadId = 0;
-		this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+		this->threadCreate();
 
 		while (!cit->isEnd())
 		{

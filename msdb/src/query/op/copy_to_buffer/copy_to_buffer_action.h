@@ -24,7 +24,7 @@ private:
 	template <class Ty_>
 	void attributeEncode(pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
-		auto cItr = inArr->getChunkIterator();
+		auto cItr = inArr->getChunkIterator(attrDesc->id_);
 		auto dSize = cItr->dSize();
 		auto cSize = cItr->getSeqEnd();
 

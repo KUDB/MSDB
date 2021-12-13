@@ -30,7 +30,7 @@ private:
 		int64_t readBlocks = 0;
 
 		inPredicate->setEvaluateFunc(attrDesc->type_);
-		auto inChunkItr = inArr->getChunkIterator();
+		auto inChunkItr = inArr->getChunkIterator(attrDesc->id_);
 
 		std::stringstream ss;
 		while (!inChunkItr->isEnd())
@@ -48,7 +48,7 @@ private:
 				auto isEmptyChunk = this->chunkFilter<Ty_>(outChunk, inChunk, inPredicate, chunkFilteredValue, readChunkBlocks);
 				if (isEmptyChunk)
 				{
-					outArr->freeChunk(inChunk->getId());
+					outArr->freeChunk(attrDesc->id_, inChunk->getId());
 					//BOOST_LOG_TRIVIAL(debug) << "[" << inChunk->getId() << "]: isEmpty";
 				}
 

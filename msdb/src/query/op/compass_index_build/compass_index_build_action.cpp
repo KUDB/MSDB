@@ -43,7 +43,7 @@ pArray compass_index_build_action::execute(std::vector<pArray>& inputArrays, pQu
 	for (auto attr : *arr->getDesc()->getAttrDescs())
 	{
 		pCompassIndex cpIndex = compassIndex::createIndex(attr->type_, numBins);
-		auto cit = arr->getChunkIterator(iterateMode::EXIST);
+		auto cit = arr->getChunkIterator(attr->id_, iterateMode::EXIST);
 		cpIndex->build(cit);
 		arrayMgr::instance()->setAttributeIndex(arrId, attr->id_, cpIndex);
 	}

@@ -28,14 +28,16 @@ pChunk memArray::makeChunk(const chunkDesc& desc)
 	this->insertChunk(desc.attrDesc_->id_, chunkObj);
 	return chunkObj;
 }
-void memArray::freeChunk(const chunkId cId)
+void memArray::freeChunk(const attributeId attrId, const chunkId cId)
 {
-	if(this->chunks_[cId] != nullptr)
+	assert(this->chunks_.find(attrId) != this->chunks_.end());
+	if(this->chunks_[attrId][cId] != nullptr)
 	{
-		this->chunks_[cId]->flush();
+		this->chunks_[attrId][cId]->flush();
 	}
-	this->chunks_[cId] = nullptr;
-	this->chunkBitmap_->setNull(cId);
+	this->setChunkNull(attrId, cId);
+	//this->chunks_[cId] = nullptr;
+	//this->overallChunkBitmap_->setNull(cId);
 }
 }		// core
 }		// msdb

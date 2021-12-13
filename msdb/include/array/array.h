@@ -6,61 +6,13 @@
 #include <array/arrayDesc.h>
 #include <array/chunkIterator.h>
 #include <util/coordinate.h>
+#include <array/arrayUtil.h>
+#include <array/chunkContainer.h>
 
 namespace msdb
 {
 namespace core
 {
-template <typename Dty_>
-size_t calcNumItems(const Dty_* dims, const size_t dSize)
-{
-	size_t length = 1;
-	for (size_t d = 0; d < dSize; d++)
-	{
-		length *= dims[d];
-	}
-	return length;
-}
-
-template <typename Dty_>
-std::vector<Dty_> calcChunkNums(const Dty_* dims, const Dty_* chunkDims, const size_t dSize)
-{
-	std::vector<Dty_> output;
-
-	for (size_t d = 0; d < dSize; d++)
-	{
-		output.push_back(1 + (dims[d] - 1) / chunkDims[d]);	// ceiling
-	}
-
-	return output;
-}
-
-template <typename Dty_>
-std::vector<Dty_> calcChunkNums(const Dty_* dims, const Dty_* leafChunkDims, const size_t dSize, const size_t level)
-{
-	std::vector<Dty_> output;
-
-	for (size_t d = 0; d < dSize; d++)
-	{
-		output.push_back(1 + (dims[d] - 1) / leafChunkDims[d] / pow(2, level));	// ceiling
-	}
-
-	return output;
-}
-
-template <typename Dty_>
-std::vector<Dty_> calcChunkDims(const Dty_* dims, const Dty_* chunkNums, const size_t dSize)
-{
-	std::vector<Dty_> output;
-
-	for (size_t d = 0; d < dSize; d++)
-	{
-		output.push_back(1 + (dims[d] - 1) / chunkNums[d]);	// ceiling
-	}
-
-	return output;
-}
-
 class arrayBase;
 using pArray = std::shared_ptr<arrayBase>;
 
@@ -68,7 +20,8 @@ class arrayBase : public std::enable_shared_from_this<arrayBase>
 {
 public:
 	using size_type = size_t;
-	using chunkContainer = std::map<chunkId, pChunk>;
+	//using chunkContainer = std::map<attributeId, std::map<chunkId, pChunk>>;
+	using bitmapContainer = std::map<attributeId, pBitmap>;
 	using chunkPair = std::pair<chunkId, pChunk>;
 
 public:
@@ -85,12 +38,12 @@ public:
 
 	// Chunk
 	pChunkDesc getChunkDesc(const attributeId attrId, const chunkId cId);
-	pChunk getChunk(const chunkId cId);
+	pChunk getChunk(const attributeId attrId, const chunkId cId);
 	chunkId getChunkId(pChunkDesc cDesc);
 	chunkId getChunkIdFromItemCoor(const coor& itemCoor);
 	chunkId getChunkIdFromChunkCoor(const coor& chunkCoor);
 	virtual coor itemCoorToChunkCoor(const coor& itemCoor);
-	virtual pChunkIterator getChunkIterator(
+	virtual pChunkIterator getChunkIterator(const attributeId attrId, 
 		const iterateMode itMode = iterateMode::ALL);
 
 	//////////////////////////////
@@ -111,13 +64,33 @@ public:
 	template <class _Iter>
 	void insertChunk(const attributeId attrId, _Iter begin, _Iter end)
 	{
+		assert(this->attrChunkBitmaps_[attrId] != nullptr);
 		for (; begin != end; ++begin)
 		{
-			this->chunks_.insert(chunkPair((*begin)->getId(), *begin));
-			this->chunkBitmap_->setExist((*begin)->getId());
+			auto id = (*begin)->getId();
+			this->chunks_[attrId].insert(chunkPair(id, *begin));		// 나머지 chunk들도 모두 만들어주어야 하는 것 아닌가? 왜냐면 chunk bitmap을 set하니까....
+			this->setChunkExist(attrId, id);
 		}
 	}
-	virtual void freeChunk(const chunkId cId) = 0;
+	inline void setChunkExist(const attributeId attrId, const chunkId cId)
+	{
+		this->overallChunkBitmap_->setExist(cId);
+		this->attrChunkBitmaps_[attrId]->setExist(cId);
+
+	}
+	inline void setChunkNull(const attributeId attrId, const chunkId cId)
+	{
+		this->attrChunkBitmaps_[attrId]->setNull(cId);
+		for (auto b : *this->desc_->attrDescs_)
+		{
+			if (this->attrChunkBitmaps_[b->id_]->isExist(cId))
+			{
+				return;
+			}
+		}
+		this->overallChunkBitmap_->setNull(cId);
+	}
+	virtual void freeChunk(const attributeId attrId, const chunkId cId) = 0;
 
 	cpBitmap getChunkBitmap() const;
 	void copyChunkBitmap(cpBitmap chunkBitmap);
@@ -128,8 +101,11 @@ public:
 
 protected:
 	pArrayDesc desc_;
-	chunkContainer chunks_;		// TODO::Seperate chunk container by attributeId
-	pBitmap chunkBitmap_;		// Be initialized to false by default
+	multiAttrChunkContainer chunks_;
+
+private:
+	bitmapContainer attrChunkBitmaps_;
+	pBitmap overallChunkBitmap_;		// Be initialized to false by default
 };
 }	// core
 }	// msdb

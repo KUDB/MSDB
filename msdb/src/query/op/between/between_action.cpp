@@ -35,7 +35,7 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
-		auto chunkItr = inArr->getChunkIterator();
+		auto chunkItr = inArr->getChunkIterator(attr->id_);
 		while (!chunkItr->isEnd())
 		{
 			if(chunkItr->isExist())

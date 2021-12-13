@@ -28,8 +28,8 @@ private:
 		int64_t readChunks = 0;
 		int64_t readBlocks = 0;
 
-		auto inChunkItr = inArr->getChunkIterator();
-		//auto outChunkItr = outArr->getChunkIterator();
+		auto inChunkItr = inArr->getChunkIterator(attrDesc->id_);
+		//auto outChunkItr = outArr->getChunkIterator(attrDesc->id_);
 
 		inPredicate->setEvaluateFunc(attrDesc->type_);
 
@@ -49,7 +49,7 @@ private:
 				auto isEmptyChunk = this->chunkFilter<Ty_>(outChunk, inChunk, inPredicate, chunkFilteredValue, readChunkBlocks);
 				if(isEmptyChunk)
 				{
-					outArr->freeChunk(inChunk->getId());
+					outArr->freeChunk(attrDesc->id_, inChunk->getId());
 				}
 
 				attrFilteredValues += chunkFilteredValue;
