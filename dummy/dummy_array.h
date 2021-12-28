@@ -3,11 +3,7 @@
 #ifndef _MSDB_DUMMY_ARRAY_H_
 #define _MSDB_DUMMY_ARRAY_H_
 
-#include <vector>
-#include <string>
-#include <utility>
-#include <array/arrayDesc.h>
-#include <api_cpp/msdb.h>
+#include <dummy_array_util.h>
 
 #define DUMMY_PATH(path) "../dummy/"#path
 
@@ -15,50 +11,6 @@ namespace msdb
 {
 namespace dummy
 {
-static const int arr_id_seacow = 10;
-static const int arr_id_seacow_huffman = 11;
-static const int arr_id_spiht = 20;
-static const int arr_id_compass = 25;
-static const int arr_id_lzw = 30;
-static const int arr_id_huffman = 35;
-static const int arr_id_adapt_huffman = 36;
-static const int arr_id_lzw_huffman = 40;
-static const int arr_id_zip = 45;
-
-core::pDimensionDescs dimensionDescBuilder(
-	const std::vector<std::string> dimNames, const core::dimension& dims,
-	const core::dimension& chunkDims, const core::dimension& blockDims
-);
-core::pAttributeDescs attributeDescBuilder(
-	const std::vector<std::string> attrNames,
-	const std::vector<core::eleType> attrTypes
-);
-
-std::pair<core::arrayId, std::string> getArrayIdName(core::compressionType compType, core::arrayId baseId, std::string baseName);
-
-Array getArrayAFL(
-	std::string arrName, compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
-	std::string arrName, std::string filePath,
-	compressionType compType = compressionType::RAW,
-	int paramOne = 0, int paramTwo = 0);
-std::shared_ptr<AFLOperator> getLoadAFL(
-	std::string arrName, 
-	compressionType compType = compressionType::RAW,
-	int paramOne = 0, int paramTwo = 0);
-std::shared_ptr<AFLOperator> getBuildIndexAFL(
-	std::string arrName, std::string filePath,
-	compressionType compType, attrIndexType idxType,
-	int paramOne = 0, int paramTwo = 0);
-std::shared_ptr<AFLOperator> getSaveIndexAFL(
-	std::string arrName, 
-	compressionType compType, attrIndexType idxType,
-	int paramOne = 0, int paramTwo = 0);
-std::shared_ptr<AFLOperator> getLoadIndexAFL(
-	std::string arrName,
-	compressionType compType, attrIndexType idxType,
-	int paramOne = 0, int paramTwo = 0);
-
 namespace data_star1024x1024
 {
 static const std::string arrName = "star1024x1024";

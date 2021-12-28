@@ -174,9 +174,9 @@ filePath storageMgr::getBasePath()
 	return this->basePath_;
 }
 
-filePath storageMgr::getArrayPath(const arrayId arrId)
+filePath storageMgr::getArrayRelativePath(const arrayId arrId)
 {
-	return this->getBasePath() / this->arrayPath_ / this->getArrayFolder(arrId);
+	return this->arrayPath_ / this->getArrayFolder(arrId);
 }
 
 filePath storageMgr::getArrayFolder(const arrayId arrId)
@@ -186,12 +186,12 @@ filePath storageMgr::getArrayFolder(const arrayId arrId)
 
 filePath storageMgr::getArrayIndexPath(const arrayId arrId)
 {
-	return this->getBasePath() / this->getArrayPath(arrId) / this->indexFolder_;
+	return this->getBasePath() / this->getArrayRelativePath(arrId) / this->indexFolder_;
 }
 
 filePath storageMgr::getChunkPath(const arrayId arrId, const attributeId attrId, const chunkId chkId)
 {
-	return this->getBasePath() / this->getArrayPath(arrId) / std::to_string(attrId) / std::to_string(chkId);
+	return this->getBasePath() / this->getArrayRelativePath(arrId) / std::to_string(attrId) / std::to_string(chkId);
 }
 
 void storageMgr::getOfstream(std::ofstream& fs, filePath fPath, const char* ext)

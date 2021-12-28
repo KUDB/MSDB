@@ -11,7 +11,7 @@ int main()
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Build(
-			0, msdb::dummy::data_star1024x1024::arrName,
+			msdb::dummy::data_star1024x1024::aid, msdb::dummy::data_star1024x1024::arrName,
 			{
 				msdb::DefDimension("Y", 0, 1024, 128, 32),
 				msdb::DefDimension("X", 0, 1024, 128, 32)
