@@ -44,9 +44,7 @@ pBitmapTree index_filter_array_pset::inferBottomUpBitmap()
 	// Assume all chunks are exist
 	auto myBitmap = std::make_shared<bitmapTree>(chunkSpace.area(), true);
 
-
-	// TODO::remove a const attribute id and use scan for all attributes
-	for (auto attrDesc : *arrDesc->getAttrDescs())
+	for (auto attrDesc : *arrDesc->attrDescs_)
 	{
 		switch (attrDesc->type_)
 		{
@@ -102,8 +100,7 @@ pBitmapTree index_filter_plan_pset::inferBottomUpBitmap()
 	// Make bitmap
 	auto myBitmap = std::make_shared<bitmapTree>(*(this->getSourcePlanBottomUpBitmap()));
 
-	// TODO::remove a const attribute id and use scan for all attributes
-	for (auto attrDesc : *arrDesc->getAttrDescs())
+	for (auto attrDesc : *arrDesc->attrDescs_)
 	{
 		switch (attrDesc->type_)
 		{

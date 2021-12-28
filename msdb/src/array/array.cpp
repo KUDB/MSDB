@@ -99,7 +99,6 @@ pChunkDesc arrayBase::getChunkDesc(const attributeId attrId, const chunkId cId)
 									   chunkDims.area() * attrDesc->typeSize_);
 }
 
-// TODO:: attributeId
 pChunk arrayBase::getChunk(const attributeId attrId, const chunkId cId)
 {
 	assert(this->chunks_.find(attrId) != this->chunks_.end());

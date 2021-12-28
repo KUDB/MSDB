@@ -50,8 +50,7 @@ pBitmapTree between_array_pset::inferBottomUpBitmap()
 	size_t chunkNums = chunkSpace.area();
 	auto chunkBitmap = std::make_shared<bitmapTree>(chunkNums, true);
 
-	// TODO::remove a const attribute id and use scan for all attributes
-	for (auto attrDesc : *arrDesc->getAttrDescs())
+	for (auto attrDesc : *arrDesc->attrDescs_)
 	{
 		switch (attrDesc->type_)
 		{
@@ -107,8 +106,7 @@ pBitmapTree between_plan_pset::inferBottomUpBitmap()
 	auto inSp = std::static_pointer_cast<coor>(this->params_[1]->getParam());
 	auto inEp = std::static_pointer_cast<coor>(this->params_[2]->getParam());
 
-	// TODO::remove a const attribute id and use scan for all attributes
-	for (auto attrDesc : *arrDesc->getAttrDescs())
+	for (auto attrDesc : *arrDesc->attrDescs_)
 	{
 		switch (attrDesc->type_)
 		{

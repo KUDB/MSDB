@@ -32,6 +32,9 @@ pArray insert_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	pArray inArr = inputArrays[0];
 	// pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
 
+	// TODO::Fork according to insert param type
+	// this->params_[1]->getParam()
+	// pass attribute id
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
 		switch (attr->type_)

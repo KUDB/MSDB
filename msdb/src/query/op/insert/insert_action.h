@@ -28,7 +28,7 @@ private:
 		size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getDims(), sizeof(Ty_));
 		Ty_* fileData = new Ty_[bufferSize];
 
-		std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[1]->getParam()));
+		std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[2]->getParam()));
 		std::ifstream in(filePath, std::ios::binary);
 
 		// Get file size
@@ -60,56 +60,57 @@ private:
 	template<typename Ty_>
 	void insertData(pArray inArr, Ty_* data, size_t size)
 	{
-		// TODO::Attribute Id
-		_MSDB_TRY_BEGIN
-		{
-			auto dims = inArr->getDesc()->getDimDescs()->getDims();
-			auto globalItr = coorItr(dims);
-			auto attrDesc = inArr->getDesc()->attrDescs_->at(0);
+		auto dims = inArr->getDesc()->getDimDescs()->getDims();
+		auto globalItr = coorItr(dims);
 
-			auto chunkItr = inArr->getChunkIterator(attrDesc->id_);
-			while (!chunkItr->isEnd())
+		for (auto attr : *inArr->getDesc()->attrDescs_)
+		{
+			_MSDB_TRY_BEGIN
 			{
-				inArr->makeChunk(attrDesc->id_, chunkItr->seqPos());
-				if (chunkItr->isExist())
+				auto chunkItr = inArr->getChunkIterator(attr->id_);
+				while (!chunkItr->isEnd())
 				{
-					auto inChunk = (**chunkItr);
-					inChunk->bufferAlloc();
-					inChunk->makeAllBlocks();
-					auto chunkGlobalCoor = inChunk->getDesc()->sp_;
-					auto blockItr = inChunk->getBlockIterator();
-					while (!blockItr->isEnd())
+					inArr->makeChunk(attr->id_, chunkItr->seqPos());
+					if (chunkItr->isExist())
 					{
-						if (blockItr->isExist())
+						auto inChunk = (**chunkItr);
+						inChunk->bufferAlloc();
+						inChunk->makeAllBlocks();
+						auto chunkGlobalCoor = inChunk->getDesc()->sp_;
+						auto blockItr = inChunk->getBlockIterator();
+						while (!blockItr->isEnd())
 						{
-							auto inBlock = (**blockItr);
-							auto itemItr = inBlock->getItemIterator();
-							auto blockGlobalCoor = chunkGlobalCoor + inBlock->getDesc()->getSp();
-
-							while (!itemItr->isEnd())
+							if (blockItr->isExist())
 							{
-								auto mySeqPos = globalItr.coorToSeq(itemItr->coor() + blockGlobalCoor);
+								auto inBlock = (**blockItr);
+								auto itemItr = inBlock->getItemIterator();
+								auto blockGlobalCoor = chunkGlobalCoor + inBlock->getDesc()->getSp();
 
-								if (mySeqPos < size)
+								while (!itemItr->isEnd())
 								{
-									(**itemItr).set<Ty_>(data[mySeqPos]);
+									auto mySeqPos = globalItr.coorToSeq(itemItr->coor() + blockGlobalCoor);
+
+									if (mySeqPos < size)
+									{
+										(**itemItr).set<Ty_>(data[mySeqPos]);
+									}
+									++(*itemItr);
 								}
-								++(*itemItr);
 							}
+
+							++(*blockItr);
 						}
-
-						++(*blockItr);
 					}
+
+					++(*chunkItr);
 				}
-
-				++(*chunkItr);
 			}
-		}
 			_MSDB_CATCH_ALL
-		{
-
+			{
+				// TODO::logging exceptions
+			}
+			_MSDB_CATCH_END
 		}
-		_MSDB_CATCH_END
 	}
 };
 }		// core

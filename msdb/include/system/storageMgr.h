@@ -53,7 +53,7 @@ public:
 
 protected:
 	filePath getBasePath();
-	filePath getArrayPath(const arrayId arrId);
+	filePath getArrayRelativePath(const arrayId arrId);
 	filePath getArrayFolder(const arrayId arrId);
 	filePath getArrayIndexPath(const arrayId arrId);
 	filePath getChunkPath(const arrayId arrId, const attributeId attrId, const chunkId chkId);

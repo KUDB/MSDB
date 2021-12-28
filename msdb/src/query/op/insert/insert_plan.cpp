@@ -36,8 +36,8 @@ insert_array_memory_pset::insert_array_memory_pset(parameters& pSet)
 {
 	assert(this->params_.size() == 4);
 	assert(this->params_[1]->type() == opParamType::ENUM);
-	assert(this->params_[2]->type() == opParamType::MEMORY);
-	assert(this->params_[3]->type() == opParamType::CONST_TYPE);
+	assert(this->params_[2]->type() == opParamType::MEMORY);			// memory pointer
+	assert(this->params_[3]->type() == opParamType::CONST_TYPE);		// memory size
 }
 }		// core
 }		// msdb
