@@ -921,7 +921,7 @@ public:
 			offset *= this->dims_[d];
 		}
 
-		for (int d = (int)(this->dSize() - 1); d > this->basisDim_; d--)
+		for (int d = (int)(this->dSize() - 1); d > (int)this->basisDim_; d--)
 		{
 			seq += (left % this->dims_[d]) * offset;
 			left = left / this->dims_[d];
@@ -1022,7 +1022,7 @@ public:
 		assert(this->dSize() == coor.size());
 
 		size_type offset = 1;
-		for (dimensionId d = this->dSize() - 1; d != (dimensionId)-1; d--)
+		for (dimensionId d = (dimensionId)(this->dSize() - 1); d != (dimensionId)-1; d--)
 		{
 			this->seqPos_ += (coor[d] - this->coor_[d]) * offset;
 			this->coor_[d] = coor[d];

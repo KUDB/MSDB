@@ -26,6 +26,7 @@ using pPlan = std::shared_ptr<opPlan>;
 enum class opParamType
 {
 	PLAN,
+	CONTAINER,
 	ARRAY,
 	ATTRIBUTE,
 	DIMENSION,
@@ -179,39 +180,39 @@ private:
 	std::shared_ptr<predicate> predicates_;
 };
 
-
-class opParamEnum : public opParam
-{
-public:
-	using paramType = int64_t;
-
-public:
-	opParamEnum(std::shared_ptr<std::string> str);
-
-public:
-	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
-
-private:
-	std::shared_ptr<std::string> str_;
-};
-
 // Make 
 // std::shared_ptr<Ty> ptr(new Ty[10], std::default_delete<Ty[]>());
 class opParamMemory : public opParam
 {
 public:
-	using paramType = void;
+	using paramType = std::tuple<std::shared_ptr<void>, uint64_t>;
 
 public:
-	opParamMemory(std::shared_ptr<void> mem);
+	/////
+	// Default constructor
+	//
+	// default constructor is required to use the class in 'map' container with 'operator[]'
+	//
+	// data_type& operator[](const key_type& k)
+	// operator[] inserts the default object data_type()
+	opParamMemory();
+
+	/**
+	 * memSize: size of memory (== length * sizeof(Ty_))
+	 */
+	opParamMemory(std::shared_ptr<void> mem, const uint64_t memSize);
 
 public:
 	virtual opParam::void_pointer getParam();
 	virtual opParamType type();
+	//inline uint64_t getMemsize()
+	//{
+	//	return this->size_;
+	//}
 
 private:
 	std::shared_ptr<void> mem_;
+	uint64_t size_;
 };
 
 template <typename Ty_>
@@ -311,6 +312,44 @@ public:
 public:
 	virtual opParamType type();
 };
+
+template <typename TyEnum_>
+class opParamEnum : public opParam
+{
+public:
+	using paramType = int64_t;
+
+public:
+	opParamEnum(TyEnum_ value);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	std::shared_ptr<TyEnum_> value_;
+};
+
+template <typename TyKey_, typename TyValue_>
+class opParamContainer : public opParam
+{
+public:
+	using paramType = std::map<TyKey_, TyValue_>;
+	using pContainer = std::shared_ptr<paramType>;
+
+public:
+	opParamContainer(pContainer container);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	pContainer container_;
+};
 }		// core
 }		// msdb
+
+#include "opParam.hpp"
+
 #endif	// _MSDB_OPPARAM_H_

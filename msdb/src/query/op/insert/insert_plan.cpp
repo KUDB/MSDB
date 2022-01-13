@@ -31,13 +31,20 @@ insert_array_file_pset::insert_array_file_pset(parameters& pSet)
 	assert(this->params_[1]->type() == opParamType::ENUM);
 	assert(this->params_[2]->type() == opParamType::STRING);
 }
-insert_array_memory_pset::insert_array_memory_pset(parameters& pSet)
+insert_array_multi_attr_file_pset::insert_array_multi_attr_file_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
 {
-	assert(this->params_.size() == 4);
+	assert(this->params_.size() == 3);
 	assert(this->params_[1]->type() == opParamType::ENUM);
-	assert(this->params_[2]->type() == opParamType::MEMORY);			// memory pointer
-	assert(this->params_[3]->type() == opParamType::CONST_TYPE);		// memory size
+	assert(this->params_[2]->type() == opParamType::CONTAINER);
+}
+insert_array_multi_attr_memory_pset::insert_array_multi_attr_memory_pset(parameters& pSet)
+	: opArrayParamSet(pSet)
+{
+	assert(this->params_.size() == 3);
+	assert(this->params_[1]->type() == opParamType::ENUM);
+	assert(this->params_[2]->type() == opParamType::CONTAINER);			// memory pointer
+	//assert(this->params_[3]->type() == opParamType::CONST_TYPE);		// number of size
 }
 }		// core
 }		// msdb

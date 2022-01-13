@@ -9,6 +9,7 @@
 #include <api_cpp/cpp_domain.h>
 #include <api_cpp/cpp_predicate.h>
 #include <query/opPlan.h>
+#include <op/insert/insert_plan.h>
 #include <parse/predicate.h>
 
 namespace msdb
@@ -43,19 +44,28 @@ private:
 /* ************************ */
 /* Insert					*/
 /* ************************ */
+enum InsertOprType {
+	single_from_file,
+	multi_from_file,
+	multi_from_memory
+};
+
 class InsertOpr : public AFLOperator
 {
 public:
-	InsertOpr(Array arr, std::string filePath);
+	InsertOpr(Array arr, core::parameters params, InsertOprType type);
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
 	virtual std::string toString(int depth);
 
 private:
-	std::string filePath_;
+	core::parameters params_;
+	InsertOprType type_;
 };
 std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath);
+std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_file_pset::containerType attrFiles);
+std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_memory_pset::containerType attrMem);
 
 /* ************************ */
 /* Save 					*/

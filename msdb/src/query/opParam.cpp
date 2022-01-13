@@ -200,29 +200,22 @@ opParamType opParamPlanPlaceholder::type()
 }
 
 //////////////////////////////
-// opParamEnum
-opParamEnum::opParamEnum(std::shared_ptr<std::string> str)
-	: str_(str)
-{
-}
-opParam::void_pointer opParamEnum::getParam()
-{
-	return this->str_;
-}
-opParamType opParamEnum::type()
-{
-	return opParamType::ENUM;
-}
-
-//////////////////////////////
 // opParamMemory
-opParamMemory::opParamMemory(std::shared_ptr<void> mem)
-	: mem_(mem)
+opParamMemory::opParamMemory()
+	: opParam(), mem_(nullptr), size_(0)
+{
+
+}
+opParamMemory::opParamMemory(std::shared_ptr<void> mem, const uint64_t size)
+	: opParam(), mem_(mem), size_(size)
 {
 }
 opParam::void_pointer opParamMemory::getParam()
 {
-	return this->mem_;
+	// TODO:: return tuple
+	return std::make_shared<opParamMemory::paramType>(std::make_tuple(this->mem_, this->size_));
+	//return this->mem_;
+
 }
 opParamType opParamMemory::type()
 {
