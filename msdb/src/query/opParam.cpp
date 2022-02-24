@@ -20,6 +20,8 @@ opParamType opParamArray::type()
 	return opParamType::ARRAY;
 }
 
+//////////////////////////////
+// opParam Attribute
 opParamAttr::opParamAttr(pAttributeDesc desc)
 	: desc_(desc)
 {
@@ -35,6 +37,23 @@ opParamType opParamAttr::type()
 	return opParamType::ATTRIBUTE;
 }
 
+//////////////////////////////
+// opParam Attribute List
+opParamStringList::opParamStringList(std::shared_ptr<std::vector<std::string>> strList)
+	: strList_(strList)
+{
+}
+opParam::void_pointer opParamStringList::getParam()
+{
+	return this->strList_;
+}
+opParamType opParamStringList::type()
+{
+	return opParamType::STRING_LIST;
+}
+
+//////////////////////////////
+// opParam Dimension
 opParamDim::opParamDim(pDimensionDesc desc)
 	: desc_(desc)
 {
@@ -50,6 +69,8 @@ opParamType opParamDim::type()
 	return opParamType::DIMENSION;
 }
 
+//////////////////////////////
+// opParam Const
 opParamConst::opParamConst(pStableElement ele)
 	: opParam(), ele_(ele)
 {
@@ -64,6 +85,8 @@ opParamType opParamConst::type()
 	return opParamType::CONST_TYPE;
 }
 
+//////////////////////////////
+// opParam Predicate
 opParamPredicate::opParamPredicate(std::shared_ptr<predicate> predicate)
 	: opParam(), predicates_(predicate)
 {

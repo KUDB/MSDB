@@ -24,9 +24,14 @@ status query::process()
 		this->arrDesc_ = this->qryPlan_->inferSchema();
 		this->qryPlan_->process(shared_from_this());
 	}
-		_MSDB_CATCH_ALL
+	_MSDB_CATCH_EXCEPTION(e)
 	{
-		// TODO:: Log error
+		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n" << e.what();
+		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
+	}
+	_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n";
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}
 	_MSDB_CATCH_END

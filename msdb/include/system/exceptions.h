@@ -12,11 +12,16 @@ namespace msdb
 namespace core
 {
 // EXCEPTION MACROS
-#define _MSDB_TRY_BEGIN     try {;
+#define _MSDB_TRY_BEGIN     try{;\
+;
 
 #define _MSDB_CATCH(x)      \
 }                           \
 catch (x) {;
+
+#define _MSDB_CATCH_EXCEPTION(e)    \
+}                                   \
+catch (const std::exception& e) {;
 
 #define _MSDB_CATCH_ALL     \
 }                           \

@@ -32,6 +32,7 @@ enum class opParamType
 	DIMENSION,
 	CONST_TYPE,
 	INTLIST,
+	STRING_LIST,
 	PREDICATE,
 	COOR,
 	STRING,
@@ -82,6 +83,22 @@ public:
 
 private:
 	pAttributeDesc desc_;
+};
+
+class opParamStringList : public opParam
+{
+public:
+	using paramType = std::vector<std::string>;
+
+public:
+	opParamStringList(std::shared_ptr<std::vector<std::string>> strList);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	std::shared_ptr<std::vector<std::string>> strList_;
 };
 
 class opParamDim : public opParam

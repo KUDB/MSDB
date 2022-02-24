@@ -32,21 +32,33 @@ void insert_action::insertFromFile(pArray inArr, pAttributeDesc attr)
 template <typename Ty_>
 void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 {
-	auto attrMemContainer = std::static_pointer_cast<insert_array_multi_attr_memory_pset::containerType>(this->params_[2]->getParam());
-	// insert_array_multi_attr_memory_pset::valueType::paramType == opParamMemory
-	auto memParam = attrMemContainer->at(attr->id_);
-	auto tupleMem = std::static_pointer_cast<opParamMemory::paramType>(memParam.getParam());
-	auto mem = std::get<0>(*tupleMem);
-	auto memSize = std::get<1>(*tupleMem);
-
 	size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getDims(), sizeof(Ty_));
 	Ty_* fileData = new Ty_[bufferSize];
 
-	//std::shared_ptr<void> mem = tupleAttrMemory->first;
-	memcpy(fileData, mem.get(), memSize);
+	_MSDB_TRY_BEGIN
+	{
+		auto attrMemContainer = std::static_pointer_cast<insert_array_multi_attr_memory_pset::containerType>(this->params_[2]->getParam());
 
-	// TODO:: copy memory to temporal buffer
-	this->insertData(inArr, fileData, memSize / sizeof(Ty_));
+		auto memParam = attrMemContainer->at(attr->id_);
+		auto tupleMem = std::static_pointer_cast<opParamMemory::paramType>(memParam.getParam());
+		auto mem = std::get<0>(*tupleMem);
+		auto memSize = std::get<1>(*tupleMem);
+
+		//std::shared_ptr<void> mem = tupleAttrMemory->first;
+		memcpy(fileData, mem.get(), memSize);
+
+		// TODO:: copy memory to temporal buffer
+		this->insertData(inArr, fileData, memSize / sizeof(Ty_));
+	}
+		_MSDB_CATCH(const std::out_of_range& e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Insert: There is no data (from memory) for the attribute (" << attr->id_ << ")";
+	}
+		_MSDB_CATCH_ALL
+	{
+
+	}
+	_MSDB_CATCH_END
 
 	delete[] fileData;
 }

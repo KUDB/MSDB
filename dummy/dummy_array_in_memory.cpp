@@ -41,7 +41,8 @@ std::pair<int, int> getParam(compressionType compType)
 core::pArrayDesc getDummyArrayDesc() {
 	// Build dimension desc
 	core::pDimensionDescs dimDescs = dimensionDescBuilder({ nameDim_0, nameDim_1 }, dims, chunkDims, blockDims);
-	core::pAttributeDescs attrDescs = attributeDescBuilder({ nameAttr_0 }, { typeAttr_0 });
+	core::pAttributeDescs attrDescs = attributeDescBuilder(
+		{ nameAttr_0, nameAttr_1, nameAttr_2 }, { typeAttr_0, typeAttr_1, typeAttr_2 });
 
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
@@ -60,7 +61,9 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType),
+			msdb::DefAttribute(nameAttr_0, typeAttr_1, compType),
+			msdb::DefAttribute(nameAttr_0, typeAttr_2, compType)
 		});
 	return afl;
 }

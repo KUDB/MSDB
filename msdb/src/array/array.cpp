@@ -38,11 +38,20 @@ pChunkIterator arrayBase::getChunkIterator(const attributeId attrId, const itera
 	return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
 										   &(this->chunks_[attrId]), this->overallChunkBitmap_,
 										   itMode);
+
+	//if (this->chunks_.find(attrId) != this->chunks_.end())
+	//{
+
+	//}
+	//else
+	//{
+	//	return nullptr;
+	//}								   
 }
-arrayBase::size_type arrayBase::getNumChunks()
-{
-	return this->chunks_.size();
-}
+//arrayBase::size_type arrayBase::getNumChunks(const attributeId attrId)
+//{
+//	return this->chunks_[attrId].size();
+//}
 coor arrayBase::itemCoorToChunkCoor(const coor& itemCoor)
 {
 	coor chunkCoor(this->desc_->dimDescs_->size());

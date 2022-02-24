@@ -30,53 +30,53 @@ int main()
 	//	msdb::Attribute("ATTR_1") == 4
 	//);
 
-	//{
-	//	//auto afl = msdb::Between(
-	//	//	msdb::Insert(
-	//	//		msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
-	//	//		msdb::dummy::data_star1024x1024::filePath
-	//	//	),
-	//	//	msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
-	//	//);
+	{
+		//auto afl = msdb::Between(
+		//	msdb::Insert(
+		//		msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
+		//		msdb::dummy::data_star1024x1024::filePath
+		//	),
+		//	msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
+		//);
 
-	//	auto afl = msdb::Between(
-	//		msdb::Filter(
-	//			msdb::Insert(
-	//				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
-	//				msdb::dummy::data_star1024x1024::filePath
-	//			),
-	//			msdb::Attribute("ATTR_1") <= 10
-	//		),
-	//		msdb::Domain(msdb::Coordinate({ 128 - 2, 128 - 2 }), msdb::Coordinate({ 128 + 2, 128 + 2 }))
-	//	);
+		auto afl = msdb::Between(
+			msdb::Filter(
+				msdb::Insert(
+					msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
+					msdb::dummy::data_star1024x1024::filePath
+				),
+				msdb::Attribute("ATTR_1") <= 10
+			),
+			msdb::Domain(msdb::Coordinate({ 128 - 2, 128 - 2 }), msdb::Coordinate({ 128 + 2, 128 + 2 }))
+		);
 
-	//	std::cout << "=====" << std::endl;
-	//	std::cout << afl->toString(0) << std::endl;
-	//	std::cout << "=====" << std::endl;
+		std::cout << "=====" << std::endl;
+		std::cout << afl->toString(0) << std::endl;
+		std::cout << "=====" << std::endl;
 
-	//	auto qry = msdb::Query(afl);
-	//	auto ra = qry.execute();
-	//	msdb::printResultArray(ra);
-	//	
-	//	std::cout << qry.strStatus() << std::endl;
-	//	std::cout << qry.getTimer()->getDetailResult() << std::endl;
-	//}
-	//{
-	//	auto afl = msdb::Between(
-	//		msdb::Insert(
-	//			msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
-	//			msdb::dummy::data_star1024x1024::filePath
-	//		),
-	//		msdb::Domain(msdb::Coordinate({ 128, 128 }), msdb::Coordinate({ 128 + 4, 128 + 4 }))
-	//	);
+		auto qry = msdb::Query(afl);
+		auto ra = qry.execute();
+		msdb::printResultArray(ra);
+		
+		std::cout << qry.strStatus() << std::endl;
+		std::cout << qry.getTimer()->getDetailResult() << std::endl;
+	}
+	{
+		auto afl = msdb::Between(
+			msdb::Insert(
+				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
+				msdb::dummy::data_star1024x1024::filePath
+			),
+			msdb::Domain(msdb::Coordinate({ 128, 128 }), msdb::Coordinate({ 128 + 4, 128 + 4 }))
+		);
 
-	//	auto qry = msdb::Query(afl);
-	//	auto ra = qry.execute();
-	//	msdb::printResultArray(ra);
+		auto qry = msdb::Query(afl);
+		auto ra = qry.execute();
+		msdb::printResultArray(ra);
 
-	//	std::cout << qry.strStatus() << std::endl;
-	//	std::cout << qry.getTimer()->getDetailResult() << std::endl;
-	//}
+		std::cout << qry.strStatus() << std::endl;
+		std::cout << qry.getTimer()->getDetailResult() << std::endl;
+	}
 
 	{
 		getchar();

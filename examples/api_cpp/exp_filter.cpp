@@ -27,7 +27,8 @@ std::vector<core::pTimer> exeFilterTest(
 	for (int i = 0; i < filter::numTest; ++i)
 	{
 		int64_t v = (unsigned char)rand() % filter::valueLimit;
-		auto afl = Consume(makeFilterEqQry(childQry, attrName, v));
+		//auto afl = Consume(makeFilterEqQry(childQry, attrName, v));
+		auto afl = makeFilterEqQry(childQry, attrName, v);
 		
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;
@@ -35,7 +36,7 @@ std::vector<core::pTimer> exeFilterTest(
 		
 		auto qry = Query(afl);
 		auto ra = qry.execute();
-		//msdb::printResultArray(ra);
+		msdb::printResultArray(ra);
 		std::cout << qry.strStatus() << std::endl;
 		//std::cout << qry.getTimer()->getDetailResult() << std::endl;
 
@@ -52,7 +53,8 @@ std::vector<core::pTimer> exeIndexFilterTest(
 	for (int i = 0; i < numTest; ++i)
 	{
 		int64_t v = (unsigned char)rand() % filter::valueLimit;
-		auto afl = Consume(makeIndexFilterEqQry(childQry, attrName, v));
+		//auto afl = Consume(makeIndexFilterEqQry(childQry, attrName, v));
+		auto afl = makeIndexFilterEqQry(childQry, attrName, v);
 
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;
@@ -60,7 +62,7 @@ std::vector<core::pTimer> exeIndexFilterTest(
 
 		auto qry = Query(afl);
 		auto ra = qry.execute();
-		//msdb::printResultArray(ra);
+		msdb::printResultArray(ra);
 		std::cout << qry.strStatus() << std::endl;
 		//std::cout << qry.getTimer()->getDetailResult() << std::endl;
 

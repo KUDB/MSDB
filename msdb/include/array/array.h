@@ -34,7 +34,7 @@ public:
 	//////////////////////////////
 	arrayId getId();
 	pArrayDesc getDesc();
-	size_type getNumChunks();
+	//size_type getNumChunks();
 
 	// Chunk
 	pChunkDesc getChunkDesc(const attributeId attrId, const chunkId cId);

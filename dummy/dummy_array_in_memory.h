@@ -23,8 +23,12 @@ static const int compassBins = 128;
 
 static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
-static const std::string nameAttr_0 = "ATTR_1";
+static const std::string nameAttr_0 = "ATTR_0";
+static const std::string nameAttr_1 = "ATTR_1";
+static const std::string nameAttr_2 = "ATTR_2";
 static const core::eleType typeAttr_0 = core::eleType::UINT8;
+static const core::eleType typeAttr_1 = core::eleType::UINT8;
+static const core::eleType typeAttr_2 = core::eleType::UINT8;
 
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
