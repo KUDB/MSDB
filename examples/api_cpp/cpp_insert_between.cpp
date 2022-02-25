@@ -19,7 +19,7 @@ int main()
 	//		),
 	//		msdb::Attribute("ATTR_1") <= 10
 	//	),
-	//	msdb::Domain(msdb::Coordinate({ 128 - 2, 128 - 2 }), msdb::Coordinate({ 128 + 2, 128 + 2 }))
+	//	msdb::Domain(msdb::Coordinates({ 128 - 2, 128 - 2 }), msdb::Coordinates({ 128 + 2, 128 + 2 }))
 	//);
 
 	//auto afl = msdb::Filter(
@@ -36,7 +36,7 @@ int main()
 		//		msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
 		//		msdb::dummy::data_star1024x1024::filePath
 		//	),
-		//	msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
+		//	msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))
 		//);
 
 		auto afl = msdb::Between(
@@ -47,7 +47,7 @@ int main()
 				),
 				msdb::Attribute("ATTR_1") <= 10
 			),
-			msdb::Domain(msdb::Coordinate({ 128 - 2, 128 - 2 }), msdb::Coordinate({ 128 + 2, 128 + 2 }))
+			msdb::Domain(msdb::Coordinates({ 128 - 2, 128 - 2 }), msdb::Coordinates({ 128 + 2, 128 + 2 }))
 		);
 
 		std::cout << "=====" << std::endl;
@@ -67,7 +67,7 @@ int main()
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
 				msdb::dummy::data_star1024x1024::filePath
 			),
-			msdb::Domain(msdb::Coordinate({ 128, 128 }), msdb::Coordinate({ 128 + 4, 128 + 4 }))
+			msdb::Domain(msdb::Coordinates({ 128, 128 }), msdb::Coordinates({ 128 + 4, 128 + 4 }))
 		);
 
 		auto qry = msdb::Query(afl);
@@ -109,7 +109,7 @@ int main()
 		//		msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName),
 		//		msdb::dummy::data_star1024x1024::filePath
 		//	),
-		//	msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
+		//	msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))
 		//);
 
 		auto afl = msdb::Save(
@@ -137,7 +137,7 @@ int main()
 			msdb::Load(
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 			),
-			msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
+			msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))
 		);
 
 		std::cout << "=====" << std::endl;

@@ -35,7 +35,7 @@ int main()
 		auto afl = msdb::Between(
 			msdb::Load(
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)),
-			msdb::Domain(msdb::Coordinate({ 50, 50 }), msdb::Coordinate({ 60, 60 }))
+			msdb::Domain(msdb::Coordinates({ 50, 50 }), msdb::Coordinates({ 60, 60 }))
 		);
 
 		auto qry = msdb::Query(afl);

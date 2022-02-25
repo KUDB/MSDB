@@ -56,7 +56,7 @@ int main()
 			msdb::Load(
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 			),
-			msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
+			msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))
 		);
 
 		std::cout << "=====" << std::endl;
@@ -76,7 +76,7 @@ int main()
 			msdb::Load(
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 			),
-			msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))
+			msdb::Domain(msdb::Coordinates({ 100, 100 }), msdb::Coordinates({ 104, 104 }))
 		);
 
 		std::cout << "=====" << std::endl;
@@ -98,7 +98,7 @@ int main()
 					msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 				),
 				msdb::Attribute("ATTR_1") > 10),
-				msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))
+				msdb::Domain(msdb::Coordinates({ 100, 100 }), msdb::Coordinates({ 104, 104 }))
 			);
 
 		std::cout << "=====" << std::endl;
@@ -120,7 +120,7 @@ int main()
 					msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 				),
 				msdb::Attribute("ATTR_1") >= 7),
-			msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))
+			msdb::Domain(msdb::Coordinates({ 100, 100 }), msdb::Coordinates({ 104, 104 }))
 		);
 
 		std::cout << "=====" << std::endl;
@@ -142,7 +142,7 @@ int main()
 					msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName)
 				),
 				msdb::Attribute("ATTR_1") == 7),
-			msdb::Domain(msdb::Coordinate({ 100, 100 }), msdb::Coordinate({ 104, 104 }))
+			msdb::Domain(msdb::Coordinates({ 100, 100 }), msdb::Coordinates({ 104, 104 }))
 		);
 
 		std::cout << "=====" << std::endl;

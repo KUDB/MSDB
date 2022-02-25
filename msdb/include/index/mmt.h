@@ -97,23 +97,23 @@ protected:
 	size_type lowerLevel_;
 	size_type maxLevel_;
 };
-template <typename Dty_, typename Ty_>
+template <typename Ty_>
 class MinMaxTreeImpl;
 
-template <typename Dty_, typename Ty_>
+template <typename Ty_>
 class MinMaxTreeImpl : public MinMaxTree
 {
 public:
 	using size_type = size_t;
 	using size_const = const size_t;
 
-	using dim_type = Dty_;
-	using dim_pointer = Dty_*;
-	using dim_const_pointer = const Dty_*;
-	using dim_reference = Dty_&;
-	using dim_const_reference = const Dty_;
+	using dim_type = position_t;
+	using dim_pointer = position_t*;
+	using dim_const_pointer = const position_t*;
+	using dim_reference = position_t&;
+	using dim_const_reference = const position_t&;
 
-	using self_type = MinMaxTreeImpl<Dty_, Ty_>;
+	using self_type = MinMaxTreeImpl<Ty_>;
 
 	using node_type = Ty_;
 
@@ -121,7 +121,7 @@ public:
 	// MMT NODE					//
 	//////////////////////////////
 public:
-	using nodeItr = itemIterator<Dty_, pMmtNode>;
+	using nodeItr = itemIterator<pMmtNode>;
 
 protected:
 	// inherit from serializable
@@ -292,9 +292,9 @@ public:
 	}
 
 public:
-	coordinate<Dty_> chunkCoorToBlockCoor(const coordinate<Dty_>& chunkCoor, const dimension& chunkDimForBlock)
+	coordinates chunkCoorToBlockCoor(const coordinates& chunkCoor, const dimension& chunkDimForBlock)
 	{
-		coordinate<Dty_> blockCoor(this->dSize_);
+		coordinates blockCoor(this->dSize_);
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
 			blockCoor[d] = chunkCoor[d] * chunkDimForBlock[d];
@@ -403,9 +403,9 @@ protected:
 
 		////////////////////////////////////////
 		// Update min/max values
-		//itemIterator<Dty_, pMmtNode> pcit(this->nodes_[level - 1].data(), this->dSize_,
+		//itemIterator<pMmtNode> pcit(this->nodes_[level - 1].data(), this->dSize_,
 		//							   prevNodeSpace.data());
-		//itemIterator<Dty_, pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
+		//itemIterator<pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
 		//							  nodeSpace.data());
 
 		auto childIt = this->getNodeIterator(level - 1);
@@ -446,7 +446,7 @@ protected:
 		//	auto parentCoor = this->getParentCoor();
 
 		//	// current iterator coordiate -> parent coordinate
-		//	coordinate<Dty_> cur = pcit.coor();
+		//	coordinates cur = pcit.coor();
 		//	for (size_type d = 0; d < this->dSize_; ++d)
 		//	{
 		//		cur[d] /= 2;
@@ -509,7 +509,7 @@ protected:
 
 		////////////////////////////////////////
 		// Update min/max values
-		itemIterator<Dty_, pMmtNode> pcit(this->nodes_[this->maxLevel_ - 1].data(), this->dSize_,
+		itemIterator<pMmtNode> pcit(this->nodes_[this->maxLevel_ - 1].data(), this->dSize_,
 									   prevNodeSpace.data());
 
 		auto node = this->nodes_[this->maxLevel_][0];
@@ -582,16 +582,16 @@ protected:
 		////////////////////////////////////////
 		// Update nit order for chunks in current level
 		// Prev
-		itemIterator<Dty_, pMmtNode> pcit(this->nodes_[level + 1].data(), this->dSize_,
+		itemIterator<pMmtNode> pcit(this->nodes_[level + 1].data(), this->dSize_,
 									   prevLevelDim.data());
 		// Current
-		itemIterator<Dty_, pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
+		itemIterator<pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
 									  levelDim.data());
 
 		for (size_type i = 0; i < this->nodes_[level + 1].size(); ++i, ++pcit)
 		{
 			// Setup child Base
-			coordinate<Dty_> childBase = pcit.coor();
+			coordinates childBase = pcit.coor();
 			for (size_type d = 0; d < this->dSize_; d++)
 			{
 				childBase[d] *= 2;
@@ -602,7 +602,7 @@ protected:
 			for (size_type cID = 0; cID < childs; cID++)
 			{
 				// Set child coordinate and move to cit
-				coordinate<Dty_> cur = childBase;
+				coordinates cur = childBase;
 				for (size_type d = 0; d < this->dSize_; ++d)
 				{
 					if (cID & ((size_type)0x1 << d))
@@ -828,11 +828,11 @@ protected:
 		this->nodes_[level].resize(chunkCnt);
 
 		// Prev
-		itemIterator<Dty_, pMmtNode> pcit(this->nodes_[level + 1].data(), this->dSize_,
+		itemIterator<pMmtNode> pcit(this->nodes_[level + 1].data(), this->dSize_,
 										  pChunksInDim.data());
 
 		   // Current
-		itemIterator<Dty_, pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
+		itemIterator<pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
 										 chunksInDim.data());
 
 		pMmtNode prevNode = (*pcit);
@@ -865,11 +865,11 @@ protected:
 		this->nodes_[level].resize(chunkCnt);
 
 		// Prev
-		itemIterator<Dty_, pMmtNode> pcit(this->nodes_[level + 1].data(), this->dSize_,
+		itemIterator<pMmtNode> pcit(this->nodes_[level + 1].data(), this->dSize_,
 									   pChunksInDim.data());
 
 		// Current
-		itemIterator<Dty_, pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
+		itemIterator<pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
 									  chunksInDim.data());
 
 		for (size_type i = 0; i < chunkCnt; i++)
@@ -1024,9 +1024,9 @@ protected:
 		}
 	}
 
-	_NODISCARD coordinate<Dty_> getParentCoor(coordinate<Dty_>& childCoor)
+	_NODISCARD coordinates getParentCoor(coordinates& childCoor)
 	{
-		coordinate<Dty_> coorParent = childCoor;
+		coordinates coorParent = childCoor;
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
 			coorParent[d] /= 2;
@@ -1058,9 +1058,9 @@ protected:
 public:
 	// chunkCoor: coordinate of a chunk that contains the block
 	// blockCoor: blockCoor coordiante of blocks in a chunk
-	_NODISCARD coordinate<Dty_> getBlockCoor(coordinate<Dty_>& chunkCoor, coordinate<Dty_>& inner)
+	_NODISCARD coordinates getBlockCoor(coordinates& chunkCoor, coordinates& inner)
 	{
-		coordinate<Dty_> blockCoor(inner);
+		coordinates blockCoor(inner);
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
 			blockCoor[d] += chunkCoor[d] * this->blockSpace_[d];
@@ -1068,9 +1068,9 @@ public:
 		return blockCoor;
 	}
 
-	coorRange getBlockItemBoundary(coordinate<Dty_>& inner)
+	coorRange getBlockItemBoundary(coordinates& inner)
 	{
-		coordinate<Dty_> spOut(this->dSize_), epOut(this->dSize_);
+		coordinates spOut(this->dSize_), epOut(this->dSize_);
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
 			spOut[d] = this->blockDims_[d] * inner[d];

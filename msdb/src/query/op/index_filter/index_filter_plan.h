@@ -48,7 +48,7 @@ protected:
 		auto arrIndex = arrayMgr::instance()->getAttributeIndex(arrDesc->id_, attrDesc->id_);
 		if (arrIndex->getType() == attrIndexType::MMT)
 		{
-			auto pMmtIndex = std::static_pointer_cast<MinMaxTreeImpl<position_t, Ty_>>(arrIndex);
+			auto pMmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(arrIndex);
 			auto curLevel = pMmtIndex->getMaxLevel();
 			auto blockLevel = pMmtIndex->getBlockLevel();
 
@@ -137,7 +137,7 @@ protected:
 
 	template <typename Ty_>
 	void evaluateFirstLevel(std::shared_ptr<predicate> inPredicate,
-							std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>>pMmtIndex,
+							std::shared_ptr<MinMaxTreeImpl<Ty_>>pMmtIndex,
 							std::vector<std::vector<bool>>& nodes,
 							size_t curLevel, size_t dSize)
 	{
@@ -159,7 +159,7 @@ protected:
 
 	template <typename Ty_>
 	void evaluateChildLevel(std::shared_ptr<predicate> inPredicate,
-							std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>>pMmtIndex,
+							std::shared_ptr<MinMaxTreeImpl<Ty_>>pMmtIndex,
 							std::vector<std::vector<bool>>& nodes,
 							size_t curLevel, size_t dSize)
 	{
@@ -210,7 +210,7 @@ protected:
 	template <typename Ty_>
 	pBitmapTree inferBoUpBitmapChildLevel(pBitmapTree myBitmap,
 										  std::vector<std::vector<bool>>& nodes,
-										  std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>>pMmtIndex,
+										  std::shared_ptr<MinMaxTreeImpl<Ty_>>pMmtIndex,
 										  dimension& chunkSpace, dimension& blockSpace)
 	{
 		size_t chunkNums = chunkSpace.area();

@@ -19,8 +19,8 @@ Domain getRandomRange(const uint64_t dimX, const uint64_t dimY, const float sele
 	int epY = spY + height;
 	int cal = (epX - spX) * (epY - spY);
 
-	Coordinate sp(core::coor({ spY, spX }));
-	Coordinate ep(core::coor({ spY + height, spX + width }));
+	Coordinates sp(core::coor({ spY, spX }));
+	Coordinates ep(core::coor({ spY + height, spX + width }));
 
 	return Domain(sp, ep);
 }
@@ -33,7 +33,7 @@ std::shared_ptr<BetweenOpr> makeRangeIndexFilterEqQry(std::shared_ptr<AFLOperato
 	return Between(makeIndexFilterEqQry(opt, attrName, value), d);
 }
 std::vector<core::pTimer> exeRangeFilterTest(const int numTest, std::shared_ptr<AFLOperator> childQry, 
-											 Coordinate arraySize, std::string attrName)
+											 Coordinates arraySize, std::string attrName)
 {
 	srand(rangeFilter::filterValueSeed);
 	std::vector<core::pTimer> result;

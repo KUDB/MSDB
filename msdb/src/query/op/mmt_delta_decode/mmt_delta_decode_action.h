@@ -42,7 +42,7 @@ public:
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_TYPE_DIFF));
 		}
 		//auto arrMMTIndex = std::static_pointer_cast<mmt>(attrIndex);
-		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<position_t, Ty_>>(attrIndex);
+		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(attrIndex);
 		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 		size_t wtLevel = inArr->getMaxLevel();
 		dimension chunkDim = inArr->getDesc()->getDimDescs()->getChunkDims();
@@ -87,7 +87,7 @@ public:
 					 pChunk inChunk,
 					 const dimension& synopsisDim,
 					 const dimension& blockSpaceDim,
-					 std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>> mmtIndex,
+					 std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 					 pQuery qry,
 					 const size_t parentThreadId)
 	{

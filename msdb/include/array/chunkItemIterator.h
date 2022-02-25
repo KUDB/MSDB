@@ -16,11 +16,10 @@ using pChunkItemIterator = std::shared_ptr<chunkItemIterator>;
 using pChunkItemRangeIterator = std::shared_ptr<chunkItemRangeIterator>;
 
 template <typename Dty_>
-class chunkItemIteratorBase : virtual public coordinateIterator<Dty_>
+class chunkItemIteratorBase : virtual public coordinatesIterator
 {
 public:
-	using base_type = coordinateIterator<Dty_>;
-	using coordinate_type = base_type::coordinate_type;
+	using base_type = coordinatesIterator;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;
@@ -38,9 +37,9 @@ public:
 	}
 
 public:
-	coordinate_type coorOut2In(coordinate_type& out)
+	coordinates coorOut2In(coordinates& out)
 	{
-		coordinate_type in(this->dSize());
+		coordinates in(this->dSize());
 		for (dimensionId d = 0; d < this->dSize(); d++)
 		{
 			in[d] = out[d] - this->csP_[d];
@@ -49,9 +48,9 @@ public:
 		return in;
 	}
 
-	coordinate_type coorIn2Out(coordinate_type& in)
+	coordinates coorIn2Out(coordinates& in)
 	{
-		coordinate_type out(this->dSize());
+		coordinates out(this->dSize());
 		for (dimensionId d = 0; d < this->dSize(); d++)
 		{
 			out[d] = in[d] + this->csP_[d];
@@ -59,14 +58,14 @@ public:
 		return out;
 	}
 
-	coordinate_type coorIn2Out()
+	coordinates coorIn2Out()
 	{
 		return this->coorIn2Out(this->coor_);
 	}
 
-	coordinate_type ceP()
+	coordinates ceP()
 	{
-		coordinate_type ceP(this->dSize());
+		coordinates ceP(this->dSize());
 		for (dimensionId d = 0; d < this->dSize(); d++)
 		{
 			ceP[d] = this->csP_[d] + this->dims_[d];
@@ -75,12 +74,12 @@ public:
 		return ceP;
 	}
 
-	coordinate_type outCoor()
+	coordinates outCoor()
 	{
 		return this->coorIn2Out();
 	}
 
-	coordinate_type inCoor()
+	coordinates inCoor()
 	{
 		return this->coor_;
 	}
@@ -97,7 +96,6 @@ public:
 	using self_type = chunkItemIterator;
 	using base_type = itemItr;
 
-	using coordinate_type = base_type::coordinate_type;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;
@@ -120,7 +118,6 @@ class chunkItemRangeIterator : public itemRangeItr, public chunkItemItrBase
 public:
 	using base_type = itemRangeItr;
 
-	using coordinate_type = base_type::coordinate_type;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;

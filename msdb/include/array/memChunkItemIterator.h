@@ -16,7 +16,6 @@ public:
 	using self_type = memChunkItemIterator;
 	using base_type = chunkItemIterator;
 
-	using coordinate_type = base_type::coordinate_type;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;

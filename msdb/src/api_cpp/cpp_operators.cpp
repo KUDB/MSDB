@@ -356,7 +356,7 @@ std::shared_ptr<BuildOpr> Build(const core::arrayId aid, const std::string name,
 	return std::make_shared<BuildOpr>(aid, name, outDims, outAttrs);
 }
 
-//BuildOpr& BuildOpr::AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize)
+//BuildOpr& BuildOpr::AddAxis(id_t dimId, std::string axis, Coordinates dim, position_t chunkSize, position_t blockSize)
 //{
 //	//arrDesc_->dimDescs_->push_back(std::make_shared<core::dimensionDesc>(dimId, axis, dim.getCoor().at(0), dim.getCoor().at(1), chunkSize, blockSize));
 //	//core::arrayMgr::instance()->setArrayDesc(arrDesc_->id_, arrDesc_);

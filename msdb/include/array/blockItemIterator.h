@@ -16,12 +16,10 @@ class blockItemRangeIterator;
 using pBlockItemIterator = std::shared_ptr<blockItemIterator>;
 using pBlockItemRangeIterator = std::shared_ptr<blockItemRangeIterator>;
 
-template <typename Dty_>
-class blockItemIteratorBase : virtual public coordinateIterator<Dty_>
+class blockItemIteratorBase : virtual public coordinatesIterator
 {
 public:
-	using base_type = coordinateIterator<Dty_>;
-	using coordinate_type = base_type::coordinate_type;
+	using base_type = coordinatesIterator;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;
@@ -66,18 +64,17 @@ public:
 	}
 
 protected:
-	coordinate_type bSp_;
+	coordinates bSp_;
 	pBitmap itemBitmap_;
 };
 
-using blockItemItrBase = blockItemIteratorBase<position_t>;
+using blockItemItrBase = blockItemIteratorBase;
 
 class blockItemRangeIterator : public itemRangeItr, public blockItemItrBase
 {
 public:
 	using base_type = itemRangeItr;
 
-	using coordinate_type = base_type::coordinate_type;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;
@@ -100,7 +97,6 @@ public:
 	using self_type = blockItemRangeIterator;
 	using base_type = itemItr;
 
-	using coordinate_type = base_type::coordinate_type;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;

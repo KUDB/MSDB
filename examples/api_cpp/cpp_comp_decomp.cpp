@@ -215,7 +215,7 @@ int main()
 				msdb::compressionType::SEACOW,
 				msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
 			),
-			msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
+			msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))
 		);
 
 		std::cout << "=====" << std::endl;
@@ -237,7 +237,7 @@ int main()
 				msdb::compressionType::COMPASS,
 				msdb::dummy::data_star1024x1024::compassBins
 			),
-			msdb::Domain(msdb::Coordinate({ 0, 0 }), msdb::Coordinate({ 4, 4 }))
+			msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))
 		);
 
 		std::cout << "=====" << std::endl;

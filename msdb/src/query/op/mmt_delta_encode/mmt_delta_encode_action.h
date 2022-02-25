@@ -32,7 +32,7 @@ public:
 	void chunkEncode(pChunk oit, pChunk iit, 
 					 const dimension& synopsisDim, 
 					 const dimension& blockSpaceDim,
-					 std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>> mmtIndex);
+					 std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex);
 };
 
 template<class Ty_>
@@ -43,7 +43,7 @@ void mmt_delta_encode_action::saveAttribute(std::shared_ptr<wavelet_encode_array
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_TYPE_DIFF));
 	}
-	auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<position_t, Ty_>>(arrIndex);
+	auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(arrIndex);
 	auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 	size_t wtLevel = inArr->getMaxLevel();
 	dimension chunkDim = inArr->getDesc()->getDimDescs()->getChunkDims();
@@ -70,7 +70,7 @@ template<class Ty_>
 void mmt_delta_encode_action::chunkEncode(pChunk outChunk, pChunk inChunk,
 										  const dimension& synopsisDim, 
 										  const dimension& blockSpaceDim,
-										  std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>> mmtIndex)
+										  std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex)
 {
 	//auto ibItr = inChunk->getBlockIterator();
 	//auto obItr = outChunk->getBlockIterator();

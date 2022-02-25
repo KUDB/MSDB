@@ -26,7 +26,7 @@ std::shared_ptr<BetweenOpr> makeRangeIndexFilterEqQry(
 
 std::vector<core::pTimer> exeRangeFilterTest(
 	const int numTest, std::shared_ptr<AFLOperator> childQry, 
-	Coordinate arraySize, std::string attrName);
+	Coordinates arraySize, std::string attrName);
 
 namespace data_star1024x1024
 {

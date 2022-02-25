@@ -133,7 +133,7 @@ public:
 	virtual std::string toString(int depth);
 
 public:
-	//BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize);
+	//BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinates dim, position_t chunkSize, position_t blockSize);
 	//BuildOpr& AddAttribute(id_t attrId, std::string name, core::eleType eType);
 	//BuildOpr& SetArray(id_t arrId, std::string name);
 };

@@ -3,19 +3,19 @@
 
 namespace msdb
 {
-//Coordinate::Coordinate(std::vector<int64_t> vecInt)
+//Coordinates::Coordinates(std::vector<int64_t> vecInt)
 //	: coor_(vecInt)
 //{
 //
 //}
 
-Coordinate::Coordinate(core::coordinate<Dty_> coor)
+Coordinates::Coordinates(core::coordinates coor)
 	: coor_(coor)
 {
 
 }
 
-Domain::Domain(Coordinate start, Coordinate end)
+Domain::Domain(Coordinates start, Coordinates end)
 	: range_(start.getCoor(), end.getCoor())
 {
 

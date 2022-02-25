@@ -46,7 +46,7 @@ private:
 		{
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_TYPE_DIFF));
 		}
-		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<position_t, Ty_>>(arrIndex);
+		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(arrIndex);
 		dimension chunkDim(inArr->getDesc()->getDimDescs()->getChunkDims());
 
 		if((Ty_)-1 < 0)
@@ -73,7 +73,7 @@ private:
 
 	template<typename Ty_>
 	pSeChunk compressChunk(pWtChunk inChunk,
-						   std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>> mmtIndex,
+						   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 						   dimension& sourceChunkDim, bool hasNegative)
 	{
 		size_t dSize = inChunk->getDSize();
@@ -135,7 +135,7 @@ private:
 
 	template <class Ty_>
 	void findRequiredBitsForRootLevel(pSeChunk outChunk, pBlock outBlock,
-									  std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>> mmtIndex,
+									  std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									  const dimension& bandDims, const size_t numBandsInLevel, 
 									  const bool hasNegative)
 	{
@@ -166,7 +166,7 @@ private:
 
 	template <class Ty_>
 	void findRequiredBitsForChildLevel(pSeChunk outChunk, pBlock outBlock,
-									   std::shared_ptr<MinMaxTreeImpl<position_t, Ty_>> mmtIndex,
+									   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									   const dimension& bandDims, 
 									   const size_t maxLevel,
 									   const size_t numBandsInLevel, 
