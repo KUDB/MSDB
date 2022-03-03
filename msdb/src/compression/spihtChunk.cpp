@@ -67,7 +67,7 @@ pBlock spihtChunk::makeBlock(const blockId bId)
 //	return nullptr;
 //}
 //
-//pChunkItemRangeIterator spihtChunk::getItemRangeIterator(const coorRange& range)
+//pChunkItemRangeIterator spihtChunk::getItemRangeIterator(const range& range)
 //{
 //	_MSDB_EXCEPTIONS_MSG(MSDB_EC_LOGIC_ERROR, MSDB_ER_NOT_IMPLEMENTED, "spihtChunk has no itemiterator");
 //	return nullptr;

@@ -32,8 +32,8 @@ public:
 	dimensionId getDSize();
 	//inline void setIsp(coor isp);
 	//inline void setIep(coor iep);
-	coorRange getBlockRange();
-	coorRange getBlockItemRange();
+	range getBlockRange();
+	range getBlockItemRange();
 	void setBlockDesc(const pBlockDesc inDesc);
 
 	virtual void serialize(bstream& os) = 0;
@@ -66,7 +66,7 @@ protected:
 //////////////////////////////
 public:
 	virtual pBlockItemIterator getItemIterator() = 0;
-	virtual pBlockItemRangeIterator getItemRangeIterator(const coorRange& range) = 0;
+	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range) = 0;
 
 	void copyBitmap(cpBitmap itemBitmap);
 	void replaceBitmap(pBitmap itemBitmap);

@@ -222,61 +222,61 @@ coordinates operator% (const coordinates& left, const int right)
 ////////////////////////////////////////
 // coordinatesRange
 //
-coordinatesRange::coordinatesRange(const size_type dSize)
+range::range(const size_type dSize)
 	: dSize_(dSize), sP_(dSize), eP_(dSize)
 {
 }
 
-coordinatesRange::coordinatesRange(const std::vector<dim_type>& sP, const std::vector<dim_type>& eP)
+range::range(const std::vector<dim_type>& sP, const std::vector<dim_type>& eP)
 	: dSize_(sP.size()), sP_(sP), eP_(eP)
 {
 	assert(sP_.size() == eP_.size());
 }
 
-coordinatesRange::coordinatesRange(std::initializer_list<dim_type> sP, std::initializer_list<dim_type> eP)
+range::range(std::initializer_list<dim_type> sP, std::initializer_list<dim_type> eP)
 	: dSize_(sP.size()), sP_(sP), eP_(eP)
 {
 }
 
-coordinatesRange::coordinatesRange(const coordinates& sP, const coordinates& eP)
+range::range(const coordinates& sP, const coordinates& eP)
 	: dSize_(sP.size()), sP_(sP), eP_(eP)
 {
 	assert(sP.size() == eP.size());
 }
 
-coordinatesRange::coordinatesRange(const coordinates& eP)
+range::range(const coordinates& eP)
 	: dSize_(eP.size()), sP_(coordinates(eP.size())), eP_(eP)
 {
 
 }
 
-coordinatesRange::coordinatesRange(const self_type& mit)
+range::range(const self_type& mit)
 	: dSize_(mit.dSize_), sP_(mit.sP_), eP_(mit.eP_)
 {
 }
 
-coordinatesRange::~coordinatesRange()
+range::~range()
 {
 }
 
-coordinatesRange operator+ (const coordinatesRange& left, const coordinates& right)
+range operator+ (const range& left, const coordinates& right)
 {
-	coordinatesRange output(left);
+	range output(left);
 	output += right;
 	return output;
 }
 
-coordinatesRange operator- (const coordinatesRange& left, const coordinates& right)
+range operator- (const range& left, const coordinates& right)
 {
-	coordinatesRange output(left);
+	range output(left);
 	output -= right;
 	return output;
 }
 
 ////////////////////////////////////////
-// coordinatesIterator
+// multiDimIterator
 //
-coordinatesIterator::coordinatesIterator(const size_type dSize, dim_const_pointer dims)
+multiDimIterator::multiDimIterator(const size_type dSize, dim_const_pointer dims)
 	: coor_(dSize), dSize_(dSize), end_(false), basisDimOffset_(1), seqPos_(0),
 	dims_(dSize, dims), sP_(dSize), eP_(dSize, dims)
 {
@@ -284,7 +284,7 @@ coordinatesIterator::coordinatesIterator(const size_type dSize, dim_const_pointe
 	this->initSeqCapacity();
 }
 
-coordinatesIterator::coordinatesIterator(const std::vector<dim_type>& lst)
+multiDimIterator::multiDimIterator(const std::vector<dim_type>& lst)
 	: coor_(lst.size()), dSize_(lst.size()), end_(false), basisDimOffset_(1), seqPos_(0),
 	dims_(lst), sP_(lst.size()), eP_(lst)
 {
@@ -292,7 +292,7 @@ coordinatesIterator::coordinatesIterator(const std::vector<dim_type>& lst)
 	this->initSeqCapacity();
 }
 
-coordinatesIterator::coordinatesIterator(const coordinates space)
+multiDimIterator::multiDimIterator(const coordinates space)
 	: coor_(space.size()), dSize_(space.size()), end_(false), basisDimOffset_(1), seqPos_(0),
 	dims_(space), sP_(space.size()), eP_(space)
 {
@@ -300,7 +300,7 @@ coordinatesIterator::coordinatesIterator(const coordinates space)
 	this->initSeqCapacity();
 }
 
-coordinatesIterator::coordinatesIterator(std::initializer_list<dim_type> lst)
+multiDimIterator::multiDimIterator(std::initializer_list<dim_type> lst)
 	: coor_(lst.size()), dSize_(lst.size()), end_(false), basisDimOffset_(1), seqPos_(0),
 	dims_(lst.size()), sP_(lst.size()), eP_(lst.size())
 {
@@ -314,7 +314,7 @@ coordinatesIterator::coordinatesIterator(std::initializer_list<dim_type> lst)
 	this->initSeqCapacity();
 }
 
-coordinatesIterator::coordinatesIterator(const self_type& mit)
+multiDimIterator::multiDimIterator(const self_type& mit)
 	: coor_(mit.coor_), basisDim_(mit.basisDim_), dSize_(mit.dSize_),
 	front_(mit.front_), end_(mit.end_), basisDimOffset_(mit.basisDimOffset_),
 	seqPos_(mit.seqPos_), seqCapacity_(mit.seqCapacity_),
@@ -322,12 +322,12 @@ coordinatesIterator::coordinatesIterator(const self_type& mit)
 {
 }
 
-coordinatesIterator::~coordinatesIterator()
+multiDimIterator::~multiDimIterator()
 {
 
 }
 
-void coordinatesIterator::setBasisDim(const unsigned int dim)
+void multiDimIterator::setBasisDim(const unsigned int dim)
 {
 	if (this->dSize() <= dim)
 	{
@@ -338,7 +338,7 @@ void coordinatesIterator::setBasisDim(const unsigned int dim)
 	this->basisDim_ = dim;
 }
 
-void coordinatesIterator::next()
+void multiDimIterator::next()
 {
 	if (this->end_)		return;
 	this->front_ = false;
@@ -366,7 +366,7 @@ void coordinatesIterator::next()
 
 	this->end_ = true;
 }
-void coordinatesIterator::prev()
+void multiDimIterator::prev()
 {
 	if (this->front_)		return;
 	this->end_ = false;
@@ -393,7 +393,7 @@ void coordinatesIterator::prev()
 	this->front_ = true;
 }
 
-void coordinatesIterator::moveTo(const coordinates& coor)
+void multiDimIterator::moveTo(const coordinates& coor)
 {
 	assert(this->dSize() == coor.size());
 
@@ -408,11 +408,11 @@ void coordinatesIterator::moveTo(const coordinates& coor)
 	this->setFrontEnd();
 }
 
-void coordinatesIterator::moveToStart()
+void multiDimIterator::moveToStart()
 {
 	this->moveTo(this->sP_);
 }
-void coordinatesIterator::moveToLast()
+void multiDimIterator::moveToLast()
 {
 	this->moveTo(this->eP_ - 1);
 }

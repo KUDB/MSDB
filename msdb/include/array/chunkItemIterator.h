@@ -15,11 +15,10 @@ class chunkItemRangeIterator;
 using pChunkItemIterator = std::shared_ptr<chunkItemIterator>;
 using pChunkItemRangeIterator = std::shared_ptr<chunkItemRangeIterator>;
 
-template <typename Dty_>
-class chunkItemIteratorBase : virtual public coordinatesIterator
+class chunkItemIteratorBase : virtual public multiDimIterator
 {
 public:
-	using base_type = coordinatesIterator;
+	using base_type = multiDimIterator;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;
@@ -88,9 +87,7 @@ protected:
 	dim_pointer csP_;			// Chunk start point
 };
 
-using chunkItemItrBase = chunkItemIteratorBase<position_t>;
-
-class chunkItemIterator : public itemItr, public chunkItemItrBase
+class chunkItemIterator : public itemItr, public chunkItemIteratorBase
 {
 public:
 	using self_type = chunkItemIterator;
@@ -113,7 +110,7 @@ public:
 	chunkItemIterator(void* data, const eleType eType, const dimension dims, const dimension csP);
 };
 
-class chunkItemRangeIterator : public itemRangeItr, public chunkItemItrBase
+class chunkItemRangeIterator : public itemRangeItr, public chunkItemIteratorBase
 {
 public:
 	using base_type = itemRangeItr;
@@ -134,7 +131,7 @@ public:
 
 	chunkItemRangeIterator(void* data, const eleType eType, 
 						   const dimension dims, 
-						   const coorRange& range,
+						   const range& range,
 						   const dimension csP);
 };
 }		// core

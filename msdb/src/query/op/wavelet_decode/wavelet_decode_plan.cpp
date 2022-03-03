@@ -53,9 +53,9 @@ pBitmapTree wavelet_decode_plan_pset::inferBottomUpBitmap()
 	dimension blockSpace = aDesc->getDimDescs()->getBlockSpace();
 	dimension seChunkSpace = chunkSpace * blockSpace;
 
-	auto inChunkItr = coorItr(seChunkSpace);
-	auto outChunkItr = coorItr(chunkSpace);
-	auto outBlockItr = coorItr(blockSpace);
+	auto inChunkItr = mdItr(seChunkSpace);
+	auto outChunkItr = mdItr(chunkSpace);
+	auto outBlockItr = mdItr(blockSpace);
 
 	pBitmapTree outBitmap = std::make_shared<bitmapTree>(chunkSpace.area(), false);
 
@@ -92,9 +92,9 @@ pBitmapTree wavelet_decode_plan_pset::inferTopDownBitmap(pBitmapTree fromParent)
 	dimension blockSpace = aDesc->getDimDescs()->getBlockSpace();
 	dimension seChunkSpace = chunkSpace * blockSpace;
 
-	auto inChunkItr = coorItr(chunkSpace);
-	auto inBlockItr = coorItr(blockSpace);
-	auto outChunkItr = coorItr(seChunkSpace);
+	auto inChunkItr = mdItr(chunkSpace);
+	auto inBlockItr = mdItr(blockSpace);
+	auto outChunkItr = mdItr(seChunkSpace);
 
 	pBitmapTree outBitmap = std::make_shared<bitmapTree>(seChunkSpace.area(), false);
 

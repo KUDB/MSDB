@@ -27,13 +27,13 @@ dimensionId block::getDSize()
 {
 	return this->desc_->dims_.size();
 }
-coorRange block::getBlockRange()
+range block::getBlockRange()
 {
-	return coorRange(this->desc_->getSp(), this->desc_->getEp());
+	return range(this->desc_->getSp(), this->desc_->getEp());
 }
-coorRange block::getBlockItemRange()
+range block::getBlockItemRange()
 {
-	return coorRange(this->desc_->getIsp(), this->desc_->getIep());
+	return range(this->desc_->getIsp(), this->desc_->getIep());
 }
 void block::setBlockDesc(const pBlockDesc inDesc)
 {

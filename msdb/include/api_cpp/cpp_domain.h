@@ -34,7 +34,7 @@ public:
 	Domain(Coordinates start, Coordinates end);
 
 public:
-	inline core::coordinatesRange getRange() const
+	inline core::range getRange() const
 	{
 		return this->range_;
 	}
@@ -52,7 +52,7 @@ public:
 	std::string toString();
 
 private:
-	core::coordinatesRange range_;
+	core::range range_;
 };
 }		// msdb
 #endif	// _MSDB_CPP_DOMAIN_H_

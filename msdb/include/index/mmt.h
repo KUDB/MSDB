@@ -312,7 +312,7 @@ protected:
 		// Create new mmtNodes
 		this->nodes_.push_back(std::vector<pMmtNode>(this->nodeSpace_[0].area()));
 		dimension leafSpace = this->blockDims_ / this->leafDims_;
-		coorItr leafItr = coorItr(leafSpace);
+		mdItr leafItr = mdItr(leafSpace);
 
 		BOOST_LOG_TRIVIAL(debug) << "leaf Space: " << leafSpace.toString();
 		BOOST_LOG_TRIVIAL(debug) << "Forward Build Leaf: lv0";
@@ -327,7 +327,7 @@ protected:
 				while(!leafItr.isEnd())
 				{
 					auto bItemItr = (**bItr)->getItemRangeIterator(
-						coorRange(leafItr.coor() * this->leafDims_, leafItr.coor() * this->leafDims_ + this->leafDims_));
+						range(leafItr.coor() * this->leafDims_, leafItr.coor() * this->leafDims_ + this->leafDims_));
 					auto lNode = this->forwardInitLeafNode(bItemItr);
 					this->setNode(lNode, cItr->coor(), bItr->coor(), leafItr.coor());
 
@@ -1068,7 +1068,7 @@ public:
 		return blockCoor;
 	}
 
-	coorRange getBlockItemBoundary(coordinates& inner)
+	range getBlockItemBoundary(coordinates& inner)
 	{
 		coordinates spOut(this->dSize_), epOut(this->dSize_);
 		for (dimensionId d = 0; d < this->dSize_; ++d)
@@ -1076,7 +1076,7 @@ public:
 			spOut[d] = this->blockDims_[d] * inner[d];
 			epOut[d] = this->blockDims_[d] * (inner[d] + 1);
 		}
-		return coorRange(spOut, epOut);
+		return range(spOut, epOut);
 	}
 
 	_NODISCARD dimension getLeafDim() const
@@ -1122,7 +1122,7 @@ public:
 	}
 
 	// qRange: query range
-	pMmtNode getNode(const coorRange qRange)
+	pMmtNode getNode(const range qRange)
 	{
 		auto rangeDim = qRange.width();
 		coor blockDim(this->blockDims_);

@@ -41,8 +41,8 @@ protected:
 		dimension blockSpace = arrDesc->getDimDescs()->getBlockSpace();
 		dimension mmtNodeSpace = chunkSpace * blockSpace;
 
-		coorItr cit(chunkSpace);
-		coorItr bit(blockSpace);
+		mdItr cit(chunkSpace);
+		mdItr bit(blockSpace);
 		size_t dSize = arrDesc->getDSize();
 
 		auto arrIndex = arrayMgr::instance()->getAttributeIndex(arrDesc->id_, attrDesc->id_);
@@ -219,9 +219,9 @@ protected:
 		size_t blockLevel = pMmtIndex->getBlockLevel();
 
 		//auto chunkBitmap = std::make_shared<bitmapTree>(chunkNums, false);
-		auto chunkItr = coorItr(chunkSpace);
-		auto blockItr = coorItr(blockSpace);
-		auto nodeItr = coorItr(chunkSpace * blockSpace);
+		auto chunkItr = mdItr(chunkSpace);
+		auto blockItr = mdItr(blockSpace);
+		auto nodeItr = mdItr(chunkSpace * blockSpace);
 
 		for (chunkId cid = 0; cid < chunkNums; ++cid)
 		{

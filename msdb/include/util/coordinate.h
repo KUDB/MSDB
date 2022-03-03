@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_COORDINATE_H_
 #define _MSDB_COORDINATE_H_
 
@@ -347,10 +347,10 @@ coordinates operator/ (const coordinates& left, const int right);
 coordinates operator% (const coordinates& left, const coordinates& right);
 coordinates operator% (const coordinates& left, const int right);
 
-class coordinatesRange
+class range
 {
 public:
-	using self_type = coordinatesRange;
+	using self_type = range;
 	using size_type = size_t;
 	using dim_type = coordinates::dim_type;
 	using dim_pointer = coordinates::dim_pointer;
@@ -359,15 +359,15 @@ public:
 	using dim_const_reference = coordinates::dim_const_reference;
 
 public:
-	coordinatesRange(const size_type dSize = 0);
-	coordinatesRange(const std::vector<dim_type>& sP, const std::vector<dim_type>& eP);
-	coordinatesRange(std::initializer_list<dim_type> sP, std::initializer_list<dim_type> eP);
+	range(const size_type dSize = 0);
+	range(const std::vector<dim_type>& sP, const std::vector<dim_type>& eP);
+	range(std::initializer_list<dim_type> sP, std::initializer_list<dim_type> eP);
 
-	coordinatesRange(const coordinates& sP, const coordinates& eP);
-	coordinatesRange(const coordinates& eP);
-	coordinatesRange(const self_type& mit);
+	range(const coordinates& sP, const coordinates& eP);
+	range(const coordinates& eP);
+	range(const self_type& mit);
 
-	virtual ~coordinatesRange();
+	virtual ~range();
 
 public:
 	//////////////////////////////
@@ -533,16 +533,16 @@ protected:
 	coordinates eP_;
 };
 
-coordinatesRange operator+ (const coordinatesRange& left, const coordinates& right);
-coordinatesRange operator- (const coordinatesRange& left, const coordinates& right);
+range operator+ (const range& left, const coordinates& right);
+range operator- (const range& left, const coordinates& right);
 
 ////////////////////////////////////////
-// coordinatesIterator
+// multiDimIterator
 //
-class coordinatesIterator
+class multiDimIterator
 {
 public:
-	using self_type = coordinatesIterator;
+	using self_type = multiDimIterator;
 	using size_type = size_t;
 	using dim_type = coordinates::dim_type;
 	using dim_pointer = coordinates::dim_pointer;
@@ -551,13 +551,13 @@ public:
 	using dim_const_reference = coordinates::dim_const_reference;
 
 public:
-	coordinatesIterator(const size_type dSize, dim_const_pointer dims);
-	coordinatesIterator(const std::vector<dim_type>& lst);
-	coordinatesIterator(const coordinates space);
-	coordinatesIterator(std::initializer_list<dim_type> lst);
-	coordinatesIterator(const self_type& mit);
+	multiDimIterator(const size_type dSize, dim_const_pointer dims);
+	multiDimIterator(const std::vector<dim_type>& lst);
+	multiDimIterator(const coordinates space);
+	multiDimIterator(std::initializer_list<dim_type> lst);
+	multiDimIterator(const self_type& mit);
 
-	virtual ~coordinatesIterator();
+	virtual ~multiDimIterator();
 
 	inline self_type& operator=(const self_type& rhs)
 	{
@@ -655,7 +655,7 @@ public:
 	inline size_type coorToSeq(const coordinates coor)
 	{
 		size_type seq = 0, offset = 1;
-		for (dimensionId d = this->dSize() - 1; d != (dimensionId)-1; d--)
+		for (dimensionId d = (dimensionId)(this->dSize() - 1); d != (dimensionId)-1; d--)
 		{
 			seq += coor[d] * offset;
 			offset *= this->dims_[d];
@@ -818,11 +818,12 @@ protected:
 };
 
 template <typename Ty_ = element>
-class itemIterator : virtual public coordinatesIterator
+class itemIterator : virtual public multiDimIterator
 {
 public:
 	using self_type = itemIterator<Ty_>;
-	using base_type = coordinatesIterator;
+	using base_type = multiDimIterator;
+	using data_type = Ty_;
 
 	using size_type = size_t;
 	using dim_type = base_type::dim_type;
@@ -882,15 +883,15 @@ protected:
 };
 
 template <>
-class itemIterator<element> : virtual public coordinatesIterator
+class itemIterator<element> : virtual public multiDimIterator
 {
 public:
 	using self_type = itemIterator<element>;
-	using base_type = coordinatesIterator;
+	using base_type = multiDimIterator;
 
 	using coordinates = coordinates;
 	using size_type = size_t;
-	using dim_type = coordinatesIterator::dim_type;
+	using dim_type = multiDimIterator::dim_type;
 	using dim_pointer = base_type::dim_pointer;
 	using dim_const_pointer = base_type::dim_const_pointer;
 	using dim_reference = base_type::dim_reference;
@@ -971,7 +972,7 @@ public:
 public:
 	itemRangeIterator(void* ptr, const size_type dSize, dim_const_pointer dim,
 					  dim_const_pointer sP, dim_const_pointer eP)
-		: base_type(ptr, dSize, dim), coordinatesIterator(dSize, dim)
+		: base_type(ptr, dSize, dim), multiDimIterator(dSize, dim)
 	{
 		assert(this->initCheckSpEp());
 		this->sP_ = coordinates(dSize, sP);
@@ -980,8 +981,8 @@ public:
 	}
 
 	itemRangeIterator(void* ptr, eleType eType, const size_type dSize, dim_const_pointer dim,
-					  const coordinatesRange& range)
-		: base_type(ptr, eType, dSize, dim), coordinatesIterator(dSize, dim)
+					  const range& range)
+		: base_type(ptr, eType, dSize, dim), multiDimIterator(dSize, dim)
 	{
 		assert(this->initCheckSpEp());
 		this->sP_ = range.getSp();
@@ -989,7 +990,7 @@ public:
 		this->moveToStart();
 	}
 
-	itemRangeIterator(const self_type& mit) : base_type(mit), coordinatesIterator(mit)
+	itemRangeIterator(const self_type& mit) : base_type(mit), multiDimIterator(mit)
 	{
 		this->sP_ = mit.sP_;
 		this->eP_ = mit.eP_;
@@ -1037,7 +1038,7 @@ public:
 					  dim_const_pointer dim,
 					  dim_const_pointer sP,
 					  dim_const_pointer eP)
-		: base_type(ptr, eType, dSize, dim), coordinatesIterator(dSize, dim)
+		: base_type(ptr, eType, dSize, dim), multiDimIterator(dSize, dim)
 	{
 		assert(this->initCheckSpEp());
 		this->sP_ = coordinates(dSize, sP);
@@ -1048,8 +1049,8 @@ public:
 	itemRangeIterator(void* ptr, 
 					  const eleType eType,
 					  const coordinates dim,
-					  const coordinatesRange& range)
-		: base_type(ptr, eType, dim), coordinatesIterator(dim)
+					  const range& range)
+		: base_type(ptr, eType, dim), multiDimIterator(dim)
 	{
 		assert(this->initCheckSpEp());
 		this->sP_ = range.getSp();
@@ -1058,7 +1059,7 @@ public:
 	}
 
 	itemRangeIterator(const self_type& mit) 
-		: base_type(mit), coordinatesIterator(mit)
+		: base_type(mit), multiDimIterator(mit)
 	{
 		this->sP_ = mit.sP_;
 		this->eP_ = mit.eP_;
@@ -1093,11 +1094,10 @@ coordinates getOutsideCoor(const coordinates& c1, const coordinates& c2);
 using coor = coordinates;
 using pCoor = std::shared_ptr<coor>;
 
-using coorItr = coordinatesIterator;
-using pCoorItr = std::shared_ptr<coorItr>;
+using mdItr = multiDimIterator;
+using pMdItr = std::shared_ptr<mdItr>;
 
-using coorRange = coordinatesRange;
-using pCoorRange = std::shared_ptr<coorRange>;
+using pRange = std::shared_ptr<range>;
 
 using itemItr = itemIterator<element>;
 using pItemItr = std::shared_ptr<itemItr>;

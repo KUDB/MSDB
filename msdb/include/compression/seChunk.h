@@ -134,7 +134,7 @@ public:
 		{
 			auto innerSize = pow(2, level);
 			dimension innerSpace = dimension(dSize, innerSize);
-			coorItr innerItr(innerSpace);
+			mdItr innerItr(innerSpace);
 			while (!innerItr.isEnd())
 			{
 				coor innerCoor(innerItr.coor() + this->getChunkCoor() * innerSpace);
@@ -143,7 +143,7 @@ public:
 				{
 					dimension targetSp = getBandRange(band, bandDims * pow(2, level)).getSp() + innerItr.coor() * bandDims;
 					dimension targetEp = targetSp + bandDims;
-					auto bItemItr = inBlock->getItemRangeIterator(coorRange(targetSp, targetEp));
+					auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
 
 					bit_cnt_type rbFromDelta = this->rBitFromDelta[seqId];
 					bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
@@ -342,7 +342,7 @@ public:
 		{
 			auto innerSize = pow(2, level);
 			dimension innerSpace = dimension(dSize, innerSize);
-			coorItr innerItr(innerSpace);
+			mdItr innerItr(innerSpace);
 			while (!innerItr.isEnd())
 			{
 				coor innerCoor(innerItr.coor() + this->getChunkCoor() * innerSpace);
@@ -367,7 +367,7 @@ public:
 					//assert(rbFromMMT >= gap);
 #endif
 
-					auto bItemItr = inBlock->getItemRangeIterator(coorRange(targetSp, targetEp));
+					auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
 
 					//////////////////////////////
 					// 01

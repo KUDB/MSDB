@@ -105,7 +105,7 @@ private:
 	}
 
 	template <class Ty_>
-	bit_cnt_type findRequiredBits(pBlock curBlock, const coorRange& bandRange)
+	bit_cnt_type findRequiredBits(pBlock curBlock, const range& bandRange)
 	{
 		auto bItemItr = curBlock->getItemRangeIterator(bandRange);
 		bit_cnt_type maxValueBits = 0;
@@ -177,7 +177,7 @@ private:
 		{
 			auto innerSize = pow(2, level);
 			dimension innerSpace = dimension(dSize, innerSize);
-			coorItr innerItr(innerSpace);
+			mdItr innerItr(innerSpace);
 			auto blockLevel = mmtIndex->getBlockLevel();
 			while (!innerItr.isEnd())
 			{
@@ -189,7 +189,7 @@ private:
 					dimension targetSp = getBandRange(band, bandDims * pow(2, level)).getSp() + innerItr.coor() * bandDims;
 					dimension targetEp = targetSp + bandDims;
 
-					bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, coorRange(targetSp, targetEp));
+					bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, range(targetSp, targetEp));
 					if(rbFromDelta > 0)
 					{
 						rbFromDelta += static_cast<char>(hasNegative);
@@ -214,7 +214,7 @@ private:
 					//		<< ", innerCoor: " << innerCoor.toString() << ", innerSpace: " << innerSpace.toString();
 					//	BOOST_LOG_TRIVIAL(warning) << mNode->toString<Ty_>();
 					//	BOOST_LOG_TRIVIAL(warning) << "range: " << targetSp.toString() << "~" << targetEp.toString();
-					//	auto iit = outBlock->getItemRangeIterator(coorRange(targetSp, targetEp));
+					//	auto iit = outBlock->getItemRangeIterator(range(targetSp, targetEp));
 					//	std::stringstream ss;
 					//	while(!iit->isEnd())
 					//	{

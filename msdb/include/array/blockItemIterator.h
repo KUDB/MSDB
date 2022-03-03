@@ -16,10 +16,10 @@ class blockItemRangeIterator;
 using pBlockItemIterator = std::shared_ptr<blockItemIterator>;
 using pBlockItemRangeIterator = std::shared_ptr<blockItemRangeIterator>;
 
-class blockItemIteratorBase : virtual public coordinatesIterator
+class blockItemIteratorBase : virtual public multiDimIterator
 {
 public:
-	using base_type = coordinatesIterator;
+	using base_type = multiDimIterator;
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
 	using dim_pointer = base_type::dim_pointer;
@@ -86,7 +86,7 @@ public:
 public:
 	blockItemRangeIterator(void* data, const eleType eType,
 						   const dimension& dims,
-						   const coorRange& range,
+						   const range& range,
 						   const dimension& bSp,
 						   pBitmap itemBitmap);
 };
@@ -110,7 +110,7 @@ public:
 					  pBitmap itemBitmap);
 
 	blockItemIterator(void* data, const eleType eType,
-					  const dimension& dims, const coorRange& irange,
+					  const dimension& dims, const range& irange,
 					  const dimension& bSp,
 					  pBitmap itemBitmap);
 };

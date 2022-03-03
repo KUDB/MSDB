@@ -13,13 +13,13 @@ namespace core
 class chunkIterator;
 using pChunkIterator = std::shared_ptr<chunkIterator>;
 
-class chunkIterator : public coorItr
+class chunkIterator : public mdItr
 {
 public:
 	using self_type = chunkIterator;
-	using base_type = coorItr;
+	using base_type = mdItr;
 
-	using size_type = coorItr::size_type;
+	using size_type = mdItr::size_type;
 
 public:
 	chunkIterator(const dimension dims,

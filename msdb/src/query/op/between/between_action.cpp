@@ -31,7 +31,7 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
 	pCoor sp = std::static_pointer_cast<coor>(this->params_[1]->getParam());
 	pCoor ep = std::static_pointer_cast<coor>(this->params_[2]->getParam());
-	coorRange betweenRange(*sp, *ep);
+	range betweenRange(*sp, *ep);
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
@@ -99,7 +99,7 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	return outArr;
 }
 
-void between_action::betweenChunk(pChunk outChunk, pChunk inChunk, coorRange& betweenRange)
+void between_action::betweenChunk(pChunk outChunk, pChunk inChunk, range& betweenRange)
 {
 	auto blockItr = inChunk->getBlockIterator();
 	auto betweenRangeInChunk = betweenRange;
@@ -133,7 +133,7 @@ void between_action::fullyInsideChunk(pChunk outChunk, pChunk inChunk)
 {
 	outChunk->makeBlocks(*inChunk->getBlockBitmap());
 }
-void between_action::betweenBlock(pBlock outBlock, pBlock inBlock, coorRange& betweenRangeInChunk)
+void between_action::betweenBlock(pBlock outBlock, pBlock inBlock, range& betweenRangeInChunk)
 {
 	auto inDesc = inBlock->getDesc();
 	auto outDesc = outBlock->getDesc();
@@ -144,7 +144,7 @@ void between_action::betweenBlock(pBlock outBlock, pBlock inBlock, coorRange& be
 	outDesc->setIep(outDesc->getIep() - outDesc->getSp());
 	outBlock->initEmptyBitmap();
 
-	coorRange itRange(outDesc->getIsp(), outDesc->getIep());
+	range itRange(outDesc->getIsp(), outDesc->getIep());
 	auto iit = inBlock->getItemRangeIterator(itRange);
 	auto oit = outBlock->getItemRangeIterator(itRange);
 	

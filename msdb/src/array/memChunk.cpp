@@ -59,7 +59,7 @@ void memChunk::referenceBufferToBlock(const blockId bId)
 //												  this->desc_->dims_,
 //												  this->desc_->sp_);
 //}
-//pChunkItemRangeIterator memChunk::getItemRangeIterator(const coorRange& range)
+//pChunkItemRangeIterator memChunk::getItemRangeIterator(const range& range)
 //{
 //	return std::make_shared<memChunkItemRangeIterator>(this->cached_->getData(),
 //													   this->desc_->attrDesc_->type_,

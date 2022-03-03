@@ -67,7 +67,7 @@ template<typename Ty_>
 void insert_action::insertData(pArray inArr, Ty_* data, size_t length)
 {
 	auto dims = inArr->getDesc()->getDimDescs()->getDims();
-	auto globalItr = coorItr(dims);
+	auto globalItr = mdItr(dims);
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{

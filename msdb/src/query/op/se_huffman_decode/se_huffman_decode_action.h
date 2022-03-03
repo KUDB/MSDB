@@ -205,7 +205,7 @@ private:
 		{
 			auto innerSize = pow(2, level);
 			dimension innerSpace = dimension(dSize, innerSize);
-			coorItr innerItr(innerSpace);
+			mdItr innerItr(innerSpace);
 			while (!innerItr.isEnd())
 			{
 				coor innerCoor(innerItr.coor() + inChunk->getChunkCoor() * innerSpace);

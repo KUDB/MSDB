@@ -5,7 +5,7 @@ namespace msdb
 {
 namespace core
 {
-coorRange getBandRange(const size_t bandId, const coor& bandDims)
+range getBandRange(const size_t bandId, const coor& bandDims)
 {
 	size_t dSize = bandDims.size();
 	coor bandSp(dSize);
@@ -19,7 +19,7 @@ coorRange getBandRange(const size_t bandId, const coor& bandDims)
 			bandEp[d] += bandDims[d];
 		}
 	}
-	return coorRange(bandSp, bandEp);
+	return range(bandSp, bandEp);
 }
 
 //pVecBlockInfo getWaveletBlockInfo(size_t maxLevel, size_t dSize, size_t blockId)

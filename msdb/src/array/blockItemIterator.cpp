@@ -11,36 +11,36 @@ blockItemIterator::blockItemIterator(void* data,
 									 const dimension& bSp,
 									 pBitmap itemBitmap)
 	: blockItemRangeIterator(data, eType, dims, dims, bSp, itemBitmap),
-	coorItr(dims)
+	mdItr(dims)
 	//: itemItr(data, eType, dims), 
 	//blockItemIteratorBase(data, eType, dims, bSp, itemBitmap),
-	//coorItr(dims)
+	//mdItr(dims)
 {
 }
 
 blockItemIterator::blockItemIterator(void* data,
 									 const eleType eType,
 									 const dimension& dims,
-									 const coorRange& irange,
+									 const range& irange,
 									 const dimension& bSp,
 									 pBitmap itemBitmap)
 	: blockItemRangeIterator(data, eType, dims, irange, bSp, itemBitmap),
-	coorItr(dims)
+	mdItr(dims)
 	//: itemItr(data, eType, dims), 
 	//blockItemIteratorBase(data, eType, dims, bSp, itemBitmap),
-	//coorItr(dims)
+	//mdItr(dims)
 {
 }
 
 blockItemRangeIterator::blockItemRangeIterator(void* data,
 											   const eleType eType,
 											   const dimension& dims, 
-											   const coorRange& range,
+											   const range& range,
 											   const dimension& bSp,
 											   pBitmap itemBitmap)
 	: itemRangeItr(data, eType, dims, range),
 	blockItemIteratorBase(data, eType, dims, bSp, itemBitmap),
-	coorItr(dims)
+	mdItr(dims)
 {
 }
 }		// core

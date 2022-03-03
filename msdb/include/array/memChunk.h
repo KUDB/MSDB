@@ -49,7 +49,7 @@ protected:
 //////////////////////////////
 public:
 	//virtual pChunkItemIterator getItemIterator();
-	//virtual pChunkItemRangeIterator getItemRangeIterator(const coorRange& range);
+	//virtual pChunkItemRangeIterator getItemRangeIterator(const range& range);
 
 //////////////////////////////
 // Serializable

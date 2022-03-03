@@ -42,7 +42,7 @@ public:
 
 	memChunkItemRangeIterator(void* data, eleType eType,
 							  const dimension dims,
-							  const coorRange& range,
+							  const range& range,
 							  const dimension csP);
 };
 }		// core

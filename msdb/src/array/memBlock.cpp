@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/memBlock.h>
 #include <array/memBlockItemIterator.h>
 
@@ -105,19 +105,19 @@ pBlockItemIterator memBlock::getItemIterator()
 	return std::make_shared<memBlockItemIterator>(this->cached_->getData(),
 													   this->desc_->eType_,
 													   this->desc_->dims_,
-													   coorRange(this->desc_->getIsp(), this->desc_->getIep()),
+													   range(this->desc_->getIsp(), this->desc_->getIep()),
 													   this->desc_->getSp(),
 													   this->itemBitmap_);
 }
 
-pBlockItemRangeIterator memBlock::getItemRangeIterator(const coorRange& range)
+pBlockItemRangeIterator memBlock::getItemRangeIterator(const range& r)
 {
-	auto sp = getOutsideCoor(this->desc_->getIsp(), range.getSp());
-	auto ep = getInsideCoor(this->desc_->getIep(), range.getEp());
+	auto sp = getOutsideCoor(this->desc_->getIsp(), r.getSp());
+	auto ep = getInsideCoor(this->desc_->getIep(), r.getEp());
 	return std::make_shared<memBlockItemRangeIterator>(this->cached_->getData(),
 													   this->desc_->eType_,
 													   this->desc_->dims_,
-													   coorRange(sp, ep),
+													   range(sp, ep),
 													   this->desc_->getSp(),
 													   this->itemBitmap_);
 }

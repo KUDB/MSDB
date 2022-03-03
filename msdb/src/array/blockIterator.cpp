@@ -8,14 +8,14 @@ namespace core
 blockIterator::blockIterator(const dimension dims,
 							 blockContainer* blocks, pBitmap blockBitmap, 
 							 const iterateMode itMode)
-	: coorItr(dims), 
+	: mdItr(dims), 
 	blocks_(blocks), blockBitmap_(blockBitmap),
 	itMode_(itMode)
 {
 }
 
 blockIterator::blockIterator(const self_type& mit)
-	: coorItr(mit), 
+	: mdItr(mit), 
 	blocks_(mit.blocks_), blockBitmap_(mit.blockBitmap_),
 	itMode_(mit.itMode_)
 {

@@ -163,9 +163,9 @@ coor chunk::getChunkCoor()
 	return this->desc_->chunkCoor_;
 }
 
-coorRange chunk::getChunkRange()
+range chunk::getChunkRange()
 {
-	return coorRange(this->desc_->sp_, this->desc_->ep_);
+	return range(this->desc_->sp_, this->desc_->ep_);
 }
 
 void chunk::flush()

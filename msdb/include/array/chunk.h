@@ -36,7 +36,7 @@ public:
 	size_type getDSize();
 	size_type numCells();
 	coor getChunkCoor();
-	coorRange getChunkRange();
+	range getChunkRange();
 	void flush();
 
 protected:
@@ -104,7 +104,7 @@ protected:
 //////////////////////////////
 public:
 	//virtual pChunkItemIterator getItemIterator() = 0;
-	//virtual pChunkItemRangeIterator getItemRangeIterator(const coorRange& range) = 0;
+	//virtual pChunkItemRangeIterator getItemRangeIterator(const range& range) = 0;
 
 //////////////////////////////
 // Print

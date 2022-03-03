@@ -105,8 +105,8 @@ public:
 		dimension originalBlockCoor = inChunk->getChunkCoor() % blockSpaceDim;
 
 		// Iterator synopsis item
-		auto iit = inBlock->getItemRangeIterator(coorRange(synopsisDim));
-		auto oit = outBlock->getItemRangeIterator(coorRange(synopsisDim));
+		auto iit = inBlock->getItemRangeIterator(range(synopsisDim));
+		auto oit = outBlock->getItemRangeIterator(range(synopsisDim));
 
 		// Get mmtNode
 		// MMT is built from the origianl array

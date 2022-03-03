@@ -13,13 +13,13 @@ namespace core
 class blockIterator;
 using pBlockIterator = std::shared_ptr<blockIterator>;
 
-class blockIterator : public coorItr
+class blockIterator : public mdItr
 {
 public:
 	using self_type = blockIterator;
-	using base_type = coorItr;
+	using base_type = mdItr;
 
-	using size_type = coorItr::size_type;
+	using size_type = mdItr::size_type;
 
 
 public:

@@ -11,7 +11,7 @@ memBlockItemIterator::memBlockItemIterator(void* data,
                                            const dimension& bSp,
                                            pBitmap itemBitmap)
     : blockItemIterator(data, eType, dims, bSp, itemBitmap),
-    coorItr(dims.size(), dims.data())
+    mdItr(dims.size(), dims.data())
 {
     if(itemBitmap == nullptr)
     {
@@ -22,11 +22,11 @@ memBlockItemIterator::memBlockItemIterator(void* data,
 memBlockItemIterator::memBlockItemIterator(void* data,
                                            const eleType eType,
                                            const dimension& dims,
-                                           const coorRange& irange,
+                                           const range& irange,
                                            const dimension& bSp,
                                            pBitmap itemBitmap)
     : blockItemIterator(data, eType, dims, irange, bSp, itemBitmap),
-    coorItr(dims.size(), dims.data())
+    mdItr(dims.size(), dims.data())
 {
     if (itemBitmap == nullptr)
     {
@@ -37,11 +37,11 @@ memBlockItemIterator::memBlockItemIterator(void* data,
 memBlockItemRangeIterator::memBlockItemRangeIterator(void* data,
                                                      const eleType eType,
                                                      const dimension& dims, 
-                                                     const coorRange& range, 
+                                                     const range& range, 
                                                      const dimension& bSp,
                                                      pBitmap itemBitmap)
     : blockItemRangeIterator(data, eType, dims, range, bSp, itemBitmap),
-    coorItr(dims.size(), dims.data())
+    mdItr(dims.size(), dims.data())
 {
     if (itemBitmap == nullptr)
     {

@@ -89,7 +89,7 @@ private:
 
 		for (size_t level = 0; level <= maxLevel; ++level)
 		{
-			coorRange arrRange = outChunkDesc->blockDims_ / pow(2, level);
+			range arrRange = outChunkDesc->blockDims_ / pow(2, level);
 			this->levelEncode<Ty_>(outChunk, arrRange, w, level, q);
 #ifndef NDEBUG
 			//BOOST_LOG_TRIVIAL(trace) << "wtEncode level: " << level;
@@ -100,7 +100,7 @@ private:
 	}
 
 	template <class Ty_>
-	void levelEncode(pChunk outChunk, coorRange& arrRange, 
+	void levelEncode(pChunk outChunk, range& arrRange, 
 					 pWavelet w, size_t level, pQuery q)
 	{
 		dimensionId dSize = outChunk->getDSize();
@@ -116,7 +116,7 @@ private:
 
 	template <class Ty_>
 	void dimensionEncode(pChunk outChunk, 
-						 coorRange& arrRange, dimensionId basisDim,
+						 range& arrRange, dimensionId basisDim,
 						 pWavelet w, pQuery q)
 	{
 		size_t length = arrRange.getEp()[basisDim];

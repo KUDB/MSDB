@@ -57,7 +57,7 @@ public:
 //////////////////////////////
 public:
 	virtual pChunkItemIterator getItemIterator();
-	virtual pChunkItemRangeIterator getItemRangeIterator(const coorRange& range);
+	virtual pChunkItemRangeIterator getItemRangeIterator(const range& range);
 
 public:
 	virtual void serialize(std::ostream& os) override;
@@ -104,7 +104,7 @@ class blockChunkItemRangeIterator : public chunkItemRangeIterator
 public:
 	blockChunkItemRangeIterator(void* data, eleType eType, 
 								const dimension& dims,
-								const coorRange& range,
+								const range& range,
 								const dimension& csP, 
 								pBlockIterator bItr);
 

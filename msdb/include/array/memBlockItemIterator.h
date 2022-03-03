@@ -33,7 +33,7 @@ public:
 	memBlockItemIterator(void* data,
 						 const eleType eType,
 						 const dimension& dims,
-						 const coorRange& irange,
+						 const range& irange,
 						 const dimension& bSp,
 						 pBitmap itemBitmap);
 };
@@ -44,7 +44,7 @@ public:
 	memBlockItemRangeIterator(void* data,
 							  const eleType eType,
 							  const dimension& dims,
-							  const coorRange& range,
+							  const range& range,
 							  const dimension& bSp,
 							  pBitmap itemBitmap);
 };

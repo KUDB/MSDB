@@ -95,7 +95,7 @@ private:
 		//pBitmap blockBitmap = std::make_shared<bitmap>(blockSpace.area(), false);
 		auto blockBitmap = outChunk->getBlockBitmap();
 		auto blockItr = outChunk->getBlockIterator();
-		//coorItr bSpaceItr(blockSpace);
+		//mdItr bSpaceItr(blockSpace);
 
 		// Bring all chunks belong to an outChunk
 		while (!blockItr->isEnd())
@@ -198,14 +198,14 @@ private:
 		dimensionId dSize = outBlock->getDSize();
 		for (dimensionId d = dSize - 1; d != (dimensionId)-1; --d)
 		{
-			coorRange arrRange = outBlock->getDesc()->dims_ / pow(2, level);
+			range arrRange = outBlock->getDesc()->dims_ / pow(2, level);
 			this->dimensionDecode<Ty_>(outBlock, arrRange, d, w, q);
 		}
 	}
 
 	template <class Ty_>
 	void dimensionDecode(pBlock outBlock,
-						 const coorRange& encodeRange, const dimensionId& basisDim,
+						 const range& encodeRange, const dimensionId& basisDim,
 						 pWavelet w, pQuery q)
 	{
 		size_t length = encodeRange.getEp()[basisDim];
@@ -277,9 +277,9 @@ private:
 		dimension blockSpace = aDesc->getDimDescs()->getBlockSpace();
 		dimension seChunkSpace = chunkSpace * blockSpace;
 
-		auto inChunkItr = coorItr(seChunkSpace);
-		auto outChunkItr = coorItr(chunkSpace);
-		auto outBlockItr = coorItr(blockSpace);
+		auto inChunkItr = mdItr(seChunkSpace);
+		auto outChunkItr = mdItr(chunkSpace);
+		auto outBlockItr = mdItr(blockSpace);
 
 		pBitmapTree outBitmap = std::make_shared<bitmapTree>(chunkSpace.area(), false);
 

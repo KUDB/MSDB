@@ -23,7 +23,7 @@ public:
 //////////////////////////////
 public:
 	virtual pBlockItemIterator getItemIterator();
-	virtual pBlockItemRangeIterator getItemRangeIterator(const coorRange& range);
+	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range);
 
 //////////////////////////////
 // Buffer

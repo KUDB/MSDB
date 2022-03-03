@@ -84,8 +84,8 @@ void mmt_delta_encode_action::chunkEncode(pChunk outChunk, pChunk inChunk,
 	dimension originalBlockCoor = inChunk->getChunkCoor() % blockSpaceDim;
 
 	// Iterator synopsis item
-	auto iit = inBlock->getItemRangeIterator(coorRange(synopsisDim));
-	auto oit = outBlock->getItemRangeIterator(coorRange(synopsisDim));
+	auto iit = inBlock->getItemRangeIterator(range(synopsisDim));
+	auto oit = outBlock->getItemRangeIterator(range(synopsisDim));
 
 	auto node = mmtIndex->getNode(originalChunkCoor, originalBlockCoor, mmtIndex->getBlockLevel());
 	Ty_ nodeMin = node->getMin<Ty_>();
