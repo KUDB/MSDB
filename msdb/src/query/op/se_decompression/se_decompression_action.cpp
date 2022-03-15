@@ -1,6 +1,5 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/se_decompression/se_decompression_action.h>
-#include <array/memArray.h>
 #include <system/storageMgr.h>
 
 namespace msdb
@@ -82,7 +81,7 @@ pArray se_decompression_action::execute(std::vector<pArray>& inputArrays, pQuery
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return std::static_pointer_cast<arrayBase>(outArr);;
+	return std::static_pointer_cast<array>(outArr);;
 }
 
 pSeChunk se_decompression_action::makeInChunk(std::shared_ptr<wavelet_encode_array> arr,

@@ -79,7 +79,7 @@ pArray mmt_delta_decode_action::execute(std::vector<pArray>& inputArrays, pQuery
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return std::static_pointer_cast<arrayBase>(outArr);
+	return std::static_pointer_cast<array>(outArr);
 }
 }		// core
 }		// msdb

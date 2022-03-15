@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ARRAY_H_
 #define _MSDB_ARRAY_H_
 
@@ -13,10 +13,10 @@ namespace msdb
 {
 namespace core
 {
-class arrayBase;
-using pArray = std::shared_ptr<arrayBase>;
+class array;
+using pArray = std::shared_ptr<array>;
 
-class arrayBase : public std::enable_shared_from_this<arrayBase>
+class array : public std::enable_shared_from_this<array>
 {
 public:
 	using size_type = size_t;
@@ -25,8 +25,8 @@ public:
 	using chunkPair = std::pair<chunkId, pChunk>;
 
 public:
-	arrayBase(pArrayDesc desc);
-	virtual ~arrayBase();
+	array(pArrayDesc desc);
+	virtual ~array();
 
 public:
 	//////////////////////////////
@@ -57,7 +57,7 @@ public:
 	// The function provided by default extracts ID from ChunkDesc 
 	// and re-generate chunkDesc for it.
 	virtual pChunk makeChunk(const chunkDesc& desc);
-	// If a chunkBit is setted, arrayBase makes a chunk accordingly.
+	// If a chunkBit is setted, array makes a chunk accordingly.
 	void makeChunks(const attributeId attrId, const bitmap& input);
 
 	pChunk insertChunk(const attributeId attrId, pChunk inputChunk);
@@ -90,12 +90,12 @@ public:
 		}
 		this->overallChunkBitmap_->setNull(cId);
 	}
-	virtual void freeChunk(const attributeId attrId, const chunkId cId) = 0;
+	virtual void freeChunk(const attributeId attrId, const chunkId cId);
 
 	cpBitmap getChunkBitmap() const;
 	void copyChunkBitmap(cpBitmap chunkBitmap);
 	void replaceChunkBitmap(pBitmap chunkBitmap);
-	void mergeChunkBitmap(pBitmap chunkBitmap);
+	void mergeChunkBitmap(pBitmap chunkBitmap);		// TODO::pullout the method from array -> bitmap, andMerge, orMerge.... or operators
 
 	void print();
 

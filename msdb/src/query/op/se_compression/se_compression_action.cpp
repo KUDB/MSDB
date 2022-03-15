@@ -1,6 +1,5 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/se_compression/se_compression_action.h>
-#include <array/memArray.h>
 #include <system/storageMgr.h>
 
 namespace msdb
@@ -64,7 +63,7 @@ pArray se_compression_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return std::static_pointer_cast<arrayBase>(sourceArr);
+	return std::static_pointer_cast<array>(sourceArr);
 }
 pSeChunk se_compression_action::makeOutChunk(pWtChunk inChunk)
 {

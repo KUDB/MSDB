@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/se_huffman_encode/se_huffman_encode_action.h>
 #include <system/storageMgr.h>
 #include <compression/seHuffmanChunk.h>
@@ -65,7 +65,7 @@ pArray se_huffman_encode_action::execute(std::vector<pArray>& inputArrays, pQuer
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return std::static_pointer_cast<arrayBase>(sourceArr);
+	return std::static_pointer_cast<array>(sourceArr);
 }
 pSeHuffmanChunk se_huffman_encode_action::makeOutChunk(pWtChunk inChunk)
 {

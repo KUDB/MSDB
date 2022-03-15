@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/encode_raw/encode_raw_action.h>
-#include <array/memArray.h>
+#include <array/flattenArray.h>
 #include <system/storageMgr.h>
 #include <util/logger.h>
 

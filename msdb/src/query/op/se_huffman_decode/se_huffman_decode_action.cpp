@@ -83,7 +83,7 @@ pArray se_huffman_decode_action::execute(std::vector<pArray>& inputArrays, pQuer
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return std::static_pointer_cast<arrayBase>(outArr);;
+	return std::static_pointer_cast<array>(outArr);;
 }
 
 pSeHuffmanChunk se_huffman_decode_action::makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,

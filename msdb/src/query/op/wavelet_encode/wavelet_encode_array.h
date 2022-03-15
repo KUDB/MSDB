@@ -1,18 +1,18 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_WAVELET_ENCODE_ARRAY_H_
 #define _MSDB_OP_WAVELET_ENCODE_ARRAY_H_
 
 #include <pch.h>
-#include <array/memArray.h>
+#include <array/flattenArray.h>
 
 namespace msdb
 {
 namespace core
 {
-class wavelet_encode_array : public memArray
+class wavelet_encode_array : public flattenArray
 {
 public:
-	using base_type = memArray;
+	using base_type = flattenArray;
 
 public:
 	wavelet_encode_array(pArrayDesc desc);

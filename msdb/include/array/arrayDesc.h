@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ARRAYDESC_H_
 #define _MSDB_ARRAYDESC_H_
 
@@ -15,6 +15,7 @@ namespace core
 #define _MSDB_STR_ARRAY_DESC_		"ARRAY_DESCRIPTION"
 #define _MSDB_STR_ARR_ID_			"ARRAY_ID"
 #define _MSDB_STR_ARR_NAME_			"ARRAY_NAME"
+#define _MSDB_STR_ARR_TYPE_			"ARRAY_TYPE"
 
 class arrayDesc;
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
-#ifndef _MSDB_MEMBLOCKARRAY_H_
-#define _MSDB_MEMBLOCKARRAY_H_
+#ifndef _MSDB_FLATTENARRAY_H_
+#define _MSDB_FLATTENARRAY_H_
 
 #include <pch.h>
 #include <array/array.h>
@@ -9,14 +9,14 @@ namespace msdb
 {
 namespace core
 {
-class memBlockArray : public array
+class flattenArray : public array
 {
 public:
 	using base_type = array;
 
 public:
-	memBlockArray(pArrayDesc desc);
-	~memBlockArray();
+	flattenArray(pArrayDesc desc);
+	virtual ~flattenArray();
 
 public:
 	virtual pChunk makeChunk(const attributeId attrId, const chunkId cId) override;
@@ -24,4 +24,4 @@ public:
 };
 }		// core
 }		// msdb
-#endif	// _MSDB_MEMBLOCKARRAY_H_
+#endif _MSDB_FLATTENARRAY_H_
