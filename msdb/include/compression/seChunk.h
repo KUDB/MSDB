@@ -3,7 +3,7 @@
 #define _MSDB_SE_CHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <array/block.h>
 #include <compression/waveletUtil.h>
 #include <numeric>
@@ -15,7 +15,7 @@ namespace core
 class seChunk;
 using pSeChunk = std::shared_ptr<seChunk>;
 
-class seChunk : public memBlockChunk
+class seChunk : public flattenChunk
 {
 public:
 	seChunk(pChunkDesc desc);

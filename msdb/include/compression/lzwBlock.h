@@ -3,7 +3,7 @@
 #define _MSDB_LZWBLOCK_H_
 
 #include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 #include <util/ioutil.h>
 
 namespace msdb
@@ -13,7 +13,7 @@ namespace core
 class lzwBlock;
 using pLzwBlock = std::shared_ptr<lzwBlock>;
 
-class lzwBlock : public memBlock
+class lzwBlock : public flattenBlock
 {
 public:
 	lzwBlock(pBlockDesc desc);

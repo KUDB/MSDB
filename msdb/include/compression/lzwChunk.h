@@ -3,7 +3,7 @@
 #define _MSDB_LZWCHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <compression/lzwEncoder.h>
 #include <compression/lzwBlock.h>
 #include <io/bitstream.h>
@@ -16,7 +16,7 @@ namespace core
 class lzwChunk;
 using pLzwChunk = std::shared_ptr<lzwChunk>;
 
-class lzwChunk : public memBlockChunk
+class lzwChunk : public flattenChunk
 {
 public:
 	using lzwCodeType = std::uint16_t;

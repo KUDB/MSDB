@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_COMPASSBLOCK_H_
 #define _MSDB_COMPASSBLOCK_H_
 
 #include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 #include <io/bitstream.h>
 
 namespace msdb
@@ -13,7 +13,7 @@ namespace core
 class compassBlock;
 using pCompassBlock = std::shared_ptr<compassBlock>;
 
-class compassBlock : public memBlock
+class compassBlock : public flattenBlock
 {
 public:
 	compassBlock(pBlockDesc desc);

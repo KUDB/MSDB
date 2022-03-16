@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/huffman_decode/huffman_decode_action.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
 
@@ -29,7 +29,7 @@ pArray huffman_decode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	pArray sourceArr = inputArrays[0];
 	arrayId arrId = sourceArr->getId();
 
-	auto outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	auto outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	outArr->copyChunkBitmap(this->getPlanInChunkBitmap());
 
 	for (auto attr : *sourceArr->getDesc()->attrDescs_)

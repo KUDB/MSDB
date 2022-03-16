@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ADAPTHUFFMANBLOCK_H_
 #define _MSDB_ADAPTHUFFMANBLOCK_H_
 
 #include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 #include <compression/adaptiveHuffmanCode.h>
 
 namespace msdb
@@ -13,7 +13,7 @@ namespace core
 class adaptHuffmanBlock;
 using pAdaptHuffmanBlock = std::shared_ptr<adaptHuffmanBlock>;
 
-class adaptHuffmanBlock : public memBlock
+class adaptHuffmanBlock : public flattenBlock
 {
 public:
 	adaptHuffmanBlock(pBlockDesc desc);

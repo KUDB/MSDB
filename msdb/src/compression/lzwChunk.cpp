@@ -7,7 +7,7 @@ namespace msdb
 namespace core
 {
 lzwChunk::lzwChunk(pChunkDesc desc)
-	: memBlockChunk(desc)
+	: flattenChunk(desc)
 {
 }
 lzwChunk::~lzwChunk()

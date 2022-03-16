@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <compression/spihtBlock.h>
 
 namespace msdb
@@ -6,7 +6,7 @@ namespace msdb
 namespace core
 {
 spihtBlock::spihtBlock(pBlockDesc desc)
-	: memBlock(desc)
+	: flattenBlock(desc)
 {
 }
 

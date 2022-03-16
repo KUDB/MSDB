@@ -1,18 +1,18 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_WAVELET_DECODE_ARRAY_H_
 #define _MSDB_OP_WAVELET_DECODE_ARRAY_H_
 
 #include <pch.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 
 namespace msdb
 {
 namespace core
 {
-class wavelet_decode_array : public memBlockArray
+class wavelet_decode_array : public flattenArray
 {
 public:
-	using base_type = memBlockArray;
+	using base_type = flattenArray;
 
 public:
 	wavelet_decode_array(pArrayDesc desc, const size_t maxLevel);

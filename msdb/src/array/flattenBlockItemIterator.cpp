@@ -1,11 +1,11 @@
-#include <pch.h>
-#include <array/memBlockItemIterator.h>
+﻿#include <pch.h>
+#include <array/flattenBlockItemIterator.h>
 
 namespace msdb
 {
 namespace core
 {
-memBlockItemIterator::memBlockItemIterator(void* data,
+flattenBlockItemIterator::flattenBlockItemIterator(void* data,
                                            const eleType eType, 
                                            const dimension& dims,
                                            const dimension& bSp,
@@ -19,7 +19,7 @@ memBlockItemIterator::memBlockItemIterator(void* data,
     }
 }
 
-memBlockItemIterator::memBlockItemIterator(void* data,
+flattenBlockItemIterator::flattenBlockItemIterator(void* data,
                                            const eleType eType,
                                            const dimension& dims,
                                            const range& irange,
@@ -34,7 +34,7 @@ memBlockItemIterator::memBlockItemIterator(void* data,
     }
 }
 
-memBlockItemRangeIterator::memBlockItemRangeIterator(void* data,
+flattenBlockItemRangeIterator::flattenBlockItemRangeIterator(void* data,
                                                      const eleType eType,
                                                      const dimension& dims, 
                                                      const range& range, 

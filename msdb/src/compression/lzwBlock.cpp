@@ -7,7 +7,7 @@ namespace msdb
 namespace core
 {
 lzwBlock::lzwBlock(pBlockDesc desc)
-	: memBlock(desc)
+	: flattenBlock(desc)
 {
 }
 lzwBlock::~lzwBlock()

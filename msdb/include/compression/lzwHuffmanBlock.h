@@ -3,7 +3,7 @@
 #define _MSDB_LZWHUFFMANBLOCK_H_
 
 #include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 
 namespace msdb
 {
@@ -12,7 +12,7 @@ namespace core
 class lzwHuffmanBlock;
 using pLzwHuffmanBlock = std::shared_ptr<lzwHuffmanBlock>;
 
-class lzwHuffmanBlock : public memBlock
+class lzwHuffmanBlock : public flattenBlock
 {
 public:
 	lzwHuffmanBlock(pBlockDesc desc);

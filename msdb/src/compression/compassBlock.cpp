@@ -6,7 +6,7 @@ namespace msdb
 namespace core
 {
 compassBlock::compassBlock(pBlockDesc desc)
-	: memBlock(desc), numBins_(0)
+	: flattenBlock(desc), numBins_(0)
 {
 }
 

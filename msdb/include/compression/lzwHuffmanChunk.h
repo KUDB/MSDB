@@ -3,7 +3,7 @@
 #define _MSDB_LZWHUFFMANCHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <io/bitstream.h>
 #include <compression/lzwEncoder.h>
 #include <compression/huffmanCode.h>
@@ -15,7 +15,7 @@ namespace core
 class lzwHuffmanChunk;
 using pLzwHuffmanChunk = std::shared_ptr<lzwHuffmanChunk>;
 
-class lzwHuffmanChunk : public memBlockChunk
+class lzwHuffmanChunk : public flattenChunk
 {
 public:
 	lzwHuffmanChunk(pChunkDesc desc);

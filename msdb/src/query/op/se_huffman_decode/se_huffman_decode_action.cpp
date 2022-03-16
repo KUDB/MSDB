@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/se_huffman_decode/se_huffman_decode_action.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
 

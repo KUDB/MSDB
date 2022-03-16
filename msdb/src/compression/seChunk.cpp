@@ -7,7 +7,7 @@ namespace msdb
 namespace core
 {
 seChunk::seChunk(pChunkDesc desc)
-	: memBlockChunk(desc), level_(0), rBitFromMMT(0), min_(0)
+	: flattenChunk(desc), level_(0), rBitFromMMT(0), min_(0)
 {
 }
 

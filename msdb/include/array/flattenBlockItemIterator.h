@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_MEMBLOCKITEMITERATOR_H_
 #define _MSDB_MEMBLOCKITEMITERATOR_H_
 
@@ -10,10 +10,10 @@ namespace msdb
 {
 namespace core
 {
-class memBlockItemIterator : public blockItemIterator
+class flattenBlockItemIterator : public blockItemIterator
 {
 public:
-	using self_type = memBlockItemIterator;
+	using self_type = flattenBlockItemIterator;
 	using base_type = blockItemIterator;
 
 	using size_type = base_type::size_type;
@@ -24,13 +24,13 @@ public:
 	using dim_const_reference = base_type::dim_const_reference;
 public:
 	// bSp : block start point
-	memBlockItemIterator(void* data, 
+	flattenBlockItemIterator(void* data, 
 						 const eleType eType, 
 						 const dimension& dims,
 						 const dimension& bSp,
 						 pBitmap itemBitmap);
 
-	memBlockItemIterator(void* data,
+	flattenBlockItemIterator(void* data,
 						 const eleType eType,
 						 const dimension& dims,
 						 const range& irange,
@@ -38,10 +38,10 @@ public:
 						 pBitmap itemBitmap);
 };
 
-class memBlockItemRangeIterator : public blockItemRangeIterator
+class flattenBlockItemRangeIterator : public blockItemRangeIterator
 {
 public:
-	memBlockItemRangeIterator(void* data,
+	flattenBlockItemRangeIterator(void* data,
 							  const eleType eType,
 							  const dimension& dims,
 							  const range& range,

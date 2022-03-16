@@ -1,5 +1,5 @@
 ﻿#include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 #include <array/monoChunk.h>
 #include <array/monoChunkBuffer.h>
 #include <array/monoChunkItemIterator.h>
@@ -30,7 +30,7 @@ pBlock monoChunk::makeBlock(const blockId bId)
 		auto desc = this->getBlockDesc(bId);
 		desc->mSize_ = desc->dims_.area() * this->desc_->attrDesc_->typeSize_;
 		desc->mOffset_ = 0;
-		auto blockObj = std::make_shared<memBlock>(desc);
+		auto blockObj = std::make_shared<flattenBlock>(desc);
 		this->insertBlock(blockObj);
 		return blockObj;
 	}

@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ADAPTHUFFMANCHUNK_H_
 #define _MSDB_ADAPTHUFFMANCHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <compression/huffmanBlock.h>
 #include <compression/adaptiveHuffmanCode.h>
 #include <compression/huffmanCode.h>
@@ -15,7 +15,7 @@ namespace core
 class adaptHuffmanChunk;
 using pAdaptHuffmanChunk = std::shared_ptr<adaptHuffmanChunk>;
 
-class adaptHuffmanChunk : public memBlockChunk
+class adaptHuffmanChunk : public flattenChunk
 {
 public:
 	adaptHuffmanChunk(pChunkDesc desc);

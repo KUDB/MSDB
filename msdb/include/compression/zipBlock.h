@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ZIPBLOCK_H_
 #define _MSDB_ZIPBLOCK_H_
 
 #include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 #include <util/ioutil.h>
 
 namespace msdb
@@ -13,7 +13,7 @@ namespace core
 class zipBlock;
 using pZipBlock = std::shared_ptr<zipBlock>;
 
-class zipBlock : public memBlock
+class zipBlock : public flattenBlock
 {
 public:
 	zipBlock(pBlockDesc desc);

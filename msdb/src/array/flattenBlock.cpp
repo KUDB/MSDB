@@ -1,12 +1,12 @@
 ﻿#include <pch.h>
-#include <array/memBlock.h>
-#include <array/memBlockItemIterator.h>
+#include <array/flattenBlock.h>
+#include <array/flattenBlockItemIterator.h>
 
 namespace msdb
 {
 namespace core
 {
-memBlock::memBlock(pBlockDesc desc)
+flattenBlock::flattenBlock(pBlockDesc desc)
 	: block(desc)
 {
 	if(this->desc_->mSize_ == INVALID_BLOCK_SIZE || 
@@ -18,12 +18,12 @@ memBlock::memBlock(pBlockDesc desc)
 	}
 }
 
-memBlock::~memBlock()
+flattenBlock::~flattenBlock()
 {
 	this->desc_ = nullptr;
 }
 
-void memBlock::serialize(bstream& bs)
+void flattenBlock::serialize(bstream& bs)
 {
 	switch (this->desc_->eType_)
 	{
@@ -59,7 +59,7 @@ void memBlock::serialize(bstream& bs)
 	}
 }
 
-void memBlock::deserialize(bstream& bs)
+void flattenBlock::deserialize(bstream& bs)
 {
 	switch (this->desc_->eType_)
 	{
@@ -95,14 +95,14 @@ void memBlock::deserialize(bstream& bs)
 	}
 }
 
-pBlockItemIterator memBlock::getItemIterator()
+pBlockItemIterator flattenBlock::getItemIterator()
 {
-	//return std::make_shared<memBlockItemIterator>(this->cached_->getData(),
+	//return std::make_shared<flattenBlockItemIterator>(this->cached_->getData(),
 	//											  this->desc_->eType_,
 	//											  this->desc_->dims_,
 	//											  this->desc_->sp_,
 	//											  this->itemBitmap_);
-	return std::make_shared<memBlockItemIterator>(this->cached_->getData(),
+	return std::make_shared<flattenBlockItemIterator>(this->cached_->getData(),
 													   this->desc_->eType_,
 													   this->desc_->dims_,
 													   range(this->desc_->getIsp(), this->desc_->getIep()),
@@ -110,20 +110,20 @@ pBlockItemIterator memBlock::getItemIterator()
 													   this->itemBitmap_);
 }
 
-pBlockItemRangeIterator memBlock::getItemRangeIterator(const range& r)
+pBlockItemRangeIterator flattenBlock::getItemRangeIterator(const range& r)
 {
 	auto sp = getOutsideCoor(this->desc_->getIsp(), r.getSp());
 	auto ep = getInsideCoor(this->desc_->getIep(), r.getEp());
-	return std::make_shared<memBlockItemRangeIterator>(this->cached_->getData(),
+	return std::make_shared<flattenBlockItemRangeIterator>(this->cached_->getData(),
 													   this->desc_->eType_,
 													   this->desc_->dims_,
 													   range(sp, ep),
 													   this->desc_->getSp(),
 													   this->itemBitmap_);
 }
-void memBlock::refChunkBufferWithoutOwnership(void* data, bufferSize size)
+void flattenBlock::refChunkBufferWithoutOwnership(void* data, bufferSize size)
 {
-	this->cached_ = std::make_shared<memBlockBuffer>(data, size);	// TODO::make mem block buffer
+	this->cached_ = std::make_shared<flattenBlockBuffer>(data, size);	// TODO::make mem block buffer
 }
 }		// core
 }		// msdb

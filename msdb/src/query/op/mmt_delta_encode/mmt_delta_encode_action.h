@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_MMT_DELTA_ENCODE_ACTION_H_
 #define _MSDB_OP_MMT_DELTA_ENCODE_ACTION_H_
 
 #include <pch.h>
 #include <array/arrayMgr.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <index/mmt.h>
 #include <query/opAction.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
@@ -75,7 +75,7 @@ void mmt_delta_encode_action::chunkEncode(pChunk outChunk, pChunk inChunk,
 	//auto ibItr = inChunk->getBlockIterator();
 	//auto obItr = outChunk->getBlockIterator();
 
-	// wtChunk should have its memBlock, or the chunk should not be exist.0
+	// wtChunk should have its flattenBlock, or the chunk should not be exist.0
 	assert(inChunk->getBlockBitmap()->isExist(0) == true);
 	auto inBlock = inChunk->getBlock(0);
 	auto outBlock = outChunk->makeBlock(0);

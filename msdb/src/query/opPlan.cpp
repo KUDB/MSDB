@@ -1,9 +1,9 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <query/opPlan.h>
 #include <util/logger.h>
 #include <query/query.h>
 #include <array/arrayMgr.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 
 namespace msdb
 {
@@ -85,7 +85,7 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 	}
 	else
 	{
-		inArr.push_back(arrayMgr::instance()->makeArray<memBlockArray>(this->inferSchema()));
+		inArr.push_back(arrayMgr::instance()->makeArray<flattenArray>(this->inferSchema()));
 	}
 
 	auto outArr = this->getAction()->execute(inArr, qry);

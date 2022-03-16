@@ -1,7 +1,7 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/insert/insert_action.h>
-#include <array/memBlockArray.h>
-#include <array/blockChunk.h>
+#include <array/flattenArray.h>
+#include <array/flattenChunk.h>
 #include <system/storageMgr.h>
 #include <array/arrayMgr.h>
 #include <util/threadUtil.h>
@@ -30,7 +30,7 @@ pArray insert_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	//========================================//
 
 	pArray inArr = inputArrays[0];
-	// pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	// pArray outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 
 	// TODO::Fork according to insert param type
 	// this->params_[1]->getParam()

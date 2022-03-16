@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_SPIHTBLOCK_H_
 #define _MSDB_SPIHTBLOCK_H_
 
 #include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 #include <io/bitstream.h>
 
 namespace msdb
@@ -13,7 +13,7 @@ namespace core
 class spihtBlock;
 using pSpihtBlock = std::shared_ptr<spihtBlock>;
 
-class spihtBlock : public memBlock
+class spihtBlock : public flattenBlock
 {
 public:
 	spihtBlock(pBlockDesc desc);

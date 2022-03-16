@@ -6,7 +6,7 @@ namespace msdb
 namespace core
 {
 compassChunk::compassChunk(pChunkDesc desc)
-	: memBlockChunk(desc)
+	: flattenChunk(desc)
 {
 }
 

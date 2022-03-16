@@ -1,6 +1,6 @@
 ﻿#pragma once
-#ifndef _MSDB_BLOCKEDCHUNK_H_
-#define _MSDB_BLOCKEDCHUNK_H_
+#ifndef _MSDB_FLATTENCHUNK_H_
+#define _MSDB_FLATTENCHUNK_H_
 
 #include <pch.h>
 #include <array/chunkIterator.h>
@@ -13,14 +13,14 @@ namespace core
 {
 class blockIterator;
 
-class memBlockChunk : public chunk
+class flattenChunk : public chunk
 {
 public:
 	using size_type = chunk::size_type;
 
 public:
-	memBlockChunk(pChunkDesc desc);
-	virtual ~memBlockChunk();
+	flattenChunk(pChunkDesc desc);
+	virtual ~flattenChunk();
 
 //////////////////////////////
 // Buffer
@@ -122,4 +122,4 @@ protected:
 };
 }		// core
 }		// msdb
-#endif	// _MSDB_BLOCKEDCHUNK_H_
+#endif	// _MSDB_FLATTENCHUNK_H_

@@ -1,7 +1,7 @@
-#include <pch.h>
+﻿#include <pch.h>
 
 #include <op/index_filter/index_filter_action.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 
 namespace msdb
 {
@@ -28,7 +28,7 @@ pArray index_filter_action::execute(std::vector<pArray>& inputArrays, pQuery qry
 	pArray inArr = inputArrays[0];
 	auto inArrDesc = inArr->getDesc();
 	auto outArrDesc = std::make_shared<arrayDesc>(*inArrDesc);
-	auto outArr = std::make_shared<memBlockArray>(outArrDesc);
+	auto outArr = std::make_shared<flattenArray>(outArrDesc);
 
 	auto inPredicate = std::static_pointer_cast<predicate>(this->params_[1]->getParam());
 

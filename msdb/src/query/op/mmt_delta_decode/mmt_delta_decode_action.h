@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_MMT_DELTA_DECODE_ACTION_H_
 #define _MSDB_OP_MMT_DELTA_DECODE_ACTION_H_
 
 #include <pch.h>
 #include <array/arrayMgr.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <query/opAction.h>
 #include <index/mmt.h>
 #include <op/mmt_delta_decode/mmt_delta_decode_array.h>
@@ -96,7 +96,7 @@ public:
 		qry->getTimer()->nextJob(threadId, this->name(), workType::COMPUTING);
 		//----------------------------------------//
 
-		// wtChunk should have its memBlock, or the chunk should not be exist.
+		// wtChunk should have its flattenBlock, or the chunk should not be exist.
 		assert(inChunk->getBlockBitmap()->isExist(0) == true);
 		auto inBlock = inChunk->getBlock(0);
 		auto outBlock = outChunk->makeBlock(0);

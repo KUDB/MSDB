@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <compression/seHuffmanBlock.h>
 
 namespace msdb
@@ -6,7 +6,7 @@ namespace msdb
 namespace core
 {
 seHuffmanBlock::seHuffmanBlock(pBlockDesc desc)
-	: memBlock(desc)
+	: flattenBlock(desc)
 {
 }
 seHuffmanBlock::~seHuffmanBlock()

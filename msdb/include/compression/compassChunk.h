@@ -3,7 +3,7 @@
 #define _MSDB_COMPASSCHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <compression/compassBlock.h>
 #include <io/bitstream.h>
 
@@ -14,7 +14,7 @@ namespace core
 class compassChunk;
 using pCompassChunk = std::shared_ptr<compassChunk>;
 
-class compassChunk : public memBlockChunk
+class compassChunk : public flattenChunk
 {
 public:
 	compassChunk(pChunkDesc desc);

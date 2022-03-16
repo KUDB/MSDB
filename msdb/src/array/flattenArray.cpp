@@ -1,6 +1,6 @@
 ﻿#include <pch.h>
 #include <array/flattenArray.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 
 namespace msdb
 {
@@ -19,14 +19,14 @@ flattenArray::~flattenArray()
 pChunk flattenArray::makeChunk(const attributeId attrId, const chunkId cId)
 {
 	auto desc = this->getChunkDesc(attrId, cId);
-	auto chunkObj = std::make_shared<memBlockChunk>(desc);
+	auto chunkObj = std::make_shared<flattenChunk>(desc);
 	this->insertChunk(attrId, chunkObj);
 	return chunkObj;
 }
 pChunk flattenArray::makeChunk(const chunkDesc& desc)
 {
 	auto chunkObj
-		= std::make_shared<memBlockChunk>(std::make_shared<chunkDesc>(desc));
+		= std::make_shared<flattenChunk>(std::make_shared<chunkDesc>(desc));
 	this->insertChunk(desc.attrDesc_->id_, chunkObj);
 	return chunkObj;
 }

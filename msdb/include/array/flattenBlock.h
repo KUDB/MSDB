@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_MEMBLOCK_H_
 #define _MSDB_MEMBLOCK_H_
 
@@ -12,11 +12,11 @@ namespace msdb
 {
 namespace core
 {
-class memBlock : public block
+class flattenBlock : public block
 {
 public:
-	memBlock(pBlockDesc desc);
-	virtual ~memBlock();
+	flattenBlock(pBlockDesc desc);
+	virtual ~flattenBlock();
 
 //////////////////////////////
 // Item Iterators

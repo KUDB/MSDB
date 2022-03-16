@@ -1,7 +1,7 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/load/load_action.h>
-#include <array/memBlockArray.h>
-#include <array/blockChunk.h>
+#include <array/flattenArray.h>
+#include <array/flattenChunk.h>
 #include <system/storageMgr.h>
 #include <array/arrayMgr.h>
 #include <util/threadUtil.h>
@@ -29,8 +29,8 @@ pArray load_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	assert(inputArrays.size() == 1);
 	auto planChunkBitmap = this->getPlanInChunkBitmap();
 
-	//pArray outArr = arrayMgr::instance()->makeArray<memBlockArray>(this->getArrayDesc());
-	pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	//pArray outArr = arrayMgr::instance()->makeArray<flattenArray>(this->getArrayDesc());
+	pArray outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	outArr->copyChunkBitmap(planChunkBitmap);
 	arrayId arrId = outArr->getId();
 

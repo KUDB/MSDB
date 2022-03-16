@@ -6,7 +6,7 @@ namespace msdb
 namespace core
 {
 adaptHuffmanBlock::adaptHuffmanBlock(pBlockDesc desc)
-	: memBlock(desc)
+	: flattenBlock(desc)
 {
 }
 

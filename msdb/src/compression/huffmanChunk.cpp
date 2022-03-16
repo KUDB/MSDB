@@ -8,7 +8,7 @@ namespace msdb
 namespace core
 {
 huffmanChunk::huffmanChunk(pChunkDesc desc)
-	: memBlockChunk(desc)
+	: flattenChunk(desc)
 {
 }
 

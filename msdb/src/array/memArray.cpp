@@ -1,6 +1,6 @@
 ﻿#include <pch.h>
 #include <array/flattenArray.h>
-#include <array/memChunk.h>
+#include <array/monoChunk.h>
 
 namespace msdb
 {

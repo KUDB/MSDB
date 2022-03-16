@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/lzw_decode/lzw_decode_action.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
 
@@ -29,7 +29,7 @@ pArray lzw_decode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	pArray sourceArr = inputArrays[0];
 	arrayId arrId = sourceArr->getId();
 
-	auto outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	auto outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	outArr->copyChunkBitmap(this->getPlanInChunkBitmap());
 
 	for (auto attr : *sourceArr->getDesc()->attrDescs_)

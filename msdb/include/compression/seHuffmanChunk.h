@@ -3,7 +3,7 @@
 #define _MSDB_SEHUFFMANCHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <io/bitstream.h>
 #include <compression/seChunk.h>
 #include <compression/huffmanCode.h>

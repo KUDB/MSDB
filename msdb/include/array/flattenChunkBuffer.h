@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BLOCKCHUNKBUFFER_H_
 #define _MSDB_BLOCKCHUNKBUFFER_H_
 
@@ -10,14 +10,14 @@ namespace msdb
 {
 namespace core
 {
-class blockChunkBuffer;
-using pBlockChunkBuffer = std::shared_ptr<blockChunkBuffer>;
+class flattenChunkBuffer;
+using pFlattenChunkBuffer = std::shared_ptr<flattenChunkBuffer>;
 
-class blockChunkBuffer : public buffer
+class flattenChunkBuffer : public buffer
 {
 public:
-	blockChunkBuffer();
-	virtual ~blockChunkBuffer();
+	flattenChunkBuffer();
+	virtual ~flattenChunkBuffer();
 
 public:
 	// buffer을(를) 통해 상속됨

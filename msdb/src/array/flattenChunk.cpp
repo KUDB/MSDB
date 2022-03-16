@@ -1,42 +1,42 @@
 ﻿#include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <array/monoChunkBuffer.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 
 namespace msdb
 {
 namespace core
 {
-memBlockChunk::memBlockChunk(pChunkDesc desc)
+flattenChunk::flattenChunk(pChunkDesc desc)
 	: chunk(desc)
 {
 	this->blockCapacity_ = this->desc_->getBlockSpace().area();
 	this->blocks_.resize(this->getBlockCapacity(), nullptr);
 }
 
-memBlockChunk::~memBlockChunk()
+flattenChunk::~flattenChunk()
 {
 }
 
-void memBlockChunk::makeBuffer()
+void flattenChunk::makeBuffer()
 {
 	this->cached_ = std::make_shared<monoChunkBuffer>();
 }
 
-pBlock memBlockChunk::makeBlock(const blockId bId)
+pBlock flattenChunk::makeBlock(const blockId bId)
 {
 	assert(this->blockCapacity_ > bId);
 	if (this->blocks_[bId] == nullptr)
 	{
 		auto desc = this->getBlockDesc(bId);
-		auto blockObj = std::make_shared<memBlock>(desc);
+		auto blockObj = std::make_shared<flattenBlock>(desc);
 		this->insertBlock(blockObj);
 		return blockObj;
 	}
 	return this->blocks_[bId];
 }
 
-void memBlockChunk::insertBlock(pBlock inBlock)
+void flattenChunk::insertBlock(pBlock inBlock)
 {
 	assert(this->blockCapacity_ > inBlock->getId());
 	this->blocks_[inBlock->getId()] = inBlock;
@@ -44,7 +44,7 @@ void memBlockChunk::insertBlock(pBlock inBlock)
 	this->referenceBufferToBlock(inBlock->getId());
 }
 
-void memBlockChunk::referenceBufferToBlock(blockId bId)
+void flattenChunk::referenceBufferToBlock(blockId bId)
 {
 	// Reference block buffers to the chunk buffer
 	if (this->blocks_[bId] && this->cached_)
@@ -56,26 +56,26 @@ void memBlockChunk::referenceBufferToBlock(blockId bId)
 	}
 }
 
-pBlock memBlockChunk::getBlock(const blockId bId)
+pBlock flattenChunk::getBlock(const blockId bId)
 {
 	assert(this->blockCapacity_ > bId);
 	return this->blocks_[bId];
 }
 
-void memBlockChunk::freeBlock(const blockId bid)
+void flattenChunk::freeBlock(const blockId bid)
 {
 	this->blocks_[bid] = nullptr;
 	this->blockBitmap_->setNull(bid);
 }
 
-pBlockIterator memBlockChunk::getBlockIterator(const iterateMode itMode)
+pBlockIterator flattenChunk::getBlockIterator(const iterateMode itMode)
 {
 	return std::make_shared<blockIterator>(this->desc_->getBlockSpace(),
 										   &this->blocks_, this->blockBitmap_,
 										   itMode);
 }
 
-pChunkItemIterator memBlockChunk::getItemIterator()
+pChunkItemIterator flattenChunk::getItemIterator()
 {
 	return std::make_shared<blockChunkItemIterator>(this->cached_->getData(),
 													this->desc_->attrDesc_->type_,
@@ -84,7 +84,7 @@ pChunkItemIterator memBlockChunk::getItemIterator()
 													this->getBlockIterator());
 }
 
-pChunkItemRangeIterator memBlockChunk::getItemRangeIterator(const range& range)
+pChunkItemRangeIterator flattenChunk::getItemRangeIterator(const range& range)
 {
 	return std::make_shared<blockChunkItemRangeIterator>(this->cached_->getData(),
 														 this->desc_->attrDesc_->type_,
@@ -94,7 +94,7 @@ pChunkItemRangeIterator memBlockChunk::getItemRangeIterator(const range& range)
 														 this->getBlockIterator());
 }
 
-void memBlockChunk::serialize(std::ostream& os)
+void flattenChunk::serialize(std::ostream& os)
 {
 	bstream bs;
 	auto it = this->getBlockIterator();
@@ -109,7 +109,7 @@ void memBlockChunk::serialize(std::ostream& os)
 	os.write(bs.data(), bs.capacity());
 }
 
-void memBlockChunk::deserialize(std::istream& is)
+void flattenChunk::deserialize(std::istream& is)
 {
 	this->getHeader()->deserialize(is);
 	this->updateFromHeader();

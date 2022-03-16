@@ -3,7 +3,7 @@
 #define _MSDB_HUFFMANCHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <compression/huffmanBlock.h>
 #include <compression/huffmanCode.h>
 
@@ -14,7 +14,7 @@ namespace core
 class huffmanChunk;
 using pHuffmanChunk = std::shared_ptr<huffmanChunk>;
 
-class huffmanChunk : public memBlockChunk
+class huffmanChunk : public flattenChunk
 {
 public:
 	huffmanChunk(pChunkDesc desc);

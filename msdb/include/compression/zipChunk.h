@@ -3,7 +3,7 @@
 #define _MSDB_ZIPCHUNK_H_
 
 #include <pch.h>
-#include <array/blockChunk.h>
+#include <array/flattenChunk.h>
 #include <compression/zipBlock.h>
 #include <io/bitstream.h>
 
@@ -14,7 +14,7 @@ namespace core
 class zipChunk;
 using pZipChunk = std::shared_ptr<zipChunk>;
 
-class zipChunk : public memBlockChunk
+class zipChunk : public flattenChunk
 {
 public:
 	zipChunk(pChunkDesc desc);

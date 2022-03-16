@@ -1,8 +1,8 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/between/between_action.h>
 #include <array/arrayMgr.h>
-#include <array/blockChunk.h>
-#include <array/memBlockArray.h>
+#include <array/flattenChunk.h>
+#include <array/flattenArray.h>
 
 namespace msdb
 {
@@ -27,8 +27,8 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 
 	pArray inArr = inputArrays[0];
-	//pArray outArr = arrayMgr::instance()->makeArray<memBlockArray>(this->getArrayDesc());
-	pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	//pArray outArr = arrayMgr::instance()->makeArray<flattenArray>(this->getArrayDesc());
+	pArray outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	pCoor sp = std::static_pointer_cast<coor>(this->params_[1]->getParam());
 	pCoor ep = std::static_pointer_cast<coor>(this->params_[2]->getParam());
 	range betweenRange(*sp, *ep);

@@ -7,7 +7,7 @@ namespace msdb
 namespace core
 {
 zipChunk::zipChunk(pChunkDesc desc)
-	: memBlockChunk(desc)
+	: flattenChunk(desc)
 {
 }
 

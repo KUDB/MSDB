@@ -3,7 +3,7 @@
 #define _MSDB_HUFFMANBLOCK_H_
 
 #include <pch.h>
-#include <array/memBlock.h>
+#include <array/flattenBlock.h>
 #include <compression/adaptiveHuffmanCode.h>
 
 namespace msdb
@@ -13,7 +13,7 @@ namespace core
 class huffmanBlock;
 using pHuffmanBlock = std::shared_ptr<huffmanBlock>;
 
-class huffmanBlock : public memBlock
+class huffmanBlock : public flattenBlock
 {
 public:
 	huffmanBlock(pBlockDesc desc);
