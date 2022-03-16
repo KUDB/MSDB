@@ -3,7 +3,7 @@
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <system/storageMgr.h>
 #include <array/arrayMgr.h>
-#include <array/memChunk.h>
+#include <array/monoChunk.h>
 #include <util/threadUtil.h>
 
 namespace msdb

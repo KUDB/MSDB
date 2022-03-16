@@ -40,8 +40,8 @@ public:
 	pChunkDesc getChunkDesc(const attributeId attrId, const chunkId cId);
 	pChunk getChunk(const attributeId attrId, const chunkId cId);
 	chunkId getChunkId(pChunkDesc cDesc);
-	chunkId getChunkIdFromItemCoor(const coor& itemCoor);
-	chunkId getChunkIdFromChunkCoor(const coor& chunkCoor);
+	virtual chunkId itemCoorToChunkId(const coor& itemCoor);
+	virtual chunkId chunkCoorToChunkId(const coor& chunkCoor);
 	virtual coor itemCoorToChunkCoor(const coor& itemCoor);
 	virtual pChunkIterator getChunkIterator(const attributeId attrId, 
 		const iterateMode itMode = iterateMode::ALL);

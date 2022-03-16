@@ -11,11 +11,11 @@ namespace msdb
 {
 namespace core
 {
-class memChunkBuffer : public chunkBuffer
+class monoChunkBuffer : public chunkBuffer
 {
 public:
-	memChunkBuffer();
-	virtual ~memChunkBuffer();
+	monoChunkBuffer();
+	virtual ~monoChunkBuffer();
 
 public:
 	virtual bool isCompressed() const;

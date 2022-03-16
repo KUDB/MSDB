@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_MEMCHUNK_H_
 #define _MSDB_MEMCHUNK_H_
 
@@ -10,11 +10,11 @@ namespace msdb
 {
 namespace core
 {
-class memChunk : public chunk
+class monoChunk : public chunk
 {
 public:
-	memChunk(pChunkDesc desc);
-	virtual ~memChunk();
+	monoChunk(pChunkDesc desc);
+	virtual ~monoChunk();
 
 //////////////////////////////
 // Buffer
@@ -36,13 +36,13 @@ public:
 	//virtual blockId getBlockIdFromItemCoor(coor& itemCoor) override;
 	//virtual blockId getBlockIdFromBlockCoor(coor& blockCoor) override;
 	//virtual coor itemCoorToBlockCoor(coor& itemCoor) override;
-	virtual coor getBlockCoor(const blockId bId);
+	virtual coor blockId2blockCoor(const blockId bId);
 	virtual pBlockIterator getBlockIterator(
 		const iterateMode itMode = iterateMode::ALL) override;
 
 protected:
 	//blockContainer blocks_;
-	pBlock block_;	// memChunk has single block.
+	pBlock block_;	// monoChunk has single block.
 
 //////////////////////////////
 // Item Iterators

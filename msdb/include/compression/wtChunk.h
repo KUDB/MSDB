@@ -3,7 +3,7 @@
 #define _MSDB_WT_CHUNK_H_
 
 #include <pch.h>
-#include <array/memChunk.h>
+#include <array/monoChunk.h>
 
 namespace msdb
 {
@@ -13,7 +13,7 @@ class wtChunk;
 using pWtChunk = std::shared_ptr<wtChunk>;
 
 // TODO:: inherit blocked chunk
-class wtChunk : public memChunk
+class wtChunk : public monoChunk
 {
 public:
 	wtChunk(pChunkDesc desc);

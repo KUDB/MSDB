@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_WAVELET_ENCODE_ACTION_H_
 #define _MSDB_OP_WAVELET_ENCODE_ACTION_H_
 
@@ -40,7 +40,7 @@ private:
 			// --------------------
 			for(auto chk : convertedChunkList)
 			{
-				auto cid = outArr->getChunkIdFromChunkCoor(chk->getDesc()->chunkCoor_);
+				auto cid = outArr->chunkCoorToChunkId(chk->getDesc()->chunkCoor_);
 				chk->setId(cid);
 			}
 

@@ -20,6 +20,7 @@ array::array(pArrayDesc desc)
 array::~array()
 {
 	//BOOST_LOG_TRIVIAL(debug) << "~array(): " << this->desc_->name_;
+	this->flush();
 	this->chunks_.clear();
 	this->overallChunkBitmap_ = nullptr;
 	for (auto b : this->attrChunkBitmaps_)
@@ -32,21 +33,16 @@ pArrayDesc array::getDesc()
 {
 	return this->desc_;
 }
-// TODO::required an attirubteId as an input parameter
+
 pChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMode itMode)
 {
-	return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
-										   &(this->chunks_[attrId]), this->overallChunkBitmap_,
-										   itMode);
-
-	//if (this->chunks_.find(attrId) != this->chunks_.end())
-	//{
-
-	//}
-	//else
-	//{
-	//	return nullptr;
-	//}								   
+	if (this->chunks_.find(attrId) != this->chunks_.end())
+	{
+		return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+											   &(this->chunks_[attrId]), this->overallChunkBitmap_,
+											   itMode);
+	}
+	_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "attrId: " + std::to_string(attrId)));
 }
 //array::size_type array::getNumChunks(const attributeId attrId)
 //{
@@ -142,20 +138,20 @@ void array::setId(const arrayId id)
 
 chunkId array::getChunkId(pChunkDesc cDesc)
 {
-	return this->getChunkIdFromItemCoor(cDesc->sp_);
+	return this->itemCoorToChunkId(cDesc->sp_);
 }
 
-chunkId array::getChunkIdFromItemCoor(const coor& itemCoor)
+chunkId array::itemCoorToChunkId(const coor& itemCoor)
 {
 	coor chunkCoor = itemCoor;
 	for (dimensionId d = this->desc_->dimDescs_->size() - 1; d != -1; --d)
 	{
 		chunkCoor[d] /= this->desc_->dimDescs_->at(d)->chunkSize_;
 	}
-	return this->getChunkIdFromChunkCoor(chunkCoor);
+	return this->chunkCoorToChunkId(chunkCoor);
 }
 
-chunkId array::getChunkIdFromChunkCoor(const coor& chunkCoor)
+chunkId array::chunkCoorToChunkId(const coor& chunkCoor)
 {
 	chunkId id = 0;
 	chunkId offset = 1;
@@ -174,7 +170,7 @@ void array::freeChunk(const attributeId attrId, const chunkId cId)
 		this->chunks_[attrId][cId]->flush();
 	}
 	this->setChunkNull(attrId, cId);
-	//this->chunks_[cId] = nullptr;
+	//this->chunks_[cId] = nullptr;dkddkd
 	//this->overallChunkBitmap_->setNull(cId);
 }
 cpBitmap array::getChunkBitmap() const

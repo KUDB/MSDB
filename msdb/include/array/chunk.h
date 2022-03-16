@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CHUNK_H_
 #define _MSDB_CHUNK_H_
 
@@ -86,7 +86,7 @@ public:
 	//virtual blockId getBlockIdFromItemCoor(coor& itemCoor) = 0;
 	//virtual blockId getBlockIdFromBlockCoor(coor& blockCoor) = 0;
 	//virtual coor itemCoorToBlockCoor(coor& itemCoor) = 0;
-	virtual coor getBlockCoor(const blockId bId);
+	virtual coor blockId2blockCoor(const blockId bId);
 	virtual pBlockIterator getBlockIterator(
 		const iterateMode itMode = iterateMode::ALL) = 0;
 	void copyBlockBitmap(cpBitmap blockBitmap);

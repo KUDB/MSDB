@@ -2,7 +2,7 @@
 #include <op/spiht_encode/spiht_encode_action.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <system/storageMgr.h>
-#include <array/memChunk.h>
+#include <array/monoChunk.h>
 #include <compression/spihtChunk.h>
 #include <util/logger.h>
 

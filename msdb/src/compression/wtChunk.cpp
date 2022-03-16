@@ -6,7 +6,7 @@ namespace msdb
 namespace core
 {
 wtChunk::wtChunk(pChunkDesc desc)
-	: memChunk(desc), level_(0)
+	: monoChunk(desc), level_(0)
 {
 }
 

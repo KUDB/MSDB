@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/blockChunk.h>
-#include <array/memChunkBuffer.h>
+#include <array/monoChunkBuffer.h>
 #include <array/memBlock.h>
 
 namespace msdb
@@ -20,7 +20,7 @@ memBlockChunk::~memBlockChunk()
 
 void memBlockChunk::makeBuffer()
 {
-	this->cached_ = std::make_shared<memChunkBuffer>();
+	this->cached_ = std::make_shared<monoChunkBuffer>();
 }
 
 pBlock memBlockChunk::makeBlock(const blockId bId)

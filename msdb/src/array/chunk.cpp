@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/chunk.h>
-#include <array/memChunkBuffer.h>
+#include <array/monoChunkBuffer.h>
 #include <util/logger.h>
 
 namespace msdb
@@ -231,7 +231,7 @@ pBlockDesc chunk::getBlockDesc(const blockId bId)
 {
 	pAttributeDesc attrDesc = this->desc_->attrDesc_;
 	dimension blockDims = this->desc_->getBlockDims();
-	coor blockCoor = this->getBlockCoor(bId);
+	coor blockCoor = this->blockId2blockCoor(bId);
 	coor sp = blockCoor * blockDims;
 	coor ep = sp + blockDims;
 
@@ -258,7 +258,7 @@ void chunk::updateFromHeader()
 	this->setSerializedSize(curHeader->bodySize_);
 	this->bufferAlloc();
 }
-coor chunk::getBlockCoor(const blockId bId)
+coor chunk::blockId2blockCoor(const blockId bId)
 {
 	return this->getBlockIterator()->seqToCoor(bId);
 }

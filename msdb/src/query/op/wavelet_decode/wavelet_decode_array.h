@@ -20,8 +20,8 @@ public:
 public:
 	size_t getMaxLevel();
 	//chunkId getChunkId(pChunkDesc cDesc, size_t level, size_t band);
-	//chunkId getChunkIdFromItemCoor(coor& itemCoor, size_t level, size_t band);
-	//chunkId getChunkIdFromChunkCoor(coor& chunkCoor, size_t level, size_t band);
+	//chunkId itemCoorToChunkId(coor& itemCoor, size_t level, size_t band);
+	//chunkId chunkCoorToChunkId(coor& chunkCoor, size_t level, size_t band);
 
 protected:
 	size_t maxLevel_;

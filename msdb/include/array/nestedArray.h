@@ -15,9 +15,15 @@ using pNestedArray = std::shared_ptr<nestedArray>;
 class nestedArray : public array
 {
 public:
+	using base_type = array;
+
+public:
 	nestedArray(pArrayDesc desc);
 	virtual ~nestedArray();
 
+public:
+	virtual pChunk makeChunk(const attributeId attrId, const chunkId cId) override;
+	virtual pChunk makeChunk(const chunkDesc& desc) override;
 };
 }	// core
 }	// msdb

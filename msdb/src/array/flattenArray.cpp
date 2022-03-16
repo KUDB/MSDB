@@ -13,7 +13,7 @@ flattenArray::flattenArray(pArrayDesc desc)
 
 flattenArray::~flattenArray()
 {
-	this->flush();
+
 }
 
 pChunk flattenArray::makeChunk(const attributeId attrId, const chunkId cId)

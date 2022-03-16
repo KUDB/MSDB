@@ -1,15 +1,15 @@
 #include <pch.h>
 #include <compression/spihtChunk.h>
 #include <compression/spihtBlock.h>
-#include <array/memChunkBuffer.h>
-#include <array/memChunk.h>
+#include <array/monoChunkBuffer.h>
+#include <array/monoChunk.h>
 
 namespace msdb
 {
 namespace core
 {
 spihtChunk::spihtChunk(pChunkDesc desc)
-	: memChunk(desc)
+	: monoChunk(desc)
 {
 }
 
@@ -42,7 +42,7 @@ void spihtChunk::initBufferZero()
 
 void spihtChunk::makeBuffer()
 {
-	this->cached_ = std::make_shared<memChunkBuffer>();
+	this->cached_ = std::make_shared<monoChunkBuffer>();
 }
 
 pBlock spihtChunk::makeBlock(const blockId bId)

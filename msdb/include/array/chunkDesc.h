@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CHUNKDESC_H_
 #define _MSDB_CHUNKDESC_H_
 
@@ -51,6 +51,7 @@ public:
 	dimension getDims();
 	virtual dimension getBlockDims();
 	virtual dimension getBlockSpace();
+	
 
 	size_t getDimSize();
 

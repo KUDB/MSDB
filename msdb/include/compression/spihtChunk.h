@@ -3,7 +3,7 @@
 #define _MSDB_SPIHTCHUNK_H_
 
 #include <pch.h>
-#include <array/memChunk.h>
+#include <array/monoChunk.h>
 #include <compression/spihtBlock.h>
 #include <io/bitstream.h>
 
@@ -14,7 +14,7 @@ namespace core
 class spihtChunk;
 using pSpihtChunk = std::shared_ptr<spihtChunk>;
 
-class spihtChunk : public memChunk
+class spihtChunk : public monoChunk
 {
 public:
 	spihtChunk(pChunkDesc desc);

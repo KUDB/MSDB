@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_EXCEPTIONS_H_
 #define _MSDB_EXCEPTIONS_H_
 
@@ -60,6 +60,15 @@ catch (...) {;
                        const char* stringified_error_category,
                        const char* stringified_error_code);
 
+        //msdb_exception(const char* file, const char* function, int32_t line,
+        //               const char* errors_namespace,
+        //               int32_t error_category, int32_t error_code,
+        //               const char* stringified_error_category,
+        //               const char* stringified_error_code,
+        //               const char* error_category_msg,
+        //               const char* error_msg,
+        //               const char* what);
+
         msdb_exception(const char* file, const char* function, int32_t line,
                        const char* errors_namespace,
                        int32_t error_category, int32_t error_code,
@@ -67,7 +76,7 @@ catch (...) {;
                        const char* stringified_error_code,
                        const char* error_category_msg,
                        const char* error_msg,
-                       const char* what);
+                       const std::string what);
 
         virtual ~msdb_exception() noexcept = default;
 
@@ -82,6 +91,7 @@ catch (...) {;
         std::string _stringified_error_code;
         std::string _error_category_msg;
         std::string _error_msg;
+        std::string _what;
     };
 }		// core
 }       // msdb
