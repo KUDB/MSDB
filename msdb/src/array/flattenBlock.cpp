@@ -1,6 +1,7 @@
 ﻿#include <pch.h>
 #include <array/flattenBlock.h>
 #include <array/flattenBlockItemIterator.h>
+#include <io/iterator.h>
 
 namespace msdb
 {
@@ -97,6 +98,7 @@ void flattenBlock::deserialize(bstream& bs)
 
 pBlockItemIterator flattenBlock::getItemIterator()
 {
+	auto tempIt = std::make_shared<conAttrItemIterator<int8_t>>(this->cached_->getData(), this->desc_->dims_, this->desc_->getSp(), this->itemBitmap_);
 	//return std::make_shared<flattenBlockItemIterator>(this->cached_->getData(),
 	//											  this->desc_->eType_,
 	//											  this->desc_->dims_,

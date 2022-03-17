@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BLOCKITEM_ITERATOR_H_
 #define _MSDB_BLOCKITEM_ITERATOR_H_
 
@@ -33,7 +33,7 @@ public:
 						  const dimension& dims,
 						  const dimension& bSp,
 						  pBitmap itemBitmap)
-		: base_type(dims), bSp_(bSp), itemBitmap_(itemBitmap)
+		: base_type(dims), itemBitmap_(itemBitmap)
 	{
 	}
 
@@ -64,7 +64,7 @@ public:
 	}
 
 protected:
-	coordinates bSp_;
+	//coordinates bSp_;
 	pBitmap itemBitmap_;
 };
 

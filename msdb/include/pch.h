@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _MSDB_PCH_H_
 #define _MSDB_PCH_H_
@@ -32,6 +32,9 @@
 // For timer
 #include <chrono>
 #include <mutex>
+
+// C++17
+#include <variant>
 
 ////////////////////////////////////////
 // BOOST LIBRARY
