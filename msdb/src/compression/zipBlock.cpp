@@ -5,13 +5,13 @@ namespace msdb
 {
 namespace core
 {
-zipBlock::zipBlock(pBlockDesc desc)
-	: flattenBlock(desc)
-{
-}
-
-zipBlock::~zipBlock()
-{
-}
+//zipBlock::zipBlock(pBlockDesc desc)
+//	: flattenBlock<element>(desc)
+//{
+//}
+//
+//zipBlock::~zipBlock()
+//{
+//}
 }		// core
 }		// msdb

@@ -552,9 +552,14 @@ public:
 
 public:
 	multiDimIterator(const size_type dSize, dim_const_pointer dims);
-	multiDimIterator(const std::vector<dim_type>& lst);
-	multiDimIterator(const coordinates space);
-	multiDimIterator(std::initializer_list<dim_type> lst);
+	multiDimIterator(const size_type dSize, dim_const_pointer dims, dim_const_pointer startCoor, dim_const_pointer endCoor);
+	multiDimIterator(const std::vector<dim_type>& dims);
+	multiDimIterator(const std::vector<dim_type>& dims, const std::vector<dim_type>& startCoor, const std::vector<dim_type>& endCoor);
+	multiDimIterator(const coordinates& space);
+	multiDimIterator(const coordinates& space, const range& itRange);
+	multiDimIterator(const std::initializer_list<dim_type>& dims);
+	multiDimIterator(const std::initializer_list<dim_type>& dims, 
+					 const std::initializer_list<dim_type>& startCoor, const std::initializer_list<dim_type>& endCoor);
 	multiDimIterator(const self_type& mit);
 
 	virtual ~multiDimIterator();
@@ -745,6 +750,20 @@ public:
 	//////////////////////////////
 
 protected:
+	// Check if sP_ and eP_ has proper coordinates.
+	inline bool initCheckSpEp()
+	{
+		for (dimensionId d = 0; d < this->dSize(); d++)
+		{
+			if (this->sP_[d] > this->eP_[d] || this->dims_[d] < this->eP_[d])
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	// copy dimension value using memcpy
 	inline void memcpyDim(dim_type* dest, const dim_type* src)
 	{
@@ -999,21 +1018,6 @@ public:
 	~itemRangeIterator()
 	{
 	}
-
-protected:
-	// Check if sP_ and eP_ has proper coordinates.
-	inline bool initCheckSpEp()
-	{
-		for (dimensionId d = 0; d < this->dSize(); d++)
-		{
-			if (this->sP_[d] > this->eP_[d] || this->dims_[d] < this->eP_[d])
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
 };
 
 template <>
@@ -1067,21 +1071,6 @@ public:
 
 	~itemRangeIterator()
 	{
-	}
-
-protected:
-	// Check if sP_ and eP_ has proper coordinates.
-	bool initCheckSpEp()
-	{
-		for (dimensionId d = 0; d < this->dSize(); d++)
-		{
-			if (this->sP_[d] > this->eP_[d] || this->dims_[d] < this->eP_[d])
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 };
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BLOCK_H_
 #define _MSDB_BLOCK_H_
 
@@ -8,6 +8,7 @@
 #include <array/blockDesc.h>
 #include <io/bitstream.h>
 #include <util/logger.h>
+#include <io/iterator.h>
 
 namespace msdb
 {
@@ -65,8 +66,20 @@ protected:
 // Item Iterators
 //////////////////////////////
 public:
+	// TODO
+	//[[deprecated("")]] 
 	virtual pBlockItemIterator getItemIterator() = 0;
+	// TODO
+	//[[deprecated("")]] 
 	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range) = 0;
+
+<<<<<<< Updated upstream
+	virtual pvItemIterator getValueIterator() = 0;
+	virtual pvItemIterator getValueRangeIterator(const range& range) = 0;
+=======
+	virtual vpItemIterator getValueIterator() = 0;
+	virtual vpItemIterator getValueRangeIterator(const range& range) = 0;
+>>>>>>> Stashed changes
 
 	void copyBitmap(cpBitmap itemBitmap);
 	void replaceBitmap(pBitmap itemBitmap);

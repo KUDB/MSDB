@@ -4,7 +4,7 @@
 
 #include <pch.h>
 #include <array/arrayMgr.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <system/storageMgr.h>
 #include <compression/wtChunk.h>
 #include <compression/seChunk.h>

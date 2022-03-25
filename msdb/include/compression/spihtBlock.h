@@ -3,21 +3,29 @@
 #define _MSDB_SPIHTBLOCK_H_
 
 #include <pch.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <io/bitstream.h>
 
 namespace msdb
 {
 namespace core
 {
-class spihtBlock;
-using pSpihtBlock = std::shared_ptr<spihtBlock>;
+//class spihtBlock;
+//using pSpihtBlock = std::shared_ptr<spihtBlock>;
 
-class spihtBlock : public flattenBlock
+template <typename Ty_>
+class spihtBlock : public flattenBlock<Ty_>
 {
 public:
-	spihtBlock(pBlockDesc desc);
-	virtual ~spihtBlock();
+	spihtBlock(pBlockDesc desc)
+		: flattenBlock<Ty_>(desc)
+	{
+
+	}
+	virtual ~spihtBlock()
+	{
+
+	}
 
 	template <typename Ty_>
 	struct SpihtNode
@@ -32,8 +40,39 @@ public:
 // Serializable
 //////////////////////////////
 public:
-	void init(dimension& bandDims);
+	void init(dimension& bandDims)
+	{
+		size_t dSize = this->getDSize();
+		dimension blockDims = this->desc_->dims_;
+
+		this->LIP_.clear();
+		this->LIS_.clear();
+		this->LIS_TYPE_.clear();
+		this->LSP_.clear();
+
+		size_t index = 0;
+		size_t band_num = 1;
+		for (int d = (int)dSize - 1; d >= 0; d--)
+		{
+			band_num *= bandDims[d];
+		}
+		size_t noChild_num = band_num / 4;
+
+		for (size_t i = 0; i < band_num; i++)
+		{
+			this->LIP_.push_back(index);
+
+			if (index >= noChild_num)
+			{
+				this->LIS_.push_back(index);
+				this->LIS_TYPE_.push_back('A');
+			}
+
+			index++;
+		}
+	}
 	
+	// TODO::Erase Ty_ in spihtBlock member functions
 	template<typename Ty_>
 	std::vector<Ty_> checkDescendants(bstream& bs, std::vector<SpihtNode<Ty_>>& arr, dimension& bandDims, coor parent_coor, size_t parent_index, Ty_ signBit, size_t curLevel)
 	{
@@ -793,7 +832,10 @@ public:
 	}
 
 public:
-	void setLevel(size_t maxLevel);
+	inline void setLevel(size_t maxLevel)
+	{
+		this->maxLevel_ = maxLevel;
+	}
 
 private:
 	std::list<size_t> LIP_;

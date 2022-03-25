@@ -10,6 +10,7 @@ namespace msdb
 {
 namespace core
 {
+template <typename Ty_>
 class monoChunk : public chunk
 {
 public:
@@ -87,4 +88,7 @@ public:
 };
 }		// core
 }		// msdb
+
+#include "monoChunk.hpp"
+
 #endif	// _MSDB_MEMCHUNK_H_

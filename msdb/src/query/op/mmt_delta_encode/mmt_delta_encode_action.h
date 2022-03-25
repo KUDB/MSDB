@@ -54,7 +54,7 @@ void mmt_delta_encode_action::saveAttribute(std::shared_ptr<wavelet_encode_array
 	{
 		// Make new chunk
 		auto cDesc = (**cit)->getDesc();
-		pWtChunk deltaChunk = std::static_pointer_cast<wtChunk>(outArr->makeChunk(*cDesc));
+		auto deltaChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(*cDesc));
 		deltaChunk->setLevel(wtLevel);
 		// MMT only modify synopsis section, copy the rest values.
 		deltaChunk->bufferCopy(**cit);

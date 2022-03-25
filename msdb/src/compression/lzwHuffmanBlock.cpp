@@ -1,16 +1,16 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <compression/lzwHuffmanBlock.h>
 
 namespace msdb
 {
 namespace core
 {
-lzwHuffmanBlock::lzwHuffmanBlock(pBlockDesc desc)
-	: flattenBlock(desc)
-{
-}
-lzwHuffmanBlock::~lzwHuffmanBlock()
-{
-}
+//lzwHuffmanBlock::lzwHuffmanBlock(pBlockDesc desc)
+//	: flattenBlock<element>(desc)
+//{
+//}
+//lzwHuffmanBlock::~lzwHuffmanBlock()
+//{
+//}
 }		// core
 }		// msdb

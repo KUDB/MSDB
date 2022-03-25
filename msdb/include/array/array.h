@@ -8,6 +8,7 @@
 #include <util/coordinate.h>
 #include <array/arrayUtil.h>
 #include <array/chunkContainer.h>
+#include <array/chunkFactory.h>
 
 namespace msdb
 {
@@ -52,6 +53,8 @@ public:
 	void setId(const arrayId id);	// only used for test
 	void flush();
 
+	// Initialize and assign ChunkFactory in this->chunkFactories_ according to data type of each attribute
+	virtual void initChunkFactories() = 0;
 	virtual pChunk makeChunk(const attributeId attrId, const chunkId cId) = 0;
 	// For better performance, implement the function in an inherit class.
 	// The function provided by default extracts ID from ChunkDesc 
@@ -102,8 +105,10 @@ public:
 protected:
 	pArrayDesc desc_;
 	multiAttrChunkContainer chunks_;
+	chunkFactories cFactories_;
 
 private:
+	//std::vector<chunkFactory> attrChunkFactories_;
 	bitmapContainer attrChunkBitmaps_;
 	pBitmap overallChunkBitmap_;		// Be initialized to false by default
 };

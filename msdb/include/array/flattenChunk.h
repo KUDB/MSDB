@@ -6,6 +6,11 @@
 #include <array/chunkIterator.h>
 #include <array/monoChunkItemIterator.h>
 #include <util/coordinate.h>
+#include <array/chunkFactory.h>
+#include <array/block.h>
+#include <array/chunkIterator.h>
+#include <array/chunkItemIterator.h>
+#include <io/bitstream.h>
 
 namespace msdb
 {
@@ -13,6 +18,65 @@ namespace core
 {
 class blockIterator;
 
+template <typename Ty_>
+class flattenBlock : public block
+{
+public:
+	flattenBlock(pBlockDesc desc);
+	virtual ~flattenBlock();
+
+	//////////////////////////////
+	// Item Iterators
+	//////////////////////////////
+public:
+	virtual pBlockItemIterator getItemIterator();
+	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range);
+
+	virtual vpItemIterator getValueIterator();
+	virtual vpItemIterator getValueRangeIterator(const range& range);
+
+//////////////////////////////
+// Buffer
+//////////////////////////////
+protected:
+	virtual void refChunkBufferWithoutOwnership(void* data, bufferSize size) override;
+
+	//////////////////////////////
+	// Serializable
+	//////////////////////////////
+public:
+	virtual void serialize(bstream& os) override;
+	virtual void deserialize(bstream& is) override;
+
+	// TODO::Deprecate function
+	template<typename Ty_>
+	void serializeTy(bstream& bs)
+	{
+		bs << setw(sizeof(Ty_) * CHAR_BIT);
+		auto it = this->getItemIterator();
+		while (!it->isEnd())
+		{
+			bs << (**it).get<Ty_>();
+			++(*it);
+		}
+	}
+	// TODO::Deprecate function
+	template<typename Ty_>
+	void deserializeTy(bstream& bs)
+	{
+		bs >> setw(sizeof(Ty_) * CHAR_BIT);
+		auto it = this->getItemIterator();
+		while (!it->isEnd())
+		{
+			Ty_ value;
+			bs >> value;
+			(**it).set<Ty_>(value);
+			++(*it);
+		}
+	}
+};
+
+template <typename Ty_>
 class flattenChunk : public chunk
 {
 public:
@@ -120,6 +184,21 @@ protected:
 	pBlockIterator bItr_;
 	pBlockItemRangeIterator curBlockItemItr_;
 };
+
+template <typename Ty_>
+class flattenChunkFactory : public chunkFactory
+{
+public:
+	flattenChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(const pChunkDesc cDesc);
+};
 }		// core
 }		// msdb
+
+#include "flattenChunk.hpp"
+
 #endif	// _MSDB_FLATTENCHUNK_H_

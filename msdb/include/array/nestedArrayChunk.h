@@ -9,6 +9,7 @@ namespace msdb
 {
 namespace core
 {
+template <typename Ty_>
 class nestedArrayChunk : public chunk
 {
 public:
@@ -55,4 +56,7 @@ private:
 
 }		// core
 }		// msdb
+
+#include "nestedArrayChunk.hpp"
+
 #endif	_MSDB_NESTEDARRAYCHUNK_H_

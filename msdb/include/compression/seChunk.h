@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_SE_CHUNK_H_
 #define _MSDB_SE_CHUNK_H_
 
@@ -12,28 +12,160 @@ namespace msdb
 {
 namespace core
 {
-class seChunk;
-using pSeChunk = std::shared_ptr<seChunk>;
+//class seChunk;
+//using pSeChunk = std::shared_ptr<seChunk>;
 
-class seChunk : public flattenChunk
+template <typename Ty_>
+class seChunk : public flattenChunk<Ty_>
 {
 public:
-	seChunk(pChunkDesc desc);
-	virtual ~seChunk();
+	seChunk(pChunkDesc desc)
+		: flattenChunk<Ty_>(desc), level_(0), rBitFromMMT(0), min_(0)
+	{
+
+	}
+	virtual ~seChunk()
+	{
+
+	}
 
 public:
-	size_t getLevel();
+	inline size_t getLevel()
+	{
+		return this->level_;
+	}
 	//chunkId getSourceChunkId();
 
-	void setLevel(size_t level);
+	inline void setLevel(size_t level)
+	{
+		this->level_ = level;
+	}
 	//void setSourceChunkId(chunkId cid);
 
 public:
-	virtual void serialize(std::ostream& os) override;
-	virtual void deserialize(std::istream& is) override;
+	virtual void serialize(std::ostream& os) override
+	{
+		bstream bs;
+		switch (this->desc_->attrDesc_->type_)
+		{
+		case eleType::CHAR:
+			this->serialize<char>(bs);
+			break;
+		case eleType::INT8:
+			this->serialize<int8_t>(bs);
+			break;
+		case eleType::INT16:
+			this->serialize<int16_t>(bs);
+			break;
+		case eleType::INT32:
+			this->serialize<int32_t>(bs);
+			break;
+		case eleType::INT64:
+			this->serialize<int64_t>(bs);
+			break;
+		case eleType::UINT8:
+			this->serialize<int8_t>(bs);
+			break;
+		case eleType::UINT16:
+			this->serialize<int16_t>(bs);
+			break;
+		case eleType::UINT32:
+			this->serialize<int32_t>(bs);
+			break;
+		case eleType::UINT64:
+			this->serialize<int64_t>(bs);
+			break;
+		default:
+			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
+		}
 
-	void serializeGap(bstream& bs, int64_t gap);
-	int64_t deserializeGap(bstream& bs);
+		this->serializedSize_ = bs.capacity();
+		this->getOutHeader()->serialize(os);
+		os.write(bs.data(), bs.capacity());
+	}
+	virtual void deserialize(std::istream& is) override
+	{
+		this->getHeader()->deserialize(is);
+		this->updateFromHeader();
+
+		bstream bs;
+		bs.resize(this->serializedSize_);
+		is.read(bs.data(), this->serializedSize_);
+
+		switch (this->desc_->attrDesc_->type_)
+		{
+		case eleType::CHAR:
+			this->deserialize<char>(bs);
+			break;
+		case eleType::INT8:
+			this->deserialize<int8_t>(bs);
+			break;
+		case eleType::INT16:
+			this->deserialize<int16_t>(bs);
+			break;
+		case eleType::INT32:
+			this->deserialize<int32_t>(bs);
+			break;
+		case eleType::INT64:
+			this->deserialize<int64_t>(bs);
+			break;
+		case eleType::UINT8:
+			this->deserialize<int8_t>(bs);
+			break;
+		case eleType::UINT16:
+			this->deserialize<int16_t>(bs);
+			break;
+		case eleType::UINT32:
+			this->deserialize<int32_t>(bs);
+			break;
+		case eleType::UINT64:
+			this->deserialize<int64_t>(bs);
+			break;
+		default:
+			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
+		}
+	}
+
+	void serializeGap(bstream& bs, int64_t gap)
+	{
+		if (gap < 0)
+		{
+			bs << setw(1) << 0x1;
+			//BOOST_LOG_TRIVIAL(debug) << "GAP < 0";
+		}
+		else
+		{
+			bs << setw(1) << 0x0;
+		}
+		if (gap)
+		{
+			assert(abs_(gap) <= 128);
+			bs << setw(abs_(gap));
+			bs << (uint64_t)0;
+		}
+		bs << setw(1) << 0x1;
+	}
+	int64_t deserializeGap(bstream& bs)
+	{
+		bs >> setw(1);
+		char negiveGap;
+		bs >> negiveGap;
+
+		size_t gap = 0;
+		char gapBit = 0;
+		do
+		{
+			assert(gap <= 128);
+			bs >> gapBit;
+			++gap;
+		} while (gapBit != 1);
+
+		if (negiveGap)
+		{
+			return (gap - 1) * -1;
+		}
+		return gap - 1;
+	}
 
 	template<typename Ty_>
 	void serialize(bstream& bs)
@@ -458,7 +590,10 @@ public:
 	}
 
 public:
-	void setTileOffset(std::vector<uint64_t>& offset);
+	inline void setTileOffset(std::vector<uint64_t>& offset)
+	{
+		this->tileOffset_ = offset;
+	}
 	inline void setMin(int64_t min)
 	{
 		this->min_ = min;

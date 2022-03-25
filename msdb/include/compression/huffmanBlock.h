@@ -1,23 +1,31 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_HUFFMANBLOCK_H_
 #define _MSDB_HUFFMANBLOCK_H_
 
 #include <pch.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <compression/adaptiveHuffmanCode.h>
 
 namespace msdb
 {
 namespace core
 {
-class huffmanBlock;
-using pHuffmanBlock = std::shared_ptr<huffmanBlock>;
+//class huffmanBlock;
+//using pHuffmanBlock = std::shared_ptr<huffmanBlock>;
 
-class huffmanBlock : public flattenBlock
+template <typename Ty_>
+class huffmanBlock : public flattenBlock<Ty_>
 {
 public:
-	huffmanBlock(pBlockDesc desc);
-	virtual ~huffmanBlock();
+	huffmanBlock(pBlockDesc desc)
+		: flattenBlock<Ty_>(desc)
+	{
+
+	}
+	virtual ~huffmanBlock()
+	{
+
+	}
 
 public:
 	template<typename Cty_, typename Ty_>

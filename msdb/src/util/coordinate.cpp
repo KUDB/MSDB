@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <util/coordinate.h>
 
 namespace msdb
@@ -284,15 +284,41 @@ multiDimIterator::multiDimIterator(const size_type dSize, dim_const_pointer dims
 	this->initSeqCapacity();
 }
 
-multiDimIterator::multiDimIterator(const std::vector<dim_type>& lst)
-	: coor_(lst.size()), dSize_(lst.size()), end_(false), basisDimOffset_(1), seqPos_(0),
-	dims_(lst), sP_(lst.size()), eP_(lst)
+multiDimIterator::multiDimIterator(const size_type dSize, dim_const_pointer dims, 
+								   dim_const_pointer startCoor, dim_const_pointer endCoor)
+	: coor_(dSize), dSize_(dSize), end_(false), basisDimOffset_(1), seqPos_(0),
+	dims_(dSize, dims), sP_(dSize, startCoor), eP_(dSize, endCoor)
+{
+	this->basisDim_ = (dimensionId)(this->dSize() - 1);
+	this->initSeqCapacity();
+
+	assert(this->initCheckSpEp());
+	this->moveToStart();
+}
+
+multiDimIterator::multiDimIterator(const std::vector<dim_type>& dims)
+	: coor_(dims.size()), dSize_(dims.size()), end_(false), basisDimOffset_(1), seqPos_(0),
+	dims_(dims), sP_(dims.size()), eP_(dims)
 {
 	this->basisDim_ = (dimensionId)(this->dSize() - 1);
 	this->initSeqCapacity();
 }
 
-multiDimIterator::multiDimIterator(const coordinates space)
+multiDimIterator::multiDimIterator(const std::vector<dim_type>& dims, 
+								   const std::vector<dim_type>& startCoor, const std::vector<dim_type>& endCoor)
+	: coor_(dims.size()), dSize_(dims.size()), end_(false), basisDimOffset_(1), seqPos_(0),
+	dims_(dims), sP_(startCoor), eP_(endCoor)
+{
+	assert(dims.size() == startCoor.size() && dims.size() == endCoor.size());
+
+	this->basisDim_ = (dimensionId)(this->dSize() - 1);
+	this->initSeqCapacity();
+
+	assert(this->initCheckSpEp());
+	this->moveToStart();
+}
+
+multiDimIterator::multiDimIterator(const coordinates& space)
 	: coor_(space.size()), dSize_(space.size()), end_(false), basisDimOffset_(1), seqPos_(0),
 	dims_(space), sP_(space.size()), eP_(space)
 {
@@ -300,18 +326,53 @@ multiDimIterator::multiDimIterator(const coordinates space)
 	this->initSeqCapacity();
 }
 
-multiDimIterator::multiDimIterator(std::initializer_list<dim_type> lst)
-	: coor_(lst.size()), dSize_(lst.size()), end_(false), basisDimOffset_(1), seqPos_(0),
-	dims_(lst.size()), sP_(lst.size()), eP_(lst.size())
+multiDimIterator::multiDimIterator(const coordinates& space, const range& itRange)
+	: coor_(space.size()), dSize_(space.size()), end_(false), basisDimOffset_(1), seqPos_(0),
+	dims_(space), sP_(itRange.getSp()), eP_(itRange.getEp())
 {
-	size_type d = 0;
-	for (auto value : lst)
-	{
-		this->dims_[d] = value;
-		this->eP_[d] = value;
-	}
 	this->basisDim_ = (dimensionId)(this->dSize() - 1);
 	this->initSeqCapacity();
+
+	assert(this->initCheckSpEp());
+	this->moveToStart();
+}
+
+multiDimIterator::multiDimIterator(const std::initializer_list<dim_type>& dims)
+	: coor_(dims.size()), dSize_(dims.size()), end_(false), basisDimOffset_(1), seqPos_(0),
+	dims_(dims.size()), sP_(dims.size()), eP_(dims.size())
+{
+	auto dimsIt = dims.begin();
+
+	for (int d = 0; d < dims.size(); ++d)
+	{
+		this->dims_[d] = *dimsIt++;
+		this->eP_[d] = *dimsIt++;
+	}
+
+	this->basisDim_ = (dimensionId)(this->dSize() - 1);
+	this->initSeqCapacity();
+}
+
+multiDimIterator::multiDimIterator(const std::initializer_list<dim_type>& dims,
+								   const std::initializer_list<dim_type>& startCoor, 
+								   const std::initializer_list<dim_type>& endCoor)
+{
+	auto dimsIt = dims.begin();
+	auto spIt = startCoor.begin();
+	auto epIt = endCoor.begin();
+
+	for (int d = 0; d < dims.size(); ++d)
+	{
+		this->dims_[d] = *dimsIt++;
+		this->sP_[d] = *spIt++;
+		this->eP_[d] = *epIt++;
+	}
+
+	this->basisDim_ = (dimensionId)(this->dSize() - 1);
+	this->initSeqCapacity();
+
+	assert(this->initCheckSpEp());
+	this->moveToStart();
 }
 
 multiDimIterator::multiDimIterator(const self_type& mit)

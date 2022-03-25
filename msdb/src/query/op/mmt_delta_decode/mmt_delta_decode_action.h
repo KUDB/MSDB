@@ -63,7 +63,7 @@ public:
 				//auto cDesc = (**cit)->getDesc();
 				//pChunk outChunk = outArr->makeChunk(*cDesc);
 				//outChunk->copyBlockBitmap((**cit)->getBlockBitmap());
-				pWtChunk outChunk = std::static_pointer_cast<wtChunk>(outArr->makeChunk(attrDesc->id_, cit->seqPos()));
+				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(attrDesc->id_, cit->seqPos()));
 				outChunk->setLevel(wtLevel);
 				outChunk->bufferCopy(**cit);
 

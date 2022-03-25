@@ -3,23 +3,32 @@
 #define _MSDB_COMPASSBLOCK_H_
 
 #include <pch.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <io/bitstream.h>
 
 namespace msdb
 {
 namespace core
 {
-class compassBlock;
-using pCompassBlock = std::shared_ptr<compassBlock>;
+//class compassBlock;
+//using pCompassBlock = std::shared_ptr<compassBlock>;
 
-class compassBlock : public flattenBlock
+template <typename Ty_>
+class compassBlock : public flattenBlock<Ty_>
 {
 public:
-	compassBlock(pBlockDesc desc);
-	virtual ~compassBlock();
+	compassBlock(pBlockDesc desc)
+		: flattenBlock<Ty_>(desc), numBins_(0)
+	{
+
+	}
+	virtual ~compassBlock()
+	{
+
+	}
 
 public:
+	// TODO::Erase Ty_ in compassBlock member functions
 	template <typename Ty_>
 	struct bin
 	{
@@ -29,6 +38,7 @@ public:
 	};
 
 public:
+	// TODO::Erase Ty_ in compassBlock member functions
 	template<typename Ty_>
 	void serializeTy(bstream& bs)
 	{
@@ -55,6 +65,7 @@ public:
 		}
 	}
 
+	// TODO::Erase Ty_ in compassBlock member functions
 	template<typename Ty_>
 	void deserializeTy(bstream& bs)
 	{
@@ -81,6 +92,7 @@ public:
 	}
 
 private:
+	// TODO::Erase Ty_ in compassBlock member functions
 	template <typename Ty_>
 	inline Ty_ getBinValueRange()
 	{
@@ -91,6 +103,7 @@ private:
 		return (maxValue / this->numBins_) * 2;
 	}
 
+	// TODO::Erase Ty_ in compassBlock member functions
 	template <typename Ty_>
 	void buildBinFronValue(std::vector<compassBlock::bin<Ty_>>& bins_)
 	{
@@ -126,6 +139,7 @@ private:
 		}
 	}
 
+	// TODO::Erase Ty_ in compassBlock member functions
 	template <typename Ty_>
 	inline size_t getBinIndexForValue(Ty_ value, Ty_ binValueRange, bool hasNegative, size_t negativeToPositive = 0)
 	{
@@ -137,6 +151,7 @@ private:
 		return (uint64_t)(value / binValueRange);
 	}
 
+	// TODO::Erase Ty_ in compassBlock member functions
 	template <typename Ty_>
 	void buildArrayFromBin(std::vector<compassBlock::bin<Ty_>>& bins_)
 	{
@@ -179,8 +194,63 @@ private:
 	}
 
 	// Expects positional vector is ordered
-	void serializePositional(bstream& bs, std::vector<position_t>& positional);
-	void deserializePositional(bstream& bs, std::vector<position_t>& positional);
+	void serializePositional(bstream& bs, std::vector<position_t>& positional)
+	{
+		position_t maxGap = 0;
+		position_t prevP = positional[0];
+		for (auto p : positional)
+		{
+			if (p - prevP > maxGap)
+			{
+				maxGap = p - prevP;
+			}
+			prevP = p;
+		}
+
+		auto bFirstPosition = std::max({ msb<position_t>(positional[0]), (unsigned char)1 });
+		auto bMaxGap = std::max({ msb<position_t>(maxGap), (unsigned char)1 });
+
+		bs << setw(CHAR_BIT) << bFirstPosition << bMaxGap;
+		bs << setw(bFirstPosition) << positional[0];	// set first position
+		bs << setw(bMaxGap);
+
+		prevP = positional[0];
+		size_t numPositions = positional.size();
+		for (size_t i = 1; i < numPositions; ++i)
+		{
+			position_t p = positional[i];
+			assert((p == 0 || (p > prevP && p - prevP > 0)) && "check positional vector is ordered");
+			bs << (p - prevP);
+			prevP = p;
+		}
+		bs << 0;
+	}
+	void deserializePositional(bstream& bs, std::vector<position_t>& positional)
+	{
+		bit_cnt_type bMaxGap = 0;
+		bit_cnt_type bFirstPosition = 0;
+
+		position_t p = 0;
+		position_t prevP = 0;
+
+		bs >> setw(CHAR_BIT) >> bFirstPosition >> bMaxGap;
+		bs >> setw(bFirstPosition) >> p;		// get first position
+		bs >> setw(bMaxGap);
+		positional.push_back(p);
+		prevP = p;
+
+		do
+		{
+			bs >> p;
+			if (!p)
+			{
+				break;
+			}
+			positional.push_back(p + prevP);
+			prevP += p;
+
+		} while (true);
+	}
 
 	template <typename Ty_>
 	void serialzieResidual(bstream& bs, std::vector<Ty_>& residual)
@@ -221,7 +291,11 @@ private:
 	}
 
 public:
-	void setNumBins(size_t numBins);
+	void setNumBins(size_t numBins)
+	{
+		assert(numBins % 2 == 0);
+		this->numBins_ = numBins;
+	}
 
 private:
 	size_t numBins_;

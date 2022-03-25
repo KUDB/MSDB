@@ -1,23 +1,31 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_LZWBLOCK_H_
 #define _MSDB_LZWBLOCK_H_
 
 #include <pch.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <util/ioutil.h>
 
 namespace msdb
 {
 namespace core
 {
-class lzwBlock;
-using pLzwBlock = std::shared_ptr<lzwBlock>;
+//class lzwBlock;
+//using pLzwBlock = std::shared_ptr<lzwBlock>;
 
-class lzwBlock : public flattenBlock
+template <typename Ty_>
+class lzwBlock : public flattenBlock<Ty_>
 {
 public:
-	lzwBlock(pBlockDesc desc);
-	virtual ~lzwBlock();
+	lzwBlock(pBlockDesc desc)
+		: flattenBlock<Ty_>(desc)
+	{
+
+	}
+	virtual ~lzwBlock()
+	{
+
+	}
 
 public:
 	template<typename Ty_>

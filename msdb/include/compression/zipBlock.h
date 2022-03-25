@@ -3,21 +3,29 @@
 #define _MSDB_ZIPBLOCK_H_
 
 #include <pch.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <util/ioutil.h>
 
 namespace msdb
 {
 namespace core
 {
-class zipBlock;
-using pZipBlock = std::shared_ptr<zipBlock>;
+//class zipBlock;
+//using pZipBlock = std::shared_ptr<zipBlock>;
 
-class zipBlock : public flattenBlock
+template <typename Ty_>
+class zipBlock : public flattenBlock<Ty_>
 {
 public:
-	zipBlock(pBlockDesc desc);
-	virtual ~zipBlock();
+	zipBlock(pBlockDesc desc)
+		: flattenBlock<Ty_>(desc)
+	{
+
+	}
+	virtual ~zipBlock()
+	{
+
+	}
 
 public:
 	template<typename Ty_>

@@ -3,21 +3,29 @@
 #define _MSDB_ADAPTHUFFMANBLOCK_H_
 
 #include <pch.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <compression/adaptiveHuffmanCode.h>
 
 namespace msdb
 {
 namespace core
 {
-class adaptHuffmanBlock;
-using pAdaptHuffmanBlock = std::shared_ptr<adaptHuffmanBlock>;
+//class adaptHuffmanBlock;
+//using pAdaptHuffmanBlock = std::shared_ptr<adaptHuffmanBlock>;
 
-class adaptHuffmanBlock : public flattenBlock
+template <typename Ty_>
+class adaptHuffmanBlock : public flattenBlock<Ty_>
 {
 public:
-	adaptHuffmanBlock(pBlockDesc desc);
-	virtual ~adaptHuffmanBlock();
+	adaptHuffmanBlock(pBlockDesc desc)
+		: flattenBlock<Ty_>(desc)
+	{
+
+	}
+	virtual ~adaptHuffmanBlock()
+	{
+
+	}
 
 public:
 	template<typename Cty_, typename Ty_>

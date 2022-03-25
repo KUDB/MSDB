@@ -45,6 +45,7 @@ public:
 			  const CompressionMethod cType);
 
 	chunkDesc(const chunkDesc& mit);
+	
 
 public:
 	void setDim(dimensionId dId, position_t value);

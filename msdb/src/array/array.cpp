@@ -16,6 +16,7 @@ array::array(pArrayDesc desc)
 	{
 		this->attrChunkBitmaps_[attr->id_] = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
 	}
+	//initChunkFactories();
 }
 array::~array()
 {
@@ -28,6 +29,7 @@ array::~array()
 		b.second = nullptr;
 	}
 	this->desc_ = nullptr;
+	this->cFactories_.clear();
 }
 pArrayDesc array::getDesc()
 {

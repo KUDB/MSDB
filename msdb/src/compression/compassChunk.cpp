@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <compression/compassChunk.h>
 
 namespace msdb
@@ -6,7 +6,7 @@ namespace msdb
 namespace core
 {
 compassChunk::compassChunk(pChunkDesc desc)
-	: flattenChunk(desc)
+	: flattenChunk<element>(desc)
 {
 }
 
@@ -20,7 +20,7 @@ pBlock compassChunk::makeBlock(const blockId bId)
 	if (this->blocks_[bId] == nullptr)
 	{
 		auto desc = this->getBlockDesc(bId);
-		auto blockObj = std::make_shared<compassBlock>(desc);
+		auto blockObj = std::make_shared<compassBlock<Ty_>>(desc);
 		this->insertBlock(blockObj);
 		return blockObj;
 	}

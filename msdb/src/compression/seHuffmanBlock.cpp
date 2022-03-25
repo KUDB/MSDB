@@ -5,12 +5,12 @@ namespace msdb
 {
 namespace core
 {
-seHuffmanBlock::seHuffmanBlock(pBlockDesc desc)
-	: flattenBlock(desc)
-{
-}
-seHuffmanBlock::~seHuffmanBlock()
-{
-}
+//seHuffmanBlock::seHuffmanBlock(pBlockDesc desc)
+//	: flattenBlock<element>(desc)
+//{
+//}
+//seHuffmanBlock::~seHuffmanBlock()
+//{
+//}
 }		// core
 }		// msdb

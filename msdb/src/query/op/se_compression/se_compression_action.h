@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_SE_COMPRESSION_ACTION_H_
 #define _MSDB_OP_SE_COMPRESSION_ACTION_H_
 
 #include <pch.h>
 #include <array/arrayMgr.h>
 #include <array/block.h>
-#include <array/flattenBlock.h>
+#include <array/flattenChunk.h>
 #include <system/storageMgr.h>
 #include <compression/wtChunk.h>
 #include <compression/seChunk.h>
@@ -30,7 +30,19 @@ public:
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery q) override;
 
 private:
-	pSeChunk makeOutChunk(pWtChunk inChunk);
+	template <typename Ty_>
+	std::shared_ptr<seChunk<Ty_>> makeOutChunk(std::shared_ptr<wtChunk<Ty_>> inChunk)
+	{
+		auto outDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
+		std::shared_ptr<seChunk<Ty_>> outChunk = std::make_shared<seChunk<Ty_>>(outDesc);
+		outChunk->setLevel(inChunk->getLevel());
+		//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
+		outChunk->bufferRef(inChunk);
+		outChunk->makeAllBlocks();
+
+		return outChunk;
+	}
+
 
 	template<typename Ty_>
 	void compressAttribute(std::shared_ptr<wavelet_encode_array>inArr, pAttributeDesc attrDesc)
@@ -57,7 +69,7 @@ private:
 		while (!cit->isEnd())
 		{
 			pChunk outChunk = this->compressChunk<Ty_>(
-				std::static_pointer_cast<wtChunk>(**cit), mmtIndex, chunkDim, hasNegative);
+				std::static_pointer_cast<wtChunk<Ty_>>(**cit), mmtIndex, chunkDim, hasNegative);
 
 			auto attr = outChunk->getDesc()->attrDesc_;
 			storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
@@ -72,12 +84,12 @@ private:
 	}
 
 	template<typename Ty_>
-	pSeChunk compressChunk(pWtChunk inChunk,
+	std::shared_ptr<seChunk<Ty_>> compressChunk(std::shared_ptr<wtChunk<Ty_>> inChunk,
 						   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 						   dimension& sourceChunkDim, bool hasNegative)
 	{
 		size_t dSize = inChunk->getDSize();
-		pSeChunk outChunk = this->makeOutChunk(inChunk);
+		auto outChunk = this->makeOutChunk(inChunk);
 
 #ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "Chunkcoor: " << chunkCoor.toString() << " / MMT NODE: " << mNode->toString<Ty_>();
@@ -134,7 +146,7 @@ private:
 	}
 
 	template <class Ty_>
-	void findRequiredBitsForRootLevel(pSeChunk outChunk, pBlock outBlock,
+	void findRequiredBitsForRootLevel(std::shared_ptr<seChunk<Ty_>> outChunk, pBlock outBlock,
 									  std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									  const dimension& bandDims, const size_t numBandsInLevel, 
 									  const bool hasNegative)
@@ -165,7 +177,7 @@ private:
 	}
 
 	template <class Ty_>
-	void findRequiredBitsForChildLevel(pSeChunk outChunk, pBlock outBlock,
+	void findRequiredBitsForChildLevel(std::shared_ptr<seChunk<Ty_>> outChunk, pBlock outBlock,
 									   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									   const dimension& bandDims, 
 									   const size_t maxLevel,
@@ -246,6 +258,8 @@ private:
 	//	//}
 	//	//assert(rbFromDelta <= rbFromMMT);
 	//}
+
+
 };
 }	// core
 }	// msdb
