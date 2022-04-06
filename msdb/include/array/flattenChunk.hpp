@@ -346,10 +346,13 @@ void flattenChunk<Ty_>::deserialize(std::istream& is)
 	}
 }
 
+//////////////////////////////
+// flattenChunkFactory
+//
 template <typename Ty_>
-pChunk flattenChunkFactory<Ty_>::makeChunk(const pChunkDesc cDesc)
+pChunk flattenChunkFactory<Ty_>::makeChunk(pChunkDesc cDesc)
 {
-	return std::make_shared<flattenChunk<Ty_>>(std::make_shared<chunkDesc>(*cDesc));
+	return std::make_shared<flattenChunk<Ty_>>(cDesc);
 }
 }		// core
 }		// msdb

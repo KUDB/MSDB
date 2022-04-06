@@ -46,6 +46,12 @@ pChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMo
 	}
 	_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "attrId: " + std::to_string(attrId)));
 }
+pChunkFactory array::getChunkFactory(const attributeId& attrId)
+{
+	assert(attrId < this->cFactories_.size());
+
+	return this->cFactories_[attrId];
+}
 //array::size_type array::getNumChunks(const attributeId attrId)
 //{
 //	return this->chunks_[attrId].size();
@@ -59,9 +65,11 @@ coor array::itemCoorToChunkCoor(const coor& itemCoor)
 	}
 	return chunkCoor;
 }
-pChunk array::insertChunk(const attributeId attrId, pChunk inputChunk)
+pChunk array::insertChunk(pChunk inputChunk)
 {
+	const auto attrId = inputChunk->getDesc()->attrDesc_->id_;
 	assert(attrId < this->desc_->attrDescs_->size());
+	
 	this->chunks_[attrId].insert(chunkPair(inputChunk->getId(), inputChunk));
 	this->setChunkExist(attrId, inputChunk->getId());
 	return inputChunk;
@@ -88,9 +96,17 @@ void array::flush()
 	this->chunks_.clear();
 }
 
-pChunk array::makeChunk(const chunkDesc& desc)
+pChunk array::makeChunk(const attributeId attrId, const chunkId cId)
 {
-	return this->makeChunk(desc.attrDesc_->id_, desc.id_);
+	return this->makeChunk(this->getChunkDesc(attrId, cId));
+}
+
+pChunk array::makeChunk(pChunkDesc desc)
+{
+	auto chunkObj = this->getChunkFactory(desc->attrDesc_->id_)->requestNewChunk(desc);
+	this->insertChunk(chunkObj);
+
+	return chunkObj;
 }
 
 void array::makeChunks(const attributeId attrId, const bitmap& input)

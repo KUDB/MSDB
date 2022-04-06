@@ -171,5 +171,14 @@ pBlockIterator monoChunk<Ty_>::getBlockIterator(const iterateMode itMode)
 		this->desc_->getBlockSpace(),
 		this->block_, itMode);
 }
+
+//////////////////////////////
+// flattenChunkFactory
+//
+template <typename Ty_>
+pChunk monoChunkFactory<Ty_>::makeChunk(pChunkDesc cDesc)
+{
+	return std::make_shared<monoChunk<Ty_>>(cDesc);
+}
 }		// core
 }		// msdb

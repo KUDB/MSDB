@@ -20,8 +20,7 @@ public:
 
 public:
 	virtual void initChunkFactories();
-	virtual pChunk makeChunk(const attributeId attrId, const chunkId cId) override;
-	virtual pChunk makeChunk(const chunkDesc& desc) override;
+	//virtual pChunk makeChunk(pChunkDesc desc) override;
 };
 }		// core
 }		// msdb

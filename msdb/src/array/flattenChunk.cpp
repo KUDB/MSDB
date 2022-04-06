@@ -227,5 +227,13 @@ element blockChunkItemRangeIterator::operator*()
 {
 	return (**this->curBlockItemItr_);
 }
+
+//////////////////////////////
+// flattenChunkType
+//
+flattenChunkType::flattenChunkType(const dataType& type)
+	: chunkType(buildFactory(flattenChunkFactoryBuilder(), type))
+{
+}
 }		// core
 }		// msdb

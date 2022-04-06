@@ -10,9 +10,6 @@ namespace msdb
 {
 namespace core
 {
-//class spihtBlock;
-//using pSpihtBlock = std::shared_ptr<spihtBlock>;
-
 template <typename Ty_>
 class spihtBlock : public flattenBlock<Ty_>
 {

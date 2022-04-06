@@ -11,9 +11,6 @@ namespace msdb
 {
 namespace core
 {
-//class compassChunk;
-//using pCompassChunk = std::shared_ptr<compassChunk>;
-
 template <typename Ty_>
 class compassChunk : public flattenChunk<Ty_>
 {
@@ -175,6 +172,58 @@ public:
 private:
 	size_t numBins_;
 };
-}	// core
-}	// msdb
+
+//////////////////////////////
+// compassChunkFactory
+//
+// To make concreteType of compassChunk
+//
+template <typename Ty_>
+class compassChunkFactory : public chunkFactory
+{
+public:
+	compassChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};		// compassChunkFactory
+
+//////////////////////////////
+// Factory constructor for compassChunkFacotry
+//
+class compassChunkFactoryBuilder
+{
+public:
+	compassChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<compassChunkFactory<Ty_>>();
+	}
+};		// compassChunkFactoryBuilder
+
+//////////////////////////////
+// compassChunkType
+//
+class compassChunkType : public chunkType
+{
+public:
+	compassChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "compassChunk";
+	}
+};		// compassChunkType
+}		// core
+}		// msdb
+
+#include "compassChunk.hpp"
+
 #endif	// _MSDB_COMPASSCHUNK_H_

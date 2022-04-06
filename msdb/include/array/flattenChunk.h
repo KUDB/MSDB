@@ -11,6 +11,7 @@
 #include <array/chunkIterator.h>
 #include <array/chunkItemIterator.h>
 #include <io/bitstream.h>
+#include <util/dataType.h>
 
 namespace msdb
 {
@@ -185,6 +186,11 @@ protected:
 	pBlockItemRangeIterator curBlockItemItr_;
 };
 
+//////////////////////////////
+// flattenChunkFactory
+//
+// To make concreteType of flattenChunk
+//
 template <typename Ty_>
 class flattenChunkFactory : public chunkFactory
 {
@@ -194,7 +200,39 @@ public:
 	{}
 
 protected:
-	virtual pChunk makeChunk(const pChunkDesc cDesc);
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// Factory constructor for flattenChunkFacotry
+//
+class flattenChunkFactoryBuilder
+{
+public:
+	flattenChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<flattenChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// flattenChunkType
+//
+class flattenChunkType : public chunkType
+{
+public:
+	flattenChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "flattenChunk";
+	}
 };
 }		// core
 }		// msdb

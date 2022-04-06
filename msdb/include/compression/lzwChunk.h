@@ -13,9 +13,6 @@ namespace msdb
 {
 namespace core
 {
-//class lzwChunk;
-//using pLzwChunk = std::shared_ptr<lzwChunk>;
-
 template <typename Ty_>
 class lzwChunk : public flattenChunk<Ty_>
 {
@@ -288,6 +285,57 @@ private:
 	/// Dictionary Maximum Size (when reached, the dictionary will be reset)
 	static const lzwCodeType dms{ std::numeric_limits<lzwCodeType>::max() };
 };
+
+//////////////////////////////
+// lzwChunkFactory
+//
+// To make concreteType of lzwChunk
+//
+template <typename Ty_>
+class lzwChunkFactory : public chunkFactory
+{
+public:
+	lzwChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// Factory constructor for lzwChunkFacotry
+//
+class lzwChunkFactoryBuilder
+{
+public:
+	lzwChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<lzwChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// lzwChunkType
+//
+class lzwChunkType : public chunkType
+{
+public:
+	lzwChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "lzwChunk";
+	}
+};
 }		// core
 }		// msdb
+
+#include "lzwChunk.hpp"
 #endif	// _MSDB_LZWCHUNK_H_

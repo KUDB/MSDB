@@ -6,6 +6,14 @@ namespace msdb
 {
 namespace core
 {
+//////////////////////////////
+// seChunkType
+//
+seChunkType::seChunkType(const dataType& type)
+	: chunkType(buildFactory(seChunkFactoryBuilder(), type))
+{
+}
+
 //seChunk::seChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc), level_(0), rBitFromMMT(0), min_(0)
 //{

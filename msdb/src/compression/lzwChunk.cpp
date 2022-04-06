@@ -6,6 +6,14 @@ namespace msdb
 {
 namespace core
 {
+//////////////////////////////
+// lzwChunkType
+//
+lzwChunkType::lzwChunkType(const dataType& type)
+	: chunkType(buildFactory(lzwChunkFactoryBuilder(), type))
+{
+}
+
 //lzwChunk::lzwChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc)
 //{

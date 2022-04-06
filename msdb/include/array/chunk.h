@@ -112,18 +112,6 @@ public:
 public:
 	void print();
 
-protected:
-	template <class Ty_>
-	void printImp()
-	{
-
-	}
-	template<>
-	void printImp<char>()
-	{
-
-	}
-
 //////////////////////////////
 // Serializable
 //////////////////////////////

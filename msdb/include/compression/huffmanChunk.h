@@ -11,9 +11,6 @@ namespace msdb
 {
 namespace core
 {
-//class huffmanChunk;
-//using pHuffmanChunk = std::shared_ptr<huffmanChunk>;
-
 template <typename Ty_>
 class huffmanChunk : public flattenChunk<Ty_>
 {
@@ -122,6 +119,58 @@ private:
 		huffmanDecoder.decode((uint8_t*)this->getBuffer()->getData(), this->getBuffer()->size(), in);
 	}
 };
+
+//////////////////////////////
+// huffmanChunkFactory
+//
+// To make concreteType of huffmanChunk
+//
+template <typename Ty_>
+class huffmanChunkFactory : public chunkFactory
+{
+public:
+	huffmanChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};		// huffmanChunkFactory
+
+//////////////////////////////
+// Factory constructor for huffmanChunkFacotry
+//
+class huffmanChunkFactoryBuilder
+{
+public:
+	huffmanChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<huffmanChunkFactory<Ty_>>();
+	}
+};		// huffmanChunkFactoryBuilder
+
+//////////////////////////////
+// huffmanChunkType
+//
+class huffmanChunkType : public chunkType
+{
+public:
+	huffmanChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "huffmanChunk";
+	}
+};		// huffmanChunkType
 }		// core
 }		// msdb
+
+#include "huffmanChunk.hpp"
+
 #endif	// _MSDB_HUFFMANCHUNK_H_

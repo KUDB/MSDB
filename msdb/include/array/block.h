@@ -73,13 +73,8 @@ public:
 	//[[deprecated("")]] 
 	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range) = 0;
 
-<<<<<<< Updated upstream
-	virtual pvItemIterator getValueIterator() = 0;
-	virtual pvItemIterator getValueRangeIterator(const range& range) = 0;
-=======
 	virtual vpItemIterator getValueIterator() = 0;
 	virtual vpItemIterator getValueRangeIterator(const range& range) = 0;
->>>>>>> Stashed changes
 
 	void copyBitmap(cpBitmap itemBitmap);
 	void replaceBitmap(pBitmap itemBitmap);

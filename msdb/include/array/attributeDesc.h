@@ -1,10 +1,12 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ATTRIBUTEDESC_H_
 #define _MSDB_ATTRIBUTEDESC_H_
 
 #include <pch.h>
-#include <array/attributeId.h>
 #include <util/element.h>
+#include <util/dataType.h>
+#include <array/attributeId.h>
+#include <array/chunkType.h>
 #include <compression/compressionType.h>
 #include <xml/tinyxml2.h>
 
@@ -36,7 +38,11 @@ public:
 class attributeDesc
 {
 public:
+	// TODO::replace eleType->dataType
 	attributeDesc(attributeId id, std::string name, eleType type, compressionType compType = compressionType::NONE);
+
+	// TODO::make copy constructor for attributeDesc
+	// TODO::make assign operator for attributeDescs
 
 public:
 	// TODO:: set comp type at compression operator actions
@@ -56,10 +62,17 @@ public:
 	std::string toString();
 	bool operator == (const attributeDesc& right_);
 
+private:
+	// TODO::replace eleType and erase this function
+	dataType eleType2dataType(eleType eTy);
+
 public:
 	attributeId id_;
 	std::string name_;
-	eleType type_;
+	eleType type_;				// TODO::Deprecated, replace eleType->util/dataType
+	dataType dataType_;
+	std::list<chunkType> chunkTypeLineage_;
+	std::map<std::string, std::string> optionalParams_;
 	size_t typeSize_;
 	compressionType compType_;	// compression type, default:NONE
 };

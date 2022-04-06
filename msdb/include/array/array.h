@@ -46,7 +46,10 @@ public:
 	virtual coor itemCoorToChunkCoor(const coor& itemCoor);
 	virtual pChunkIterator getChunkIterator(const attributeId attrId, 
 		const iterateMode itMode = iterateMode::ALL);
+protected:
+	pChunkFactory getChunkFactory(const attributeId& attrId);
 
+public:
 	//////////////////////////////
 	// Setter
 	//////////////////////////////
@@ -55,15 +58,15 @@ public:
 
 	// Initialize and assign ChunkFactory in this->chunkFactories_ according to data type of each attribute
 	virtual void initChunkFactories() = 0;
-	virtual pChunk makeChunk(const attributeId attrId, const chunkId cId) = 0;
+	inline pChunk makeChunk(const attributeId attrId, const chunkId cId);
 	// For better performance, implement the function in an inherit class.
 	// The function provided by default extracts ID from ChunkDesc 
 	// and re-generate chunkDesc for it.
-	virtual pChunk makeChunk(const chunkDesc& desc);
+	inline pChunk makeChunk(pChunkDesc desc);
 	// If a chunkBit is setted, array makes a chunk accordingly.
 	void makeChunks(const attributeId attrId, const bitmap& input);
 
-	pChunk insertChunk(const attributeId attrId, pChunk inputChunk);
+	inline pChunk insertChunk(pChunk inputChunk);
 	template <class _Iter>
 	void insertChunk(const attributeId attrId, _Iter begin, _Iter end)
 	{

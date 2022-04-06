@@ -12,9 +12,6 @@ namespace msdb
 {
 namespace core
 {
-//class lzwHuffmanChunk;
-//using pLzwHuffmanChunk = std::shared_ptr<lzwHuffmanChunk>;
-
 template <typename Ty_>
 class lzwHuffmanChunk : public flattenChunk<Ty_>
 {
@@ -168,6 +165,58 @@ public:
 private:
 	static const lzwCodeType dms{ std::numeric_limits<lzwCodeType>::max() };
 };
+
+//////////////////////////////
+// lzwHuffmanChunkFactory
+//
+// To make concreteType of lzwHuffmanChunk
+//
+template <typename Ty_>
+class lzwHuffmanChunkFactory : public chunkFactory
+{
+public:
+	lzwHuffmanChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// Factory constructor for lzwHuffmanChunkFacotry
+//
+class lzwHuffmanChunkFactoryBuilder
+{
+public:
+	lzwHuffmanChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<lzwHuffmanChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// lzwHuffmanChunkType
+//
+class lzwHuffmanChunkType : public chunkType
+{
+public:
+	lzwHuffmanChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "lzwHuffmanChunk";
+	}
+};
 }		// core
 }		// msdb
+
+#include "lzwHuffmanChunk.hpp"
+
 #endif	// _MSDB_LZWHUFFMANCHUNK_H_

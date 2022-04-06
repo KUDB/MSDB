@@ -9,26 +9,24 @@ namespace msdb
 {
 namespace core
 {
+class chunkFactory;
+using pChunkFactory = std::shared_ptr<chunkFactory>;
+using chunkFactories = std::vector<pChunkFactory>;
+
 class chunkFactory
 {
 public:
 	chunkFactory();
 
 public:
-	inline pChunk requestNewChunk(const pChunkDesc cDesc)
+	inline pChunk requestNewChunk(pChunkDesc cDesc)
 	{
 		return this->makeChunk(cDesc);
 	}
 
 protected:
-	virtual pChunk makeChunk(const pChunkDesc cDesc) = 0;
-};
-<<<<<<< Updated upstream
-=======
-
-using upChunkFactory = std::unique_ptr<chunkFactory>;
-using chunkFactories = std::vector<upChunkFactory>;
->>>>>>> Stashed changes
+	virtual pChunk makeChunk(pChunkDesc cDesc) = 0;
+};		// chunkFactory
 }		// core
 }		// msdb
 

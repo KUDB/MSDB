@@ -12,9 +12,6 @@ namespace msdb
 {
 namespace core
 {
-//class seChunk;
-//using pSeChunk = std::shared_ptr<seChunk>;
-
 template <typename Ty_>
 class seChunk : public flattenChunk<Ty_>
 {
@@ -661,6 +658,57 @@ bit_cnt_type getRBitFromMMT(Ty_ max, Ty_ min, bit_cnt_type order, bool hasNegati
 
 	//return std::max((bit_cnt_type)abs_(node->bMax_), (bit_cnt_type)abs_(node->bMin_)) + static_cast<char>(hasNegative);
 }
+
+//////////////////////////////
+// seChunkFactory
+//
+// To make concreteType of seChunk
+//
+template <typename Ty_>
+class seChunkFactory : public chunkFactory
+{
+public:
+	seChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// Factory constructor for seChunkFacotry
+//
+class seChunkFactoryBuilder
+{
+public:
+	seChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<seChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// seChunkType
+//
+class seChunkType : public chunkType
+{
+public:
+	seChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "seChunk";
+	}
+};
+
+#include "seChunk.hpp"
 }		// core
 }		// msdb
 #endif	// _MSDB_SE_CHUNK_H_

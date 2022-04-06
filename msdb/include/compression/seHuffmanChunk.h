@@ -12,9 +12,6 @@ namespace msdb
 {
 namespace core
 {
-//class seHuffmanChunk;
-//using pSeHuffmanChunk = std::shared_ptr<seHuffmanChunk>;
-
 template <typename Ty_>
 class seHuffmanChunk : public seChunk<Ty_>
 {
@@ -162,6 +159,58 @@ public:
 		this->seDecode<Ty_>(seIn);
 	}
 };
+
+//////////////////////////////
+// seHuffmanChunkFactory
+//
+// To make concreteType of seHuffmanChunk
+//
+template <typename Ty_>
+class seHuffmanChunkFactory : public chunkFactory
+{
+public:
+	seHuffmanChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};		// seHuffmanChunkFactory
+
+//////////////////////////////
+// Factory constructor for seHuffmanChunkFacotry
+//
+class seHuffmanChunkFactoryBuilder
+{
+public:
+	seHuffmanChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<seHuffmanChunkFactory<Ty_>>();
+	}
+};		// seHuffmanChunkFactoryBuilder
+
+//////////////////////////////
+// seHuffmanChunkType
+//
+class seHuffmanChunkType : public chunkType
+{
+public:
+	seHuffmanChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "seHuffmanChunk";
+	}
+};		// seHuffmanChunkType
 }		// core
 }		// msdb
+
+#include "seHuffmanChunk.hpp"
+
 #endif	// _MSDB_SEHUFFMANCHUNK_H_

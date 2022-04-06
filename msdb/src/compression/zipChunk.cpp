@@ -6,6 +6,16 @@ namespace msdb
 {
 namespace core
 {
+//////////////////////////////
+// zipChunkType
+// 
+zipChunkType::zipChunkType(const dataType& type)
+	: chunkType()
+{
+	zipChunkFactoryBuilder fConstructor;
+	this->myFactory_ = std::visit(fConstructor, type);
+}
+
 //zipChunk::zipChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc)
 //{

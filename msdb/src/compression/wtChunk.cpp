@@ -5,6 +5,14 @@ namespace msdb
 {
 namespace core
 {
+//////////////////////////////
+// wtChunkType
+//
+wtChunkType::wtChunkType(const dataType& type)
+	: chunkType(buildFactory(wtChunkFactoryBuilder(), type))
+{
+}
+
 //wtChunk::wtChunk(pChunkDesc desc)
 //	: monoChunk(desc), level_(0)
 //{

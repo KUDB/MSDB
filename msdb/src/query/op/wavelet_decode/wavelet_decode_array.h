@@ -30,4 +30,4 @@ protected:
 };
 }		// core
 }		// msdb
-#endif		// _MSDB_OP_WAVELET_DECODE_ARRAY_H_
+#endif	// _MSDB_OP_WAVELET_DECODE_ARRAY_H_

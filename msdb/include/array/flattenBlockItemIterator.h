@@ -68,11 +68,7 @@ public:
 
 public:
 	flattenBufferItemIterator(Ty_* ptr, const size_type dSize, dim_const_pointer dims, const range& itRange, pBitmap itemBitmap);
-<<<<<<< Updated upstream
-	flattenBufferItemIterator(Ty_* ptr, const coordinates& dims, const range& range, pBitmap itemBitmap);
-=======
 	flattenBufferItemIterator(Ty_* ptr, const coordinates& dims, const range& itRange, pBitmap itemBitmap);
->>>>>>> Stashed changes
 	flattenBufferItemIterator(const self_type& mit);
 
 public:

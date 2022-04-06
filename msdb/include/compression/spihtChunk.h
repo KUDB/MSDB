@@ -11,9 +11,6 @@ namespace msdb
 {
 namespace core
 {
-//class spihtChunk;
-//using pSpihtChunk = std::shared_ptr<spihtChunk>;
-
 template <typename Ty_>
 class spihtChunk : public monoChunk<Ty_>
 {
@@ -194,6 +191,58 @@ public:
 protected:
 	size_t maxLevel_;
 };
+
+//////////////////////////////
+// spihtChunkFactory
+//
+// To make concreteType of spihtChunk
+//
+template <typename Ty_>
+class spihtChunkFactory : public chunkFactory
+{
+public:
+	spihtChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// Factory constructor for spihtChunkFacotry
+//
+class spihtChunkFactoryBuilder
+{
+public:
+	spihtChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<spihtChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// spihtChunkType
+//
+class spihtChunkType : public chunkType
+{
+public:
+	spihtChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "spihtChunk";
+	}
+};
 }		// core
 }		// msdb
+
+#include "spihtChunk.hpp"
+
 #endif	// _MSDB_SPIHTCHUNK_H_

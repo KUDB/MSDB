@@ -4,15 +4,70 @@
 
 #include <pch.h>
 #include <array/flattenChunk.h>
-#include <compression/zipBlock.h>
 #include <io/bitstream.h>
 
 namespace msdb
 {
 namespace core
 {
-//class zipChunk;
-//using pZipChunk = std::shared_ptr<zipChunk>;
+template <typename Ty_>
+class zipBlock : public flattenBlock<Ty_>
+{
+public:
+	zipBlock(pBlockDesc desc)
+		: flattenBlock<Ty_>(desc)
+	{
+
+	}
+	virtual ~zipBlock()
+	{
+
+	}
+
+public:
+	template<typename Ty_>
+	void serializeTy(std::stringstream& compressed)
+	{
+		boost::iostreams::filtering_streambuf<boost::iostreams::input> out;
+
+		std::stringstream blockCompressed;
+		std::stringstream origin;
+		origin.write((const char*)this->getBuffer()->getReadData(), this->getBuffer()->size());
+		out.push(boost::iostreams::zlib_compressor());
+		out.push(origin);
+		boost::iostreams::copy(out, blockCompressed);
+
+		size_t mBlockSize = getSize(blockCompressed);
+		compressed << static_cast<size_t>(mBlockSize);
+
+		compressed << blockCompressed.rdbuf();
+	}
+
+	template<typename Ty_>
+	void deserializeTy(std::stringstream& compressed)
+	{
+		size_t mBlockSize;
+		compressed >> mBlockSize;
+
+		assert(mBlockSize <= this->getBuffer()->size() * 2);
+
+		char* tempBuffer = new char[mBlockSize];
+		compressed.read(tempBuffer, mBlockSize);
+
+		std::stringstream blockCompressed;
+		blockCompressed.write(tempBuffer, mBlockSize);
+
+		std::stringstream decompressed;
+		boost::iostreams::filtering_streambuf<boost::iostreams::input> out;
+		out.push(boost::iostreams::zlib_decompressor());
+		out.push(blockCompressed);
+		boost::iostreams::copy(out, decompressed);
+
+		delete[] tempBuffer;
+
+		memcpy(this->getBuffer()->getData(), decompressed.str().c_str(), this->getBuffer()->size());
+	}
+};
 
 template <typename Ty_>
 class zipChunk : public flattenChunk<Ty_>
@@ -209,6 +264,57 @@ public:
 
 		memcpy(this->getBuffer()->getData(), decompressed.str().c_str(), this->getBuffer()->size());
 		//////////////////////////////
+	}
+};
+
+//////////////////////////////
+// zipChunkFactory
+//
+// To make concreteType Chunk
+//
+template <typename Ty_>
+class zipChunkFactory : public chunkFactory
+{
+public:
+	zipChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// zipChunkFactoryBuilder
+//
+class zipChunkFactoryBuilder
+{
+public:
+	zipChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<zipChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// zipChunkType
+// 
+// - ChunkType for zipChunk
+//
+class zipChunkType : public chunkType
+{
+public:
+	zipChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "zipChunk";
 	}
 };
 }		// core

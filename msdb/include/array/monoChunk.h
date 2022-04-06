@@ -86,6 +86,55 @@ public:
 		//}
 	}
 };
+
+//////////////////////////////
+// monoChunkFactory
+//
+// To make concreteType of monoChunk
+//
+template <typename Ty_>
+class monoChunkFactory : public chunkFactory
+{
+public:
+	monoChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// Factory constructor for monoChunkFacotry
+//
+class monoChunkFactoryBuilder
+{
+public:
+	monoChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<monoChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// monoChunkType
+//
+class monoChunkType : public chunkType
+{
+public:
+	monoChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "monoChunk";
+	}
+};
 }		// core
 }		// msdb
 

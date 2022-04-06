@@ -1,6 +1,6 @@
 ﻿#include <pch.h>
 #include <array/nestedArray.h>
-#include <array/nestedArrayChunk.h>
+#include <array/nestedChunk.h>
 
 namespace msdb
 {
@@ -15,19 +15,23 @@ nestedArray::~nestedArray()
 {
 	
 }
-pChunk nestedArray::makeChunk(const attributeId attrId, const chunkId cId)
+void nestedArray::initChunkFactories()
 {
-	auto desc = this->getChunkDesc(attrId, cId);
-	auto chunkObj = std::make_shared<nestedArrayChunk>(desc);
-	this->insertChunk(attrId, chunkObj);
-	return chunkObj;
+	nestedChunkFactoryBuilder ncfc;
+
+	for (auto attrDesc : *this->getDesc()->getAttrDescs())
+	{
+		assert(attrDesc->id_ == this->cFactories_.size());
+		this->cFactories_.push_back(std::visit(ncfc, attrDesc->dataType_));
+	}
 }
-pChunk nestedArray::makeChunk(const chunkDesc& desc)
-{
-	auto chunkObj
-		= std::make_shared<nestedArrayChunk>(std::make_shared<chunkDesc>(desc));
-	this->insertChunk(desc.attrDesc_->id_, chunkObj);
-	return chunkObj;
-}
+
+//pChunk nestedArray::makeChunk(const pChunkDesc desc)
+//{
+//	auto chunkObj = this->getChunkFactory(desc->attrDesc_->id_)->requestNewChunk(desc);
+//	this->insertChunk(chunkObj);
+//
+//	return chunkObj;
+//}
 }		// core
 }		// msdb

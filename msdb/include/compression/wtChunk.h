@@ -56,6 +56,55 @@ protected:
 	//chunkId bandId_;
 	//chunkId sourceChunkId_;
 };
+
+//////////////////////////////
+// wtChunkFactory
+//
+// To make concreteType of wtChunk
+//
+template <typename Ty_>
+class wtChunkFactory : public chunkFactory
+{
+public:
+	wtChunkFactory()
+		: chunkFactory()
+	{}
+
+protected:
+	virtual pChunk makeChunk(pChunkDesc cDesc);
+};
+
+//////////////////////////////
+// Factory constructor for wtChunkFacotry
+//
+class wtChunkFactoryBuilder
+{
+public:
+	wtChunkFactoryBuilder() = default;
+
+public:
+	// Visitor
+	template <typename Ty_>
+	pChunkFactory operator()(const concreteTy<Ty_>& type)
+	{
+		return std::make_shared<wtChunkFactory<Ty_>>();
+	}
+};
+
+//////////////////////////////
+// wtChunkType
+//
+class wtChunkType : public chunkType
+{
+public:
+	wtChunkType(const dataType& type);
+
+public:
+	virtual std::string name() override
+	{
+		return "wtChunk";
+	}
+};
 }		// core
 }		// msdb
 #endif	// _MSDB_WT_CHUNK_H_

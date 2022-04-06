@@ -8,6 +8,14 @@ namespace msdb
 {
 namespace core
 {
+//////////////////////////////
+// spihtChunkType
+//
+spihtChunkType::spihtChunkType(const dataType& type)
+	: chunkType(buildFactory(spihtChunkFactoryBuilder(), type))
+{
+}
+
 //spihtChunk::spihtChunk(pChunkDesc desc)
 //	: monoChunk(desc)
 //{

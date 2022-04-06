@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <compression/wtChunk.h>
 
@@ -16,24 +16,27 @@ wavelet_encode_array::wavelet_encode_array(pArrayDesc desc)
 	}
 }
 
-pChunk wavelet_encode_array::makeChunk(const attributeId attrId, const chunkId cId)
-{
-	auto desc = this->getChunkDesc(attrId, cId);
-	auto chunkObj = std::make_shared<wtChunk>(desc);
-	this->insertChunk(attrId, chunkObj);
-	return chunkObj;
-}
+// TODO::Erase deprecated codes
+//pChunk wavelet_encode_array::makeChunk(const attributeId attrId, const chunkId cId)
+//{
+//	// TODO::Do with chunkFactory
+//	auto desc = this->getChunkDesc(attrId, cId);
+//	auto chunkObj = std::make_shared<wtChunk>(desc);
+//	this->insertChunk(chunkObj);
+//	return chunkObj;
+//}
+//
+//pChunk wavelet_encode_array::makeChunk(const chunkDesc& desc)
+//{
+//	// TODO::Do with chunkFactory
+//	auto chunkObj
+//		= std::make_shared<wtChunk>(std::make_shared<chunkDesc>(desc));
+//	this->insertChunk(chunkObj);
+//	//chunkObj->setLevel(this->getMaxLevel());
+//	return chunkObj;
+//}
 
-pChunk wavelet_encode_array::makeChunk(const chunkDesc& desc)
-{
-	auto chunkObj
-		= std::make_shared<wtChunk>(std::make_shared<chunkDesc>(desc));
-	this->insertChunk(desc.attrDesc_->id_, chunkObj);
-	//chunkObj->setLevel(this->getMaxLevel());
-	return chunkObj;
-}
-
-// TODO:: Change name to getWTLeve()
+// TODO:: Change name to getWTLevel()
 size_t wavelet_encode_array::getMaxLevel()
 {
 	return this->maxLevel_;

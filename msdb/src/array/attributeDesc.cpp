@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <typeinfo>
 #include <array/attributeDesc.h>
 #include <util/element.h>
@@ -25,6 +25,7 @@ attributeDesc::attributeDesc(attributeId id, std::string name, eleType type, com
 	: id_(id), name_(name), type_(type), compType_(compType)
 {
 	this->typeSize_ = getEleSize(type);
+	this->dataType_ = this->eleType2dataType(type_);
 }
 
 tinyxml2::XMLElement* attributeDesc::convertToXMLDoc(tinyxml2::XMLElement* node)
@@ -87,6 +88,59 @@ bool attributeDesc::operator==(const attributeDesc& right_)
 	if (this->compType_ != right_.compType_) return false;
 
 	return true;
+}
+dataType attributeDesc::eleType2dataType(eleType eTy)
+{
+	switch (type_)
+	{
+	case eleType::BOOL:
+	{
+		return concreteTy<bool>();
+	}
+	case eleType::CHAR:
+	case eleType::INT8:
+	{
+		return concreteTy<int8_t>();
+	}
+	case eleType::INT16:
+	{
+		return concreteTy<int16_t>();
+	}
+	case eleType::INT32:
+	{
+		return concreteTy<int32_t>();
+	}
+	case eleType::INT64:
+	{
+		return concreteTy<int64_t>();
+	}
+	case eleType::UINT8:
+	{
+		return concreteTy<uint8_t>();
+	}
+	case eleType::UINT16:
+	{
+		return concreteTy<uint16_t>();
+	}
+	case eleType::UINT32:
+	{
+		return concreteTy<uint32_t>();
+	}
+	case eleType::UINT64:
+	{
+		return concreteTy<uint64_t>();
+	}
+	case eleType::FLOAT:
+	{
+		return concreteTy<float>();
+	}
+	case eleType::DOUBLE:
+	{
+		return concreteTy<double>();
+	}
+	default:
+		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
+	}
 }
 }		// core
 }		// msdb
