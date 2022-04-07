@@ -29,5 +29,9 @@ flattenBufferItemIterator<Ty_>::flattenBufferItemIterator(const flattenBufferIte
 {
 
 }
+template<typename Ty_>
+inline flattenBufferItemIterator<Ty_>::~flattenBufferItemIterator()
+{
+}
 }		// core
 }		// msdb

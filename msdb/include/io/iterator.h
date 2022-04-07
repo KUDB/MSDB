@@ -15,6 +15,7 @@ class bitmapEmbeddedIterator : public multiDimIterator
 {
 public:
 	using base_type = multiDimIterator;
+	using self_type = bitmapEmbeddedIterator;
 
 	using size_type = base_type::size_type;
 	using dim_type = base_type::dim_type;
@@ -29,6 +30,13 @@ public:
 	bitmapEmbeddedIterator(const dimension& space, const range& itRange, pBitmap itemBitmap);
 	bitmapEmbeddedIterator(const dimension& space);
 	bitmapEmbeddedIterator(const dimension& space, const range& itRange);
+	bitmapEmbeddedIterator(const self_type& mit);
+
+public:
+	//******************************
+	// Operators
+	//******************************
+	inline self_type& operator=(const self_type& rhs);
 
 public:
 	_NODISCARD inline bool isExist() const
@@ -85,6 +93,8 @@ public:
 	iItemIterator(const coordinates& dims, const range& itRange, pBitmap itemBitmap);
 	iItemIterator(const self_type& mit);
 
+	virtual ~iItemIterator();
+
 public:
 	//////////////////////////////
 	// Getter
@@ -98,6 +108,7 @@ public:
 	// Pointer
 	virtual data_type& operator*() = 0;
 	virtual data_type* operator->() = 0;
+	inline self_type& operator=(const self_type& rhs);
 	//////////////////////////////
 };
 
@@ -106,14 +117,15 @@ public:
 // 
 // virtual inherit 'multiDimIterator'
 
-using vpItemIterator = std::variant<std::shared_ptr<iItemIterator<int8_t>>, std::shared_ptr<iItemIterator<int16_t>>,
-	std::shared_ptr<iItemIterator<int32_t>>, std::shared_ptr<iItemIterator<int64_t>>,
-	std::shared_ptr<iItemIterator<uint8_t>>, std::shared_ptr<iItemIterator<uint16_t>>,
-	std::shared_ptr<iItemIterator<uint32_t>>, std::shared_ptr<iItemIterator<uint64_t>>,
-	std::shared_ptr<iItemIterator<float>>, std::shared_ptr<iItemIterator<double>>,
-	std::shared_ptr<iItemIterator<bool>>>;
-}
-}
+using vpItemIterator = std::variant<
+	std::shared_ptr<iItemIterator<bool>>, std::shared_ptr<iItemIterator<char>>,
+	std::shared_ptr<iItemIterator<int8_t>>, std::shared_ptr<iItemIterator<uint8_t>>,
+	std::shared_ptr<iItemIterator<int16_t>>, std::shared_ptr<iItemIterator<uint16_t>>,
+	std::shared_ptr<iItemIterator<int32_t>>, std::shared_ptr<iItemIterator<uint32_t>>,
+	std::shared_ptr<iItemIterator<int64_t>>, std::shared_ptr<iItemIterator<uint64_t>>,
+	std::shared_ptr<iItemIterator<float>>, std::shared_ptr<iItemIterator<double>>>;
+}		// core
+}		// msdb
 
 #include "iterator.hpp"
 

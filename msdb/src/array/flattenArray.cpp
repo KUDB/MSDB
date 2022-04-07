@@ -21,7 +21,6 @@ void flattenArray::initChunkFactories()
 {
 	flattenChunkFactoryBuilder fcfc;
 
-
 	for (auto attrDesc : *this->getDesc()->getAttrDescs())
 	{
 		assert(attrDesc->id_ == this->cFactories_.size());
@@ -89,7 +88,7 @@ void flattenArray::initChunkFactories()
 //}
 //pChunk flattenArray::makeChunk(pChunkDesc desc)
 //{
-//	// TODO::Use factory
+//	// Use factory
 //	auto chunkObj = this->cFactories_[desc->attrDesc_->id_]->requestNewChunk(desc);
 //	this->insertChunk(chunkObj);
 //	return chunkObj;

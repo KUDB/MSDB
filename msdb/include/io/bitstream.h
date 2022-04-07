@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BITSTREAM_H_
 #define _MSDB_BITSTREAM_H_
 
@@ -603,6 +603,13 @@ namespace core
 		return _Ostr;
 	}
 
+
+	template <class _Block, class _Traits>
+	vector_obitstream<_Block, _Traits>& operator<<(vector_obitstream<_Block, _Traits>& _Ostr, const bool _val)
+	{
+		_Ostr.fillChar(static_cast<const unsigned char>(_val), 1);
+		return _Ostr;
+	}
 	template <class _Block, class _Traits>
 	vector_obitstream<_Block, _Traits>& operator<<(vector_obitstream<_Block, _Traits>& _Ostr, const char _val)
 	{
@@ -688,6 +695,13 @@ namespace core
 	}
 
 	//////////////////////////////
+	template <class _Block, class _Traits>
+	vector_ibitstream<_Block, _Traits>& operator>>(vector_ibitstream<_Block, _Traits>& _is, bool& _val)
+	{
+		_val = (unsigned char)_is.getChar(1);
+		return _is;
+	}
+
 	template <class _Block, class _Traits>
 	vector_ibitstream<_Block, _Traits>& operator>>(vector_ibitstream<_Block, _Traits>& _is, char& _val)
 	{

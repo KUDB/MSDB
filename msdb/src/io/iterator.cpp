@@ -37,6 +37,21 @@ bitmapEmbeddedIterator::bitmapEmbeddedIterator(const dimension& space, const ran
 	this->initBitmap(false);
 }
 
+bitmapEmbeddedIterator::bitmapEmbeddedIterator(const bitmapEmbeddedIterator& mit)
+	: base_type(mit)
+{
+	// TODO::bitmapEmbeddedIterator(const self_type& mit)
+	//this->itemBitmap_ = std::make_shared<bitmap>(*(mit.itemBitmap_));
+}
+
+inline bitmapEmbeddedIterator::self_type& bitmapEmbeddedIterator::operator=(const bitmapEmbeddedIterator::self_type& rhs)
+{
+	// TODO::bitmapEmbeddedIterator::Perform assign operator for super class
+	//this->itemBitmap_ = std::make_shared<bitmap>(*(rhs.itemBitmap_);
+
+	return *this;
+}
+
 void bitmapEmbeddedIterator::initBitmap(bool flag)
 {
 	this->itemBitmap_ = std::make_shared<bitmap>(this->dims().area(), flag);

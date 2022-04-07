@@ -71,6 +71,8 @@ public:
 	flattenBufferItemIterator(Ty_* ptr, const coordinates& dims, const range& itRange, pBitmap itemBitmap);
 	flattenBufferItemIterator(const self_type& mit);
 
+	virtual ~flattenBufferItemIterator();
+
 public:
 	//////////////////////////////
 	// Getter
@@ -87,6 +89,14 @@ public:
 	// Comparison
 	virtual bool operator==(const self_type& rhs) const { return ptr_ == rhs.ptr_ && this->seqPos_ == rhs.seqPos_; }
 	virtual bool operator!=(const self_type& rhs) const { return ptr_ != rhs.ptr_ || this->seqPos_ != rhs.seqPos_; }
+	self_type& operator=(const self_type& rhs)
+	{
+		//if (this == &rhs)
+		//{
+		//	return *this;
+		//}
+		// TODO::flattenBUfferItemIterator::operator=
+	}
 
 	// Pointer
 	virtual data_type& operator*() { return *(ptr_ + this->seqPos_); }

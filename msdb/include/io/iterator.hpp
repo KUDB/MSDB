@@ -35,5 +35,15 @@ iItemIterator<Ty_>::iItemIterator(const iItemIterator<Ty_>::self_type& mit)
 	: iItemIterator<Ty_>::base_type(mit)
 {
 }
+
+template<typename Ty_>
+inline iItemIterator<Ty_>::~iItemIterator()
+{
+}
+template<typename Ty_>
+inline iItemIterator<Ty_>& iItemIterator<Ty_>::operator=(const iItemIterator<Ty_>& rhs)
+{
+	// TODO: 여기에 return 문을 삽입합니다.
+}
 }		// msdb
 }		// core

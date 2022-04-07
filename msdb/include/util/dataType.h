@@ -29,7 +29,8 @@ public:
 	}
 };
 
-using dataType = std::variant<concreteTy<bool>, 
+using dataType = std::variant<
+	concreteTy<bool>, concreteTy<char>,
 	concreteTy<int8_t>, concreteTy<uint8_t>,
 	concreteTy<int16_t>, concreteTy<uint16_t>,
 	concreteTy<int32_t>, concreteTy<uint32_t>,
