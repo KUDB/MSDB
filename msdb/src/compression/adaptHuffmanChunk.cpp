@@ -15,6 +15,8 @@ adaptHuffmanChunkType::adaptHuffmanChunkType(const dataType& type)
 {
 }
 
+//REGISTER_CHUNK_FACTORY("adaptHuffmanChunk", adaptHuffmanChunkFactoryBuilder())
+
 //adaptHuffmanChunk::adaptHuffmanChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc)
 //{

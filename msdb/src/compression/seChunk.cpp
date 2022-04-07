@@ -1,6 +1,5 @@
 ﻿#include <pch.h>
 #include <compression/seChunk.h>
-#include <array/chunk.h>
 
 namespace msdb
 {
@@ -13,6 +12,8 @@ seChunkType::seChunkType(const dataType& type)
 	: chunkType(buildFactory(seChunkFactoryBuilder(), type))
 {
 }
+
+//REGISTER_CHUNK_FACTORY("seChunk", seChunkFactoryBuilder())
 
 //seChunk::seChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc), level_(0), rBitFromMMT(0), min_(0)

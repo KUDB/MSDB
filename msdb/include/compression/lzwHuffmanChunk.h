@@ -7,6 +7,8 @@
 #include <io/bitstream.h>
 #include <compression/lzwEncoder.h>
 #include <compression/huffmanCode.h>
+#include <compression/lzwHuffmanBlock.h>
+#include <util/ioutil.h>
 
 namespace msdb
 {
@@ -36,7 +38,7 @@ public:
 		{
 			// Make new one
 			auto desc = this->getBlockDesc(bId);
-			auto blockObj = std::make_shared<lzwHuffmanBlock<Ty_>(desc);
+			auto blockObj = std::make_shared<lzwHuffmanBlock<Ty_>>(desc);
 			this->insertBlock(blockObj);
 		}
 
@@ -134,7 +136,7 @@ public:
 		lzwCoder<lzwCodeType> lzwEncoder;
 		lzwEncoder.encode(lzwOut, (const unsigned char*)this->cached_->getReadData(), this->cached_->size());
 
-		out << setw(sizeof(size_type) * CHAR_BIT) << lzwOut.capacity();
+		out << setw(sizeof(size_t) * CHAR_BIT) << lzwOut.capacity();
 
 		//////////////////////////////
 		huffmanCoder<uint16_t, uint8_t> huffmanEncoder;
@@ -144,8 +146,8 @@ public:
 	template<class Ty_>
 	void deserializeTy(bstream& in)
 	{
-		size_type lzwSize = 0;
-		in >> setw(sizeof(size_type) * CHAR_BIT) >> lzwSize;
+		size_t lzwSize = 0;
+		in >> setw(sizeof(size_t) * CHAR_BIT) >> lzwSize;
 
 		uint8_t* tempBuffer = new uint8_t[lzwSize];
 
@@ -186,7 +188,7 @@ protected:
 //////////////////////////////
 // Factory constructor for lzwHuffmanChunkFacotry
 //
-class lzwHuffmanChunkFactoryBuilder
+class lzwHuffmanChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	lzwHuffmanChunkFactoryBuilder() = default;

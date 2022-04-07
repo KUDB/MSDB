@@ -14,6 +14,8 @@ lzwChunkType::lzwChunkType(const dataType& type)
 {
 }
 
+//REGISTER_CHUNK_FACTORY("lzwChunk", lzwChunkFactoryBuilder())
+
 //lzwChunk::lzwChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc)
 //{

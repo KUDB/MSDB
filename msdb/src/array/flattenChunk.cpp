@@ -2,6 +2,7 @@
 #include <array/flattenChunk.h>
 #include <array/monoChunkBuffer.h>
 #include <array/flattenChunk.h>
+#include <array/chunkFactory.h>
 
 namespace msdb
 {
@@ -234,6 +235,10 @@ element blockChunkItemRangeIterator::operator*()
 flattenChunkType::flattenChunkType(const dataType& type)
 	: chunkType(buildFactory(flattenChunkFactoryBuilder(), type))
 {
+	
 }
+
+//chunkFactoryManager::instance()->registerFactoryBuilder("flattenChunk", flattenChunkFactoryBuilder());
+//REGISTER_CHUNK_FACTORY("flattenChunk", flattenChunkFactoryBuilder())
 }		// core
 }		// msdb

@@ -5,6 +5,7 @@
 #include <pch.h>
 #include <array/flattenChunk.h>
 #include <io/bitstream.h>
+#include <util/ioutil.h>
 
 namespace msdb
 {
@@ -287,7 +288,7 @@ protected:
 //////////////////////////////
 // zipChunkFactoryBuilder
 //
-class zipChunkFactoryBuilder
+class zipChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	zipChunkFactoryBuilder() = default;
@@ -319,4 +320,7 @@ public:
 };
 }		// core
 }		// msdb
+
+#include "zipChunk.hpp"
+
 #endif	// _MSDB_ZIPCHUNK_H_

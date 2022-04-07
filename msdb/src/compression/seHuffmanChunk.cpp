@@ -15,6 +15,8 @@ seHuffmanChunkType::seHuffmanChunkType(const dataType& type)
 {
 }
 
+//REGISTER_CHUNK_FACTORY("seHuffmanChunk", seHuffmanChunkFactoryBuilder())
+
 //seHuffmanChunk::seHuffmanChunk(pChunkDesc desc)
 //	: seChunk(desc)
 //{

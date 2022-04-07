@@ -16,6 +16,8 @@ spihtChunkType::spihtChunkType(const dataType& type)
 {
 }
 
+//REGISTER_CHUNK_FACTORY("spihtChunk", spihtChunkFactoryBuilder())
+
 //spihtChunk::spihtChunk(pChunkDesc desc)
 //	: monoChunk(desc)
 //{

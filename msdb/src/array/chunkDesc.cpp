@@ -25,20 +25,20 @@ chunkDesc::chunkDesc(const chunkId id,
 	}
 }
 
-chunkDesc::chunkDesc(const chunkId id,
-					 pAttributeDesc attrDesc, const dimension& dims, const dimension& blockDims,
-					 const coor sp, const coor ep,
-					 const chunkSize mSize, const chunkSize cSize,
-					 const CompressionMethod cType)
-	: id_(id), attrDesc_(attrDesc), dims_(dims), blockDims_(blockDims), sp_(sp), ep_(ep), mSize_(mSize), cSize_(cSize),
-	chunkCoor_(dims.size()), cType_(cType), useCompression_(true)
-{
-	this->initChunkCoor();
-	if(this->mSize_ == INVALID_CHUNK_SIZE)
-	{
-		this->initPhysicalChunkSizeFromDims();
-	}
-}
+//chunkDesc::chunkDesc(const chunkId id,
+//					 pAttributeDesc attrDesc, const dimension& dims, const dimension& blockDims,
+//					 const coor sp, const coor ep,
+//					 const chunkSize mSize, const chunkSize cSize,
+//					 const CompressionMethod cType)
+//	: id_(id), attrDesc_(attrDesc), dims_(dims), blockDims_(blockDims), sp_(sp), ep_(ep), mSize_(mSize), cSize_(cSize),
+//	chunkCoor_(dims.size()), cType_(cType), useCompression_(true)
+//{
+//	this->initChunkCoor();
+//	if(this->mSize_ == INVALID_CHUNK_SIZE)
+//	{
+//		this->initPhysicalChunkSizeFromDims();
+//	}
+//}
 
 chunkDesc::chunkDesc(const chunkDesc& mit)
 	: id_(mit.id_), attrDesc_(std::make_shared<attributeDesc>(*(mit.attrDesc_))),

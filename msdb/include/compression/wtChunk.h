@@ -77,7 +77,7 @@ protected:
 //////////////////////////////
 // Factory constructor for wtChunkFacotry
 //
-class wtChunkFactoryBuilder
+class wtChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	wtChunkFactoryBuilder() = default;
@@ -107,4 +107,7 @@ public:
 };
 }		// core
 }		// msdb
+
+#include "wtChunk.hpp"
+
 #endif	// _MSDB_WT_CHUNK_H_

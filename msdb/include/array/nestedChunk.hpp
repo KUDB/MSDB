@@ -85,5 +85,14 @@ void nestedChunk<Ty_>::deserialize(std::istream& is)
 {
 	// TODO
 }
+
+//////////////////////////////
+// nestedChunkFactory
+//
+template <typename Ty_>
+pChunk nestedChunkFactory<Ty_>::makeChunk(pChunkDesc cDesc)
+{
+	return std::make_shared<nestedChunk<Ty_>>(cDesc);
+}
 }		// core
 }		// msdb

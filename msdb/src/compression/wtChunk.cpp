@@ -13,6 +13,8 @@ wtChunkType::wtChunkType(const dataType& type)
 {
 }
 
+//REGISTER_CHUNK_FACTORY("wtChunk", wtChunkFactoryBuilder())
+
 //wtChunk::wtChunk(pChunkDesc desc)
 //	: monoChunk(desc), level_(0)
 //{

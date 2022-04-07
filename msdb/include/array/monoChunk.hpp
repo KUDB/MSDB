@@ -3,6 +3,7 @@
 #include <array/monoChunk.h>
 #include <array/monoChunkBuffer.h>
 #include <array/monoChunkItemIterator.h>
+#include <array/flattenChunk.h>
 
 namespace msdb
 {

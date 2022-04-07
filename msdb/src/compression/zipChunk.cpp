@@ -1,6 +1,5 @@
 ﻿#include <pch.h>
 #include <compression/zipChunk.h>
-#include <util/ioutil.h>
 
 namespace msdb
 {
@@ -10,11 +9,11 @@ namespace core
 // zipChunkType
 // 
 zipChunkType::zipChunkType(const dataType& type)
-	: chunkType()
+	: chunkType(buildFactory(zipChunkFactoryBuilder(), type))
 {
-	zipChunkFactoryBuilder fConstructor;
-	this->myFactory_ = std::visit(fConstructor, type);
 }
+
+//REGISTER_CHUNK_FACTORY("zipChunk", zipChunkFactoryBuilder())
 
 //zipChunk::zipChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc)

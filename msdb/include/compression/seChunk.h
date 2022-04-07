@@ -510,7 +510,7 @@ public:
 						//////////////////////////////
 						// 01
 						Ty_ value = 0;
-						for (size_type i = 0; i < itemCapa; ++i)
+						for (size_t i = 0; i < itemCapa; ++i)
 						{
 							*((Ty_*)(spData + this->tileOffset_[i])) = 0;
 						}
@@ -535,7 +535,7 @@ public:
 						// 01
 						if ((Ty_)-1 < 0)
 						{
-							for (size_type i = 0; i < itemCapa; ++i)
+							for (size_t i = 0; i < itemCapa; ++i)
 							{
 								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
 
@@ -550,7 +550,7 @@ public:
 							}
 						} else
 						{
-							for (size_type i = 0; i < itemCapa; ++i)
+							for (size_t i = 0; i < itemCapa; ++i)
 							{
 								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
 
@@ -679,7 +679,7 @@ protected:
 //////////////////////////////
 // Factory constructor for seChunkFacotry
 //
-class seChunkFactoryBuilder
+class seChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	seChunkFactoryBuilder() = default;
@@ -707,8 +707,9 @@ public:
 		return "seChunk";
 	}
 };
-
-#include "seChunk.hpp"
 }		// core
 }		// msdb
+
+#include "seChunk.hpp"
+
 #endif	// _MSDB_SE_CHUNK_H_

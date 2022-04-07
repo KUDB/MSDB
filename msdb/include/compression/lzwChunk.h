@@ -306,7 +306,7 @@ protected:
 //////////////////////////////
 // Factory constructor for lzwChunkFacotry
 //
-class lzwChunkFactoryBuilder
+class lzwChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	lzwChunkFactoryBuilder() = default;

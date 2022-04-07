@@ -4,6 +4,7 @@
 
 #include <pch.h>
 #include <array/flattenChunk.h>
+#include <array/chunkType.h>
 #include <compression/compassBlock.h>
 #include <io/bitstream.h>
 
@@ -126,41 +127,43 @@ public:
 	template<typename Ty_>
 	void serializeTy(bstream& bs)
 	{
-		auto blockItr = this->getBlockIterator();
-		while (!blockItr->isEnd())
-		{
-			if (blockItr->isExist())
-			{
-				pCompassBlock cpBlock = std::static_pointer_cast<compassBlock>(**blockItr);
-				cpBlock->setNumBins(this->numBins_);
-				try
-				{
-					cpBlock->serializeTy<Ty_>(bs);
-				} catch (...)
-				{
-					std::cout << "Exception" << std::endl;
-				}
-			}
+		// TODO::serializeTy
+		//auto blockItr = this->getBlockIterator();
+		//while (!blockItr->isEnd())
+		//{
+		//	if (blockItr->isExist())
+		//	{
+		//		pCompassBlock cpBlock = std::static_pointer_cast<compassBlock>(**blockItr);
+		//		cpBlock->setNumBins(this->numBins_);
+		//		try
+		//		{
+		//			cpBlock->serializeTy<Ty_>(bs);
+		//		} catch (...)
+		//		{
+		//			std::cout << "Exception" << std::endl;
+		//		}
+		//	}
 
-			++(*blockItr);
-		}
+		//	++(*blockItr);
+		//}
 	}
 
 	template<class Ty_>
 	void deserializeTy(bstream& bs)
 	{
-		auto blockItr = this->getBlockIterator();
-		while (!blockItr->isEnd())
-		{
-			if (blockItr->isExist())
-			{
-				pCompassBlock cpBlock = std::static_pointer_cast<compassBlock>(**blockItr);
-				cpBlock->setNumBins(this->numBins_);
-				cpBlock->deserializeTy<Ty_>(bs);
-			}
+		// TODO::deserializeTy
+		//auto blockItr = this->getBlockIterator();
+		//while (!blockItr->isEnd())
+		//{
+		//	if (blockItr->isExist())
+		//	{
+		//		pCompassBlock cpBlock = std::static_pointer_cast<compassBlock>(**blockItr);
+		//		cpBlock->setNumBins(this->numBins_);
+		//		cpBlock->deserializeTy<Ty_>(bs);
+		//	}
 
-			++(*blockItr);
-		}
+		//	++(*blockItr);
+		//}
 	}
 
 public:
@@ -193,7 +196,7 @@ protected:
 //////////////////////////////
 // Factory constructor for compassChunkFacotry
 //
-class compassChunkFactoryBuilder
+class compassChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	compassChunkFactoryBuilder() = default;

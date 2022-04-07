@@ -1,7 +1,5 @@
 ﻿#include <pch.h>
 #include <compression/lzwHuffmanChunk.h>
-#include <compression/lzwHuffmanBlock.h>
-#include <util/ioutil.h>
 
 namespace msdb
 {
@@ -14,6 +12,8 @@ lzwHuffmanChunkType::lzwHuffmanChunkType(const dataType& type)
 	: chunkType(buildFactory(lzwHuffmanChunkFactoryBuilder(), type))
 {
 }
+
+//REGISTER_CHUNK_FACTORY("lzwHuffmanChunk", lzwHuffmanChunkFactoryBuilder())
 
 //lzwHuffmanChunk::lzwHuffmanChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc)

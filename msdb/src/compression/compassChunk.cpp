@@ -13,6 +13,8 @@ compassChunkType::compassChunkType(const dataType& type)
 {
 }
 
+//REGISTER_CHUNK_FACTORY("compassChunk", compassChunkFactoryBuilder())
+
 //compassChunk::compassChunk(pChunkDesc desc)
 //	: flattenChunk<element>(desc)
 //{

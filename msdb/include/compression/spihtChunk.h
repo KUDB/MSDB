@@ -138,44 +138,48 @@ public:
 	template<typename Ty_>
 	void serialize(bstream& bs)
 	{
-		auto blockItr = this->getBlockIterator();
-		while (!blockItr->isEnd())
-		{
-			// TODO::check isExist()
-			std::static_pointer_cast<spihtBlock>(**blockItr)->setLevel(this->maxLevel_);
-			this->blockSerialize<Ty_>(bs, (**blockItr));
-			++(*blockItr);
-		}
+		// TODO::serialize spihtChunk
+		//auto blockItr = this->getBlockIterator();
+		//while (!blockItr->isEnd())
+		//{
+		//	// TODO::check isExist()
+		//	std::static_pointer_cast<spihtBlock>(**blockItr)->setLevel(this->maxLevel_);
+		//	this->blockSerialize<Ty_>(bs, (**blockItr));
+		//	++(*blockItr);
+		//}
 	}
 
 	template <typename Ty_>
 	void blockSerialize(bstream& bs, pBlock curBlock)
 	{
-		pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
-		spBlock->serializeTy<Ty_>(bs);
+		// TODO::serialize spihtChunk
+		//pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
+		//spBlock->serializeTy<Ty_>(bs);
 	}
 
 	template<class Ty_>
 	void deserialize(bstream& bs)
 	{
-		auto blockItr = this->getBlockIterator();
-		while (!blockItr->isEnd())
-		{
-			if(blockItr->isExist())
-			{
-				std::static_pointer_cast<spihtBlock>(**blockItr)->setLevel(this->maxLevel_);
-				this->blockDeserialize<Ty_>(bs, (**blockItr));
-			}
-			
-			++(*blockItr);
-		}
+		// TODO::deserialize spihtChunk
+		//auto blockItr = this->getBlockIterator();
+		//while (!blockItr->isEnd())
+		//{
+		//	if(blockItr->isExist())
+		//	{
+		//		std::static_pointer_cast<spihtBlock>(**blockItr)->setLevel(this->maxLevel_);
+		//		this->blockDeserialize<Ty_>(bs, (**blockItr));
+		//	}
+		//	
+		//	++(*blockItr);
+		//}
 	}
 
 	template <typename Ty_>
 	void blockDeserialize(bstream& bs, pBlock curBlock)
 	{
-		pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
-		spBlock->deserializeTy<Ty_>(bs);
+		// TODO::deserialize spihtChunk
+		//pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
+		//spBlock->deserializeTy<Ty_>(bs);
 	}
 
 public:
@@ -212,7 +216,7 @@ protected:
 //////////////////////////////
 // Factory constructor for spihtChunkFacotry
 //
-class spihtChunkFactoryBuilder
+class spihtChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	spihtChunkFactoryBuilder() = default;

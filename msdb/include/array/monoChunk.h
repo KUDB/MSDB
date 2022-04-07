@@ -5,6 +5,7 @@
 #include <pch.h>
 #include <array/chunk.h>
 #include <array/chunkIterator.h>
+#include <array/chunkType.h>
 
 namespace msdb
 {
@@ -107,7 +108,7 @@ protected:
 //////////////////////////////
 // Factory constructor for monoChunkFacotry
 //
-class monoChunkFactoryBuilder
+class monoChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	monoChunkFactoryBuilder() = default;

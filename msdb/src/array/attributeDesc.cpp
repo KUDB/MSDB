@@ -22,7 +22,7 @@ attributeDescs::attributeDescs(const attributeDescs& mit)
 }
 
 attributeDesc::attributeDesc(attributeId id, std::string name, eleType type, compressionType compType)
-	: id_(id), name_(name), type_(type), compType_(compType)
+	: id_(id), name_(name), type_(type), compType_(compressionType::NONE)
 {
 	this->typeSize_ = getEleSize(type);
 	this->dataType_ = this->eleType2dataType(type_);

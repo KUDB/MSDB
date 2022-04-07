@@ -4,6 +4,7 @@
 
 #include <pch.h>
 #include <array/chunkIterator.h>
+#include <array/chunkType.h>
 #include <array/chunkFactory.h>
 
 namespace msdb
@@ -64,11 +65,9 @@ template <typename Ty_>
 class nestedChunkFactory : public chunkFactory
 {
 public:
-	nestedArrayChunkFactory()
+	nestedChunkFactory()
 		: chunkFactory()
-	{
-
-	}
+	{}
 
 protected:
 	virtual pChunk makeChunk(pChunkDesc cDesc);
@@ -77,7 +76,7 @@ protected:
 //////////////////////////////
 // Factory constructor for nestedChunkFactory
 //
-class nestedChunkFactoryBuilder
+class nestedChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	nestedChunkFactoryBuilder() = default;

@@ -183,7 +183,7 @@ protected:
 //////////////////////////////
 // Factory constructor for adaptHuffmanChunkFacotry
 //
-class adaptHuffmanChunkFactoryBuilder
+class adaptHuffmanChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	adaptHuffmanChunkFactoryBuilder() = default;

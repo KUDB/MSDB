@@ -46,6 +46,7 @@ public:
 	virtual coor itemCoorToChunkCoor(const coor& itemCoor);
 	virtual pChunkIterator getChunkIterator(const attributeId attrId, 
 		const iterateMode itMode = iterateMode::ALL);
+
 protected:
 	pChunkFactory getChunkFactory(const attributeId& attrId);
 

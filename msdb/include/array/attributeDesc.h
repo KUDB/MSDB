@@ -3,11 +3,11 @@
 #define _MSDB_ATTRIBUTEDESC_H_
 
 #include <pch.h>
+#include <array/attributeId.h>
 #include <util/element.h>
 #include <util/dataType.h>
-#include <array/attributeId.h>
-#include <array/chunkType.h>
 #include <compression/compressionType.h>
+//#include <array/chunkType.h>
 #include <xml/tinyxml2.h>
 
 namespace msdb
@@ -21,6 +21,7 @@ namespace core
 #define _MSDB_STR_ATTR_TYPE_		"ATTRIBUTE_TYPE"
 #define _MSDB_STR_ATTR_TYPE_SIZE_	"ATTRIBUTE_TYPE_SIZE"
 #define _MSDB_STR_ATTR_COMP_TYPE_	"ATTRIBUTE_COMPRESSION_TYPE"
+#define _MSDB_STR_ATTR_OPTIONAL_PARAMS_	"ATTRIBUTE_OPTIONAL_PARAMS"
 
 class attributeDesc;
 using pAttributeDesc = std::shared_ptr<attributeDesc>;
@@ -71,7 +72,7 @@ public:
 	std::string name_;
 	eleType type_;				// TODO::Deprecated, replace eleType->util/dataType
 	dataType dataType_;
-	std::list<chunkType> chunkTypeLineage_;
+	//std::list<chunkType> chunkTypeLineage_;		// dependency problem, chunkType->chunkFactory->chunk->attributeDesc
 	std::map<std::string, std::string> optionalParams_;
 	size_t typeSize_;
 	compressionType compType_;	// compression type, default:NONE

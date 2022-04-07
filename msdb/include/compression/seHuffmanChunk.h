@@ -16,17 +16,17 @@ template <typename Ty_>
 class seHuffmanChunk : public seChunk<Ty_>
 {
 public:
-	seHuffmanChunk(pChunkDesc desc)
-		: seChunk<Ty_>
-	{
+	using lzwCodeType = std::uint16_t;
 
+public:
+	seHuffmanChunk(pChunkDesc desc)
+		: seChunk<Ty_>(desc)
+	{
 	}
+
 	virtual ~seHuffmanChunk()
 	{
-
 	}
-
-	using lzwCodeType = std::uint16_t;
 
 public:
 	virtual pBlock makeBlock(const blockId bId) override
@@ -133,7 +133,7 @@ public:
 		bstream seOut;
 		this->seEncode<Ty_>(seOut);
 
-		out << setw(sizeof(size_type) * CHAR_BIT) << seOut.capacity();
+		out << setw(sizeof(size_t) * CHAR_BIT) << seOut.capacity();
 
 		//////////////////////////////
 		huffmanCoder<uint16_t, uint8_t> huffmanEncoder;
@@ -143,8 +143,8 @@ public:
 	template<class Ty_>
 	void deserializeTy(bstream& in)
 	{
-		size_type seSize = 0;
-		in >> setw(sizeof(size_type) * CHAR_BIT) >> seSize;
+		size_t seSize = 0;
+		in >> setw(sizeof(size_t) * CHAR_BIT) >> seSize;
 		uint8_t* tempBuffer = new uint8_t[seSize];
 
 		huffmanCoder<uint16_t, uint8_t> huffmanDecoder;
@@ -180,7 +180,7 @@ protected:
 //////////////////////////////
 // Factory constructor for seHuffmanChunkFacotry
 //
-class seHuffmanChunkFactoryBuilder
+class seHuffmanChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	seHuffmanChunkFactoryBuilder() = default;

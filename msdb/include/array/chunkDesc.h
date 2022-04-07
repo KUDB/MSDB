@@ -37,12 +37,12 @@ public:
 			  const coor sp, const coor ep,
 			  const chunkSize mSize = INVALID_CHUNK_SIZE);
 
-	chunkDesc(const chunkId id,
-			  pAttributeDesc attrDesc, const dimension& dims,
-			  const dimension& blockDims,
-			  const coor sp, const coor ep,
-			  const chunkSize mSize, const chunkSize cSize,
-			  const CompressionMethod cType);
+	//chunkDesc(const chunkId id,
+	//		  pAttributeDesc attrDesc, const dimension& dims,
+	//		  const dimension& blockDims,
+	//		  const coor sp, const coor ep,
+	//		  const chunkSize mSize, const chunkSize cSize,
+	//		  const CompressionMethod cType);
 
 	chunkDesc(const chunkDesc& mit);
 	

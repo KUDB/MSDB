@@ -9,12 +9,14 @@ namespace msdb
 namespace core
 {
 //////////////////////////////
-// flattenChunkType
+// monoChunkType
 //
-flattenChunkType::flattenChunkType(const dataType& type)
-	: chunkType(buildFactory(flattenChunkFactoryBuilder(), type))
+monoChunkType::monoChunkType(const dataType& type)
+	: chunkType(buildFactory(monoChunkFactoryBuilder(), type))
 {
 }
+
+//REGISTER_CHUNK_FACTORY("monoChunk", monoChunkFactoryBuilder())
 
 //monoChunk::monoChunk(pChunkDesc desc)
 //	: chunk(desc), block_(nullptr)

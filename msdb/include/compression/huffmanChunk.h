@@ -140,7 +140,7 @@ protected:
 //////////////////////////////
 // Factory constructor for huffmanChunkFacotry
 //
-class huffmanChunkFactoryBuilder
+class huffmanChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	huffmanChunkFactoryBuilder() = default;

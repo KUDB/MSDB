@@ -6,12 +6,13 @@
 #include <array/chunkIterator.h>
 #include <array/monoChunkItemIterator.h>
 #include <util/coordinate.h>
-#include <array/chunkFactory.h>
 #include <array/block.h>
 #include <array/chunkIterator.h>
 #include <array/chunkItemIterator.h>
 #include <io/bitstream.h>
 #include <util/dataType.h>
+#include <array/chunkType.h>
+#include <array/chunkFactory.h>
 
 namespace msdb
 {
@@ -206,7 +207,7 @@ protected:
 //////////////////////////////
 // Factory constructor for flattenChunkFacotry
 //
-class flattenChunkFactoryBuilder
+class flattenChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	flattenChunkFactoryBuilder() = default;
