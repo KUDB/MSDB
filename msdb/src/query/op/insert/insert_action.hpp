@@ -1,4 +1,4 @@
-#include "insert_action.h"
+﻿#include "insert_action.h"
 #include "insert_plan.h"
 
 namespace msdb
@@ -27,8 +27,6 @@ void insert_action::insertFromFile(pArray inArr, pAttributeDesc attr)
 	delete[] fileData;
 }
 
-//////////////////////////////
-// TODO::Implement insert body "insertFromMemory" function
 template <typename Ty_>
 void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 {
@@ -50,11 +48,11 @@ void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 		// TODO:: copy memory to temporal buffer
 		this->insertData(inArr, fileData, memSize / sizeof(Ty_));
 	}
-		_MSDB_CATCH(const std::out_of_range& e)
+	_MSDB_CATCH(const std::out_of_range & e)
 	{
 		BOOST_LOG_TRIVIAL(error) << "Insert: There is no data (from memory) for the attribute (" << attr->id_ << ")";
 	}
-		_MSDB_CATCH_ALL
+	_MSDB_CATCH_ALL
 	{
 
 	}
@@ -111,7 +109,7 @@ void insert_action::insertData(pArray inArr, Ty_* data, size_t length)
 				++(*chunkItr);
 			}
 		}
-			_MSDB_CATCH_ALL
+		_MSDB_CATCH_ALL
 		{
 			// TODO::logging exceptions
 		}

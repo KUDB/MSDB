@@ -69,7 +69,8 @@ public:
 public:
 	flattenBufferItemIterator(Ty_* ptr, const size_type dSize, dim_const_pointer dims, const range& itRange, pBitmap itemBitmap);
 	flattenBufferItemIterator(Ty_* ptr, const coordinates& dims, const range& itRange, pBitmap itemBitmap);
-	flattenBufferItemIterator(const self_type& mit);
+	flattenBufferItemIterator(const flattenBufferItemIterator<Ty_>& src);
+	flattenBufferItemIterator(flattenBufferItemIterator<Ty_>&& src) noexcept;
 
 	virtual ~flattenBufferItemIterator();
 
@@ -86,18 +87,13 @@ public:
 	//////////////////////////////
 	// Operators
 	//////////////////////////////
+	// Assign
+	friend void swap(flattenBufferItemIterator<Ty_>& first, flattenBufferItemIterator<Ty_>& second) noexcept;
+	flattenBufferItemIterator<Ty_>& operator=(const flattenBufferItemIterator<Ty_>& src);
+	flattenBufferItemIterator<Ty_>& operator=(flattenBufferItemIterator<Ty_>&& src);
 	// Comparison
 	virtual bool operator==(const self_type& rhs) const { return ptr_ == rhs.ptr_ && this->seqPos_ == rhs.seqPos_; }
 	virtual bool operator!=(const self_type& rhs) const { return ptr_ != rhs.ptr_ || this->seqPos_ != rhs.seqPos_; }
-	self_type& operator=(const self_type& rhs)
-	{
-		//if (this == &rhs)
-		//{
-		//	return *this;
-		//}
-		// TODO::flattenBUfferItemIterator::operator=
-	}
-
 	// Pointer
 	virtual data_type& operator*() { return *(ptr_ + this->seqPos_); }
 	virtual data_type* operator->() { return (data_type*)(ptr_ + this->seqPos_); }
@@ -107,6 +103,9 @@ protected:
 	Ty_* ptr_;			// pointer to element
 						// set pointer type as char, to move one byte for each seqPos_
 };
+
+template <typename Ty_>
+void swap(flattenBufferItemIterator<Ty_>& first, flattenBufferItemIterator<Ty_>& second) noexcept;
 }		// core
 }		// msdb
 

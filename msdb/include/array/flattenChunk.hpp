@@ -41,40 +41,6 @@ void flattenBlock<Ty_>::serialize(bstream& bs)
 		bs << (**it).get<Ty_>();
 		++(*it);
 	}
-
-	//// TODO::Directly serialize in Ty_ instead of calling function 'serializeTy'
-	//switch (this->desc_->eType_)
-	//{
-	//case eleType::CHAR:
-	//	this->serializeTy<char>(bs);
-	//	break;
-	//case eleType::INT8:
-	//	this->serializeTy<int8_t>(bs);
-	//	break;
-	//case eleType::INT16:
-	//	this->serializeTy<int16_t>(bs);
-	//	break;
-	//case eleType::INT32:
-	//	this->serializeTy<int32_t>(bs);
-	//	break;
-	//case eleType::INT64:
-	//	this->serializeTy<int64_t>(bs);
-	//	break;
-	//case eleType::UINT8:
-	//	this->serializeTy<uint8_t>(bs);
-	//	break;
-	//case eleType::UINT16:
-	//	this->serializeTy<uint16_t>(bs);
-	//	break;
-	//case eleType::UINT32:
-	//	this->serializeTy<uint32_t>(bs);
-	//	break;
-	//case eleType::UINT64:
-	//	this->serializeTy<uint64_t>(bs);
-	//	break;
-	//default:
-	//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-	//}
 }
 
 template <typename Ty_>
@@ -89,50 +55,11 @@ void flattenBlock<Ty_>::deserialize(bstream& bs)
 		(**it).set<Ty_>(value);
 		++(*it);
 	}
-
-	//// TODO::Directly deserialize in Ty_ instead of calling function 'serializeTy'
-	//switch (this->desc_->eType_)
-	//{
-	//case eleType::CHAR:
-	//	this->deserializeTy<char>(bs);
-	//	break;
-	//case eleType::INT8:
-	//	this->deserializeTy<int8_t>(bs);
-	//	break;
-	//case eleType::INT16:
-	//	this->deserializeTy<int16_t>(bs);
-	//	break;
-	//case eleType::INT32:
-	//	this->deserializeTy<int32_t>(bs);
-	//	break;
-	//case eleType::INT64:
-	//	this->deserializeTy<int64_t>(bs);
-	//	break;
-	//case eleType::UINT8:
-	//	this->deserializeTy<uint8_t>(bs);
-	//	break;
-	//case eleType::UINT16:
-	//	this->deserializeTy<uint16_t>(bs);
-	//	break;
-	//case eleType::UINT32:
-	//	this->deserializeTy<uint32_t>(bs);
-	//	break;
-	//case eleType::UINT64:
-	//	this->deserializeTy<uint64_t>(bs);
-	//	break;
-	//default:
-	//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-	//}
 }
 
 template <typename Ty_>
 pBlockItemIterator flattenBlock<Ty_>::getItemIterator()
 {
-	//return std::make_shared<flattenBlockItemIterator>(this->cached_->getData(),
-	//											  this->desc_->eType_,
-	//											  this->desc_->dims_,
-	//											  this->desc_->sp_,
-	//											  this->itemBitmap_);
 	return std::make_shared<flattenBlockItemIterator>(this->cached_->getData(),
 													  this->desc_->eType_,
 													  this->desc_->dims_,

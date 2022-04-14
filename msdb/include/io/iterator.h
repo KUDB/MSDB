@@ -30,13 +30,16 @@ public:
 	bitmapEmbeddedIterator(const dimension& space, const range& itRange, pBitmap itemBitmap);
 	bitmapEmbeddedIterator(const dimension& space);
 	bitmapEmbeddedIterator(const dimension& space, const range& itRange);
-	bitmapEmbeddedIterator(const self_type& mit);
+	bitmapEmbeddedIterator(const self_type& src);
+	bitmapEmbeddedIterator(self_type&& src) noexcept;
 
 public:
 	//******************************
 	// Operators
 	//******************************
-	inline self_type& operator=(const self_type& rhs);
+	friend void swap(bitmapEmbeddedIterator& first, bitmapEmbeddedIterator& second) noexcept;
+	inline self_type& operator=(const self_type& src);
+	inline self_type& operator=(self_type&& src);
 
 public:
 	_NODISCARD inline bool isExist() const
@@ -71,6 +74,8 @@ protected:
 	pBitmap itemBitmap_;
 };
 
+void swap(bitmapEmbeddedIterator& first, bitmapEmbeddedIterator& second) noexcept;
+
 template <typename Ty_>
 class iItemIterator : public bitmapEmbeddedIterator
 {
@@ -91,7 +96,6 @@ public:
 	iItemIterator(const size_type dSize, dim_const_pointer dims, dim_const_pointer startCoor, dim_const_pointer endCoor, pBitmap itemBitmap);
 	iItemIterator(const coordinates& dims, pBitmap itemBitmap);
 	iItemIterator(const coordinates& dims, const range& itRange, pBitmap itemBitmap);
-	iItemIterator(const self_type& mit);
 
 	virtual ~iItemIterator();
 
@@ -105,15 +109,20 @@ public:
 	//////////////////////////////
 	// Operators
 	//////////////////////////////
+	// Assign
+	friend void swap(iItemIterator<Ty_>& first, iItemIterator<Ty_>& second) noexcept;
 	// Pointer
 	virtual data_type& operator*() = 0;
 	virtual data_type* operator->() = 0;
-	inline self_type& operator=(const self_type& rhs);
 	//////////////////////////////
 };
 
+template <typename Ty_>
+void swap(iItemIterator<Ty_>& first, iItemIterator<Ty_>& second) noexcept;
+
 //////////////////////////////
 // Iterator with null bitmap
+//////////////////////////////
 // 
 // virtual inherit 'multiDimIterator'
 

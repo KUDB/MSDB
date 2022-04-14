@@ -37,14 +37,16 @@ public:
 	using dim_const_reference = const position_t&;
 
 public:
-	coordinates(const size_type dSize = 0);
+	coordinates();
+	coordinates(const size_type dSize);
 	coordinates(const size_type dSize, dim_const_pointer coor);
 	coordinates(const size_type dSize, const dim_type coor);
 	coordinates(const std::vector<dim_type>& coorVec);
-	coordinates(const self_type& mit);
+	coordinates(const coordinates& mit);
+	coordinates(coordinates&& src) noexcept;
 	coordinates(std::initializer_list<dim_type> lst);
 
-	self_type& operator=(self_type& rhs);
+	friend void swap(coordinates& first, coordinates& second) noexcept;
 
 	virtual ~coordinates();
 
@@ -77,6 +79,7 @@ public:
 
 	//////////////////////////////
 	// Operators
+	// ***************************
 	// Comparison
 	inline bool operator==(const self_type& rhs) const
 	{
@@ -159,27 +162,13 @@ public:
 		return true;
 	}
 
+	// ***************************
 	// Assign
-	inline self_type& operator=(const self_type& mit)
+	coordinates& operator=(const coordinates& rhs);
+	coordinates& operator=(coordinates&& rhs) noexcept;
+	self_type& operator=(const dim_type* mit)
 	{
-		delete[] this->coor_;
-		this->dSize_ = mit.dSize_;
-		this->coor_ = new dim_type[mit.dSize_];
-		this->memcpyCoor(this->coor_, mit.coor_);
-
-#ifndef NDEBUG
-		if (this->dSize_ >= 2)
-		{
-			this->x_ = this->coor_ + 1;
-			this->y_ = this->coor_;
-		}
-#endif
-
-		return *this;
-	}
-	inline self_type& operator=(const dim_type* mit)
-	{
-		this->memcpyCoor(this->coor_, mit);
+		*this = *mit;
 
 		return *this;
 	}
@@ -267,7 +256,7 @@ public:
 		return *this;
 	}
 
-	// Move
+	// ***************************
 	inline self_type& operator++()
 	{
 		this->coor_[this->dSize_ - 1]++;
@@ -280,6 +269,7 @@ public:
 		return tmp;
 	}
 
+	// ***************************
 	// Random access
 	_NODISCARD inline _CONSTEXPR17 dim_reference operator[](_In_range_(0, dSize_ - 1) size_type pos)
 		noexcept /* strengthened */
@@ -323,14 +313,20 @@ protected:
 		memcpy(dest, src, this->dSize_ * sizeof(dim_type));
 	}
 
+#ifndef NDEBUG
+	void setXY();
+#endif
+
 protected:
 	size_type dSize_;
-	dim_pointer coor_;
+	dim_pointer coor_;		// TODO::use std containers insteand of dynamic memory assign, 'Rule of Zero'
 #ifndef NDEBUG
 	dim_pointer x_;
 	dim_pointer y_;
 #endif
 };
+
+void swap(coordinates& first, coordinates& second) noexcept;
 
 coordinates operator+ (const coordinates& left, const coordinates& right);
 coordinates operator+ (const coordinates& left, const int right);
@@ -359,13 +355,17 @@ public:
 	using dim_const_reference = coordinates::dim_const_reference;
 
 public:
-	range(const size_type dSize = 0);
+	range();
+	range(const size_type dSize);
 	range(const std::vector<dim_type>& sP, const std::vector<dim_type>& eP);
 	range(std::initializer_list<dim_type> sP, std::initializer_list<dim_type> eP);
 
 	range(const coordinates& sP, const coordinates& eP);
 	range(const coordinates& eP);
-	range(const self_type& mit);
+	range(const range& mit);
+	range(range&& src);
+
+	friend void swap(range& first, range& second) noexcept;
 
 	virtual ~range();
 
@@ -468,16 +468,10 @@ public:
 	}
 
 public:
-	inline bool operator==(const self_type& rhs) const
-	{
-		return this->dSize_ == rhs.dSize_ && sP_ == rhs.sP_ && eP_ == rhs.eP_;
-	}
-
-	inline bool operator!=(const self_type& rhs) const
-	{
-		return !(*this == rhs);
-	}
-
+	// ***************************
+	// Assign
+	range& operator=(const range& rhs);
+	range& operator=(range&& rhs) noexcept;
 	inline self_type& operator+=(const coordinates& rhs)
 	{
 		this->sP_ += rhs;
@@ -492,6 +486,17 @@ public:
 		this->eP_ -= rhs;
 
 		return *this;
+	}
+
+	// ***************************
+	inline bool operator==(const self_type& rhs) const
+	{
+		return this->dSize_ == rhs.dSize_ && sP_ == rhs.sP_ && eP_ == rhs.eP_;
+	}
+
+	inline bool operator!=(const self_type& rhs) const
+	{
+		return !(*this == rhs);
 	}
 
 	//bool operator<(const self_type& rhs) const
@@ -533,6 +538,8 @@ protected:
 	coordinates eP_;
 };
 
+void swap(range& first, range& second) noexcept;
+
 range operator+ (const range& left, const coordinates& right);
 range operator- (const range& left, const coordinates& right);
 
@@ -560,26 +567,19 @@ public:
 	multiDimIterator(const std::initializer_list<dim_type>& dims);
 	multiDimIterator(const std::initializer_list<dim_type>& dims, 
 					 const std::initializer_list<dim_type>& startCoor, const std::initializer_list<dim_type>& endCoor);
-	multiDimIterator(const self_type& mit);
+	multiDimIterator(const self_type& src);
+	multiDimIterator(self_type&& src);
 
 	virtual ~multiDimIterator();
 
-	inline self_type& operator=(const self_type& rhs)
-	{
-		this->coor_ = rhs.coor_;
-		this->basisDim_ = rhs.basisDim_;
-		this->dSize_ = rhs.dSize_;
-		this->front_ = rhs.front_;
-		this->end_ = rhs.end_;
-		this->basisDimOffset_ = rhs.basisDimOffset_;
-		this->seqPos_ = rhs.seqPos_;
-		this->seqCapacity_ = rhs.seqCapacity_;
-		this->dims_ = rhs.dims_;
-		this->sP_ = rhs.sP_;
-		this->eP_ = rhs.eP_;
+	friend void swap(multiDimIterator& first, multiDimIterator& second) noexcept;
 
-		return *this;
-	}
+	//////////////////////////////
+	// Operators
+	// ***************************
+	// Assign
+	self_type& operator=(const self_type& src);
+	self_type& operator=(self_type&& src);
 
 public:
 	virtual void setBasisDim(const unsigned int dim);
@@ -818,15 +818,15 @@ protected:
 
 protected:
 	coordinates coor_;		// coordinates
-	dimensionId basisDim_;		// current dimension
+	dimensionId basisDim_;	// current dimension
 
 	coordinates dims_;		// original array dimension size
 	coordinates sP_;		// range start point
 	coordinates eP_;		// range end point
-	size_type dSize_;			// number of dimensions
+	size_type dSize_;		// number of dimensions
 
-	bool end_;					// is iterator at the end
-	bool front_;				// is iterator at the front
+	bool end_;				// is iterator at the end
+	bool front_;			// is iterator at the front
 
 	size_type seqPos_;
 	size_type seqCapacity_;
@@ -900,6 +900,8 @@ protected:
 	Ty_* ptr_;					// pointer to element
 								// set pointer type as char, to move one byte for each seqPos_
 };
+
+void swap(multiDimIterator& first, multiDimIterator& second) noexcept;
 
 template <>
 class itemIterator<element> : virtual public multiDimIterator

@@ -37,24 +37,48 @@ bitmapEmbeddedIterator::bitmapEmbeddedIterator(const dimension& space, const ran
 	this->initBitmap(false);
 }
 
-bitmapEmbeddedIterator::bitmapEmbeddedIterator(const bitmapEmbeddedIterator& mit)
-	: base_type(mit)
+bitmapEmbeddedIterator::bitmapEmbeddedIterator(const bitmapEmbeddedIterator::self_type& src)
+	: base_type(src)
 {
-	// TODO::bitmapEmbeddedIterator(const self_type& mit)
-	//this->itemBitmap_ = std::make_shared<bitmap>(*(mit.itemBitmap_));
+	this->itemBitmap_ = std::make_shared<bitmap>(*(src.itemBitmap_));
 }
 
-inline bitmapEmbeddedIterator::self_type& bitmapEmbeddedIterator::operator=(const bitmapEmbeddedIterator::self_type& rhs)
+bitmapEmbeddedIterator::bitmapEmbeddedIterator(self_type&& src) noexcept
+	: self_type(src.dims_, src.itemBitmap_)
 {
-	// TODO::bitmapEmbeddedIterator::Perform assign operator for super class
-	//this->itemBitmap_ = std::make_shared<bitmap>(*(rhs.itemBitmap_);
+	swap(*this, src);
+}
 
+inline bitmapEmbeddedIterator::self_type& bitmapEmbeddedIterator::operator=(const bitmapEmbeddedIterator::self_type& src)
+{
+	if (this == &src)
+	{
+		return *this;
+	}
+
+	bitmapEmbeddedIterator temp(src);
+	swap(*this, temp);
+	return *this;
+}
+
+inline bitmapEmbeddedIterator::self_type& bitmapEmbeddedIterator::operator=(bitmapEmbeddedIterator::self_type&& src)
+{
+	bitmapEmbeddedIterator temp(std::move(src));
+	swap(*this, temp);
 	return *this;
 }
 
 void bitmapEmbeddedIterator::initBitmap(bool flag)
 {
 	this->itemBitmap_ = std::make_shared<bitmap>(this->dims().area(), flag);
+}
+void swap(bitmapEmbeddedIterator& first, bitmapEmbeddedIterator& second) noexcept
+{
+	using std::swap;
+
+	swap(static_cast<bitmapEmbeddedIterator::base_type&>(first), static_cast<bitmapEmbeddedIterator::base_type&>(second));
+
+	swap(first.itemBitmap_, second.itemBitmap_);
 }
 }		// core
 }		// msdb

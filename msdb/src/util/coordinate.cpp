@@ -8,16 +8,17 @@ namespace core
 ////////////////////////////////////////
 // coordinates
 //
+coordinates::coordinates()
+	: dSize_(0), coor_(nullptr)
+{
+}
+
 coordinates::coordinates(const size_type dSize)
 	: dSize_(dSize)
 {
 	this->coor_ = new dim_type[this->dSize_]();
 #ifndef NDEBUG
-	if (this->dSize_ >= 2)
-	{
-		this->x_ = this->coor_ + 1;
-		this->y_ = this->coor_;
-	}
+	this->setXY();
 #endif
 }
 
@@ -27,11 +28,7 @@ coordinates::coordinates(const size_type dSize, dim_const_pointer coor)
 	this->coor_ = new dim_type[this->dSize_];
 	memcpy(this->coor_, coor, this->dSize_ * sizeof(dim_type));
 #ifndef NDEBUG
-	if (this->dSize_ >= 2)
-	{
-		this->x_ = this->coor_ + 1;
-		this->y_ = this->coor_;
-	}
+	this->setXY();
 #endif
 }
 
@@ -44,11 +41,7 @@ coordinates::coordinates(const size_type dSize, const dim_type coor)
 		this->coor_[d] = coor;
 	}
 #ifndef NDEBUG
-	if (this->dSize_ >= 2)
-	{
-		this->x_ = this->coor_ + 1;
-		this->y_ = this->coor_;
-	}
+	this->setXY();
 #endif
 }
 
@@ -58,26 +51,23 @@ coordinates::coordinates(const std::vector<dim_type>& coorVec)
 	this->coor_ = new dim_type[coorVec.size()];
 	memcpy(this->coor_, coorVec.data(), coorVec.size() * sizeof(dim_type));
 #ifndef NDEBUG
-	if (this->dSize_ >= 2)
-	{
-		this->x_ = this->coor_ + 1;
-		this->y_ = this->coor_;
-	}
+	this->setXY();
 #endif
 }
 
-coordinates::coordinates(const self_type& mit)
-	: dSize_(mit.dSize_)
+coordinates::coordinates(const coordinates& src)
+	: coordinates(src.dSize_)
 {
-	this->coor_ = new dim_type[this->dSize_];
-	memcpy(this->coor_, mit.coor_, mit.dSize_ * sizeof(dim_type));
+	memcpy(this->coor_, src.coor_, src.dSize_ * sizeof(dim_type));
 #ifndef NDEBUG
-	if (this->dSize_ >= 2)
-	{
-		this->x_ = this->coor_ + 1;
-		this->y_ = this->coor_;
-	}
+	this->setXY();
 #endif
+}
+
+coordinates::coordinates(coordinates&& src) noexcept
+	: coordinates()
+{
+	swap(*this, src);
 }
 
 coordinates::coordinates(std::initializer_list<dim_type> lst)
@@ -91,34 +81,38 @@ coordinates::coordinates(std::initializer_list<dim_type> lst)
 		this->coor_[d] = *it;
 	}
 #ifndef NDEBUG
-	if (this->dSize_ >= 2)
-	{
-		this->x_ = this->coor_ + 1;
-		this->y_ = this->coor_;
-	}
+	this->setXY();
 #endif
 }
 
-coordinates::self_type& coordinates::operator=(self_type& rhs)
-{
-	this->dSize_ = rhs.dSize_;
-	this->coor_ = new dim_type[this->dSize_];
-	memcpy(this->coor_, rhs.coor_, rhs.dSize_ * sizeof(dim_type));
-#ifndef NDEBUG
-	if (this->dSize_ >= 2)
-	{
-		this->x_ = this->coor_ + 1;
-		this->y_ = this->coor_;
-	}
-#endif
-	return *this;
-}
+//coordinates::self_type& coordinates::operator=(self_type& rhs)
+//{
+//	this->dSize_ = rhs.dSize_;
+//	this->coor_ = new dim_type[this->dSize_];
+//	memcpy(this->coor_, rhs.coor_, rhs.dSize_ * sizeof(dim_type));
+//#ifndef NDEBUG
+//	if (this->dSize_ >= 2)
+//	{
+//		this->x_ = this->coor_ + 1;
+//		this->y_ = this->coor_;
+//	}
+//#endif
+//	return *this;
+//}
 
 coordinates::~coordinates()
 {
-	delete[] this->coor_;
-}
+	this->dSize_ = 0;
 
+#ifndef NDEBUG
+	this->x_ = this->y_ = 0;
+#endif
+
+	if (this->coor_)
+	{
+		delete[] this->coor_;
+	}
+}
 
  std::string coordinates::toString() const
 {
@@ -139,8 +133,56 @@ coordinates::~coordinates()
 	return ss.str();
 }
 
+ // ***************************
+ // Assign
+ coordinates& coordinates::operator=(const coordinates& src)
+ {
+	 if (this == &src)
+	 {
+		 return *this;
+	 }
 
-coordinates operator+ (const coordinates& left, const coordinates& right)
+	 coordinates temp(src);
+	 swap(*this, temp);
+	 return *this;
+ }
+
+ coordinates& coordinates::operator=(coordinates&& src) noexcept
+ {
+	 coordinates temp(std::move(src));
+	 swap(*this, temp);
+	 return *this;
+ }
+#ifndef NDEBUG
+ void coordinates::setXY()
+ {
+	 if (this->dSize_ >= 2)
+	 {
+		 this->x_ = this->coor_ + 1;
+		 this->y_ = this->coor_;
+	 }
+	 else
+	 {
+		 this->x_ = 0;
+		 this->y_ = 0;
+	 }
+ }
+#endif
+
+ void swap(coordinates& first, coordinates& second) noexcept
+ {
+	 using std::swap;
+
+	 swap(first.dSize_, second.dSize_);
+	 swap(first.coor_, second.coor_);
+
+#ifndef NDEBUG
+	 swap(first.x_, second.x_);
+	 swap(first.y_, second.y_);
+#endif
+ }
+
+ coordinates operator+ (const coordinates& left, const coordinates& right)
 {
 	coordinates output(left);
 	output += right;
@@ -220,8 +262,13 @@ coordinates operator% (const coordinates& left, const int right)
 }
 
 ////////////////////////////////////////
-// coordinatesRange
-//
+// range class
+////////////////////////////////////////
+range::range()
+	: dSize_(0), sP_(), eP_()
+{
+}
+
 range::range(const size_type dSize)
 	: dSize_(dSize), sP_(dSize), eP_(dSize)
 {
@@ -250,13 +297,55 @@ range::range(const coordinates& eP)
 
 }
 
-range::range(const self_type& mit)
-	: dSize_(mit.dSize_), sP_(mit.sP_), eP_(mit.eP_)
+range::range(const range& src)
+	: dSize_(src.dSize_), sP_(src.sP_), eP_(src.eP_)
 {
+
+}
+
+range::range(range&& src)
+{
+	swap(*this, src);
 }
 
 range::~range()
 {
+}
+
+range& range::operator=(const range& rhs)
+{
+	if (this == &rhs)
+	{
+		return *this;
+	}
+
+	range temp(rhs);
+	swap(*this, temp);
+	return *this;
+}
+
+range& range::operator=(range&& rhs) noexcept
+{
+	if (this == &rhs)
+	{
+		return *this;
+	}
+
+	range temp(std::move(rhs));
+	swap(*this, temp);
+	return *this;
+}
+
+// ***************************
+// swap for range
+// ***************************
+void swap(range& first, range& second) noexcept
+{
+	using std::swap;
+
+	swap(first.dSize_, second.dSize_);
+	swap(first.sP_, second.sP_);
+	swap(first.eP_, second.eP_);
 }
 
 range operator+ (const range& left, const coordinates& right)
@@ -275,7 +364,7 @@ range operator- (const range& left, const coordinates& right)
 
 ////////////////////////////////////////
 // multiDimIterator
-//
+////////////////////////////////////////
 multiDimIterator::multiDimIterator(const size_type dSize, dim_const_pointer dims)
 	: coor_(dSize), dSize_(dSize), end_(false), basisDimOffset_(1), seqPos_(0),
 	dims_(dSize, dims), sP_(dSize), eP_(dSize, dims)
@@ -383,9 +472,40 @@ multiDimIterator::multiDimIterator(const self_type& mit)
 {
 }
 
+multiDimIterator::multiDimIterator(self_type&& src)
+	: multiDimIterator(src.dSize_, src.dims_)
+{
+	swap(*this, src);
+}
+
 multiDimIterator::~multiDimIterator()
 {
 
+}
+
+// ***************************
+// Operators
+// ***************************
+multiDimIterator::self_type& multiDimIterator::operator=(const self_type& src)
+{
+	if (this == &src)
+	{
+		return *this;
+	}
+
+	multiDimIterator temp(src);
+	swap(*this, temp);
+	return *this;
+}
+
+multiDimIterator::self_type& multiDimIterator::operator=(self_type&& src)
+{
+	if (this == &src)
+	{
+		return *this;
+	}
+
+	swap(*this, src);
 }
 
 void multiDimIterator::setBasisDim(const unsigned int dim)
@@ -478,6 +598,29 @@ void multiDimIterator::moveToLast()
 	this->moveTo(this->eP_ - 1);
 }
 
+// ***************************
+// swap for multiDimIterator
+// ***************************
+void swap(multiDimIterator& first, multiDimIterator& second) noexcept
+{
+	using std::swap;
+
+	swap(first.coor_, second.coor_);
+	swap(first.basisDim_, second.basisDim_);
+
+	swap(first.dims_, second.dims_);
+	swap(first.sP_, second.sP_);
+	swap(first.eP_, second.eP_);
+	swap(first.dSize_, second.dSize_);
+
+	swap(first.end_, second.end_);
+	swap(first.front_, second.front_);
+
+	swap(first.seqPos_, second.seqPos_);
+	swap(first.seqCapacity_, second.seqCapacity_);
+	swap(first.basisDimOffset_, second.basisDimOffset_);
+}
+////////////////////////////////////////
 
 ////////////////////
 // Pic less coordinates value on each dimension

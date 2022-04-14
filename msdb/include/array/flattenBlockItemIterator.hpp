@@ -24,14 +24,47 @@ flattenBufferItemIterator<Ty_>::flattenBufferItemIterator(Ty_* ptr, const coordi
 }
 
 template<typename Ty_>
-flattenBufferItemIterator<Ty_>::flattenBufferItemIterator(const flattenBufferItemIterator<Ty_>::self_type& mit)
-	: flattenBufferItemIterator<Ty_>::base_type(mit), ptr_(mit.ptr_)
+flattenBufferItemIterator<Ty_>::flattenBufferItemIterator(const flattenBufferItemIterator<Ty_>& src)
+	: flattenBufferItemIterator<Ty_>::base_type(src), ptr_(src.ptr_)
 {
 
 }
 template<typename Ty_>
+inline flattenBufferItemIterator<Ty_>::flattenBufferItemIterator(flattenBufferItemIterator<Ty_>&& src) noexcept
+{
+	swap(*this, src);
+}
+template<typename Ty_>
 inline flattenBufferItemIterator<Ty_>::~flattenBufferItemIterator()
 {
+}
+template<typename Ty_>
+inline flattenBufferItemIterator<Ty_>& flattenBufferItemIterator<Ty_>::operator=(const flattenBufferItemIterator<Ty_>& src)
+{
+	if (this == &src)
+	{
+		return *this;
+	}
+
+	flattenBufferItemIterator<Ty_> temp(src);
+	swap(*this, temp);
+	return *this;
+}
+template<typename Ty_>
+inline flattenBufferItemIterator<Ty_>& flattenBufferItemIterator<Ty_>::operator=(flattenBufferItemIterator<Ty_>&& src)
+{
+	flattenBufferItemIterator<Ty_> temp(std::move(src));
+	swap(*this, temp);
+	return *this;
+}
+template<typename Ty_>
+void swap(flattenBufferItemIterator<Ty_>& first, flattenBufferItemIterator<Ty_>& second) noexcept
+{
+	using std::swap;
+
+	swap(static_cast<flattenBufferItemIterator<Ty_>::base_type&>(first), static_cast<flattenBufferItemIterator<Ty_>::base_type&>(second));
+
+	swap(first.ptr_, second.ptr_);
 }
 }		// core
 }		// msdb
