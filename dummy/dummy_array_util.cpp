@@ -1,4 +1,5 @@
 #include <dummy_array_util.h>
+#include <system/exceptions.h>
 
 namespace msdb
 {
@@ -206,9 +207,34 @@ core::pDimensionDescs dimensionDescBuilder(const std::vector<std::string> dimNam
 	}
 	return dimDescs;
 }
-core::pAttributeDescs attributeDescBuilder(const std::vector<std::string> attrNames,
-										   const std::vector<core::eleType> attrTypes)
+core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
+										   const std::vector<core::eleType>& attrTypes)
 {
+	if (attrNames.size() != attrTypes.size())
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_WRONG_ATTRIBUTE_DESC, "Number of Attributes and their types are not matched"));
+	}
+
+	core::pAttributeDescs attrDescs = std::make_shared<core::attributeDescs>();
+	core::attributeId nums = core::attributeId(attrNames.size());
+
+	for (core::attributeId id = 0; id < nums; ++id)
+	{
+		attrDescs->push_back(std::make_shared<core::attributeDesc>(id, attrNames[id], attrTypes[id]));
+	}
+	return attrDescs;
+}
+
+core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
+										   const std::vector<core::eleType>& attrTypes,
+										   const std::vector<core::materializedType>& matTypes,
+										   const std::vector<core::compressionType>& compTypes)
+{
+	if (attrNames.size() != attrTypes.size())
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_WRONG_ATTRIBUTE_DESC, "Number of Attributes and their types are not matched"));
+	}
+
 	core::pAttributeDescs attrDescs = std::make_shared<core::attributeDescs>();
 	core::attributeId nums = core::attributeId(attrNames.size());
 

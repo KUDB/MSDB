@@ -45,7 +45,7 @@ core::pArrayDesc getDummyArrayDesc() {
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -59,7 +59,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
 		});
 	return afl;
 }
@@ -132,7 +132,7 @@ core::pArrayDesc getDummyArrayDesc()
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -146,7 +146,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
 		});
 	return afl;
 }
@@ -219,7 +219,7 @@ core::pArrayDesc getDummyArrayDesc()
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -233,7 +233,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
 		});
 	return afl;
 }
@@ -306,7 +306,7 @@ core::pArrayDesc getDummyArrayDesc()
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -320,7 +320,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
 		});
 	return afl;
 }
@@ -393,7 +393,7 @@ core::pArrayDesc getDummyArrayDesc()
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -407,7 +407,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
 		});
 	return afl;
 }
@@ -480,7 +480,7 @@ core::pArrayDesc getDummyArrayDesc()
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -494,7 +494,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(compressionType compType)
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, compType)
+			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
 		});
 	return afl;
 }

@@ -1,18 +1,20 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CPP_ARRAY_H_
 #define _MSDB_CPP_ARRAY_H_
 
 #include <pch.h>
+#include <compression/compressionType.h>
+#include <compression/materializedType.h>
 #include <array/array.h>
 #include <query/query.h>
 #include <api_cpp/cpp_context.h.>
-#include <compression/compressionType.h>
 #include <index/attributeIndex.h>
 
 namespace msdb
 {
 using typename core::eleType;
 using typename core::compressionType;
+using typename core::materializedType;
 using typename core::attrIndexType;
 
 class Array
@@ -80,7 +82,9 @@ private:
 class DefAttribute
 {
 public:
-	DefAttribute(std::string name, eleType type, compressionType compType = compressionType::NONE);
+	DefAttribute(std::string name, eleType type, 
+				 materializedType matType = materializedType::FLATTEN,
+				 compressionType compType = compressionType::NONE);
 
 public:
 	std::shared_ptr<core::attributeDesc> getDesc();

@@ -49,33 +49,6 @@ protected:
 public:
 	virtual void serialize(bstream& os) override;
 	virtual void deserialize(bstream& is) override;
-
-	//// TODO::Deprecate function
-	//template<typename Ty_>
-	//void serializeTy(bstream& bs)
-	//{
-	//	bs << setw(sizeof(Ty_) * CHAR_BIT);
-	//	auto it = this->getItemIterator();
-	//	while (!it->isEnd())
-	//	{
-	//		bs << (**it).get<Ty_>();
-	//		++(*it);
-	//	}
-	//}
-	//// TODO::Deprecate function
-	//template<typename Ty_>
-	//void deserializeTy(bstream& bs)
-	//{
-	//	bs >> setw(sizeof(Ty_) * CHAR_BIT);
-	//	auto it = this->getItemIterator();
-	//	while (!it->isEnd())
-	//	{
-	//		Ty_ value;
-	//		bs >> value;
-	//		(**it).set<Ty_>(value);
-	//		++(*it);
-	//	}
-	//}
 };
 
 template <typename Ty_>

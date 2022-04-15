@@ -33,6 +33,7 @@ static const core::eleType typeAttr_2 = core::eleType::UINT8;
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
+	materializedType matType = materializedType::FLATTEN,
 	compressionType compType = compressionType::RAW);
 }		// array_mem_char_4x4
 }		// dummy

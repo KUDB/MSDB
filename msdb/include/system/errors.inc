@@ -1,4 +1,4 @@
-// Name										code			msg
+﻿// Name										code			msg
 X(MSDB_ER_SUCCESS,							0,				"Success")
 X(MSDB_ER_UNKNOWN_ERROR,					-1,				"Unknown error")
 X(MSDB_ER_NOT_IMPLEMENTED,					1001,			"Not Implemented")
@@ -22,6 +22,7 @@ X(MSDB_ER_NO_ARRAY,							5001,			"There is no array")
 X(MSDB_ER_NO_ATTRIBUTE,						5100,			"There is no attribute")
 X(MSDB_ER_NO_ATTR_INDEX,					5101,			"There is no attribute index")
 X(MSDB_ER_ATTR_INDEX_TYPE_DIFF,				5102,			"Attribute index type is different as expected")
+X(MSDB_ER_WRONG_ATTRIBUTE_DESC,				5110,			"Wrong attribute input")
 X(MSDB_ER_NO_DIMENSION,						5200,			"There is no dimension")
 X(MSDB_ER_NO_DIM_INDEX,						5201,			"There is no dimension index")
 X(MSDB_ER_DIM_INDEX_TYPE_DIFF,				5202,			"Dimension index type is different as expected")

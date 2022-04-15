@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/arrayMgr.h>
 #include <query/query.h>
 #include <api_cpp/cpp_array.h>
@@ -55,8 +55,8 @@ std::shared_ptr<core::dimensionDesc> DefDimension::getDesc()
 {
 	return this->dimDesc_;
 }
-DefAttribute::DefAttribute(std::string name, eleType type, compressionType compType)
-	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, compType))
+DefAttribute::DefAttribute(std::string name, eleType type, materializedType matType, compressionType compType)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, compType))
 {
 }
 std::shared_ptr<core::attributeDesc> DefAttribute::getDesc()

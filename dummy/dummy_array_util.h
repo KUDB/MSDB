@@ -51,9 +51,12 @@ core::pDimensionDescs dimensionDescBuilder(
 	const core::dimension& chunkDims, const core::dimension& blockDims
 );
 core::pAttributeDescs attributeDescBuilder(
-	const std::vector<std::string> attrNames,
-	const std::vector<core::eleType> attrTypes
-);
+	const std::vector<std::string>& attrNames,
+	const std::vector<core::eleType>& attrTypes);
+core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
+										   const std::vector<core::eleType>& attrTypes,
+										   const std::vector<core::materializedType>& matTypes,
+										   const std::vector<core::compressionType>& compTypes);
 std::pair<core::arrayId, std::string> getArrayIdName(
 	core::compressionType compType, 
 	core::arrayId baseId, 

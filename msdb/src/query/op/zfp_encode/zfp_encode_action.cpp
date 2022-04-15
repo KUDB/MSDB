@@ -1,74 +1,72 @@
 ﻿#include <pch.h>
 #include <op/zfp_encode/zfp_encode_action.h>
+#include <op/zfp_encode/zfpArray.h>
 #include <system/exceptions.h>
+#include <system/storageMgr.h>
+#include <util/logger.h>
 
 namespace msdb
 {
 namespace core
 {
-////////////////////////////////////////
-// Sample code for ZFP encode/decode
-//
-int compress(double* array, int nx, int ny, int nz, double tolerance, int decompress)
+zfp_encode_action::zfp_encode_action()
+    : base_type()
 {
-    int status = 0;    /* return value: 0 = success */
-    zfp_type type;     /* array scalar type */
-    zfp_field* field;  /* array meta data */
-    zfp_stream* zfp;   /* compressed stream */
-    void* buffer;      /* storage for compressed stream */
-    size_t bufsize;    /* byte size of compressed buffer */
-    bitstream* stream; /* bit stream to write to or read from */
-    size_t zfpsize;    /* byte size of compressed stream */
+}
+zfp_encode_action::~zfp_encode_action()
+{
+}
+const char* zfp_encode_action::name()
+{
+    return "zfp_encode_action";
+}
+pArray zfp_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
+{
+    assert(inputArrays.size() == 1);
 
-    /* allocate meta data for the 3D array a[nz][ny][nx] */
-    type = zfp_type_double;
-    field = zfp_field_3d(array, type, nx, ny, nz);
+    //========================================//
+    qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 
-    /* allocate meta data for a compressed stream */
-    zfp = zfp_stream_open(NULL);
+    size_t mSizeTotal = 0;
+    pArray sourceArr = inputArrays[0];
+    pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*sourceArr->getDesc());
+    pArray outArr = std::make_shared<zfpArray>(outArrDesc);
 
-    /* set compression mode and parameters via one of three functions */
-  /*  zfp_stream_set_rate(zfp, rate, type, 3, 0); */
-  /*  zfp_stream_set_precision(zfp, precision); */
-    zfp_stream_set_accuracy(zfp, tolerance);
+    arrayId arrId = sourceArr->getId();
 
-    /* allocate buffer for compressed data */
-    bufsize = zfp_stream_maximum_size(zfp, field);
-    buffer = malloc(bufsize);
+    for (auto attr : *sourceArr->getDesc()->attrDescs_)
+    {
+        // TODO::check compressionType
+        // IF(compType != zfp)
+        //  ignore or exception
+        auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
+        while (!cit->isEnd())
+        {
+            auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
+            auto outChunk = outArr->makeChunk(cDesc);
+            outChunk->bufferRef(**cit);
 
-    /* associate bit stream with allocated buffer */
-    stream = stream_open(buffer, bufsize);
-    zfp_stream_set_bit_stream(zfp, stream);
-    zfp_stream_rewind(zfp);
+            //========================================//
+            qry->getTimer()->nextWork(0, workType::IO);
+            //----------------------------------------//
+            pSerializable serialChunk
+                = std::static_pointer_cast<serializable>(outChunk);
+            storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+                                                serialChunk);
 
-    /* compress or decompress entire array */
-    if (decompress) {
-        /* read compressed stream and decompress array */
-        zfpsize = fread(buffer, 1, bufsize, stdin);
-        if (!zfp_decompress(zfp, field)) {
-            fprintf(stderr, "decompression failed\n");
-            status = 1;
+            //========================================//
+            qry->getTimer()->nextWork(0, workType::COMPUTING);
+            //----------------------------------------//
+            mSizeTotal += serialChunk->getSerializedSize();
+            ++(*cit);
         }
     }
-    else {
-        /* compress array and output compressed stream */
-        zfpsize = zfp_compress(zfp, field);
-        if (!zfpsize) {
-            fprintf(stderr, "compression failed\n");
-            status = 1;
-        }
-        else
-            fwrite(buffer, 1, zfpsize, stdout);
-    }
 
-    /* clean up */
-    zfp_field_free(field);
-    zfp_stream_close(zfp);
-    stream_close(stream);
-    free(buffer);
-    free(array);
+    BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+    qry->getTimer()->pause(0);
+    //========================================//
 
-    return status;
+    return sourceArr;
 }
 }		// core
 }		// msdb

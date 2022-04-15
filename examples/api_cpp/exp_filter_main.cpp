@@ -13,7 +13,7 @@ using namespace msdb::experiments::data_star1024x1024;
 void exeExperiment(int numTest, compressionType compType)
 {
 	{
-		auto afl = Consume(getArrayBuildAFL(compType));
+		auto afl = Consume(getArrayBuildAFL(materializedType::FLATTEN, compType));
 		std::cout << afl->toString(0) << std::endl;
 		auto qry = msdb::Query(afl);
 		auto ra = qry.execute();
@@ -41,7 +41,7 @@ void exeExperiment(int numTest, compressionType compType)
 void exeExperiment(int numTest, compressionType compType, attrIndexType idxType)
 {
 	{
-		auto afl = Consume(getArrayBuildAFL(compType));
+		auto afl = Consume(getArrayBuildAFL(materializedType::FLATTEN, compType));
 		std::cout << afl->toString(0) << std::endl;
 		auto qry = msdb::Query(afl);
 		auto ra = qry.execute();

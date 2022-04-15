@@ -21,7 +21,8 @@ void flattenArray::initChunkFactories()
 {
 	flattenChunkFactoryBuilder fcfc;
 
-	for (auto attrDesc : *this->getDesc()->getAttrDescs())
+	auto desc = this->getDesc()->getAttrDescs();
+	for (auto attrDesc : *desc)
 	{
 		assert(attrDesc->id_ == this->cFactories_.size());
 
