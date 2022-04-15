@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/arrayDesc.h>
 #include <xml/xmlFile.h>
 
@@ -33,6 +33,12 @@ arrayDesc::arrayDesc(const arrayDesc& mit)
 	{
 		this->attrDescs_->push_back(std::make_shared<attributeDesc>(*mit.attrDescs_->at(i)));
 	}
+}
+
+arrayDesc::arrayDesc(arrayDesc&& src) noexcept
+	: arrayDesc()
+{
+	swap(*this, src);
 }
 
 arrayDesc::~arrayDesc()
@@ -156,6 +162,29 @@ pAttributeDescs arrayDesc::buildAttributeDescsFromXML(tinyxml2::XMLElement* node
 
 	return attrDescs;
 }
+
+//////////////////////////////
+// Operators
+// ***************************
+// Assign
+arrayDesc& arrayDesc::operator=(const arrayDesc& src)
+{
+	if (this == &src)
+	{
+		return *this;
+	}
+
+	arrayDesc temp(src);
+	swap(*this, temp);
+	return *this;
+}
+arrayDesc& arrayDesc::operator=(arrayDesc&& src) noexcept
+{
+	arrayDesc temp(std::move(src));
+	swap(*this, temp);
+	return *this;
+}
+
 bool arrayDesc::operator==(const arrayDesc& right_)
 {
 	if (this->id_ != right_.id_) return false;
@@ -180,6 +209,16 @@ bool arrayDesc::operator==(const arrayDesc& right_)
 	}
 
 	return true;
+}
+void swap(arrayDesc& first, arrayDesc& second) noexcept
+{
+	using std::swap;
+
+	swap(first.id_, second.id_);
+	swap(first.name_, second.name_);
+
+	swap(first.dimDescs_, second.dimDescs_);
+	swap(first.attrDescs_, second.attrDescs_);
 }
 }		// core
 }		// msdb

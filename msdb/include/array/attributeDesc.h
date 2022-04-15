@@ -7,6 +7,7 @@
 #include <util/element.h>
 #include <util/dataType.h>
 #include <compression/compressionType.h>
+#include <compression/materializedType.h>
 //#include <array/chunkType.h>
 #include <xml/tinyxml2.h>
 
@@ -21,6 +22,7 @@ namespace core
 #define _MSDB_STR_ATTR_TYPE_		"ATTRIBUTE_TYPE"
 #define _MSDB_STR_ATTR_TYPE_SIZE_	"ATTRIBUTE_TYPE_SIZE"
 #define _MSDB_STR_ATTR_COMP_TYPE_	"ATTRIBUTE_COMPRESSION_TYPE"
+#define _MSDB_STR_ATTR_MAT_TYPE_	"ATTRIBUTE_MATERIALIZED_TYPE"
 #define _MSDB_STR_ATTR_OPTIONAL_PARAMS_	"ATTRIBUTE_OPTIONAL_PARAMS"
 
 class attributeDesc;
@@ -40,7 +42,8 @@ class attributeDesc
 {
 public:
 	// TODO::replace eleType->dataType
-	attributeDesc(attributeId id, std::string name, eleType type, compressionType compType = compressionType::NONE);
+	attributeDesc(attributeId id, std::string name, eleType type, 
+				  materializedType matType = materializedType::FLATTEN, compressionType compType = compressionType::NONE);
 
 	// TODO::make copy constructor for attributeDesc
 	// TODO::make assign operator for attributeDescs
@@ -75,7 +78,8 @@ public:
 	//std::list<chunkType> chunkTypeLineage_;		// dependency problem, chunkType->chunkFactory->chunk->attributeDesc
 	std::map<std::string, std::string> optionalParams_;
 	size_t typeSize_;
-	compressionType compType_;	// compression type, default:NONE
+	compressionType compType_;	// compression chunk type, default:NONE
+	materializedType matType_;	// materialized chunk type, default:flatten
 };
 }		// core
 }		// msdb

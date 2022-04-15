@@ -27,8 +27,11 @@ public:
 	arrayDesc();
 	arrayDesc(const arrayId aid, const std::string arrayName, 
 			  pDimensionDescs dimDescs, pAttributeDescs attrDescs);
-	arrayDesc(const arrayDesc& mit);
+	arrayDesc(const arrayDesc& src);
+	arrayDesc(arrayDesc&& src) noexcept;
 	~arrayDesc();
+
+	friend void swap(arrayDesc& first, arrayDesc& second) noexcept;
 
 public:
 	pDimensionDescs getDimDescs();
@@ -46,7 +49,17 @@ public:
 	static pArrayDesc buildDescFromXML(std::shared_ptr<tinyxml2::XMLDocument> doc);
 	static pDimensionDescs buildDimensionDescsFromXML(tinyxml2::XMLElement*);
 	static pAttributeDescs buildAttributeDescsFromXML(tinyxml2::XMLElement*);
+	
+public:
+	//////////////////////////////
+	// Operators
+	// ***************************
+	// Assign
+	arrayDesc& operator=(const arrayDesc& src);
+	arrayDesc& operator=(arrayDesc&& src) noexcept;
 
+	// ***************************
+	// Comparison
 	bool operator == (const arrayDesc& right_);
 
 public:
@@ -56,6 +69,8 @@ public:
 	pDimensionDescs dimDescs_;
 	pAttributeDescs attrDescs_;
 };
+
+void swap(arrayDesc& first, arrayDesc& second) noexcept;
 }		// core
 }		// msdb
 #endif	// _MSDB_ARRAYDESC_H_

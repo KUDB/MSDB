@@ -21,8 +21,8 @@ attributeDescs::attributeDescs(const attributeDescs& mit)
 	}
 }
 
-attributeDesc::attributeDesc(attributeId id, std::string name, eleType type, compressionType compType)
-	: id_(id), name_(name), type_(type), compType_(compressionType::NONE)
+attributeDesc::attributeDesc(attributeId id, std::string name, eleType type, materializedType matType, compressionType compType)
+	: id_(id), name_(name), type_(type), matType_(matType), compType_(compType)
 {
 	this->typeSize_ = getEleSize(type);
 	this->dataType_ = this->eleType2dataType(type_);
@@ -57,6 +57,8 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 	}
 
 	auto strCompType = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_COMP_TYPE_));
+	// TODO::materializedType, compressionType 
+	auto matType = materializedType::FLATTEN;
 	auto compType = compressionType::NONE;
 
 	for (int i = 0; i < sizeof(compressionTypeStrings) / sizeof(const char*); ++i)
@@ -68,7 +70,7 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 		}
 	}
 
-	return std::make_shared<attributeDesc>(id, name, attrType, compType);
+	return std::make_shared<attributeDesc>(id, name, attrType, matType, compType);
 }
 
 std::string attributeDesc::toString()
