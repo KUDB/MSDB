@@ -5,6 +5,8 @@ namespace msdb
 {
 namespace dummy
 {
+using namespace msdb::core;
+
 Array getArrayAFL(std::string arrName, compressionType compType)
 {
 	auto idName = getArrayIdName(compType, 0, arrName);

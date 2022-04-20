@@ -21,5 +21,29 @@ TEST(arrayDesc, xml_save)
 	auto loadArrDesc = core::storageMgr::instance()->loadArrayDesc(expectFilePath);
 	EXPECT_TRUE(*arrDesc == *loadArrDesc);
 }
+
+TEST(arrayDesc, copy_assign)
+{
+	using namespace msdb::core;
+
+	auto arrDesc2D = getDummyArrayDesc_SIMPLE_2D();
+	auto arrDesc2DStable = getDummyArrayDesc_SIMPLE_2D();
+
+	EXPECT_EQ(*arrDesc2D, *arrDesc2DStable);
+
+	arrayDesc copyDesc(*arrDesc2D);
+	EXPECT_EQ(*arrDesc2D, *arrDesc2DStable);
+	EXPECT_EQ(copyDesc, *arrDesc2DStable);
+
+	arrayDesc rhsCopyDesc(std::move(*arrDesc2D));
+	EXPECT_EQ(rhsCopyDesc, *arrDesc2DStable);
+
+	// arrDesc2D is now swapped with empty arrayDesc() obj
+	// Expected not equal with original version of arrayDesc
+	EXPECT_NE(*arrDesc2D, *arrDesc2DStable);
+	// Instead, expected equal with empty arrayDesc obj
+	auto empty = core::arrayDesc();
+	EXPECT_EQ(*arrDesc2D, empty);
+}
 }		// test
 }		// msdb

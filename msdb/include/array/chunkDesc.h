@@ -45,7 +45,7 @@ public:
 	//		  const CompressionMethod cType);
 
 	chunkDesc(const chunkDesc& src);
-	chunkDesc(chunkDesc&& src);
+	chunkDesc(chunkDesc&& src) noexcept;
 	
 	friend void swap(chunkDesc& first, chunkDesc& second) noexcept;
 
@@ -63,6 +63,9 @@ public:
 	// Assign
 	chunkDesc& operator=(const chunkDesc& src);
 	chunkDesc& operator=(chunkDesc&& src) noexcept;
+	// ***************************
+	// Comparison
+	friend bool operator==(const chunkDesc& lhs_, const chunkDesc& rhs_);
 
 public:
 	void initPhysicalChunkSizeFromDims();
@@ -89,6 +92,8 @@ public:
 };
 
 void swap(chunkDesc& first, chunkDesc& second) noexcept;
+bool operator==(const chunkDesc& lhs_, const chunkDesc& rhs_);
+bool operator!=(const chunkDesc& lhs_, const chunkDesc& rhs_);
 }		// core
 }		// msdb
 #endif	// _MSDB_CHUNKDESC_H_

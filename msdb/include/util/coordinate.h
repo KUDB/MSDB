@@ -363,7 +363,7 @@ public:
 	range(const coordinates& sP, const coordinates& eP);
 	range(const coordinates& eP);
 	range(const range& mit);
-	range(range&& src);
+	range(range&& src) noexcept;
 
 	friend void swap(range& first, range& second) noexcept;
 
@@ -568,7 +568,7 @@ public:
 	multiDimIterator(const std::initializer_list<dim_type>& dims, 
 					 const std::initializer_list<dim_type>& startCoor, const std::initializer_list<dim_type>& endCoor);
 	multiDimIterator(const self_type& src);
-	multiDimIterator(self_type&& src);
+	multiDimIterator(self_type&& src) noexcept;
 
 	virtual ~multiDimIterator();
 
@@ -579,7 +579,7 @@ public:
 	// ***************************
 	// Assign
 	self_type& operator=(const self_type& src);
-	self_type& operator=(self_type&& src);
+	self_type& operator=(self_type&& src) noexcept;
 
 public:
 	virtual void setBasisDim(const unsigned int dim);

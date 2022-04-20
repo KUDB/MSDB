@@ -31,14 +31,16 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 	//========================================//
 
-	for (auto attr : *sourceArr->getDesc()->attrDescs_)
-	{
-		switch (attr->compType_)
-		{
-		default:
-			break;
-		}
-	}
+	// TODO::Fill in the body
+	//for (auto attr : *sourceArr->getDesc()->attrDescs_)
+	//{
+	//	switch (attr->compType_)
+	//	{
+	//		
+	//	default:
+	//		break;
+	//	}
+	//}
 
 	//========================================//
 	qry->getTimer()->nextJob(0, this->name(), workType::IO);

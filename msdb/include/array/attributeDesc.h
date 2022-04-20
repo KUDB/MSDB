@@ -36,17 +36,24 @@ class attributeDescs : public std::vector<pAttributeDesc>, public std::enable_sh
 public:
 	attributeDescs();
 	attributeDescs(const attributeDescs& mit);
+
+public:
+	friend bool operator==(const attributeDescs& lhs_, const attributeDescs& rhs_);
 };
+
+bool operator==(const attributeDescs& lhs_, const attributeDescs& rhs_);
+bool operator!=(const attributeDescs& lhs_, const attributeDescs& rhs_);
+
 
 class attributeDesc
 {
 public:
 	// TODO::replace eleType->dataType
+	attributeDesc();
 	attributeDesc(attributeId id, std::string name, eleType type, 
 				  materializedType matType = materializedType::FLATTEN, compressionType compType = compressionType::NONE);
-
-	// TODO::make copy constructor for attributeDesc
-	// TODO::make assign operator for attributeDescs
+	attributeDesc(const attributeDesc& src);
+	attributeDesc(attributeDesc&& src) noexcept;
 
 public:
 	// TODO:: set comp type at compression operator actions
@@ -64,7 +71,10 @@ public:
 	tinyxml2::XMLElement* convertToXMLDoc(tinyxml2::XMLElement* node);
 	static pAttributeDesc buildDescFromXML(tinyxml2::XMLElement* node);
 	std::string toString();
-	bool operator == (const attributeDesc& right_);
+
+public:
+	friend void swap(attributeDesc& lhs_, attributeDesc& rhs_);
+	friend bool operator==(const attributeDesc& lhs_, const attributeDesc& rhs_);
 
 private:
 	// TODO::replace eleType and erase this function
@@ -81,6 +91,10 @@ public:
 	compressionType compType_;	// compression chunk type, default:NONE
 	materializedType matType_;	// materialized chunk type, default:flatten
 };
+
+void swap(attributeDesc& lhs_, attributeDesc& rhs_);
+bool operator==(const attributeDesc& lhs_, const attributeDesc& rhs_);
+bool operator!=(const attributeDesc& lhs_, const attributeDesc& rhs_);
 }		// core
 }		// msdb
 #endif

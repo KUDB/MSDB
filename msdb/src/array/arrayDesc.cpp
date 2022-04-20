@@ -7,8 +7,9 @@ namespace msdb
 namespace core
 {
 arrayDesc::arrayDesc()
+	: id_(0), name_(""), dimDescs_(nullptr), attrDescs_(nullptr)
 {
-	// TODO::
+	std::cout << "arrayDesc::arrayDesc()" << std::endl;
 }
 
 arrayDesc::arrayDesc(const arrayId aid, const std::string arrayName,
@@ -16,11 +17,14 @@ arrayDesc::arrayDesc(const arrayId aid, const std::string arrayName,
 					 pAttributeDescs attrDescs)
 	: id_(aid), name_(arrayName), dimDescs_(dimDescs), attrDescs_(attrDescs)
 {
+	std::cout << "arrayDesc::arrayDesc(const arrayId aid, const std::string arrayName,.....)" << std::endl;
 }
 
 arrayDesc::arrayDesc(const arrayDesc& mit)
 	: id_(mit.id_), name_(mit.name_)
 {
+	std::cout << "arrayDesc::arrayDesc(const arrayDesc& mit)" << std::endl;
+
 	this->dimDescs_ = std::make_shared<dimensionDescs>();
 	this->attrDescs_ = std::make_shared<attributeDescs>();
 
@@ -38,6 +42,7 @@ arrayDesc::arrayDesc(const arrayDesc& mit)
 arrayDesc::arrayDesc(arrayDesc&& src) noexcept
 	: arrayDesc()
 {
+	std::cout << "arrayDesc::arrayDesc(arrayDesc&& src) noexcept" << std::endl;
 	swap(*this, src);
 }
 
@@ -87,7 +92,7 @@ std::string arrayDesc::toString(std::string strIndent)
 }
 
 /**
- * Save/load in XML file
+ * Save/ad in XML file
  */
 tinyxml2::XMLElement* arrayDesc::convertToXMLDoc(std::shared_ptr<tinyxml2::XMLDocument> doc)
 {
@@ -169,6 +174,8 @@ pAttributeDescs arrayDesc::buildAttributeDescsFromXML(tinyxml2::XMLElement* node
 // Assign
 arrayDesc& arrayDesc::operator=(const arrayDesc& src)
 {
+	std::cout << "arrayDesc& arrayDesc::operator=(const arrayDesc& src)" << std::endl;
+
 	if (this == &src)
 	{
 		return *this;
@@ -180,38 +187,48 @@ arrayDesc& arrayDesc::operator=(const arrayDesc& src)
 }
 arrayDesc& arrayDesc::operator=(arrayDesc&& src) noexcept
 {
+	std::cout << "arrayDesc& arrayDesc::operator=(arrayDesc&& src) noexcept" << std::endl;
+
 	arrayDesc temp(std::move(src));
 	swap(*this, temp);
 	return *this;
 }
 
-bool arrayDesc::operator==(const arrayDesc& right_)
+// ***************************
+// Friend
+bool operator== (const arrayDesc& lhs_, const arrayDesc& rhs_)
 {
-	if (this->id_ != right_.id_) return false;
-	if (this->name_ != right_.name_) return false;
+	if (lhs_.id_ != rhs_.id_)		return false;
+	if (lhs_.name_ != rhs_.name_)	return false;
 
-	pDimensionDescs leftDim = this->dimDescs_;
-	pDimensionDescs rightDim = right_.dimDescs_;
-	if (leftDim->size() != rightDim->size()) return false;
-	
-	for (int i = 0; i < leftDim->size(); i++)
+	// shared_ptr obj
+	if (lhs_.dimDescs_ != rhs_.dimDescs_)
 	{
-		if (!(*leftDim->at(i) == *rightDim->at(i))) return false;
+		if (lhs_.dimDescs_ == nullptr || rhs_.dimDescs_ == nullptr)	return false;
+		if(*(lhs_.dimDescs_) != *(rhs_.dimDescs_))					return false;
 	}
 
-	pAttributeDescs leftAttr = this->attrDescs_;
-	pAttributeDescs rightAttr = right_.attrDescs_;
-	if (leftAttr->size() != rightAttr->size()) return false;
-
-	for (int i = 0; i < leftAttr->size(); i++)
+	// shared_ptr obj
+	if (lhs_.attrDescs_ != rhs_.attrDescs_)
 	{
-		if (!(*leftAttr->at(i) == *rightAttr->at(i))) return false;
+		if (lhs_.attrDescs_ == nullptr || rhs_.attrDescs_ == nullptr)	return false;
+		if (*(lhs_.attrDescs_) != *(rhs_.attrDescs_))					return false;
 	}
 
 	return true;
 }
+bool operator!= (const arrayDesc& lhs_, const arrayDesc& rhs_)
+{
+	if (lhs_ == rhs_)
+		return false;
+
+	return true;
+}
+
 void swap(arrayDesc& first, arrayDesc& second) noexcept
 {
+	std::cout << "void swap(arrayDesc& first, arrayDesc& second) noexcept" << std::endl;
+
 	using std::swap;
 
 	swap(first.id_, second.id_);

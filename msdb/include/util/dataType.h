@@ -15,6 +15,8 @@ public:
 	virtual size_t size() = 0;
 };
 
+// TODO::Empty class?
+
 template <typename Ty_>
 class concreteTy : public iTy
 {

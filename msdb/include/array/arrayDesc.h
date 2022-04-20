@@ -60,7 +60,7 @@ public:
 
 	// ***************************
 	// Comparison
-	bool operator == (const arrayDesc& right_);
+	friend bool operator == (const arrayDesc& lhs_, const arrayDesc& rhs_);
 
 public:
 	arrayId id_;
@@ -71,6 +71,8 @@ public:
 };
 
 void swap(arrayDesc& first, arrayDesc& second) noexcept;
+bool operator == (const arrayDesc& lhs_, const arrayDesc& rhs_);
+bool operator!= (const arrayDesc& lhs_, const arrayDesc& rhs_);
 }		// core
 }		// msdb
 #endif	// _MSDB_ARRAYDESC_H_

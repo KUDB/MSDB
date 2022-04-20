@@ -48,7 +48,7 @@ chunkDesc::chunkDesc(const chunkDesc& mit)
 {
 }
 
-chunkDesc::chunkDesc(chunkDesc&& src)
+chunkDesc::chunkDesc(chunkDesc&& src) noexcept
 	: chunkDesc()
 {
 	swap(*this, src);
@@ -124,6 +124,8 @@ void chunkDesc::initChunkCoor()
 	}
 }
 
+// ***************************
+// Friends
 void swap(chunkDesc& first, chunkDesc& second) noexcept
 {
 	using std::swap;
@@ -142,6 +144,38 @@ void swap(chunkDesc& first, chunkDesc& second) noexcept
 	swap(first.sp_, second.sp_);
 	swap(first.ep_, second.ep_);
 	swap(first.chunkCoor_, second.chunkCoor_);
+}
+bool operator==(const chunkDesc& lhs_, const chunkDesc& rhs_)
+{
+	if (lhs_.id_ != rhs_.id_)	return false;
+
+	// shared_ptr obj
+	if (lhs_.attrDesc_ != rhs_.attrDesc_)
+	{
+		if (lhs_.attrDesc_ == nullptr || rhs_.attrDesc_ == nullptr)	return false;
+		if (*(lhs_.attrDesc_) != *(rhs_.attrDesc_))					return false;
+	}
+
+	if (lhs_.mSize_ != rhs_.mSize_)	return false;
+	if (lhs_.cSize_ != rhs_.cSize_)	return false;
+
+	if (lhs_.useCompression_ != rhs_.useCompression_)	return false;
+	if (lhs_.cType_ != rhs_.cType_)	return false;
+
+	if (lhs_.dims_ != rhs_.dims_)	return false;
+	if (lhs_.blockDims_ != rhs_.blockDims_)	return false;
+	if (lhs_.sp_ != rhs_.sp_)	return false;
+	if (lhs_.ep_ != rhs_.ep_)	return false;
+	if (lhs_.chunkCoor_ != rhs_.chunkCoor_)	return false;
+
+	return true;
+}
+bool operator!=(const chunkDesc& lhs_, const chunkDesc& rhs_)
+{
+	if (lhs_ == rhs_)
+		return false;
+
+	return true;
 }
 }		// core
 }		// msdb

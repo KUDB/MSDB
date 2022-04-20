@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_DIMENSIONDESC_H_
 #define _MSDB_DIMENSIONDESC_H_
 
@@ -39,19 +39,30 @@ public:
 	dimension getChunkSpace();
 	dimension getBlockDims();
 	dimension getBlockSpace();
+
+public:
+	friend bool operator== (const dimensionDescs& lhs_, const dimensionDescs& rhs_);
 };
 
+bool operator== (const dimensionDescs& lhs_, const dimensionDescs& rhs_);
+bool operator!= (const dimensionDescs& lhs_, const dimensionDescs& rhs_);
+
+//////////////////////////////
+// dimensionDesc
+//
 class dimensionDesc
 {
 public:
 	using dimension_type = position_t;
 
 public:
+	dimensionDesc();
 	dimensionDesc(const dimensionId id, const std::string name, 
 				  const dimension_type start, const dimension_type end,
 				  const position_t chunkSize, const position_t blockSize);
 
-	dimensionDesc(const dimensionDesc& mit);
+	dimensionDesc(const dimensionDesc& src);
+	dimensionDesc(dimensionDesc&& src) noexcept;
 
 public:
 	position_t getLength();
@@ -64,7 +75,15 @@ public:
 	tinyxml2::XMLElement* convertToXMLDoc(tinyxml2::XMLElement* node);
 	static pDimensionDesc buildDescFromXML(tinyxml2::XMLElement* node);
 
-	bool operator == (const dimensionDesc& right_);
+	//////////////////////////////
+	// Operators
+	// ***************************
+	// Assign
+	friend void swap(dimensionDesc& lhs, dimensionDesc& rhs);
+	dimensionDesc& operator=(const dimensionDesc& src);
+	dimensionDesc& operator=(dimensionDesc&& src) noexcept;
+	// Comparison
+	friend bool operator== (const dimensionDesc& lhs_, const dimensionDesc& rhs_);
 
 public:
 	dimensionId id_;
@@ -74,6 +93,10 @@ public:
 	position_t chunkSize_;
 	position_t blockSize_;
 };
+
+void swap(dimensionDesc& lhs, dimensionDesc& rhs);
+bool operator== (const dimensionDesc& lhs_, const dimensionDesc& rhs_);
+bool operator!= (const dimensionDesc& lhs_, const dimensionDesc& rhs_);
 }		// core
 }		// msdb
 #endif	// _MSDB_DIMENSIONDESC_H_

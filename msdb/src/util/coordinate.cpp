@@ -11,6 +11,10 @@ namespace core
 coordinates::coordinates()
 	: dSize_(0), coor_(nullptr)
 {
+#ifndef NDEBUG
+	this->x_ = 0;
+	this->y_ = 0;
+#endif
 }
 
 coordinates::coordinates(const size_type dSize)
@@ -303,7 +307,7 @@ range::range(const range& src)
 
 }
 
-range::range(range&& src)
+range::range(range&& src) noexcept
 {
 	swap(*this, src);
 }
@@ -472,7 +476,7 @@ multiDimIterator::multiDimIterator(const self_type& mit)
 {
 }
 
-multiDimIterator::multiDimIterator(self_type&& src)
+multiDimIterator::multiDimIterator(self_type&& src) noexcept
 	: multiDimIterator(src.dSize_, src.dims_)
 {
 	swap(*this, src);
@@ -498,7 +502,7 @@ multiDimIterator::self_type& multiDimIterator::operator=(const self_type& src)
 	return *this;
 }
 
-multiDimIterator::self_type& multiDimIterator::operator=(self_type&& src)
+multiDimIterator::self_type& multiDimIterator::operator=(self_type&& src) noexcept
 {
 	if (this == &src)
 	{
