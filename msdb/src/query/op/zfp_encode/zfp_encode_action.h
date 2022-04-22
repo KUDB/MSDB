@@ -4,7 +4,6 @@
 
 #include <pch.h>
 #include <query/opAction.h>
-#include "zfp.h"
 
 namespace msdb
 {
@@ -23,8 +22,6 @@ public:
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 };
-
-int compress(double* array, int nx, int ny, int nz, double tolerance, int decompress);
 }		// core
 }		// msdb
 #endif	// _MSDB_OP_ZFP_ENCODE_ACTION_H_
