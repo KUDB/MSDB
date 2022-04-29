@@ -133,6 +133,12 @@ using vpItemIterator = std::variant<
 	std::shared_ptr<iItemIterator<int32_t>>, std::shared_ptr<iItemIterator<uint32_t>>,
 	std::shared_ptr<iItemIterator<int64_t>>, std::shared_ptr<iItemIterator<uint64_t>>,
 	std::shared_ptr<iItemIterator<float>>, std::shared_ptr<iItemIterator<double>>>;
+
+template <typename Ty_>
+std::shared_ptr<iItemIterator<Ty_>> getTyIterator(vpItemIterator& vit)
+{
+	return std::get<std::shared_ptr<iItemIterator<Ty_>>>(vit);
+}
 }		// core
 }		// msdb
 

@@ -278,6 +278,10 @@ pBitmap chunk::getBlockBitmap()
 {
 	return this->blockBitmap_;
 }
+pChunkBuffer chunkTester::getBuffer(pChunk source)
+{
+	return source->getBuffer();
+}
 //cpBitmap chunk::getBlockBitmap() const
 //{
 //	return this->blockBitmap_;

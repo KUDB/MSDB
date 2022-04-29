@@ -25,8 +25,6 @@ public:
 	void loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry);
 	void loadChunk(pQuery qry, const size_t parentThreadId, pArray outArr, attributeId attrId, pChunk outChunk);
 };
-
-int decompress(double* array, int nx, int ny, int nz, double tolerance, int decompress);
 }		// core
 }		// msdb
 #endif	// _MSDB_OP_ZFP_DECODE_ACTION_H_

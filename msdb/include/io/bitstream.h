@@ -407,6 +407,13 @@ namespace core
 			this->_container->resize(bytes);
 		}
 
+		void moveToFront()
+		{
+			this->blockPos = 0;
+			this->bitPos = 0;
+			this->frontBlock = reinterpret_cast<block_bitset_type*>(&this->_container->front());
+		}
+
 		virtual void flush()
 		{
 			_myBase::flush();

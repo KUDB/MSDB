@@ -5,6 +5,7 @@
 #include <pch.h>
 #include <array/flattenChunk.h>
 #include <io/bitstream.h>
+#include <zfp.h>
 
 namespace msdb
 {
@@ -60,6 +61,10 @@ public:
 
 		return this->blocks_[bId];
 	}
+
+//public:
+//	virtual void serialize(std::ostream& os) override;
+//	virtual void deserialize(std::istream& is) override;
 };
 //////////////////////////////
 // zfpChunkFactory
@@ -109,6 +114,9 @@ public:
 		return "zfpChunk";
 	}
 };
+
+template <typename Ty_>
+zfp_type getZFPType();
 }		// core
 }		// msdb
 

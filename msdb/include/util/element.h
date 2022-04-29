@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ELEMENT_H_
 #define _MSDB_ELEMENT_H_
 
@@ -205,6 +205,74 @@ private:
 };
 
 eleSize getEleSize(eleType type);
+
+template<typename Ty_>
+eleType getEleType()
+{
+	return eleType::EMPTY;
+}
+template <char>
+eleType getEleType()
+{
+	return eleType::CHAR;
+}
+template <int8_t>
+eleType getEleType()
+{
+	return eleType::INT8;
+}
+template <uint8_t>
+eleType getEleType()
+{
+	return eleType::UINT8;
+}
+template <int16_t>
+eleType getEleType()
+{
+	return eleType::INT16;
+}
+
+template <uint16_t>
+eleType getEleType()
+{
+	return eleType::UINT16;
+}
+
+template <int32_t>
+eleType getEleType()
+{
+	return eleType::INT32;
+}
+
+template <uint32_t>
+eleType getEleType()
+{
+	return eleType::UINT32;
+}
+
+template <int64_t>
+eleType getEleType()
+{
+	return eleType::INT64;
+}
+
+template <uint64_t>
+eleType getEleType()
+{
+	return eleType::UINT64;
+}
+
+//template <float>
+//eleType getEleType()
+//{
+//	return eleType::FLOAT;
+//}
+//
+//template <double>
+//eleType getEleType()
+//{
+//	return eleType::DOUBLE;
+//}
 }		// core
 }		// msdb
 #endif	// _MSDB_ELEMENT_H_

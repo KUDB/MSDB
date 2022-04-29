@@ -14,6 +14,7 @@ namespace msdb
 namespace core
 {
 class chunk;
+class chunkTester;
 using pChunk = std::shared_ptr<chunk>;
 
 class chunk : public std::enable_shared_from_this<chunk>, public serializable
@@ -52,8 +53,8 @@ protected:
 	virtual void referenceAllBufferToBlock();
 
 public:
-	virtual void bufferAlloc();
-	virtual void bufferAlloc(bufferSize size);
+	virtual void bufferAlloc();					// allocate new buffer accoring to the 'mSize' described in 'chunkDesc'
+	virtual void bufferAlloc(bufferSize size);	// allocate new buffer sized 'size' and replace 'mSize' in 'chunkDesc'
 	virtual void bufferCopy(void* data, bufferSize size);
 	virtual void bufferCopy(pChunk source);
 	virtual void bufferCopy(pBlock source);
@@ -63,6 +64,8 @@ public:
 
 protected:
 	pChunkBuffer getBuffer();
+
+	friend class chunkTester;
 
 protected:
 	pChunkBuffer cached_;	// hold materialized chunk
@@ -144,6 +147,12 @@ protected:
 public:
 	virtual void updateToHeader() override;
 	virtual void updateFromHeader() override;
+};
+
+class chunkTester
+{
+public:
+	static pChunkBuffer getBuffer(pChunk source);
 };
 }		// core
 }		// msdb

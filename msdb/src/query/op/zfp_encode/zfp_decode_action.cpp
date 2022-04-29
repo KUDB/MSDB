@@ -100,6 +100,5 @@ void zfp_decode_action::loadChunk(pQuery qry, const size_t parentThreadId, pArra
 	qry->getTimer()->pause(threadId);
 	//========================================//
 }
-
 }		// core
 }		// msdb
