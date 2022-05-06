@@ -158,6 +158,20 @@ coordinates::~coordinates()
 	 return *this;
  }
 #ifndef NDEBUG
+ //////////////////////////////
+ // Convertor
+ std::vector<coordinates::dim_type> coordinates::toVector()
+ {
+	 std::vector<dim_type> output(this->dSize_);
+
+	 for (int i = 0; i < this->dSize_; ++i)
+	 {
+		 output.push_back(*(this->coor_ + i));
+	 }
+
+	 return output;
+ }
+ //////////////////////////////
  void coordinates::setXY()
  {
 	 if (this->dSize_ >= 2)

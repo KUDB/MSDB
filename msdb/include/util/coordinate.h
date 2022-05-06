@@ -295,6 +295,11 @@ public:
 	}
 	//////////////////////////////
 
+	//////////////////////////////
+	// Convertor
+	std::vector<dim_type> toVector();
+	//////////////////////////////
+
 public:
 	inline coordinates divCoor(const coordinates& right)
 	{

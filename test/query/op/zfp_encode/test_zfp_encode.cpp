@@ -23,7 +23,6 @@ TEST(zfp_encode, zfp_encode_int8_t)
 		chk->makeAllBlocks();
 		chk->bufferAlloc();
 		
-
 		auto blk = chk->getBlock(0);
 		auto it = core::getTyIterator<char>(blk->getValueIterator());
 
