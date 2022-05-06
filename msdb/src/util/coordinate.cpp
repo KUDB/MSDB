@@ -162,7 +162,7 @@ coordinates::~coordinates()
  // Convertor
  std::vector<coordinates::dim_type> coordinates::toVector()
  {
-	 std::vector<dim_type> output(this->dSize_);
+	 std::vector<dim_type> output;
 
 	 for (int i = 0; i < this->dSize_; ++i)
 	 {

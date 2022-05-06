@@ -72,7 +72,6 @@ void tthreshBlock<Ty_>::serialize(std::ostream& os)
 	bool verbose = false;
 	bool debug = false;
 
-
 	std::stringstream oss;
 	//ostream* pOss = &oss;
 
@@ -82,7 +81,6 @@ void tthreshBlock<Ty_>::serialize(std::ostream& os)
 
 	os << oss.str();
 
-
 	//std::vector<uint32_t> dims, char* input, size_t inputSize, std::ostream& output, string io_type,
 	//	Target target, double target_value, size_t skip_bytes,
 	//	bool verbose = false, bool debug = false
@@ -91,7 +89,20 @@ void tthreshBlock<Ty_>::serialize(std::ostream& os)
 template<typename Ty_>
 void tthreshBlock<Ty_>::deserialize(std::istream& is)
 {
+	tthresh::tthreshCompressor comp;
 
+	std::stringstream oss;
+	double* data = nullptr;
+
+	std::vector<tthresh::Slice> cutout;
+
+	bool autocrop = false;
+	bool verbose = false;
+	bool debug = false;
+
+	comp.decompress(is, oss, data, cutout, autocrop, verbose, debug);
+
+	memcpy(this->cached_->getData(), oss.str().c_str(), this->getDesc()->mSize_);
 }
 // ===========================
 

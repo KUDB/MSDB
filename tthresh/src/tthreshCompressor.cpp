@@ -78,6 +78,15 @@ void tthreshCompressor::open_read(string input_file)
     _zs.rbit = -1;
 }
 
+void tthreshCompressor::open_read(istream& input)
+{
+    //SET_BINARY_MODE(input_file.c_str());
+    //_zs.file = fopen(input_file.c_str(), "rb");
+    _zs._is = &input;
+    _zs.rbytes = 0;
+    _zs.rbit = -1;
+}
+
 void tthreshCompressor::read_stream(uint8_t* buf, size_t bytes_to_read)
 {
     //size_t howmany = fread(buf, 1, bytes_to_read, _zs.file);
@@ -889,7 +898,10 @@ double* tthreshCompressor::compress(string input_file, string compressed_file,
         << ", bpv = " << newbits / double(size) << endl << flush;
     return data;
 }
-void tthreshCompressor::compress(std::vector<uint32_t> dims, char* input, size_t inputSize, std::ostream& output, string io_type, Target target, double target_value, size_t skip_bytes, bool verbose, bool debug)
+void tthreshCompressor::compress(std::vector<uint32_t> dims,
+                                 char* input, size_t inputSize, 
+                                 std::ostream& output, string io_type, Target target, double target_value,
+                                 size_t skip_bytes, bool verbose, bool debug)
 {
     s = dims;
     _zs._os = &output;
@@ -1174,11 +1186,6 @@ void tthreshCompressor::compress(std::vector<uint32_t> dims, char* input, size_t
         << ", bpv = " << newbits / double(size) << endl << flush;
 }
 
-void tthreshCompressor::libTest()
-{
-    std::cout << "libTest" << std::endl;
-}
-
 //////////////////////////////
 // Decompress
 //////////////////////////////
@@ -1312,6 +1319,273 @@ vector<double> tthreshCompressor::dequantize(vector<uint64_t>& current)
     }
     return c;
 }
+void tthreshCompressor::decompress(std::istream& input, std::ostream& output, double* data,
+                                   vector<Slice>& cutout, bool autocrop, bool verbose, bool debug)
+{
+
+    /***************************************************/
+    // Read output tensor dimensionality, sizes and type
+    /***************************************************/
+
+    //open_read(compressed_file);
+    open_read(input);
+    read_stream(reinterpret_cast<uint8_t*> (&n), sizeof(n));
+    s = vector<uint32_t>(n);
+    read_stream(reinterpret_cast<uint8_t*> (&s[0]), n * sizeof(s[0]));
+
+    bool whole_reconstruction = cutout.size() == 0;
+    if (cutout.size() < n) // Non-specified slicings are assumed to be the standard (0,1,-1)
+        for (uint32_t j = cutout.size(); j < s.size(); ++j)
+            cutout.push_back(Slice(0, -1, 1));
+
+    cumulative_products(s, sprod);
+    size_t size = sprod[n];
+    snew = vector<uint32_t>(n);
+    for (uint8_t i = 0; i < n; ++i)
+    {
+        cutout[i].update(s[i]);
+        snew[i] = cutout[i].get_size();
+    }
+    cumulative_products(snew, snewprod);
+
+    if (verbose)
+    {
+        cout << endl << "/***** Decompression: " << to_string(n) << "D tensor of size ";
+        if (not whole_reconstruction)
+        {
+            cout << snew[0];
+            for (uint8_t i = 1; i < n; ++i)
+                cout << " x " << snew[i];
+            cout << " (originally ";
+        }
+        cout << s[0];
+        for (uint8_t i = 1; i < n; ++i)
+            cout << " x " << s[i];
+        if (not whole_reconstruction)
+            cout << ")";
+
+        cout << " *****/" << endl << endl;
+    }
+
+    uint8_t io_type_code;
+    read_stream(reinterpret_cast<uint8_t*> (&io_type_code), sizeof(io_type_code));
+    uint8_t io_type_size;
+    if (io_type_code == 0)
+        io_type_size = sizeof(unsigned char);
+    else if (io_type_code == 1)
+        io_type_size = sizeof(unsigned short);
+    else if (io_type_code == 2)
+        io_type_size = sizeof(int);
+    else if (io_type_code == 3)
+        io_type_size = sizeof(float);
+    else
+        io_type_size = sizeof(double);
+
+    /*************/
+    // Decode core
+    /*************/
+
+    vector<uint64_t> current = decode_array(sprod[n], true, verbose, debug);
+    vector<double> c = dequantize(current);
+    close_rbit();
+
+    /*******************/
+    // Read tensor ranks
+    /*******************/
+
+    r = vector<uint32_t>(n);
+    read_stream(reinterpret_cast<uint8_t*> (&r[0]), n * sizeof(r[0]));
+    rprod = vector<size_t>(n + 1);
+    rprod[0] = 1;
+    for (uint8_t i = 0; i < n; ++i)
+        rprod[i + 1] = rprod[i] * r[i];
+    if (verbose)
+    {
+        cout << "Compressed tensor ranks:";
+        for (uint8_t i = 0; i < n; ++i)
+            cout << " " << r[i];
+        cout << endl;
+    }
+
+    vector<RowVectorXd> slicenorms(n);
+    for (uint8_t i = 0; i < n; ++i)
+    {
+        slicenorms[i] = RowVectorXd(r[i]);
+        for (uint64_t col = 0; col < r[i]; ++col)
+        { // TODO faster
+            double norm;
+            read_stream(reinterpret_cast<uint8_t*> (&norm), sizeof(double));
+            slicenorms[i][col] = norm;
+        }
+    }
+
+    //**********************/
+    // Reshape core in place
+    //**********************/
+
+    size_t index = 0; // Where to read from in the original core
+    vector<size_t> indices(n, 0);
+    uint8_t pos = 0;
+    for (size_t i = 0; i < rprod[n]; ++i)
+    { // i marks where to write in the new rank-reduced core
+        c[i] = c[index];
+        indices[0]++;
+        index++;
+        pos = 0;
+        // We update all necessary indices in cascade, left to right. pos == n-1 => i == rprod[n]-1 => we are done
+        while (indices[pos] >= r[pos] and pos < n - 1)
+        {
+            indices[pos] = 0;
+            index += sprod[pos + 1] - r[pos] * sprod[pos];
+            pos++;
+            indices[pos]++;
+        }
+    }
+
+    //*****************/
+    // Reweight factors
+    //*****************/
+
+    vector< MatrixXd > Us;
+    for (uint8_t i = 0; i < n; ++i)
+    {
+        vector<uint64_t> factorq = decode_array(s[i] * r[i], false, verbose, debug);
+        vector<double> factor = dequantize(factorq);
+        MatrixXd Uweighted(s[i], r[i]);
+        memcpy(Uweighted.data(), (void*)factor.data(), sizeof(double) * s[i] * r[i]);
+        MatrixXd U(s[i], r[i]);
+        for (size_t col = 0; col < r[i]; ++col)
+        {
+            if (slicenorms[i][col] > 1e-10)
+                U.col(col) = Uweighted.col(col) / slicenorms[i][col];
+            else
+                U.col(col) *= 0;
+        }
+        Us.push_back(U);
+    }
+    close_rbit();
+
+    /*************************/
+    // Autocrop (if requested)
+    /*************************/
+
+    if (autocrop)
+    {
+        cout << "autocrop =";
+        for (uint8_t dim = 0; dim < n; ++dim)
+        {
+            uint32_t start_row = 0, end_row = 0;
+            bool start_set = false;
+            for (int i = 0; i < Us[dim].rows(); ++i)
+            {
+                double sqnorm = 0;
+                for (int j = 0; j < Us[dim].cols(); ++j)
+                    sqnorm += Us[dim](i, j) * Us[dim](i, j);
+                if (sqnorm > AUTOCROP_THRESHOLD)
+                {
+                    if (not start_set)
+                    {
+                        start_row = i;
+                        start_set = true;
+                    }
+                    end_row = i + 1;
+                }
+            }
+            cutout[dim].points[0] = start_row;
+            cutout[dim].points[1] = end_row;
+            snew[dim] = end_row - start_row;
+            cout << " " << start_row << ":" << end_row;
+        }
+        cout << endl;
+        cumulative_products(snew, snewprod);
+    }
+
+    /************************/
+    // Reconstruct the tensor
+    /************************/
+
+    if (verbose)
+        start_timer("Reconstructing tensor...\n");
+    hosvd_decompress(c, Us, verbose, cutout);
+    if (verbose)
+        stop_timer();
+
+    /***********************************/
+    // Cast and write the result on disk
+    /***********************************/
+
+    if (verbose)
+        start_timer("Casting and saving final result... ");
+    //ofstream output_stream(output_file.c_str(), ios::out | ios::binary);
+    size_t buf_elems = CHUNK;
+    vector<uint8_t> buffer(io_type_size * buf_elems);
+    size_t buffer_wpos = 0;
+    double sse = 0;
+    double datanorm = 0;
+    double datamin = std::numeric_limits < double >::max();
+    double datamax = std::numeric_limits < double >::min();
+    double remapped = 0;
+    for (size_t i = 0; i < snewprod[n]; ++i)
+    {
+        if (io_type_code == 0)
+        {
+            remapped = (unsigned char)(round(max(0.0, min(double(std::numeric_limits<unsigned char>::max()), c[i]))));
+            reinterpret_cast <unsigned char*>(&buffer[0])[buffer_wpos] = remapped;
+        }
+        else if (io_type_code == 1)
+        {
+            remapped = (unsigned short)(round(max(0.0, min(double(std::numeric_limits<unsigned short>::max()), c[i]))));
+            reinterpret_cast <unsigned short*>(&buffer[0])[buffer_wpos] = remapped;
+        }
+        else if (io_type_code == 2)
+        {
+            remapped = int(round(max(std::numeric_limits<int>::min(), min(double(std::numeric_limits<int>::max()), c[i]))));;
+            reinterpret_cast <int*>(&buffer[0])[buffer_wpos] = remapped;
+        }
+        else if (io_type_code == 3)
+        {
+            remapped = float(c[i]);
+            reinterpret_cast <float*>(&buffer[0])[buffer_wpos] = remapped;
+        }
+        else
+        {
+            remapped = c[i];
+            reinterpret_cast <double*>(&buffer[0])[buffer_wpos] = remapped;
+        }
+        buffer_wpos++;
+        if (buffer_wpos == buf_elems)
+        {
+            buffer_wpos = 0;
+            output.write(reinterpret_cast<const char*>(&buffer[0]), io_type_size* buf_elems);
+            //output_stream.write(reinterpret_cast<const char*>(&buffer[0]), io_type_size * buf_elems);
+        }
+        if (whole_reconstruction and not autocrop and data != NULL)
+        { // If needed, we compute the error statistics
+            datanorm += data[i] * data[i];
+            sse += (data[i] - remapped) * (data[i] - remapped);
+            datamin = min(datamin, data[i]);
+            datamax = max(datamax, data[i]);
+        }
+    }
+    if (buffer_wpos > 0)
+    {
+        output.write(reinterpret_cast<const char*>(&buffer[0]), io_type_size * buffer_wpos);
+        //output_stream.write(reinterpret_cast<const char*>(&buffer[0]), io_type_size * buffer_wpos);
+    }
+    //output_stream.close();
+    if (verbose)
+        stop_timer();
+
+    if (whole_reconstruction and not autocrop and data != NULL)
+    {
+        datanorm = sqrt(datanorm);
+        double eps = sqrt(sse) / datanorm;
+        double rmse = sqrt(sse / size);
+        double psnr = 20 * log10((datamax - datamin) / (2 * rmse));
+        cout << "eps = " << eps << ", rmse = " << rmse << ", psnr = " << psnr << endl;
+    }
+}
+
 void tthreshCompressor::decompress(string compressed_file, string output_file, double* data, vector<Slice>& cutout, bool autocrop, bool verbose, bool debug)
 {
 

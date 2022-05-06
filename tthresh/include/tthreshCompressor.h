@@ -99,6 +99,7 @@ public:
     /*********/
     // If read_bits() has been called, call close_rbit() before read_stream()
     void open_read(string input_file);
+    void open_read(istream& input);
     void read_stream(uint8_t* buf, size_t bytes_to_read);
     void close_rbit();
 
@@ -156,8 +157,6 @@ public:
                   Target target, double target_value, size_t skip_bytes,
                   bool verbose = false, bool debug = false);
 
-    void libTest();
-
     //////////////////////////////
     // Decompress
     //////////////////////////////
@@ -165,6 +164,9 @@ public:
     vector<double> dequantize(vector<uint64_t>& current);
 
     void decompress(string compressed_file, string output_file, double* data, vector<Slice>& cutout, bool autocrop, bool verbose, bool debug);
+    // data?? = nullptr
+    void decompress(std::istream& input, std::ostream& output, double* data,
+                    vector<Slice>& cutout, bool autocrop, bool verbose, bool debug);
 
 public:
     // Tensor dimensionality, ranks and sizes. They are only set, never modified
