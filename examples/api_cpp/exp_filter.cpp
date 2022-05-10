@@ -1,5 +1,6 @@
 #include "exp_filter.h"
 #include <dummy.h>
+#include <dummy_astronomy_array.h>
 
 namespace msdb
 {

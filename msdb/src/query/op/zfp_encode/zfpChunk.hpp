@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <op/zfp_encode/zfpChunk.h>
-#include <zfp.h>
+#include <zfp/zfp.h>
 
 namespace msdb
 {

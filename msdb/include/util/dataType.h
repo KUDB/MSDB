@@ -15,8 +15,7 @@ public:
 	virtual size_t size() = 0;
 };
 
-// TODO::Empty class?
-
+// TODO::Empty type?
 template <typename Ty_>
 class concreteTy : public iTy
 {
@@ -29,6 +28,13 @@ public:
 	{
 		return sizeof(Ty_);
 	}
+
+	// The returned string is exactly same with toString,
+	// however this function is static.
+	static std::string name()
+	{
+		return typeid(Ty_).name();
+	}
 };
 
 using dataType = std::variant<
@@ -38,6 +44,8 @@ using dataType = std::variant<
 	concreteTy<int32_t>, concreteTy<uint32_t>,
 	concreteTy<int64_t>, concreteTy<uint64_t>,
 	concreteTy<float>, concreteTy<double>>;
+
+dataType string2dataType(std::string str);
 }
 }
 #endif	// _MSDB_DATATYPE_H_

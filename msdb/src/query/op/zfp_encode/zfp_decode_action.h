@@ -4,7 +4,7 @@
 
 #include <pch.h>
 #include <query/opAction.h>
-#include "zfp.h"
+#include <zfp/zfp.h>
 
 namespace msdb
 {

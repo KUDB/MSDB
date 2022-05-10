@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ARRAYMGR_H_
 #define _MSDB_ARRAYMGR_H_
 
@@ -39,10 +39,11 @@ public:
 	void loadAllArrayDesc();
 	void saveArrayDesc(arrayId arrId);
 
+	// TODO::eleType replaced
 	template <class Aty_>
 	pArray makeArray(const arrayId arrId, const std::string arrName,
 					 std::vector<std::string> dimNames, const dimension dims, const dimension chunkDims, const dimension blockDims,
-					 std::vector<std::string> attrNames, std::vector<eleType> attrTypes)
+					 std::vector<std::string> attrNames, std::vector<dataType> attrTypes)
 	{
 		assert(dimNames.size() == dims.size() == chunkDims.size() == blockDims.size());
 		assert(attrNames.size() == attrTypes.size());

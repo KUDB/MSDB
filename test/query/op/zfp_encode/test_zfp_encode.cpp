@@ -1,5 +1,5 @@
 #include <pch_test.h>
-#include <dummy/dummy.h>
+#include <dummy/dummy_test_array.h>
 #include <op/zfp_encode/zfp_encode_action.h>
 #include <op/zfp_encode/zfpChunk.h>
 #include "zfp_lib.h"

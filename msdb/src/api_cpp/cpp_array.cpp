@@ -55,10 +55,26 @@ std::shared_ptr<core::dimensionDesc> DefDimension::getDesc()
 {
 	return this->dimDesc_;
 }
-DefAttribute::DefAttribute(std::string name, eleType type, materializedType matType, compressionType compType)
+
+// attribute id will be specified in 'build' operator of cpp_api
+DefAttribute::DefAttribute(const std::string name, const core::dataType type,
+						   const core::materializedType matType,
+						   const std::map<std::string, std::string> params)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, core::compressionType::NONE))
+{}
+
+DefAttribute::DefAttribute(const std::string name, const core::dataType type,
+						   const core::compressionType compType,
+						   const std::map<std::string, std::string> param)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, core::materializedType::FLATTEN, compType))
+{}
+
+DefAttribute::DefAttribute(const std::string name, const core::dataType type,
+						   const core::materializedType matType, const core::compressionType compType,
+						   const std::map<std::string, std::string> params)
 	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, compType))
-{
-}
+{}
+
 std::shared_ptr<core::attributeDesc> DefAttribute::getDesc()
 {
 	return this->attrDesc_;

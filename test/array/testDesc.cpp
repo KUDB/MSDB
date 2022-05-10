@@ -1,7 +1,8 @@
 #include <pch_test.h>
-#include <dummy/dummy.h>
+#include <dummy/dummy_test_array.h>
 #include <system/storageMgr.h>
 #include <array/arrayMgr.h>
+#include <util/datatype.h>
 
 namespace msdb
 {
@@ -11,8 +12,8 @@ TEST(attributeDesc, copy_assign)
 {
 	using namespace msdb::core;
 
-	auto myAttrDescs = attributeDescBuilder({ "ATTR_1", "ATTR_2" }, { core::eleType::CHAR, core::eleType::DOUBLE });
-	auto myAttrDescsStable = attributeDescBuilder({ "ATTR_1", "ATTR_2" }, { core::eleType::CHAR, core::eleType::DOUBLE });
+	auto myAttrDescs = dummy::attributeDescBuilder({ "ATTR_1", "ATTR_2" }, { core::concreteTy<char>(), core::concreteTy<double>() });
+	auto myAttrDescsStable = dummy::attributeDescBuilder({ "ATTR_1", "ATTR_2" }, { core::concreteTy<char>(), core::concreteTy<double>() });
 	EXPECT_EQ(*myAttrDescs, *myAttrDescsStable);
 
 	auto myAttrDesc = myAttrDescs->at(0);
@@ -46,8 +47,8 @@ TEST(dimensionDesc, copy_assign)
 	dimension chunkDims(128, 128);
 	dimension blockDims(32, 32);
 
-	auto myDimDescs = dimensionDescBuilder({ "Y", "X" }, dims, chunkDims, blockDims);
-	auto myDimDescsStable = dimensionDescBuilder({ "Y", "X" }, dims, chunkDims, blockDims);
+	auto myDimDescs = dummy::dimensionDescBuilder({ "Y", "X" }, dims, chunkDims, blockDims);
+	auto myDimDescsStable = dummy::dimensionDescBuilder({ "Y", "X" }, dims, chunkDims, blockDims);
 	EXPECT_EQ(*myDimDescs, *myDimDescsStable);
 
 	auto myDimDesc = myDimDescs->at(0);

@@ -1,6 +1,5 @@
 #pragma once
 #include <dummy_array.h>
-#include <data_star.h>
 #include <query/query.h>
 
 #ifndef _MSDB_DUMMY_H_

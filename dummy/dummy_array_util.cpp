@@ -33,42 +33,42 @@ std::shared_ptr<AFLOperator> getInsertAFL(
 		);
 		return afl;
 	}
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::Comp(
-			msdb::Insert(
-				getArrayAFL(arrName, compType), filePath),
-			compType
-		);
-		return afl;
-	}
-	case compressionType::SPIHT:
-	case compressionType::COMPASS:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::Comp(
-			msdb::Insert(
-				getArrayAFL(arrName, compType), filePath),
-			compType, paramOne
-		);
-		return afl;
-	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::Comp(
-			msdb::Insert(
-				getArrayAFL(arrName, compType), filePath),
-			compType, paramOne, paramTwo
-		);
-		return afl;
-	}
+	//case compressionType::HUFFMAN:
+	//case compressionType::ADAPTHUFFMAN:
+	//case compressionType::LZW_HUFFMAN:
+	//case compressionType::LZW:
+	//case compressionType::ZIP:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::Comp(
+	//		msdb::Insert(
+	//			getArrayAFL(arrName, compType), filePath),
+	//		compType
+	//	);
+	//	return afl;
+	//}
+	//case compressionType::SPIHT:
+	//case compressionType::COMPASS:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::Comp(
+	//		msdb::Insert(
+	//			getArrayAFL(arrName, compType), filePath),
+	//		compType, paramOne
+	//	);
+	//	return afl;
+	//}
+	//case compressionType::SEACOW:
+	//case compressionType::SEACOW_HUFFMAN:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::Comp(
+	//		msdb::Insert(
+	//			getArrayAFL(arrName, compType), filePath),
+	//		compType, paramOne, paramTwo
+	//	);
+	//	return afl;
+	//}
 	default:
 		return nullptr;
 	}
@@ -86,39 +86,39 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 			getArrayAFL(arrName));
 		return afl;
 	}
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::Decomp(
-			getArrayAFL(arrName, compType),
-			compType
-		);
-		return afl;
-	}
-	case compressionType::SPIHT:
-	case compressionType::COMPASS:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::Decomp(
-			getArrayAFL(arrName, compType),
-			compType, paramOne
-		);
-		return afl;
-	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::Decomp(
-			getArrayAFL(arrName, compType),
-			compType, paramOne, paramTwo
-		);
-		return afl;
-	}
+	//case compressionType::HUFFMAN:
+	//case compressionType::ADAPTHUFFMAN:
+	//case compressionType::LZW_HUFFMAN:
+	//case compressionType::LZW:
+	//case compressionType::ZIP:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::Decomp(
+	//		getArrayAFL(arrName, compType),
+	//		compType
+	//	);
+	//	return afl;
+	//}
+	//case compressionType::SPIHT:
+	//case compressionType::COMPASS:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::Decomp(
+	//		getArrayAFL(arrName, compType),
+	//		compType, paramOne
+	//	);
+	//	return afl;
+	//}
+	//case compressionType::SEACOW:
+	//case compressionType::SEACOW_HUFFMAN:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::Decomp(
+	//		getArrayAFL(arrName, compType),
+	//		compType, paramOne, paramTwo
+	//	);
+	//	return afl;
+	//}
 	default:
 		return nullptr;
 	}
@@ -128,26 +128,26 @@ std::shared_ptr<AFLOperator> getBuildIndexAFL(std::string arrName, std::string f
 {
 	switch (idxType)
 	{
-	case attrIndexType::MMT:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::BuildIndex(
-			msdb::Insert(
-				getArrayAFL(arrName, compType), filePath),
-			idxType, paramOne
-		);
-		return afl;
-	}
-	case attrIndexType::COMPASS:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::BuildIndex(
-			msdb::Insert(
-				getArrayAFL(arrName, compType), filePath),
-			idxType, paramOne
-		);
-		return afl;
-	}
+	//case attrIndexType::MMT:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::BuildIndex(
+	//		msdb::Insert(
+	//			getArrayAFL(arrName, compType), filePath),
+	//		idxType, paramOne
+	//	);
+	//	return afl;
+	//}
+	//case attrIndexType::COMPASS:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::BuildIndex(
+	//		msdb::Insert(
+	//			getArrayAFL(arrName, compType), filePath),
+	//		idxType, paramOne
+	//	);
+	//	return afl;
+	//}
 	default:
 		return nullptr;
 	}
@@ -157,18 +157,18 @@ std::shared_ptr<AFLOperator> getSaveIndexAFL(std::string arrName, compressionTyp
 {
 	switch (idxType)
 	{
-	case attrIndexType::MMT:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::SaveIndex(
-			getArrayAFL(arrName, compType),
-			idxType
-		);
-		return afl;
-	}
-	case attrIndexType::COMPASS:
-	{
-	}
+	//case attrIndexType::MMT:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::SaveIndex(
+	//		getArrayAFL(arrName, compType),
+	//		idxType
+	//	);
+	//	return afl;
+	//}
+	//case attrIndexType::COMPASS:
+	//{
+	//}
 	default:
 		return nullptr;
 	}
@@ -178,18 +178,18 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(std::string arrName, compressionTyp
 {
 	switch (idxType)
 	{
-	case attrIndexType::MMT:
-	{
-		msdb::Context ctx;
-		auto afl = msdb::LoadIndex(
-			getArrayAFL(arrName, compType),
-			idxType
-		);
-		return afl;
-	}
-	case attrIndexType::COMPASS:
-	{
-	}
+	//case attrIndexType::MMT:
+	//{
+	//	msdb::Context ctx;
+	//	auto afl = msdb::LoadIndex(
+	//		getArrayAFL(arrName, compType),
+	//		idxType
+	//	);
+	//	return afl;
+	//}
+	//case attrIndexType::COMPASS:
+	//{
+	//}
 	default:
 		return nullptr;
 	}
@@ -210,7 +210,7 @@ core::pDimensionDescs dimensionDescBuilder(const std::vector<std::string> dimNam
 	return dimDescs;
 }
 core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
-										   const std::vector<core::eleType>& attrTypes)
+										   const std::vector<core::dataType>& attrTypes)
 {
 	if (attrNames.size() != attrTypes.size())
 	{
@@ -228,9 +228,10 @@ core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrN
 }
 
 core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
-										   const std::vector<core::eleType>& attrTypes,
+										   const std::vector<core::dataType>& attrTypes,
 										   const std::vector<core::materializedType>& matTypes,
-										   const std::vector<core::compressionType>& compTypes)
+										   const std::vector<core::compressionType>& compTypes,
+										   const std::vector<core::attributeDesc::paramType>& optionalParams)
 {
 	if (attrNames.size() != attrTypes.size())
 	{
@@ -242,7 +243,7 @@ core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrN
 
 	for (core::attributeId id = 0; id < nums; ++id)
 	{
-		attrDescs->push_back(std::make_shared<core::attributeDesc>(id, attrNames[id], attrTypes[id]));
+		attrDescs->push_back(std::make_shared<core::attributeDesc>(id, attrNames[id], attrTypes[id], matTypes[id], compTypes[id], optionalParams[id]));
 	}
 	return attrDescs;
 }

@@ -15,3 +15,7 @@
 #include <string>
 #include <cstdlib>
 #include "gtest/gtest.h"
+
+//////////////////////////////
+// dummy project
+#include <dummy_array_util.h>

@@ -157,7 +157,7 @@ coordinates::~coordinates()
 	 swap(*this, temp);
 	 return *this;
  }
-#ifndef NDEBUG
+
  //////////////////////////////
  // Convertor
  std::vector<coordinates::dim_type> coordinates::toVector()
@@ -171,6 +171,7 @@ coordinates::~coordinates()
 
 	 return output;
  }
+#ifndef NDEBUG
  //////////////////////////////
  void coordinates::setXY()
  {

@@ -67,13 +67,13 @@ attributeDesc::attributeDesc()
 	this->dataType_ = concreteTy<bool>();
 }
 
-attributeDesc::attributeDesc(attributeId id, std::string name,
-							 eleType type,
-							 materializedType matType, compressionType compType)
-	: id_(id), name_(name), type_(type), matType_(matType), compType_(compType)
+attributeDesc::attributeDesc(const attributeId id, const std::string name, 
+							 const dataType type, const materializedType matType, const compressionType compType, 
+							 const paramType& optionalParams)
+	: id_(id), name_(name), dataType_(type), matType_(matType), compType_(compType), optionalParams_(optionalParams)
 {
+	this->type_ = this->dataType2eleType(type);
 	this->typeSize_ = getEleSize(type_);
-	this->dataType_ = this->eleType2dataType(type_);
 }
 
 attributeDesc::attributeDesc(const attributeDesc& src)
@@ -95,9 +95,17 @@ tinyxml2::XMLElement* attributeDesc::convertToXMLDoc(tinyxml2::XMLElement* node)
 {
 	node->SetAttribute(_MSDB_STR_ATTR_ID_, this->id_);
 	node->SetAttribute(_MSDB_STR_ATTR_NAME_, this->name_.c_str());
-	node->SetAttribute(_MSDB_STR_ATTR_TYPE_, eleTypeToString.at(this->type_));
-	node->SetAttribute(_MSDB_STR_ATTR_TYPE_SIZE_, this->typeSize_);
+	node->SetAttribute(_MSDB_STR_ATTR_TYPE_, reinterpret_cast<iTy*>(&this->dataType_)->toString().c_str());
+	node->SetAttribute(_MSDB_STR_ATTR_MAT_TYPE_, materializedTypeToString(this->matType_));
 	node->SetAttribute(_MSDB_STR_ATTR_COMP_TYPE_, compressionTypeToString(this->compType_));
+	
+	tinyxml2::XMLElement* paramNode = node->GetDocument()->NewElement(_MSDB_STR_ATTR_OPTIONAL_PARAMS_);
+	for (auto it = this->optionalParams_.begin(); it != this->optionalParams_.end(); ++it)
+	{
+		auto param = *it;
+		paramNode->SetAttribute(param.first.c_str(), param.second.c_str());
+	}
+	node->InsertEndChild(paramNode);
 
 	return node;
 }
@@ -106,24 +114,21 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 {
 	auto id = node->IntAttribute(_MSDB_STR_ATTR_ID_);
 	auto name = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_NAME_));
-	auto eleTypeName = std::string(xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_TYPE_)));
-	auto typeSize = node->IntAttribute(_MSDB_STR_ATTR_TYPE_SIZE_);
-	core::eleType attrType;
+	auto strDataType = std::string(xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_TYPE_)));
+	dataType dataType = string2dataType(strDataType);
 
-	for (auto bucket : eleTypeToString)
+	auto strCompType = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_COMP_TYPE_));
+	auto strMatType = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_MAT_TYPE_));
+	auto matType = materializedType::FLATTEN;		// Set default
+	auto compType = compressionType::NONE;			// Set default
+	for (int i = 0; i < sizeof(materializedTypeStrings) / sizeof(const char*); ++i)
 	{
-		if (strcmp(bucket.second, eleTypeName.c_str()) == 0)
+		if (strcmp(strMatType, materializedTypeStrings[i]) == 0)
 		{
-			attrType = bucket.first;
+			matType = (materializedType)i;
 			break;
 		}
 	}
-
-	auto strCompType = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_COMP_TYPE_));
-	// TODO::materializedType, compressionType 
-	auto matType = materializedType::FLATTEN;
-	auto compType = compressionType::NONE;
-
 	for (int i = 0; i < sizeof(compressionTypeStrings) / sizeof(const char*); ++i)
 	{
 		if (strcmp(strCompType, compressionTypeStrings[i]) == 0)
@@ -133,7 +138,20 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 		}
 	}
 
-	return std::make_shared<attributeDesc>(id, name, attrType, matType, compType);
+	attributeDesc::paramType optionalParam;
+	auto paramNode = node->FirstChildElement(_MSDB_STR_ATTR_OPTIONAL_PARAMS_);
+	const tinyxml2::XMLAttribute* paramAttr;
+	paramAttr = paramNode->FirstAttribute();
+	while (paramAttr != nullptr)
+	{
+		optionalParam.insert(
+			std::make_pair<std::string, std::string>(
+				std::string(paramAttr->Name()), std::string(paramAttr->Value())));
+		paramAttr = paramAttr->Next();
+	}
+
+
+	return std::make_shared<attributeDesc>(id, name, dataType, matType, compType, optionalParam);
 }
 
 std::string attributeDesc::toString()
@@ -145,7 +163,7 @@ std::string attributeDesc::toString()
 }
 
 // TODO::Deprecate
-dataType attributeDesc::eleType2dataType(eleType eTy)
+dataType attributeDesc::eleType2dataType(const eleType& eTy)
 {
 	// NO Type for eleType::EMPTY
 	switch (type_)
@@ -198,6 +216,11 @@ dataType attributeDesc::eleType2dataType(eleType eTy)
 	default:
 		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
 	}
+}
+
+eleType attributeDesc::dataType2eleType(const dataType& dTy)
+{
+	return std::visit(dataTyConvertor(), dTy);
 }
 
 // ***************************

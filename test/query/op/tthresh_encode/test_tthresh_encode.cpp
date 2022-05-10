@@ -1,5 +1,5 @@
 #include <pch_test.h>
-#include <dummy/dummy.h>
+#include <dummy/dummy_test_array.h>
 #include <op/tthresh_encode/tthreshChunk.h>
 
 namespace msdb

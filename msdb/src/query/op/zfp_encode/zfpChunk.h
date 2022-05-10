@@ -5,7 +5,7 @@
 #include <pch.h>
 #include <array/flattenChunk.h>
 #include <io/bitstream.h>
-#include <zfp.h>
+#include <zfp/zfp.h>
 
 namespace msdb
 {

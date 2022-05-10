@@ -1,6 +1,7 @@
 #include <iostream>
 #include <api_cpp/msdb.h>
 #include <dummy.h>
+#include <dummy_astronomy_array.h>
 #include <array/arrayMgr.h>
 #include <thread>
 #include <windows.h>

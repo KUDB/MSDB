@@ -9,6 +9,7 @@
 #include <query/query.h>
 #include <api_cpp/cpp_context.h.>
 #include <index/attributeIndex.h>
+#include <util/dataType.h>
 
 namespace msdb
 {
@@ -82,9 +83,18 @@ private:
 class DefAttribute
 {
 public:
-	DefAttribute(std::string name, eleType type, 
-				 materializedType matType = materializedType::FLATTEN,
-				 compressionType compType = compressionType::NONE);
+	// Both materialized method and compression method requires additional params
+	DefAttribute(const std::string name, const core::dataType type,
+				 const core::materializedType matType = materializedType::FLATTEN,
+				 const std::map<std::string, std::string> optionalParams = {});
+
+	DefAttribute(const std::string name, const core::dataType type,
+				 const core::compressionType compType,
+				 const std::map<std::string, std::string> optionalParams = {});
+
+	DefAttribute(const std::string name, const core::dataType type,
+				 const core::materializedType matType, const core::compressionType compType,
+				 const std::map<std::string, std::string> optionalParams = {});
 
 public:
 	std::shared_ptr<core::attributeDesc> getDesc();

@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <api_cpp/cpp_io_operators.h>
 #include <api_cpp/cpp_operators.h>
 #include <op/adapt_huffman_encode/adapt_huffman_encode_plan.h>
@@ -319,6 +319,7 @@ std::shared_ptr<core::opPlan> CompOneParamOpr::getPlan()
 				std::make_shared<core::spiht_encode_plan_pset>(params));
 		}
 		return spihtQryPlan;
+		return nullptr;
 		break;
 	}
 	default:

@@ -1,6 +1,6 @@
 #pragma once
 #include <pch_test.h>
-#include <zfp.h>
+#include <zfp/zfp.h>
 
 namespace msdb
 {
