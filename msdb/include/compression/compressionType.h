@@ -12,7 +12,7 @@ namespace core
 ENUM_MACRO(compressionType, 
 		   NONE, RAW, SEACOW, SEACOW_HUFFMAN, 
 		   SPIHT, COMPASS, HUFFMAN, ADAPTHUFFMAN,
-		   LZW_HUFFMAN, LZW, ZIP);
+		   LZW_HUFFMAN, LZW, ZIP, ZFP, TTHRESH);
 }		// core
 }		// msdb
 #endif	// _MSDB_COMPRESSIONTYPE_H_

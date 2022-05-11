@@ -36,9 +36,10 @@ pArray zfp_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
     for (auto attr : *sourceArr->getDesc()->attrDescs_)
     {
-        // TODO::check compressionType
-        // IF(compType != zfp)
-        //  ignore or exception
+        if (attr->getCompType() != compressionType::ZFP)
+        {
+            continue;
+        }
         auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
         while (!cit->isEnd())
         {
