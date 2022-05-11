@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <system/errorCodes.h>
 
 namespace msdb
@@ -14,6 +14,8 @@ namespace core
 #include <system/errorCategories.inc>
 #undef X
 		}
+
+		return "";
 	}
 
 	const char* getErrorMsg(int32_t code)
@@ -25,6 +27,8 @@ namespace core
 #include <system/errors.inc>
 #undef X
 		}
+
+		return "";
 	}
 }		// core
 }		// msdb

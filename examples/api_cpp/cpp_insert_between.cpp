@@ -1,6 +1,7 @@
 #include <iostream>
 #include <api_cpp/msdb.h>
 #include <dummy.h>
+#include <dummy_astronomy_array.h>
 #include <array/arrayMgr.h>
 #include <thread>
 
@@ -88,7 +89,7 @@ int main()
 				msdb::DefDimension("X", 0, 1024, 128, 32)
 			},
 			{
-				msdb::DefAttribute("ATTR_1", msdb::core::eleType::CHAR)
+				msdb::DefAttribute("ATTR_1", msdb::core::concreteTy<char>())
 			});
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;

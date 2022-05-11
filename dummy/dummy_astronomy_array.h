@@ -29,12 +29,13 @@ static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
 
+// TODO::Remove getParam
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
 	materializedType matType = materializedType::FLATTEN,
 	compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	compressionType compType = compressionType::RAW);
 std::shared_ptr<AFLOperator> getLoadAFL(
 	compressionType compType = compressionType::RAW);
@@ -70,7 +71,7 @@ core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
 	materializedType matType = materializedType::FLATTEN,
 	compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	compressionType compType = compressionType::RAW);
 std::shared_ptr<AFLOperator> getLoadAFL(
 	compressionType compType = compressionType::RAW);
@@ -106,7 +107,7 @@ core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
 	materializedType matType = materializedType::FLATTEN,
 	compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	compressionType compType = compressionType::RAW);
 std::shared_ptr<AFLOperator> getLoadAFL(
 	compressionType compType = compressionType::RAW);
@@ -142,7 +143,7 @@ core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
 	materializedType matType = materializedType::FLATTEN,
 	compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	compressionType compType = compressionType::RAW);
 std::shared_ptr<AFLOperator> getLoadAFL(
 	compressionType compType = compressionType::RAW);
@@ -178,7 +179,7 @@ core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
 	materializedType matType = materializedType::FLATTEN,
 	compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	compressionType compType = compressionType::RAW);
 std::shared_ptr<AFLOperator> getLoadAFL(
 	compressionType compType = compressionType::RAW);
@@ -214,7 +215,7 @@ core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
 	materializedType matType = materializedType::FLATTEN,
 	compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	compressionType compType = compressionType::RAW);
 std::shared_ptr<AFLOperator> getLoadAFL(
 	compressionType compType = compressionType::RAW);

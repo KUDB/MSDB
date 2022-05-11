@@ -1,4 +1,7 @@
 #include <dummy_astronomy_array.h>
+#include <compression/wtChunk.h>
+#include <index/mmt.h>
+#include <index/compass.h>
 
 namespace msdb
 {
@@ -59,14 +62,20 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
+			msdb::DefAttribute(
+				nameAttr_0, typeAttr_0, matType, compType,
+				{
+					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
+					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
+				})
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
 {
 	auto param = getParam(compType);
-	return dummy::getInsertAFL(arrName, filePath, compType, param.first, param.second);
+	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
 std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
 {
@@ -146,14 +155,20 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
+			msdb::DefAttribute(
+				nameAttr_0, typeAttr_0, matType, compType,
+				{
+					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
+					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
+				})
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
 {
 	auto param = getParam(compType);
-	return dummy::getInsertAFL(arrName, filePath, compType, param.first, param.second);
+	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
 std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
 {
@@ -233,14 +248,20 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
+			msdb::DefAttribute(
+				nameAttr_0, typeAttr_0, matType, compType,
+				{
+					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
+					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
+				})
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
 {
 	auto param = getParam(compType);
-	return dummy::getInsertAFL(arrName, filePath, compType, param.first, param.second);
+	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
 std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
 {
@@ -320,14 +341,20 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
+			msdb::DefAttribute(
+				nameAttr_0, typeAttr_0, matType, compType,
+				{
+					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
+					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
+				})
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
 {
 	auto param = getParam(compType);
-	return dummy::getInsertAFL(arrName, filePath, compType, param.first, param.second);
+	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
 std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
 {
@@ -407,14 +434,20 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
+			msdb::DefAttribute(
+				nameAttr_0, typeAttr_0, matType, compType,
+								{
+					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
+					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
+				})
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
 {
 	auto param = getParam(compType);
-	return dummy::getInsertAFL(arrName, filePath, compType, param.first, param.second);
+	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
 std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
 {
@@ -494,14 +527,20 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 			msdb::DefDimension(nameDim_1, 0, dims[1], chunkDims[1], blockDims[1])
 		},
 		{
-			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType)
+			msdb::DefAttribute(
+				nameAttr_0, typeAttr_0, matType, compType,
+				{
+					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
+					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
+				})
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
 {
 	auto param = getParam(compType);
-	return dummy::getInsertAFL(arrName, filePath, compType, param.first, param.second);
+	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
 std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
 {

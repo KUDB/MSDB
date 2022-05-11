@@ -8,7 +8,6 @@
 #include <util/dataType.h>
 #include <compression/compressionType.h>
 #include <compression/materializedType.h>
-//#include <array/chunkType.h>
 #include <xml/tinyxml2.h>
 
 namespace msdb

@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <util/element.h>
 #include <system/exceptions.h>
 
@@ -38,7 +38,7 @@ eleSize getEleSize(eleType type)
 		return sizeof(double);
 	}
 	
-	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_UNKNOWN_ELEMENT_TYPE));
+	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_UNKNOWN_DATA_TYPE));
 }
 element::element(eleType type)
 	: ptr_(nullptr)

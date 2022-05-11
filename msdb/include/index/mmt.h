@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_MMT_H_
 #define _MSDB_MMT_H_
 
@@ -8,6 +8,8 @@
 #include <io/serializable.h>
 #include <util/coordinate.h>
 #include <util/logger.h>
+
+#define _STR_PARAM_MMT_LEVEL_	"mmt_level"
 
 namespace msdb
 {

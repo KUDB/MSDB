@@ -17,7 +17,7 @@ Array getArrayAFL(std::string arrName, compressionType compType)
 	return Array(ctx, aname);
 }
 
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	std::string arrName, std::string filePath,
 	compressionType compType, int paramOne, int paramTwo)
 {

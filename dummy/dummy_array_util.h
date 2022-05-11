@@ -25,7 +25,7 @@ static const int arr_id_zip = 45;
 
 Array getArrayAFL(
 	std::string arrName, compressionType compType = compressionType::RAW);
-std::shared_ptr<AFLOperator> getInsertAFL(
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	std::string arrName, std::string filePath,
 	compressionType compType = compressionType::RAW,
 	int paramOne = 0, int paramTwo = 0);
@@ -54,10 +54,10 @@ core::pAttributeDescs attributeDescBuilder(
 	const std::vector<std::string>& attrNames,
 	const std::vector<core::dataType>& attrTypes);
 core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
-										   const std::vector<core::eleType>& attrTypes,
+										   const std::vector<core::dataType>& attrTypes,
 										   const std::vector<core::materializedType>& matTypes,
 										   const std::vector<core::compressionType>& compTypes,
-										   const std::vector<core::attributeDesc::paramType>& optionalParams);
+										   const std::vector<core::attributeDesc::paramType>& optionalParams = {});
 std::pair<core::arrayId, std::string> getArrayIdName(
 	core::compressionType compType, 
 	core::arrayId baseId, 

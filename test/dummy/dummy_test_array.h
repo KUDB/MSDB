@@ -11,17 +11,8 @@ namespace msdb
 {
 namespace test
 {
-//core::pDimensionDescs dimensionDescBuilder(
-//	std::vector<std::string> dimNames, core::dimension& dims, 
-//	core::dimension& chunkDims, core::dimension& blockDims
-//);
-//core::pAttributeDescs attributeDescBuilder(
-//	std::vector<std::string> attrNames,
-//	std::vector<core::dataType> attrTypes
-//);
-
-
 core::pArrayDesc getDummyArrayDesc_SIMPLE_2D();
+core::pArrayDesc getDummyArrayDesc_MultiAttr_3D();
 
 template<typename Ty_>
 core::pBlockDesc getDummyBlockDesc_SIMPLE_2D()

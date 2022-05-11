@@ -5,6 +5,8 @@
 #include <pch.h>
 #include <array/monoChunk.h>
 
+#define _STR_PARAM_WAVELET_LEVEL_	"wavelet_level"
+
 namespace msdb
 {
 namespace core

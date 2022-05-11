@@ -21,7 +21,7 @@ void exeExperiment(int numTest, compressionType compType)
 		std::cout << qry.strStatus() << std::endl;
 	}
 	{
-		auto afl = Consume(getInsertAFL(compType));
+		auto afl = Consume(getInsertSaveAFL(compType));
 		std::cout << afl->toString(0) << std::endl;
 		auto qry = msdb::Query(afl);
 		auto ra = qry.execute();
@@ -70,7 +70,7 @@ void exeExperiment(int numTest, compressionType compType, attrIndexType idxType)
 	//	std::cout << qry.strStatus() << std::endl;
 	//}
 	//{
-	//	auto afl = Consume(getInsertAFL(compType));
+	//	auto afl = Consume(getInsertSaveAFL(compType));
 	//	std::cout << afl->toString(0) << std::endl;
 	//	auto qry = msdb::Query(afl);
 	//	auto ra = qry.execute();

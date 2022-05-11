@@ -1,5 +1,6 @@
 ﻿#include <pch.h>
 #include <util/dataType.h>
+#include <system/exceptions.h>
 
 namespace msdb
 {
@@ -54,6 +55,8 @@ dataType string2dataType(std::string str)
 	{
 		return concreteTy<bool>();
 	}
+
+	_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_UNKNOWN_DATA_TYPE, std::string("string2dataType(") + str + std::string(")")));
 }
 }		// core
 }		// msdb
