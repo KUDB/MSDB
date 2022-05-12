@@ -154,7 +154,7 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 	return std::make_shared<attributeDesc>(id, name, dataType, matType, compType, optionalParam);
 }
 
-std::string attributeDesc::toString()
+std::string attributeDesc::toString() const
 {
 	std::stringstream ss;
 	ss << "id: " << this->id_ << ", name: " << this->name_ << ", type: " << eleTypeToString.at(this->type_);
@@ -166,7 +166,7 @@ std::string attributeDesc::toString()
 dataType attributeDesc::eleType2dataType(const eleType& eTy)
 {
 	// NO Type for eleType::EMPTY
-	switch (type_)
+	switch (eTy)
 	{
 	case eleType::BOOL:
 	{

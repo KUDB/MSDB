@@ -51,10 +51,11 @@ public:
 
 public:
 	void setDim(dimensionId dId, position_t value);
-	dimension getDims();
-	virtual dimension getBlockDims();
-	virtual dimension getBlockSpace();
-	size_t getDimSize();
+	dimension getDims() const;
+	virtual dimension getBlockDims() const;
+	virtual dimension getBlockSpace() const;
+	size_t getDimSize() const;
+	pAttributeDesc getAttrDesc() const;
 
 public:
 	//////////////////////////////

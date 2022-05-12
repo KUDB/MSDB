@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <compression/seChunk.h>
+#include "seChunk.h"
 
 namespace msdb
 {

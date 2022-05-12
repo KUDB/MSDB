@@ -5,7 +5,7 @@
 #include <pch.h>
 #include <array/flattenChunk.h>
 #include <io/bitstream.h>
-#include <compression/seChunk.h>
+#include <op/se_compression/seChunk.h>
 #include <compression/huffmanCode.h>
 
 namespace msdb

@@ -2,6 +2,7 @@
 #include <compression/wtChunk.h>
 #include <index/mmt.h>
 #include <index/compass.h>
+#include <op/se_compression/seChunk.h>
 
 namespace msdb
 {
@@ -66,6 +67,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 				nameAttr_0, typeAttr_0, matType, compType,
 				{
 					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(wtLevel)),
 					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
 					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
 				})
@@ -159,6 +161,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 				nameAttr_0, typeAttr_0, matType, compType,
 				{
 					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(wtLevel)),
 					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
 					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
 				})
@@ -252,6 +255,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 				nameAttr_0, typeAttr_0, matType, compType,
 				{
 					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(wtLevel)),
 					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
 					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
 				})
@@ -345,6 +349,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 				nameAttr_0, typeAttr_0, matType, compType,
 				{
 					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(wtLevel)),
 					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
 					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
 				})
@@ -438,6 +443,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 				nameAttr_0, typeAttr_0, matType, compType,
 								{
 					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(wtLevel)),
 					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
 					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
 				})
@@ -531,6 +537,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 				nameAttr_0, typeAttr_0, matType, compType,
 				{
 					std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(wtLevel)),
+					std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(wtLevel)),
 					std::make_pair<>(_STR_PARAM_MMT_LEVEL_, std::to_string(mmtLevel)),
 					std::make_pair<>(_STR_PARAM_COMPASS_BINS_, std::to_string(compassBins))
 				})

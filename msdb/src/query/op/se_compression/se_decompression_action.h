@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_SE_DECOMPRESSION_ACTION_H_
 #define _MSDB_OP_SE_DECOMPRESSION_ACTION_H_
 
@@ -7,7 +7,7 @@
 #include <array/flattenChunk.h>
 #include <system/storageMgr.h>
 #include <compression/wtChunk.h>
-#include <compression/seChunk.h>
+#include <op/se_compression/seChunk.h>
 #include <compression/waveletUtil.h>
 #include <query/opAction.h>
 #include <index/mmt.h>
@@ -29,11 +29,15 @@ public:
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery qry) override;
 
 private:
-	pSeChunk makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
-						  chunkId cid, coor chunkCoor);
+	//pSeChunk makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
+	//					  chunkId cid, coor chunkCoor);
 
+	//template <typename Ty_>
+	//void decompressAttribute(std::shared_ptr<wavelet_encode_array>outArr, pAttributeDesc attrDesc, pQuery qry)
 	template <typename Ty_>
-	void decompressAttribute(std::shared_ptr<wavelet_encode_array>outArr, pAttributeDesc attrDesc, pQuery qry)
+	void decompressAttribute(const concreteTy<Ty_>& type,
+							 pArray inArr, pArray outArr, 
+							 pAttributeDesc attrDesc, pQuery qry)
 	{
 		//========================================//
 		qry->getTimer()->nextWork(0, workType::COMPUTING);
@@ -47,13 +51,14 @@ private:
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_TYPE_DIFF));
 		}
 		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(arrIndex);
-		auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
-		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr);
+
+		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_SE_LEVEL_));
+		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr, maxLevel);		// To fast access band in serialized memory
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 
 		//----------------------------------------//
 		qry->getTimer()->nextWork(0, workType::PARALLEL);
 		//----------------------------------------//
-
 		size_t currentThreadId = 0;
 		this->threadCreate();
 
@@ -61,15 +66,19 @@ private:
 		{
 			if(cit->isExist())
 			{
-				// make chunk
 				chunkId cid = cit->seqPos();
 				coor chunkCoor = cit->coor();
-				auto inChunk = this->makeInChunk(outArr, attrDesc, cid, chunkCoor);
-				inChunk->setTileOffset(offsets);
-				auto outChunk = outArr->makeChunk(*inChunk->getDesc());
+				auto inChunk = std::static_pointer_cast<seChunk<Ty_>>(**cit);
 
-				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this,
-								  std::static_pointer_cast<wtChunk>(outChunk), inChunk, qry, outArr, attrId, mmtIndex, currentThreadId));
+				// make chunk
+				//auto inChunk = this->makeInChunk(outArr, attrDesc, cid, chunkCoor);		// TODO::Remove makeInChunk()
+
+				inChunk->setTileOffset(offsets);
+				auto cDesc = inChunk->getDesc();
+				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(std::make_shared<chunkDesc>(*cDesc)));
+
+				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
+											  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
 			}
 
 			++(*cit);
@@ -85,12 +94,28 @@ private:
 		this->getArrayStatus(outArr);
 	}
 
+	template <>
+	void decompressAttribute(const concreteTy<float>& type, 
+							 pArray inArr, pArray outArr,
+							 pAttributeDesc attrDesc, pQuery qry)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_decompress not support data compression for float"));
+	}
+
+	template <>
+	void decompressAttribute(const concreteTy<double>& type,
+							 pArray inArr, pArray outArr,
+							 pAttributeDesc attrDesc, pQuery qry)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_decompress not support data compression for double"));
+	}
+
 	template <typename Ty_>
-	std::vector<uint64_t> getSeqOffInBand(std::shared_ptr<wavelet_encode_array> outArr)
+	std::vector<uint64_t> getSeqOffInBand(pArray outArr, const size_t& maxLevel)
 	{
 		dimension blockDims = outArr->getDesc()->getDimDescs()->getChunkDims();
 		size_t blockCapa = blockDims.area();
-		dimension bandDims = blockDims / std::pow(2, outArr->getMaxLevel() + 1);
+		dimension bandDims = blockDims / std::pow(2, maxLevel + 1);
 		size_t bandCapa = bandDims.area();
 
 		std::vector<uint64_t> offsets;
@@ -106,7 +131,9 @@ private:
 	}
 
 	template <typename Ty_>
-	void decompressChunk(pWtChunk outChunk, pSeChunk inChunk, pQuery qry, std::shared_ptr<wavelet_encode_array> outArr, attributeId attrId,
+	void decompressChunk(std::shared_ptr<seChunk<Ty_>> inChunk, std::shared_ptr<wtChunk<Ty_>> outChunk, 
+						 pQuery qry, pArray outArr, attributeId attrId,
+						 const size_t maxLevel,
 						 std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex, const size_t parentThreadId)
 	{
 		auto threadId = getThreadId();
@@ -114,7 +141,7 @@ private:
 		//========================================//
 		qry->getTimer()->nextJob(threadId, this->name(), workType::COMPUTING);
 		//----------------------------------------//
-		auto maxLevel = outArr->getMaxLevel();
+		//auto maxLevel = outArr->getMaxLevel();
 		arrayId arrId = outArr->getId();
 
 		bool hasNegative = false;
@@ -152,9 +179,9 @@ private:
 	}
 
 	template <typename Ty_>
-	void requiredBitsFindingForChunk(pSeChunk inChunk, 
+	void requiredBitsFindingForChunk(std::shared_ptr<seChunk<Ty_>> inChunk, 
 						 std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
-						 size_t maxLevel,
+						 const size_t maxLevel,
 						 bool hasNegative)
 	{
 		auto dSize = inChunk->getChunkCoor().size();
@@ -175,7 +202,7 @@ private:
 	}
 
 	template <typename Ty_>
-	void findRequiredBitsForRootLevel(pSeChunk inChunk, 
+	void findRequiredBitsForRootLevel(std::shared_ptr<seChunk<Ty_>> inChunk,
 									  std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									  const size_t numBandsInLevel,
 									  const bool hasNegative)
@@ -196,7 +223,7 @@ private:
 	}
 
 	template <typename Ty_>
-	void findRequiredBitsForChildLevel(pSeChunk inChunk,
+	void findRequiredBitsForChildLevel(std::shared_ptr<seChunk<Ty_>> inChunk,
 									   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									   const size_t maxLevel,
 									   const size_t numBandsInLevel,

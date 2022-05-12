@@ -8,6 +8,9 @@
 #include <compression/waveletUtil.h>
 #include <numeric>
 
+#define _STR_PARAM_SE_LEVEL_		"se_level"
+#define _STR_PARAM_SOURCE_CHUNKID_	"source_chunkid"
+
 namespace msdb
 {
 namespace core
@@ -19,7 +22,20 @@ public:
 	seChunk(pChunkDesc desc)
 		: flattenChunk<Ty_>(desc), level_(0), rBitFromMMT(0), min_(0)
 	{
+		auto opParam = desc->getAttrDesc()->getOptionalParams();
+		assert(opParam.find(_STR_PARAM_SE_LEVEL_) != opParam.end());
 
+		try
+		{
+			this->level_ = std::stoi(opParam[_STR_PARAM_SE_LEVEL_]);
+		}
+		catch (...)
+		{
+			this->level_ = 0;
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_FAIL_TO_PARSE_PARAM, 
+				"seChunK::level: " + std::string(_STR_PARAM_SE_LEVEL_)));
+		}
 	}
 	virtual ~seChunk()
 	{
@@ -27,15 +43,27 @@ public:
 	}
 
 public:
+	// TODO::Use optional param
 	inline size_t getLevel()
 	{
 		return this->level_;
 	}
 	//chunkId getSourceChunkId();
 
+	// TODO::Use optional param
 	inline void setLevel(size_t level)
 	{
 		this->level_ = level;
+	}
+
+	inline void setSourceChunkId(chunkId cid)
+	{
+		this->getDesc()->getAttrDesc()->setParam(std::string(_STR_PARAM_SOURCE_CHUNKID_), std::to_string(cid));
+	}
+
+	inline const chunkId& getSourceChunkId() const
+	{
+		return this->getDesc()->getAttrDesc()->getParam(std::string(_STR_PARAM_SOURCE_CHUNKID_));
 	}
 	//void setSourceChunkId(chunkId cid);
 
@@ -43,38 +71,39 @@ public:
 	virtual void serialize(std::ostream& os) override
 	{
 		bstream bs;
-		switch (this->desc_->attrDesc_->type_)
-		{
-		case eleType::CHAR:
-			this->serialize<char>(bs);
-			break;
-		case eleType::INT8:
-			this->serialize<int8_t>(bs);
-			break;
-		case eleType::INT16:
-			this->serialize<int16_t>(bs);
-			break;
-		case eleType::INT32:
-			this->serialize<int32_t>(bs);
-			break;
-		case eleType::INT64:
-			this->serialize<int64_t>(bs);
-			break;
-		case eleType::UINT8:
-			this->serialize<int8_t>(bs);
-			break;
-		case eleType::UINT16:
-			this->serialize<int16_t>(bs);
-			break;
-		case eleType::UINT32:
-			this->serialize<int32_t>(bs);
-			break;
-		case eleType::UINT64:
-			this->serialize<int64_t>(bs);
-			break;
-		default:
-			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-		}
+		this->seEncode(bs);
+		//switch (this->desc_->attrDesc_->type_)
+		//{
+		//case eleType::CHAR:
+		//	this->serialize<char>(bs);
+		//	break;
+		//case eleType::INT8:
+		//	this->serialize<int8_t>(bs);
+		//	break;
+		//case eleType::INT16:
+		//	this->serialize<int16_t>(bs);
+		//	break;
+		//case eleType::INT32:
+		//	this->serialize<int32_t>(bs);
+		//	break;
+		//case eleType::INT64:
+		//	this->serialize<int64_t>(bs);
+		//	break;
+		//case eleType::UINT8:
+		//	this->serialize<int8_t>(bs);
+		//	break;
+		//case eleType::UINT16:
+		//	this->serialize<int16_t>(bs);
+		//	break;
+		//case eleType::UINT32:
+		//	this->serialize<int32_t>(bs);
+		//	break;
+		//case eleType::UINT64:
+		//	this->serialize<int64_t>(bs);
+		//	break;
+		//default:
+		//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
+		//}
 
 		this->serializedSize_ = bs.capacity();
 		this->getOutHeader()->serialize(os);
@@ -89,38 +118,39 @@ public:
 		bs.resize(this->serializedSize_);
 		is.read(bs.data(), this->serializedSize_);
 
-		switch (this->desc_->attrDesc_->type_)
-		{
-		case eleType::CHAR:
-			this->deserialize<char>(bs);
-			break;
-		case eleType::INT8:
-			this->deserialize<int8_t>(bs);
-			break;
-		case eleType::INT16:
-			this->deserialize<int16_t>(bs);
-			break;
-		case eleType::INT32:
-			this->deserialize<int32_t>(bs);
-			break;
-		case eleType::INT64:
-			this->deserialize<int64_t>(bs);
-			break;
-		case eleType::UINT8:
-			this->deserialize<int8_t>(bs);
-			break;
-		case eleType::UINT16:
-			this->deserialize<int16_t>(bs);
-			break;
-		case eleType::UINT32:
-			this->deserialize<int32_t>(bs);
-			break;
-		case eleType::UINT64:
-			this->deserialize<int64_t>(bs);
-			break;
-		default:
-			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-		}
+		this->seDecode(bs);
+		//switch (this->desc_->attrDesc_->type_)
+		//{
+		//case eleType::CHAR:
+		//	this->deserialize<char>(bs);
+		//	break;
+		//case eleType::INT8:
+		//	this->deserialize<int8_t>(bs);
+		//	break;
+		//case eleType::INT16:
+		//	this->deserialize<int16_t>(bs);
+		//	break;
+		//case eleType::INT32:
+		//	this->deserialize<int32_t>(bs);
+		//	break;
+		//case eleType::INT64:
+		//	this->deserialize<int64_t>(bs);
+		//	break;
+		//case eleType::UINT8:
+		//	this->deserialize<int8_t>(bs);
+		//	break;
+		//case eleType::UINT16:
+		//	this->deserialize<int16_t>(bs);
+		//	break;
+		//case eleType::UINT32:
+		//	this->deserialize<int32_t>(bs);
+		//	break;
+		//case eleType::UINT64:
+		//	this->deserialize<int64_t>(bs);
+		//	break;
+		//default:
+		//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
+		//}
 	}
 
 	void serializeGap(bstream& bs, int64_t gap)
@@ -164,13 +194,12 @@ public:
 		return gap - 1;
 	}
 
-	template<typename Ty_>
-	void serialize(bstream& bs)
-	{
-		this->seEncode<Ty_>(bs);
-	}
+	//template<typename Ty_>
+	//void serialize(bstream& bs)
+	//{
+	//	this->seEncode<Ty_>(bs);
+	//}
 
-	template <typename Ty_>
 	void seEncode(bstream& bs)
 	{
 		pBlock myBlock = this->blocks_.at(0);
@@ -197,7 +226,7 @@ public:
 
 			for (size_t band = 0; band <= numBandsInLevel; ++band, ++seqId)
 			{
-				this->serializeBand<Ty_>(bs, myBlock, seqId, band, bandDims);
+				this->serializeBand(bs, myBlock, seqId, band, bandDims);
 			}
 
 #ifndef NDEBUG
@@ -206,10 +235,11 @@ public:
 #endif
 		}
 
-		this->serializeChildLevelBand<Ty_>(bs, myBlock, seqId, bandDims, numBandsInLevel);
+		//this->serializeChildLevelBand<Ty_>(bs, myBlock, seqId, bandDims, numBandsInLevel);
+		this->serializeChildLevelBand(bs, myBlock, seqId, bandDims, numBandsInLevel);
 	}
 
-	template<typename Ty_>
+	//template<typename Ty_>
 	void serializeBand(bstream& bs, pBlock myBlock,
 					   size_t seqId, size_t bandId, dimension& bandDims)
 	{
@@ -250,7 +280,7 @@ public:
 		}
 	}
 
-	template <typename Ty_>
+	//template <typename Ty_>
 	void serializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
 	{
 		auto dSize = this->getDSize();
@@ -342,13 +372,13 @@ public:
 #endif
 	}
 
-	template<typename Ty_>
-	void deserialize(bstream& bs)
-	{
-		this->seDecode<Ty_>(bs);
-	}
+	//template<typename Ty_>
+	//void deserialize(bstream& bs)
+	//{
+	//	this->seDecode<Ty_>(bs);
+	//}
 
-	template <typename Ty_>
+	//template <typename Ty_>
 	void seDecode(bstream& bs)
 	{
 		pBlock myBlock = this->blocks_.at(0);
@@ -364,14 +394,15 @@ public:
 			//BOOST_LOG_TRIVIAL(debug) << "MIN: " << this->min_;
 			for (size_t band = 0; band <= numBandsInLevel; ++band, ++seqId)
 			{
-				this->deserializeBand<Ty_>(bs, myBlock, seqId, band, bandDims);
+				this->deserializeBand(bs, myBlock, seqId, band, bandDims);
 			}
 		}
 
-		this->deserializeChildLevelBand<Ty_>(bs, myBlock, seqId, bandDims, numBandsInLevel);
+		//this->deserializeChildLevelBand<Ty_>(bs, myBlock, seqId, bandDims, numBandsInLevel);
+		this->deserializeChildLevelBand(bs, myBlock, seqId, bandDims, numBandsInLevel);
 	}
 
-	template <typename Ty_>
+	//template <typename Ty_>
 	void deserializeBand(bstream& bs, pBlock myBlock,
 						 const size_t seqId, const size_t bandId, dimension& bandDims)
 	{
@@ -463,7 +494,7 @@ public:
 		//////////////////////////////
 	}
 
-	template <typename Ty_>
+	//template <typename Ty_>
 	void deserializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
 	{
 		auto dSize = this->getDSize();
@@ -611,6 +642,60 @@ public:
 	std::vector<bit_cnt_type> rBitFromDelta;	// required bits from delta array
 	std::vector<uint64_t> tileOffset_;
 	int64_t min_;
+};
+
+template <>
+class seChunk<double> : public flattenChunk<double>
+{
+public:
+	seChunk(pChunkDesc desc)
+		: flattenChunk<double>(desc)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "seChunk: double"));
+	}
+
+public:
+	inline void setLevel(size_t level)
+	{
+	}
+	inline void setSourceChunkId(chunkId cid)
+	{
+	}
+	inline size_t getLevel()
+	{
+		return 0;
+	}
+	inline const chunkId& getSourceChunkId() const
+	{
+		return 0;
+	}
+};
+
+template <>
+class seChunk<float> : public flattenChunk<float>
+{
+public:
+	seChunk(pChunkDesc desc)
+		: flattenChunk<float>(desc)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "seChunk: float"));
+	}
+
+public:
+	inline void setLevel(size_t level)
+	{
+	}
+	inline void setSourceChunkId(chunkId cid)
+	{
+	}
+	inline size_t getLevel()
+	{
+		return 0;
+	}
+	inline const chunkId& getSourceChunkId() const
+	{
+		return 0;
+	}
 };
 
 template <typename Ty_, typename mmtNode>

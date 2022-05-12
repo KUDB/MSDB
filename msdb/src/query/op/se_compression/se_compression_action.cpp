@@ -1,5 +1,6 @@
 ﻿#include <pch.h>
-#include <op/se_compression/se_compression_action.h>
+#include "se_compression_action.h"
+#include "seArray.h"
 #include <system/storageMgr.h>
 
 namespace msdb
@@ -22,48 +23,34 @@ pArray se_compression_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	//========================================//
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 
-	auto sourceArr = std::static_pointer_cast<wavelet_encode_array>(inputArrays[0]);
-	auto arrId = sourceArr->getId();
+	//auto sourceArr = std::static_pointer_cast<wavelet_encode_array>(inputArrays[0]);
+	pArray inArr = inputArrays[0];
+	pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*inArr->getDesc());
+	pArray outArr = std::make_shared<seArray>(outArrDesc);
 
-	for (auto attr : *sourceArr->getDesc()->attrDescs_)
+	auto arrId = inArr->getId();
+
+	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
-		switch (attr->type_)
+		if (attr->getCompType() != compressionType::SEACOW)
 		{
-		case eleType::CHAR:
-			compressAttribute<char>(sourceArr, attr);
-			break;
-		case eleType::INT8:
-			compressAttribute<int8_t>(sourceArr, attr);
-			break;
-		case eleType::INT16:
-			compressAttribute<int16_t>(sourceArr, attr);
-			break;
-		case eleType::INT32:
-			compressAttribute<int32_t>(sourceArr, attr);
-			break;
-		case eleType::INT64:
-			compressAttribute<int64_t>(sourceArr, attr);
-			break;
-		case eleType::UINT8:
-			compressAttribute<int8_t>(sourceArr, attr);
-			break;
-		case eleType::UINT16:
-			compressAttribute<int16_t>(sourceArr, attr);
-			break;
-		case eleType::UINT32:
-			compressAttribute<int32_t>(sourceArr, attr);
-			break;
-		case eleType::UINT64:
-			compressAttribute<int64_t>(sourceArr, attr);
-			break;
-		default:
-			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
+			continue;
 		}
+
+		std::visit(
+			visitHelper
+			{
+				[this, &inArr, &outArr, &attr](const auto& vType)
+				{
+					compressAttribute(vType, inArr, outArr, attr);
+				}
+			}, 
+			attr->getDataType());
 	}
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return std::static_pointer_cast<array>(sourceArr);
+	return std::static_pointer_cast<array>(inArr);
 }
 
 }		// core

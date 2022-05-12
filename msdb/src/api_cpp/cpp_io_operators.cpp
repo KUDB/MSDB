@@ -12,7 +12,7 @@
 #include <op/lzw_huffman_encode/lzw_huffman_encode_plan.h>
 #include <op/lzw_huffman_decode/lzw_huffman_decode_plan.h>
 #include <op/se_compression/se_compression_plan.h>
-#include <op/se_decompression/se_decompression_plan.h>
+#include <op/se_compression/se_decompression_plan.h>
 #include <op/se_huffman_encode/se_huffman_encode_plan.h>
 #include <op/se_huffman_decode/se_huffman_decode_plan.h>
 #include <op/spiht_encode/spiht_encode_plan.h>

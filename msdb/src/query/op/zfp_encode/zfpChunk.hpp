@@ -157,39 +157,5 @@ pChunk zfpChunkFactory<Ty_>::makeChunk(pChunkDesc cDesc)
 {
 	return std::make_shared<zfpChunk<Ty_>>(cDesc);
 }
-
-template<typename Ty_>
-zfp_type getZFPType()
-{
-    if (typeid(Ty_) == typeid(bool) ||
-        typeid(Ty_) == typeid(char) ||
-        typeid(Ty_) == typeid(int8_t) ||
-        typeid(Ty_) == typeid(uint8_t) ||
-        typeid(Ty_) == typeid(int16_t) ||
-        typeid(Ty_) == typeid(uint16_t) ||
-        typeid(Ty_) == typeid(int32_t) ||
-        typeid(Ty_) == typeid(uint32_t))
-    {
-        return zfp_type_int32;
-    }
-
-    if (typeid(Ty_) == typeid(int64_t) ||
-        typeid(Ty_) == typeid(uint64_t))
-    {
-        return zfp_type_int64;
-    }
-
-    if (typeid(Ty_) == typeid(float))
-    {
-        return zfp_type_float;
-    }
-
-    if (typeid(Ty_) == typeid(double))
-    {
-        return zfp_type_double;
-    }
-
-    return zfp_type_none;
-}
 }		// msdb
 }		// core

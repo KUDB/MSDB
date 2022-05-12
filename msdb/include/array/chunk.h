@@ -143,7 +143,6 @@ protected:
 			//std::cout << this->version_ << ", " << this->bodySize_ << std::endl;
 		}
 	};
-
 public:
 	virtual void updateToHeader() override;
 	virtual void updateFromHeader() override;

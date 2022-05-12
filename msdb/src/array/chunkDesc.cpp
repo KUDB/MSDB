@@ -60,23 +60,28 @@ void chunkDesc::setDim(dimensionId dId, position_t value)
 	this->initPhysicalChunkSizeFromDims();
 }
 
-dimension chunkDesc::getDims()
+dimension chunkDesc::getDims() const
 {
 	return this->dims_;
 }
 
-dimension chunkDesc::getBlockDims()
+dimension chunkDesc::getBlockDims() const
 {
 	return this->blockDims_;
 }
-dimension chunkDesc::getBlockSpace()
+dimension chunkDesc::getBlockSpace() const
 {
 	return this->dims_ / this->blockDims_;
 }
 
-size_t chunkDesc::getDimSize()
+size_t chunkDesc::getDimSize() const
 {
 	return this->dims_.size();
+}
+
+pAttributeDesc chunkDesc::getAttrDesc() const
+{
+	return this->attrDesc_;
 }
 
 //////////////////////////////

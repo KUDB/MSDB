@@ -4,6 +4,9 @@
 
 #include <pch.h>
 
+template<class... Ts> struct visitHelper : Ts... { using Ts::operator()...; };
+template<class... Ts> visitHelper(Ts...)->visitHelper<Ts...>; // line not needed in C++20...
+
 namespace msdb
 {
 namespace core

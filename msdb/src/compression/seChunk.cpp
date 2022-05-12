@@ -1,5 +1,5 @@
 ﻿#include <pch.h>
-#include <compression/seChunk.h>
+#include <op/se_compression/seChunk.h>
 
 namespace msdb
 {

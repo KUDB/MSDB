@@ -8,12 +8,13 @@
 #include <array/flattenChunk.h>
 #include <system/storageMgr.h>
 #include <compression/wtChunk.h>
-#include <compression/seChunk.h>
+#include "seChunk.h"
 #include <compression/waveletUtil.h>
 #include <query/opAction.h>
 #include <index/mmt.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <util/logger.h>
+#include <util/dataType.h>
 
 namespace msdb
 {
@@ -30,22 +31,11 @@ public:
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery q) override;
 
 private:
-	template <typename Ty_>
-	std::shared_ptr<seChunk<Ty_>> makeOutChunk(std::shared_ptr<wtChunk<Ty_>> inChunk)
-	{
-		auto outDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
-		std::shared_ptr<seChunk<Ty_>> outChunk = std::make_shared<seChunk<Ty_>>(outDesc);
-		outChunk->setLevel(inChunk->getLevel());
-		//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
-		outChunk->bufferRef(inChunk);
-		outChunk->makeAllBlocks();
-
-		return outChunk;
-	}
-
-
+	//Visitor
+	//template<typename Ty_>
+	//void compressAttribute(std::shared_ptr<wavelet_encode_array>inArr, pAttributeDesc attrDesc)
 	template<typename Ty_>
-	void compressAttribute(std::shared_ptr<wavelet_encode_array>inArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<Ty_>& type, pArray inArr, pArray outArr, pAttributeDesc attrDesc)
 	{
 		size_t mSizeTotal = 0;
 		size_t synopsisSizeTotal = 0;
@@ -68,8 +58,16 @@ private:
 
 		while (!cit->isEnd())
 		{
-			pChunk outChunk = this->compressChunk<Ty_>(
-				std::static_pointer_cast<wtChunk<Ty_>>(**cit), mmtIndex, chunkDim, hasNegative);
+			auto inChunk = std::static_pointer_cast<wtChunk<Ty_>>(**cit);
+			auto cDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
+			auto outChunk = std::static_pointer_cast<seChunk<Ty_>>(outArr->makeChunk(cDesc));
+
+			outChunk->setLevel(inChunk->getLevel());
+			//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
+			outChunk->bufferRef(inChunk);
+			outChunk->makeAllBlocks();
+
+			this->compressChunk<Ty_>(inChunk, outChunk, mmtIndex, chunkDim, hasNegative);
 
 			auto attr = outChunk->getDesc()->attrDesc_;
 			storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
@@ -83,13 +81,27 @@ private:
 		BOOST_LOG_TRIVIAL(info) << "Total Save Chunk: " << mSizeTotal << " Bytes";
 	}
 
+	template<>
+	void compressAttribute(const concreteTy<float>& type, pArray inArr, pArray outArr, pAttributeDesc attrDesc)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_compress not support data compression for float"));
+	}
+
+	template<>
+	void compressAttribute(const concreteTy<double>& type, pArray inArr, pArray outArr, pAttributeDesc attrDesc)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_compress not support data compression for double"));
+	}
+
 	template<typename Ty_>
-	std::shared_ptr<seChunk<Ty_>> compressChunk(std::shared_ptr<wtChunk<Ty_>> inChunk,
-						   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
-						   dimension& sourceChunkDim, bool hasNegative)
+	void compressChunk(std::shared_ptr<wtChunk<Ty_>> inChunk,
+					   std::shared_ptr<seChunk<Ty_>> outChunk,
+					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
+					   dimension& sourceChunkDim, bool hasNegative)
 	{
 		size_t dSize = inChunk->getDSize();
-		auto outChunk = this->makeOutChunk(inChunk);
+
+		//auto outChunk = this->makeOutChunk(inChunk);
 
 #ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "Chunkcoor: " << chunkCoor.toString() << " / MMT NODE: " << mNode->toString<Ty_>();
@@ -113,7 +125,7 @@ private:
 											bandDims, inChunk->getLevel(),
 											numBandsInLevel, hasNegative);
 
-		return outChunk;
+		//return outChunk;
 	}
 
 	template <class Ty_>

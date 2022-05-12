@@ -8,6 +8,7 @@
 #include <util/dataType.h>
 #include <compression/compressionType.h>
 #include <compression/materializedType.h>
+#include <system/exceptions.h>
 #include <xml/tinyxml2.h>
 
 namespace msdb
@@ -71,20 +72,63 @@ public:
 
 public:
 	// TODO:: set comp type at compression operator actions
+	/**
+	 * Getter 
+	 */
+	inline const paramType& getOptionalParams() const
+	{
+		return this->optionalParams_;
+	}
+	inline void setParam(std::string key, std::string value)
+	{
+		this->optionalParams_[key] = value;
+	}
+
+	inline const std::string& getParam(const std::string& key) const
+	{
+		if (this->optionalParams_.find(key) == this->optionalParams_.end())
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_PARAM, std::string("AttributeDesc: ") + key));
+			return "";
+		}
+		return this->optionalParams_.at(key);
+	}
+
+	inline const attributeId& getId() const
+	{
+		return this->id_;
+	}
+	inline const std::string& getName() const
+	{
+		return this->name_;
+	}
+	inline const dataType& getDataType() const
+	{
+		return this->dataType_;
+	}
+	inline const compressionType& getCompType() const
+	{
+		return this->compType_;
+	}
+	inline const materializedType& getMatType() const
+	{
+		return this->matType_;
+	}
+
+	/**
+	 * Setter
+	 */
 	inline void setCompType(compressionType compType)
 	{
 		this->compType_ = compType;
 	}
-	inline compressionType getCompType()
-	{
-		return this->compType_;
-	}
+
 	/**
 	 * Save/load in XML file
 	 */
 	tinyxml2::XMLElement* convertToXMLDoc(tinyxml2::XMLElement* node);
 	static pAttributeDesc buildDescFromXML(tinyxml2::XMLElement* node);
-	std::string toString();
+	std::string toString() const;
 
 public:
 	friend void swap(attributeDesc& lhs_, attributeDesc& rhs_);
@@ -99,9 +143,9 @@ public:
 	attributeId id_;
 	std::string name_;
 	eleType type_;				// TODO::Deprecated, replace eleType->util/dataType
-	dataType dataType_;
+	dataType dataType_;			// TODO::make private
 	//std::list<chunkType> chunkTypeLineage_;		// dependency problem, chunkType->chunkFactory->chunk->attributeDesc
-	std::map<std::string, std::string> optionalParams_;
+	paramType optionalParams_;
 	size_t typeSize_;
 	compressionType compType_;	// compression chunk type, default:NONE
 	materializedType matType_;	// materialized chunk type, default:flatten
