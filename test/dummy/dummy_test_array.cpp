@@ -1,7 +1,7 @@
 #include <pch_test.h>
 #include <dummy/dummy_test_array.h>
 #include <dummy_array_util.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <index/mmt.h>
 namespace msdb
 {

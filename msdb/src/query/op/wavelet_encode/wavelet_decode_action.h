@@ -8,6 +8,8 @@
 #include <query/opAction.h>
 #include <util/math.h>
 #include <util/threadUtil.h>
+#include <util/dataType.h>
+#include "wtChunk.h"
 
 namespace msdb
 {
@@ -25,9 +27,13 @@ public:
 
 private:
 	template <class Ty_>
-	void attributeDecode(pArray outArr, pArray inArr, pAttributeDesc attrDesc,
-						 pWavelet w, size_t maxLevel, pQuery qry)
+	void attributeDecode(const concreteTy<Ty_>& type, 
+						 pArray outArr, pArray inArr, 
+						 pAttributeDesc attrDesc, pQuery qry)
 	{
+		pWavelet w = std::make_shared<wavelet>(this->waveletName_.c_str());
+		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
+
 		//========================================//
 		qry->getTimer()->nextWork(0, workType::COMPUTING);
 		//----------------------------------------//

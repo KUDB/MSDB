@@ -1,6 +1,6 @@
 ﻿#include <pch.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 
 namespace msdb
 {

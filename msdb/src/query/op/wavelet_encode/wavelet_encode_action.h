@@ -4,11 +4,12 @@
 
 #include <pch.h>
 #include <compression/wavelet.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <query/opAction.h>
 #include <util/math.h>
 #include <vector>
 #include <list>
+#include <util/dataType.h>
 
 namespace msdb
 {
@@ -24,10 +25,14 @@ public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery q);
 
 private:
+	// pWavelet w, const size_t maxLevel
 	template <class Ty_>
-	void attributeEncode(pArray outArr, pArray inArr, pAttributeDesc attrDesc,
-						 pWavelet w, size_t maxLevel, pQuery q)
+	void attributeEncode(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc,
+						 pQuery q)
 	{
+		pWavelet w = std::make_shared<wavelet>(this->waveletName_.c_str());
+		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
+
 		auto cItr = inArr->getChunkIterator(attrDesc->id_);
 		auto dSize = cItr->dSize();
 		auto cSize = cItr->getSeqEnd();

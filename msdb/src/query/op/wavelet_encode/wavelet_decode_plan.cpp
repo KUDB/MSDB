@@ -1,6 +1,6 @@
 #include <pch.h>
-#include <op/wavelet_decode/wavelet_decode_plan.h>
-#include <op/wavelet_decode/wavelet_decode_action.h>
+#include <op/wavelet_encode/wavelet_decode_plan.h>
+#include <op/wavelet_encode/wavelet_decode_action.h>
 
 namespace msdb
 {

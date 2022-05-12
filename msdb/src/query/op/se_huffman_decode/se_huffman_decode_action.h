@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_SE_HUFFMAN_DECODE_ACTION_H_
 #define _MSDB_OP_SE_HUFFMAN_DECODE_ACTION_H_
 
@@ -8,7 +8,7 @@
 #include <query/opAction.h>
 #include <index/mmt.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <compression/seHuffmanChunk.h>
 #include <util/threadUtil.h>
 

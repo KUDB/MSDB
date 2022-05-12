@@ -40,9 +40,9 @@ pArray se_compression_action::execute(std::vector<pArray>& inputArrays, pQuery q
 		std::visit(
 			visitHelper
 			{
-				[this, &inArr, &outArr, &attr](const auto& vType)
+				[this, &outArr, &inArr, &attr](const auto& vType)
 				{
-					compressAttribute(vType, inArr, outArr, attr);
+					compressAttribute(vType, outArr, inArr, attr);
 				}
 			}, 
 			attr->getDataType());
@@ -50,7 +50,7 @@ pArray se_compression_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return std::static_pointer_cast<array>(inArr);
+	return inArr;
 }
 
 }		// core

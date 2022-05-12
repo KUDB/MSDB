@@ -6,7 +6,7 @@
 #include <array/arrayMgr.h>
 #include <array/flattenChunk.h>
 #include <system/storageMgr.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <op/se_compression/seChunk.h>
 #include <compression/waveletUtil.h>
 #include <query/opAction.h>
@@ -32,11 +32,9 @@ private:
 	//pSeChunk makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
 	//					  chunkId cid, coor chunkCoor);
 
-	//template <typename Ty_>
-	//void decompressAttribute(std::shared_ptr<wavelet_encode_array>outArr, pAttributeDesc attrDesc, pQuery qry)
 	template <typename Ty_>
 	void decompressAttribute(const concreteTy<Ty_>& type,
-							 pArray inArr, pArray outArr, 
+							 pArray outArr, pArray inArr,
 							 pAttributeDesc attrDesc, pQuery qry)
 	{
 		//========================================//
@@ -69,13 +67,16 @@ private:
 				chunkId cid = cit->seqPos();
 				coor chunkCoor = cit->coor();
 				auto inChunk = std::static_pointer_cast<seChunk<Ty_>>(**cit);
-
+				// TODO::Check block coordinate, size, position, id etc...
+				// Flatten -> (shuffled) -> wavelet -> seacow
+				// 
 				// make chunk
-				//auto inChunk = this->makeInChunk(outArr, attrDesc, cid, chunkCoor);		// TODO::Remove makeInChunk()
+				// auto inChunk = this->makeInChunk(outArr, attrDesc, cid, chunkCoor);		// TODO::Remove makeInChunk()
 
 				inChunk->setTileOffset(offsets);
 				auto cDesc = inChunk->getDesc();
 				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(std::make_shared<chunkDesc>(*cDesc)));
+				// TODO::Copy buffer, etc...
 
 				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
 											  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));

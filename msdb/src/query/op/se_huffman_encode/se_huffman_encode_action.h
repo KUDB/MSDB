@@ -8,7 +8,7 @@
 #include <query/opAction.h>
 #include <index/mmt.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <compression/seHuffmanChunk.h>
 
 namespace msdb

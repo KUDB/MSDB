@@ -1,5 +1,5 @@
 #include <dummy_astronomy_array.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <index/mmt.h>
 #include <index/compass.h>
 #include <op/se_compression/seChunk.h>

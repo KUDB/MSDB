@@ -7,7 +7,7 @@
 #include <array/block.h>
 #include <array/flattenChunk.h>
 #include <system/storageMgr.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include "seChunk.h"
 #include <compression/waveletUtil.h>
 #include <query/opAction.h>
@@ -32,10 +32,8 @@ public:
 
 private:
 	//Visitor
-	//template<typename Ty_>
-	//void compressAttribute(std::shared_ptr<wavelet_encode_array>inArr, pAttributeDesc attrDesc)
 	template<typename Ty_>
-	void compressAttribute(const concreteTy<Ty_>& type, pArray inArr, pArray outArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
 	{
 		size_t mSizeTotal = 0;
 		size_t synopsisSizeTotal = 0;
@@ -67,7 +65,7 @@ private:
 			outChunk->bufferRef(inChunk);
 			outChunk->makeAllBlocks();
 
-			this->compressChunk<Ty_>(inChunk, outChunk, mmtIndex, chunkDim, hasNegative);
+			this->compressChunk<Ty_>(outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
 
 			auto attr = outChunk->getDesc()->attrDesc_;
 			storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
@@ -82,20 +80,20 @@ private:
 	}
 
 	template<>
-	void compressAttribute(const concreteTy<float>& type, pArray inArr, pArray outArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<float>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_compress not support data compression for float"));
 	}
 
 	template<>
-	void compressAttribute(const concreteTy<double>& type, pArray inArr, pArray outArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<double>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_compress not support data compression for double"));
 	}
 
 	template<typename Ty_>
-	void compressChunk(std::shared_ptr<wtChunk<Ty_>> inChunk,
-					   std::shared_ptr<seChunk<Ty_>> outChunk,
+	void compressChunk(std::shared_ptr<seChunk<Ty_>> outChunk,
+					   std::shared_ptr<wtChunk<Ty_>> inChunk,
 					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 					   dimension& sourceChunkDim, bool hasNegative)
 	{
@@ -270,8 +268,6 @@ private:
 	//	//}
 	//	//assert(rbFromDelta <= rbFromMMT);
 	//}
-
-
 };
 }	// core
 }	// msdb

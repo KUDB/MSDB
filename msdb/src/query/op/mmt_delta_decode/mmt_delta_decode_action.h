@@ -10,7 +10,7 @@
 #include <op/mmt_delta_decode/mmt_delta_decode_array.h>
 #include <op/mmt_delta_encode/mmt_delta_encode_array.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <util/threadUtil.h>
 
 namespace msdb

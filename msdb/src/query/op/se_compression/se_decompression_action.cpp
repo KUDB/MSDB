@@ -47,7 +47,8 @@ pArray se_decompression_action::execute(std::vector<pArray>& inputArrays, pQuery
 	//outArr->setLevel(maxLevel);							// TODO::move to optionalParam of attributeDesc
 	//outArr->setOrigianlChunkDims(originalChunkDims);		// TODO::move to optionalParam of attributeDesc 
 
-	for (auto attr : *outArr->getDesc()->attrDescs_)
+	auto attrDescs = inArr->getDesc()->getAttrDescs();
+	for (auto attr : *attrDescs)
 	{
 		if (attr->getCompType() != compressionType::SEACOW)
 		{
@@ -59,9 +60,9 @@ pArray se_decompression_action::execute(std::vector<pArray>& inputArrays, pQuery
 		std::visit(
 			visitHelper
 			{
-				[this, &inArr, &outArr, &attr, &qry](const auto& vType)
+				[this, &outArr, &inArr, &attr, &qry](const auto& vType)
 				{
-					decompressAttribute(vType, inArr, outArr, attr, qry);
+					decompressAttribute(vType, outArr, inArr, attr, qry);
 				}
 			},
 			attr->getDataType());

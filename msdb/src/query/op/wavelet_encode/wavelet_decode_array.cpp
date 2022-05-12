@@ -1,5 +1,5 @@
 #include <pch.h>
-#include <op/wavelet_decode/wavelet_decode_array.h>
+#include <op/wavelet_encode/wavelet_decode_array.h>
 
 namespace msdb
 {

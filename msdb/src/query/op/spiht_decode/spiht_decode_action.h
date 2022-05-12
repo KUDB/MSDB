@@ -7,7 +7,7 @@
 #include <util/math.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <compression/spihtChunk.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <array/attributeId.h>
 
 namespace msdb
