@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <query/query.h>
 #include <query/queryMgr.h>
 #include <query/opPlan.h>
@@ -23,6 +23,13 @@ status query::process()
 	{
 		this->arrDesc_ = this->qryPlan_->inferSchema();
 		this->qryPlan_->process(shared_from_this());
+	}
+	_MSDB_CATCH(msdb_exception e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n" << e._what;
+		BOOST_LOG_TRIVIAL(error) << e._error_category_msg << "(" << std::to_string(e._error_category) << ")";
+		BOOST_LOG_TRIVIAL(error) << e._error_msg << "(" << std::to_string(e._error_code) << ")";
+		BOOST_LOG_TRIVIAL(error) << "File: " << e._file << " /Line: " << std::to_string(e._line) << "/Func: " << e._function;
 	}
 	_MSDB_CATCH_EXCEPTION(e)
 	{

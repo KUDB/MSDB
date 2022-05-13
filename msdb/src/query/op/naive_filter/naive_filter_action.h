@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_NAIVE_FILTER_ACTION_H_
 #define _MSDB_OP_NAIVE_FILTER_ACTION_H_
 
@@ -28,7 +28,10 @@ private:
 		int64_t readChunks = 0;
 		int64_t readBlocks = 0;
 
-		auto inChunkItr = inArr->getChunkIterator(attrDesc->id_);
+
+		pChunkIterator inChunkItr = nullptr;
+		inChunkItr = inArr->getChunkIterator(attrDesc->id_);
+
 		//auto outChunkItr = outArr->getChunkIterator(attrDesc->id_);
 
 		inPredicate->setEvaluateFunc(attrDesc->type_);

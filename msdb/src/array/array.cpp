@@ -15,6 +15,7 @@ array::array(pArrayDesc desc)
 	for (auto attr : *desc_->attrDescs_)
 	{
 		this->attrChunkBitmaps_[attr->id_] = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
+		this->chunks_[attr->id_] = chunkContainer();
 	}
 	//initChunkFactories();
 }
@@ -44,7 +45,17 @@ pChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMo
 											   &(this->chunks_[attrId]), this->overallChunkBitmap_,
 											   itMode);
 	}
-	_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "attrId: " + std::to_string(attrId)));
+	_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "Fail to get chunkIterator (attrId: " + std::to_string(attrId) + ")"));
+
+
+	//return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+	//									   nullptr, this->overallChunkBitmap_,
+	//									   itMode);
+	
+	//return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+	//									   nullptr, std::make_shared<bitmap>(this->overallChunkBitmap_->getCapacity(), false),
+	//									   itMode);
+
 }
 pChunkFactory array::getChunkFactory(const attributeId& attrId)
 {
@@ -79,18 +90,25 @@ void array::flush()
 {
 	// TODO::array::flush()
 
-	for (auto attr : *this->getDesc()->attrDescs_)
+	try
 	{
-		auto cit = this->getChunkIterator(attr->id_);
-		while (!cit->isEnd())
+		for (auto attr : *this->getDesc()->attrDescs_)
 		{
-			if (cit->isExist())
+			auto cit = this->getChunkIterator(attr->id_);
+			while (!cit->isEnd())
 			{
-				this->freeChunk(attr->id_, cit->seqPos());
+				if (cit->isExist())
+				{
+					this->freeChunk(attr->id_, cit->seqPos());
+				}
+				++(*cit);
 			}
-			++(*cit);
+			this->chunks_[attr->id_].clear();
 		}
-		this->chunks_[attr->id_].clear();
+	}
+	catch (...)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Fail array::flush()";
 	}
 
 	this->chunks_.clear();

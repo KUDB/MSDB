@@ -88,9 +88,19 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 		inArr.push_back(arrayMgr::instance()->makeArray<flattenArray>(this->inferSchema()));
 	}
 
-	auto outArr = this->getAction()->execute(inArr, qry);
-	qry->setArrayDesc(outArr->getDesc());
-	return outArr;
+	try
+	{
+		auto outArr = this->getAction()->execute(inArr, qry);
+		qry->setArrayDesc(outArr->getDesc());
+		return outArr;
+	}
+	catch (...)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n";
+		throw;
+	}
+
+	return nullptr;
 }
 void opPlan::setParentPlan(pPlan parentPlan)
 {

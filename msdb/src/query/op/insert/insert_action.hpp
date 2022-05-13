@@ -51,10 +51,12 @@ void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 	_MSDB_CATCH(const std::out_of_range & e)
 	{
 		BOOST_LOG_TRIVIAL(error) << "Insert: There is no data (from memory) for the attribute (" << attr->id_ << ")";
+		throw;
 	}
 	_MSDB_CATCH_ALL
 	{
-
+		BOOST_LOG_TRIVIAL(error) << "Insert: error for the attribute (" << attr->id_ << ")";
+		throw;
 	}
 	_MSDB_CATCH_END
 
@@ -112,6 +114,8 @@ void insert_action::insertData(pArray inArr, Ty_* data, size_t length)
 		_MSDB_CATCH_ALL
 		{
 			// TODO::logging exceptions
+			BOOST_LOG_TRIVIAL(error) << "Insert: error for the attribute (" << attr->id_ << ")";
+			throw;
 		}
 		_MSDB_CATCH_END
 	}

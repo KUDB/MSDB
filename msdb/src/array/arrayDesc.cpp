@@ -9,7 +9,6 @@ namespace core
 arrayDesc::arrayDesc()
 	: id_(0), name_(""), dimDescs_(nullptr), attrDescs_(nullptr)
 {
-	std::cout << "arrayDesc::arrayDesc()" << std::endl;
 }
 
 arrayDesc::arrayDesc(const arrayId aid, const std::string arrayName,
@@ -17,14 +16,11 @@ arrayDesc::arrayDesc(const arrayId aid, const std::string arrayName,
 					 pAttributeDescs attrDescs)
 	: id_(aid), name_(arrayName), dimDescs_(dimDescs), attrDescs_(attrDescs)
 {
-	std::cout << "arrayDesc::arrayDesc(const arrayId aid, const std::string arrayName,.....)" << std::endl;
 }
 
 arrayDesc::arrayDesc(const arrayDesc& mit)
 	: id_(mit.id_), name_(mit.name_)
 {
-	std::cout << "arrayDesc::arrayDesc(const arrayDesc& mit)" << std::endl;
-
 	this->dimDescs_ = std::make_shared<dimensionDescs>();
 	this->attrDescs_ = std::make_shared<attributeDescs>();
 
@@ -42,7 +38,6 @@ arrayDesc::arrayDesc(const arrayDesc& mit)
 arrayDesc::arrayDesc(arrayDesc&& src) noexcept
 	: arrayDesc()
 {
-	std::cout << "arrayDesc::arrayDesc(arrayDesc&& src) noexcept" << std::endl;
 	swap(*this, src);
 }
 
