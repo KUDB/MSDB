@@ -19,6 +19,7 @@ monoChunk<Ty_>::monoChunk(pChunkDesc desc)
 template <typename Ty_>
 monoChunk<Ty_>::~monoChunk()
 {
+	this->block_ = nullptr;
 }
 
 template <typename Ty_>

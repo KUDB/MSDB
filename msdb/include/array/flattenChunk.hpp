@@ -126,6 +126,19 @@ flattenChunk<Ty_>::flattenChunk(pChunkDesc desc)
 template <typename Ty_>
 flattenChunk<Ty_>::~flattenChunk()
 {
+	_MSDB_TRY_BEGIN
+	{
+		auto it = this->blocks_.begin();
+		for (; it != this->blocks_.end(); ++it)
+		{
+			(*it) = nullptr;
+		}
+	}_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "~flattenChunk() error";
+	}
+
+	this->blocks_.clear();
 }
 
 template <typename Ty_>

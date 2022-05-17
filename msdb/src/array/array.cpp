@@ -88,8 +88,6 @@ pChunk array::insertChunk(pChunk inputChunk)
 
 void array::flush()
 {
-	// TODO::array::flush()
-
 	try
 	{
 		for (auto attr : *this->getDesc()->attrDescs_)
@@ -106,11 +104,21 @@ void array::flush()
 			this->chunks_[attr->id_].clear();
 		}
 	}
+	catch (msdb_exception e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Fail array::flush()";
+		BOOST_LOG_TRIVIAL(error) << e.what();
+	}
+	catch (std::exception e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Fail array::flush()";
+		BOOST_LOG_TRIVIAL(error) << e.what();
+	}
 	catch (...)
 	{
 		BOOST_LOG_TRIVIAL(error) << "Fail array::flush()";
 	}
-
+	
 	this->chunks_.clear();
 }
 
@@ -201,11 +209,19 @@ chunkId array::chunkCoorToChunkId(const coor& chunkCoor)
 void array::freeChunk(const attributeId attrId, const chunkId cId)
 {
 	assert(this->chunks_.find(attrId) != this->chunks_.end());
-	if (this->chunks_[attrId][cId] != nullptr)
+	_MSDB_TRY_BEGIN
 	{
-		this->chunks_[attrId][cId]->flush();
+		if (this->chunks_[attrId][cId] != nullptr)
+		{
+			this->chunks_[attrId][cId]->flush();
+			this->chunks_[attrId][cId] = nullptr;
+		}
+		this->setChunkNull(attrId, cId);
+	}_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "freeChunk(" << attrId << ", " << cId << ") error";
 	}
-	this->setChunkNull(attrId, cId);
+
 	//this->chunks_[cId] = nullptr;dkddkd
 	//this->overallChunkBitmap_->setNull(cId);
 }

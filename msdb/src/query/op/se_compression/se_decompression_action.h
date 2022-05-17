@@ -51,6 +51,9 @@ private:
 		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(arrIndex);
 
 		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_SE_LEVEL_));
+		auto outAttrDesc = outArr->getDesc()->getAttrDescs()->at(attrDesc->getId());
+		outAttrDesc->setParam(_STR_PARAM_SE_LEVEL_, std::to_string(maxLevel));
+
 		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr, maxLevel);		// To fast access band in serialized memory
 		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 
@@ -67,6 +70,7 @@ private:
 				chunkId cid = cit->seqPos();
 				coor chunkCoor = cit->coor();
 				auto inChunk = std::static_pointer_cast<seChunk<Ty_>>(**cit);
+				
 				// TODO::Check block coordinate, size, position, id etc...
 				// Flatten -> (shuffled) -> wavelet -> seacow
 				// 
@@ -76,6 +80,14 @@ private:
 				inChunk->setTileOffset(offsets);
 				auto cDesc = inChunk->getDesc();
 				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(std::make_shared<chunkDesc>(*cDesc)));
+				outChunk->bufferAlloc();
+				inChunk->bufferRef(outChunk);		// outChunk should hold the buffer -> used latter
+				
+				inChunk->makeAllBlocks();
+				outChunk->makeAllBlocks();
+
+				inChunk->setLevel(maxLevel);
+				outChunk->setLevel(maxLevel);
 				// TODO::Copy buffer, etc...
 
 				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
@@ -168,10 +180,10 @@ private:
 		qry->getTimer()->nextWork(threadId, workType::COMPUTING);
 		//----------------------------------------//
 
-		outChunk->setLevel(inChunk->getLevel());
-		outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
-		outChunk->makeBlocks();
-		outChunk->bufferCopy(inChunk);
+		//outChunk->setLevel(inChunk->getLevel());
+		//outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
+		//outChunk->makeBlocks();
+		//outChunk->bufferCopy(inChunk);
 		outChunk->setSerializedSize(inChunk->getSerializedSize());
 
 		//----------------------------------------//

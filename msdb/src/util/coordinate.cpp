@@ -106,15 +106,22 @@ coordinates::coordinates(std::initializer_list<dim_type> lst)
 
 coordinates::~coordinates()
 {
-	this->dSize_ = 0;
-
-#ifndef NDEBUG
-	this->x_ = this->y_ = 0;
-#endif
-
-	if (this->coor_)
+	try
 	{
-		delete[] this->coor_;
+		this->dSize_ = 0;
+
+	#ifndef NDEBUG
+		this->x_ = this->y_ = 0;
+	#endif
+
+		if (this->coor_)
+		{
+			delete[] this->coor_;
+		}
+	}
+	catch (...)
+	{
+		BOOST_LOG_TRIVIAL(error) << "~coordiantes() error";
 	}
 }
 

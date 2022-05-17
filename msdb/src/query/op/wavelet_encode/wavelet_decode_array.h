@@ -16,6 +16,7 @@ public:
 
 public:
 	wavelet_decode_array(pArrayDesc desc, const size_t maxLevel);
+	virtual ~wavelet_decode_array();
 
 public:
 	size_t getMaxLevel();

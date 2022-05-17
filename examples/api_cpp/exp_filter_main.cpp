@@ -55,34 +55,34 @@ void exeExperiment(int numTest, compressionType compType, attrIndexType idxType)
 		auto ra = qry.execute();
 		std::cout << qry.strStatus() << std::endl;
 	}
-	//{
-	//	auto afl = Consume(getSaveIndexAFL(compType, idxType));
-	//	std::cout << afl->toString(0) << std::endl;
-	//	auto qry = msdb::Query(afl);
-	//	auto ra = qry.execute();
-	//	std::cout << qry.strStatus() << std::endl;
-	//}
-	//{
-	//	auto afl = Consume(getLoadIndexAFL(compType, idxType));
-	//	std::cout << afl->toString(0) << std::endl;
-	//	auto qry = msdb::Query(afl);
-	//	auto ra = qry.execute();
-	//	std::cout << qry.strStatus() << std::endl;
-	//}
-	//{
-	//	auto afl = Consume(getInsertSaveAFL(compType));
-	//	std::cout << afl->toString(0) << std::endl;
-	//	auto qry = msdb::Query(afl);
-	//	auto ra = qry.execute();
-	//	std::cout << qry.strStatus() << std::endl;
-	//}
-	//{
-	//	auto afl = Consume(getLoadAFL(compType));
-	//	std::cout << afl->toString(0) << std::endl;
-	//	auto qry = msdb::Query(afl);
-	//	auto ra = qry.execute();
-	//	std::cout << qry.strStatus() << std::endl;
-	//}
+	{
+		auto afl = Consume(getSaveIndexAFL(compType, idxType));
+		std::cout << afl->toString(0) << std::endl;
+		auto qry = msdb::Query(afl);
+		auto ra = qry.execute();
+		std::cout << qry.strStatus() << std::endl;
+	}
+	{
+		auto afl = Consume(getLoadIndexAFL(compType, idxType));
+		std::cout << afl->toString(0) << std::endl;
+		auto qry = msdb::Query(afl);
+		auto ra = qry.execute();
+		std::cout << qry.strStatus() << std::endl;
+	}
+	{
+		auto afl = Consume(getInsertSaveAFL(compType));
+		std::cout << afl->toString(0) << std::endl;
+		auto qry = msdb::Query(afl);
+		auto ra = qry.execute();
+		std::cout << qry.strStatus() << std::endl;
+	}
+	{
+		auto afl = Consume(getLoadAFL(compType));
+		std::cout << afl->toString(0) << std::endl;
+		auto qry = msdb::Query(afl);
+		auto ra = qry.execute();
+		std::cout << qry.strStatus() << std::endl;
+	}
 	{
 		auto result = exeFilterTest(numTest, compType);
 	}
@@ -92,8 +92,8 @@ int main()
 {
 	int numTest = 3;
 
-	exeExperiment(numTest, compressionType::RAW);
-	//exeExperiment(numTest, compressionType::SEACOW, attrIndexType::MMT);
+	//exeExperiment(numTest, compressionType::RAW);
+	exeExperiment(numTest, compressionType::SEACOW, attrIndexType::MMT);
 	//exeExperiment(numTest, compressionType::SEACOW_HUFFMAN, attrIndexType::MMT);
 	//exeExperiment(numTest, compressionType::SPIHT);
 	//exeExperiment(numTest, compressionType::COMPASS);

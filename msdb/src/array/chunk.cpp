@@ -19,6 +19,9 @@ chunk::chunk(pChunkDesc desc)
 chunk::~chunk()
 {
 	this->freeBuffer();
+	this->blockBitmap_ = nullptr;
+	this->blockCapacity_ = 0;
+	this->desc_ = nullptr;
 }
 
 void chunk::referenceAllBufferToBlock()
@@ -170,20 +173,22 @@ range chunk::getChunkRange()
 
 void chunk::flush()
 {
-	this->freeBuffer();
+	_MSDB_TRY_BEGIN
+	{
+		this->freeBuffer();
+	}_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "chunk::flush() error";
+	}
 }
 
 void chunk::freeBuffer()
 {
-	if (this->isMaterialized())
+	if (this->isMaterialized() && this->cached_ != nullptr)
 	{
-		if(this->cached_ != nullptr)
-		{
-			this->cached_->free();
-		}
-
-		this->cached_ = nullptr;
+		this->cached_->free();
 	}
+	this->cached_ = nullptr;
 }
 
 void chunk::makeBlocks(const bitmap& blockBitmap)

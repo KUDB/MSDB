@@ -7,13 +7,20 @@ namespace msdb
 namespace core
 {
 wavelet_encode_array::wavelet_encode_array(pArrayDesc desc)
-	: base_type(desc), originalChunkDims_(desc->getDSize())
+	: base_type(desc), originalChunkDims_(desc->getDSize()), maxLevel_(0)
 {
+	initChunkFactories();
+
 	//this->maxLevel_ = this->isMaxLevelAvailable(maxLevel);
 	for(pDimensionDesc desc : *this->desc_->dimDescs_)
 	{
 		desc->chunkSize_ = desc->blockSize_;
 	}
+}
+
+wavelet_encode_array::~wavelet_encode_array()
+{
+	std::cout << "~wavelet_encode_array()" << std::endl;
 }
 
 // TODO::Erase deprecated codes
@@ -74,6 +81,20 @@ bool wavelet_encode_array::isMaxLevelAvailable(const size_t maxLevel)
 	}
 
 	return level;
+}
+void wavelet_encode_array::initChunkFactories()
+{
+	wtChunkFactoryBuilder fb;
+
+	this->cFactories_.clear();
+
+	auto desc = this->getDesc()->getAttrDescs();
+	for (auto attrDesc : *desc)
+	{
+		assert(attrDesc->id_ == this->cFactories_.size());
+
+		this->cFactories_.push_back(std::visit(fb, attrDesc->dataType_));
+	}
 }
 }		// core
 }		// msdb

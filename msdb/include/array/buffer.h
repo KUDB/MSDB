@@ -36,7 +36,7 @@ public:
 
 	inline bool isAllocated()
 	{
-		if (this->isAllocated_)
+		if (this->isOwned_)
 			return true;
 		return false;
 	}
@@ -46,7 +46,7 @@ public:
 
 protected:
 	bufferSize bodySize_;
-	bool isAllocated_;
+	bool isOwned_;
 };
 }		// core
 }		// msdb

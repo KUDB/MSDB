@@ -128,16 +128,16 @@ std::shared_ptr<AFLOperator> getBuildIndexAFL(std::string arrName, std::string f
 {
 	switch (idxType)
 	{
-	//case attrIndexType::MMT:
-	//{
-	//	msdb::Context ctx;
-	//	auto afl = msdb::BuildIndex(
-	//		msdb::Insert(
-	//			getArrayAFL(arrName, compType), filePath),
-	//		idxType, paramOne
-	//	);
-	//	return afl;
-	//}
+	case attrIndexType::MMT:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::BuildIndex(
+			msdb::Insert(
+				getArrayAFL(arrName, compType), filePath),
+			idxType, paramOne
+		);
+		return afl;
+	}
 	//case attrIndexType::COMPASS:
 	//{
 	//	msdb::Context ctx;
@@ -157,18 +157,18 @@ std::shared_ptr<AFLOperator> getSaveIndexAFL(std::string arrName, compressionTyp
 {
 	switch (idxType)
 	{
-	//case attrIndexType::MMT:
-	//{
-	//	msdb::Context ctx;
-	//	auto afl = msdb::SaveIndex(
-	//		getArrayAFL(arrName, compType),
-	//		idxType
-	//	);
-	//	return afl;
-	//}
-	//case attrIndexType::COMPASS:
-	//{
-	//}
+	case attrIndexType::MMT:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::SaveIndex(
+			getArrayAFL(arrName, compType),
+			idxType
+		);
+		return afl;
+	}
+	case attrIndexType::COMPASS:
+	{
+	}
 	default:
 		return nullptr;
 	}
@@ -178,18 +178,18 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(std::string arrName, compressionTyp
 {
 	switch (idxType)
 	{
-	//case attrIndexType::MMT:
-	//{
-	//	msdb::Context ctx;
-	//	auto afl = msdb::LoadIndex(
-	//		getArrayAFL(arrName, compType),
-	//		idxType
-	//	);
-	//	return afl;
-	//}
-	//case attrIndexType::COMPASS:
-	//{
-	//}
+	case attrIndexType::MMT:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::LoadIndex(
+			getArrayAFL(arrName, compType),
+			idxType
+		);
+		return afl;
+	}
+	case attrIndexType::COMPASS:
+	{
+	}
 	default:
 		return nullptr;
 	}

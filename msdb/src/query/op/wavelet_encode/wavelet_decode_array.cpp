@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/wavelet_encode/wavelet_decode_array.h>
 
 namespace msdb
@@ -12,6 +12,10 @@ wavelet_decode_array::wavelet_decode_array(pArrayDesc desc, const size_t maxLeve
 	{
 		desc->chunkSize_ *= pow(2, this->maxLevel_);
 	}
+}
+wavelet_decode_array::~wavelet_decode_array()
+{
+	std::cout << "~wavelet_decode_array()" << std::endl;;
 }
 size_t wavelet_decode_array::getMaxLevel()
 {

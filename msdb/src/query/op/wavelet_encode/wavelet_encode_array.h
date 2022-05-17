@@ -16,6 +16,7 @@ public:
 
 public:
 	wavelet_encode_array(pArrayDesc desc);
+	virtual ~wavelet_encode_array();
 
 	/*
 	 * In wavelet_encode_array,
@@ -66,6 +67,9 @@ public:
 
 private:
 	bool isMaxLevelAvailable(size_t maxLevel);
+
+public:
+	virtual void initChunkFactories();
 
 protected:
 	size_t maxLevel_;

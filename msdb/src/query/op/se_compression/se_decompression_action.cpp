@@ -42,8 +42,9 @@ pArray se_decompression_action::execute(std::vector<pArray>& inputArrays, pQuery
 	pArray inArr = std::make_shared<seArray>(std::make_shared<arrayDesc>(*arrDesc));
 	inArr->copyChunkBitmap(planBitmap);
 
-	pArray outArr = std::make_shared<wavelet_encode_array>(std::make_shared<arrayDesc>(*arrDesc));
+	auto outArr = std::make_shared<wavelet_encode_array>(std::make_shared<arrayDesc>(*arrDesc));
 	outArr->copyChunkBitmap(planBitmap);
+	outArr->setOrigianlChunkDims(originalChunkDims);
 	//outArr->setLevel(maxLevel);							// TODO::move to optionalParam of attributeDesc
 	//outArr->setOrigianlChunkDims(originalChunkDims);		// TODO::move to optionalParam of attributeDesc 
 

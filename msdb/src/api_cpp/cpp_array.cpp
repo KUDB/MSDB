@@ -59,20 +59,20 @@ std::shared_ptr<core::dimensionDesc> DefDimension::getDesc()
 // attribute id will be specified in 'build' operator of cpp_api
 DefAttribute::DefAttribute(const std::string name, const core::dataType type,
 						   const core::materializedType matType,
-						   const std::map<std::string, std::string> params)
-	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, core::compressionType::NONE))
+						   const std::map<std::string, std::string> optionalParams)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, core::compressionType::NONE, optionalParams))
 {}
 
 DefAttribute::DefAttribute(const std::string name, const core::dataType type,
 						   const core::compressionType compType,
-						   const std::map<std::string, std::string> param)
-	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, core::materializedType::FLATTEN, compType))
+						   const std::map<std::string, std::string> optionalParams)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, core::materializedType::FLATTEN, compType, optionalParams))
 {}
 
 DefAttribute::DefAttribute(const std::string name, const core::dataType type,
 						   const core::materializedType matType, const core::compressionType compType,
-						   const std::map<std::string, std::string> params)
-	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, compType))
+						   const std::map<std::string, std::string> optionalParams)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, compType, optionalParams))
 {}
 
 std::shared_ptr<core::attributeDesc> DefAttribute::getDesc()

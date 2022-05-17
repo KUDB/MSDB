@@ -43,12 +43,12 @@ void flattenChunkBuffer::bufferAlloc(bufferSize size)
 	{
 		this->data_ = new char[size]();
 		this->bodySize_ = size;
-		this->isAllocated_ = true;
+		this->isOwned_ = true;
 	}
 	catch (const std::bad_alloc& e)
 	{
 		this->data_ = nullptr;
-		this->isAllocated_ = false;
+		this->isOwned_ = false;
 		this->bodySize_ = 0;
 
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_MEMORY_ERROR, MSDB_ER_MEMORY_ALLOC_FAIL, e.what()));
@@ -65,7 +65,7 @@ void flattenChunkBuffer::realloc(bufferSize size)
 		memcpy(re, this->data_, std::min(size, this->bodySize_));
 		this->free();
 
-		this->isAllocated_ = true;
+		this->isOwned_ = true;
 		this->data_ = re;
 		this->bodySize_ = size;
 	}
@@ -81,13 +81,13 @@ void flattenChunkBuffer::copy(void* data, bufferSize size)
 	{
 		this->data_ = new char[size]();
 		memcpy(this->data_, data, size);
-		this->isAllocated_ = true;
+		this->isOwned_ = true;
 		this->bodySize_ = size;
 	}
 	catch (const std::bad_alloc& e)
 	{
 		this->data_ = nullptr;
-		this->isAllocated_ = false;
+		this->isOwned_ = false;
 		this->bodySize_ = 0;
 
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_MEMORY_ERROR, MSDB_ER_MEMORY_ALLOC_FAIL, e.what()));
@@ -97,17 +97,17 @@ void flattenChunkBuffer::copy(void* data, bufferSize size)
 void flattenChunkBuffer::refChunkBufferWithoutOwnership(void* data, bufferSize size)
 {
 	this->free();
-	this->isAllocated_ = false;
+	this->isOwned_ = false;
 	this->data_ = data;
 	this->bodySize_ = size;
 }
 
 void flattenChunkBuffer::free()
 {
-	if(this->isAllocated_ && this->data_ != nullptr)
+	if(this->isOwned_ && this->data_ != nullptr)
 	{
 		delete[] this->data_;
-		this->isAllocated_ = false;
+		this->isOwned_ = false;
 		this->bodySize_ = 0;
 		this->data_ = nullptr;
 		//this->blocks_.clear();
