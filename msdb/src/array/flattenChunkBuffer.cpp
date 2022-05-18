@@ -34,9 +34,9 @@ void flattenChunkBuffer::bufferAlloc(bufferSize size)
 {
 	assert(size > 0);
 
-	if (this->isAllocated())
+	if (this->isOwned())
 	{
-		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_MEMORY_ERROR, MSDB_ER_MEMORY_ALLOC_FAIL));
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_MEMORY_ERROR, MSDB_ER_MEMORY_ALLOC_FAIL, "Free existing buffer data first"));
 	}
 
 	try

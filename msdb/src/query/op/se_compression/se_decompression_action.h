@@ -80,8 +80,8 @@ private:
 				inChunk->setTileOffset(offsets);
 				auto cDesc = inChunk->getDesc();
 				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(std::make_shared<chunkDesc>(*cDesc)));
-				outChunk->bufferAlloc();
-				inChunk->bufferRef(outChunk);		// outChunk should hold the buffer -> used latter
+				//outChunk->bufferAlloc();
+				//inChunk->bufferRef(outChunk);		// outChunk should hold the buffer -> used latter
 				
 				inChunk->makeAllBlocks();
 				outChunk->makeAllBlocks();
@@ -89,9 +89,12 @@ private:
 				inChunk->setLevel(maxLevel);
 				outChunk->setLevel(maxLevel);
 				// TODO::Copy buffer, etc...
+				
+				this->decompressChunk<Ty_>(inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId);
+				//io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
+				//							  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
 
-				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
-											  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
+				outChunk->bufferCopy(inChunk);
 			}
 
 			++(*cit);

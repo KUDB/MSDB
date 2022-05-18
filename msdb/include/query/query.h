@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_QUERY_H_
 #define _MSDB_QUERY_H_
 
@@ -45,12 +45,22 @@ public:
 		return std::static_pointer_cast<std::vector<Ty_>>(attrBuffers_[attrId].buffer_);
 	}
 
+	inline void setErrorMsg(const std::string& errorMsg)
+	{
+		this->errorMsg_ = errorMsg;
+	}
+	inline const std::string& getErrorMsg()
+	{
+		return this->errorMsg_;
+	}
+
 protected:
 	pTimer timer_;
 	pArrayDesc arrDesc_;
 	std::shared_ptr<std::vector<coor>> dimBuffer_;
 	std::map<attributeId, outBuffer> attrBuffers_;
 	std::shared_ptr<opPlan> qryPlan_;
+	std::string errorMsg_;
 };
 }		// core
 }		// msdb

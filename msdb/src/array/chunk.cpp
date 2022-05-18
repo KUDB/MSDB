@@ -261,7 +261,15 @@ void chunk::updateFromHeader()
 {
 	auto curHeader = std::static_pointer_cast<chunkHeader>(this->getHeader());
 	this->setSerializedSize(curHeader->bodySize_);
-	this->bufferAlloc();
+	// 220518 Changed, allocate new buffer if there is no buffer assigned
+	auto buf = this->getBuffer();
+	if (buf == nullptr || buf->size() < this->serializedSize_)
+	{
+		assert(buf == nullptr || buf->isOwned() == true);
+		this->bufferAlloc();
+	}
+
+
 }
 coor chunk::blockId2blockCoor(const blockId bId)
 {

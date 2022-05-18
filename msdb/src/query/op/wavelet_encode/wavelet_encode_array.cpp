@@ -20,7 +20,6 @@ wavelet_encode_array::wavelet_encode_array(pArrayDesc desc)
 
 wavelet_encode_array::~wavelet_encode_array()
 {
-	std::cout << "~wavelet_encode_array()" << std::endl;
 }
 
 // TODO::Erase deprecated codes

@@ -26,19 +26,35 @@ status query::process()
 	}
 	_MSDB_CATCH(msdb_exception e)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n" << e._what;
-		BOOST_LOG_TRIVIAL(error) << e._error_category_msg << "(" << std::to_string(e._error_category) << ")";
-		BOOST_LOG_TRIVIAL(error) << e._error_msg << "(" << std::to_string(e._error_code) << ")";
-		BOOST_LOG_TRIVIAL(error) << "File: " << e._file << " /Line: " << std::to_string(e._line) << "/Func: " << e._function;
+		std::stringstream ss;
+		ss << "Error in query processing:\n" << e._what << std::endl;;
+		ss << e._error_category_msg << "(" << std::to_string(e._error_category) << ")" << std::endl;;
+		ss << e._error_msg << "(" << std::to_string(e._error_code) << ")" << std::endl;;
+		ss << "File: " << e._file << " /Line: " << std::to_string(e._line) << "/Func: " << e._function << std::endl;;
+
+		BOOST_LOG_TRIVIAL(error) << ss.str();
+		this->errorMsg_ = ss.str();
+
+		return status(statusSectionCode::ERR, (statusSubCodeType)e._error_code);
 	}
 	_MSDB_CATCH_EXCEPTION(e)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n" << e.what();
+		std::stringstream ss;
+		ss << "Error in query processing:\n" << e.what();
+		
+		BOOST_LOG_TRIVIAL(error) << ss.str();
+		this->errorMsg_ = ss.str();
+
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}
 	_MSDB_CATCH_ALL
 	{
-		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n";
+		std::stringstream ss;
+		ss << "Unknwon error in query processing:\n";
+		
+		BOOST_LOG_TRIVIAL(error) << ss.str();
+		this->errorMsg_ = ss.str();
+		
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}
 	_MSDB_CATCH_END

@@ -15,7 +15,6 @@ wavelet_decode_array::wavelet_decode_array(pArrayDesc desc, const size_t maxLeve
 }
 wavelet_decode_array::~wavelet_decode_array()
 {
-	std::cout << "~wavelet_decode_array()" << std::endl;;
 }
 size_t wavelet_decode_array::getMaxLevel()
 {

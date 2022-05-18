@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BUFFER_H_
 #define _MSDB_BUFFER_H_
 
@@ -34,11 +34,9 @@ public:
 	virtual void ref(pBuffer refBuffer, bufferSize size) = 0;
 	virtual void free();										// free binary data
 
-	inline bool isAllocated()
+	inline bool isOwned()
 	{
-		if (this->isOwned_)
-			return true;
-		return false;
+		return this->isOwned_;
 	}
 
 	//virtual bool pin() const = 0;
