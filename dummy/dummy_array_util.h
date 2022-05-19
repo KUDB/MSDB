@@ -22,8 +22,10 @@ static const int arr_id_huffman = 35;
 static const int arr_id_adapt_huffman = 36;
 static const int arr_id_lzw_huffman = 40;
 static const int arr_id_zip = 45;
+static const int arr_id_tthresh = 50;
+static const int arr_id_zfp = 55;
 
-Array getArrayAFL(
+msdb::Array getArrayAFL(
 	std::string arrName, compressionType compType = compressionType::RAW);
 std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	std::string arrName, std::string filePath,

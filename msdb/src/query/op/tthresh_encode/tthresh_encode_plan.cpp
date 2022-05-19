@@ -25,5 +25,10 @@ tthresh_encode_array_pset::tthresh_encode_array_pset(parameters& pSet)
 {
 	assert(this->params_.size() == 1);
 }
+tthresh_encode_plan_pset::tthresh_encode_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
+{
+	assert(this->params_.size() == 1);
+}
 }		// core
 }		// msdb

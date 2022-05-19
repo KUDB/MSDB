@@ -3,9 +3,8 @@
 #define _MSDB_WT_CHUNK_H_
 
 #include <pch.h>
+#include <compression/compressionParam.h>
 #include <array/monoChunk.h>
-
-#define _STR_PARAM_WAVELET_LEVEL_	"wavelet_level"
 
 namespace msdb
 {

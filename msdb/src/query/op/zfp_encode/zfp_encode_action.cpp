@@ -43,9 +43,17 @@ pArray zfp_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
         auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
         while (!cit->isEnd())
         {
+            //if (cit->seqPos() != 27)
+            //{
+            //    ++(*cit);
+            //    continue;
+            //}
+            //std::cout << "27" << std::endl;
+
             auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
             auto outChunk = outArr->makeChunk(cDesc);
-            outChunk->bufferRef(**cit);
+            outChunk->bufferCopy(**cit);
+            outChunk->makeAllBlocks();
 
             //========================================//
             qry->getTimer()->nextWork(0, workType::IO);

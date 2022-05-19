@@ -25,5 +25,10 @@ zfp_encode_array_pset::zfp_encode_array_pset(parameters& pSet)
 {
 	assert(this->params_.size() == 1);
 }
+zfp_encode_plan_pset::zfp_encode_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
+{
+	assert(this->params_.size() == 1);
+}
 }		// core
 }		// msdb

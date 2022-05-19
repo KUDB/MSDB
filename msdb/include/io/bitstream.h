@@ -535,7 +535,7 @@ namespace core
 		using pos_type = typename _Traits::pos_type;
 
 		vector_iobitstream()
-			: _myIs(_STD addressof(this->_concreateContainer)), _myOs(_STD addressof(this->_concreateContainer))
+			: _myIs(_STD addressof(this->_concreateContainer)), _myOs(_STD addressof(this->_concreateContainer)), isFlushed(false)
 		{
 			_myOs::addNewBlock();
 		}
@@ -559,6 +559,8 @@ namespace core
 
 		virtual void flush()
 		{
+			assert(isFlushed = false);
+			isFlushed = true;
 			_myIs::flush();
 			_myOs::flush();
 		}
@@ -576,6 +578,7 @@ namespace core
 
 	protected:
 		container_type _concreateContainer;
+		bool isFlushed;
 	};
 
 	// STRUCT TEMPLATE _BitSmanip

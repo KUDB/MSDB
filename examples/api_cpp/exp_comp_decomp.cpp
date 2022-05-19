@@ -17,7 +17,8 @@ int main()
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Build(
-			0, msdb::dummy::data_star1024x1024::arrName,
+			msdb::dummy::data_star1024x1024::aid, 
+			msdb::dummy::data_star1024x1024::arrName,
 			{
 				msdb::DefDimension("Y", 0, 1024, 128, 32),
 				msdb::DefDimension("X", 0, 1024, 128, 32)
@@ -47,7 +48,8 @@ int main()
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Build(
-			1, msdb::dummy::data_star1024x1024::arrName + "_SEACOW",
+			msdb::dummy::data_star1024x1024::aid + msdb::dummy::arr_id_seacow, 
+			msdb::dummy::data_star1024x1024::arrName + "_SEACOW",
 			{
 				msdb::DefDimension("Y", 0, 1024, 128, 32),
 				msdb::DefDimension("X", 0, 1024, 128, 32)
@@ -84,27 +86,27 @@ int main()
 		std::cout << qry.strStatus() << std::endl;
 	}
 	////////////////////////////////////////////////
-	//{
-	//	msdb::Context ctx;
-	//	auto afl = msdb::Comp(
-	//		msdb::Insert(
-	//			msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),
-	//			msdb::dummy::data_star1024x1024::filePath
-	//		),
-	//		msdb::compressionType::SEACOW,
-	//		msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
-	//	);
+	{
+		msdb::Context ctx;
+		auto afl = msdb::Comp(
+			msdb::Insert(
+				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),
+				msdb::dummy::data_star1024x1024::filePath
+			),
+			msdb::compressionType::SEACOW,
+			msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
+		);
 
-	//	std::cout << "=====" << std::endl;
-	//	std::cout << afl->toString(0) << std::endl;
-	//	std::cout << "=====" << std::endl;
+		std::cout << "=====" << std::endl;
+		std::cout << afl->toString(0) << std::endl;
+		std::cout << "=====" << std::endl;
 
-	//	auto qry = msdb::Query(afl);
-	//	auto ra = qry.execute();
-	//	ra.close();
-	//	std::cout << qry.strStatus() << std::endl;
-	//	std::cout << qry.getTimer()->getDetailResult() << std::endl;
-	//}
+		auto qry = msdb::Query(afl);
+		auto ra = qry.execute();
+		ra.close();
+		std::cout << qry.strStatus() << std::endl;
+		std::cout << qry.getTimer()->getDetailResult() << std::endl;
+	}
 	////////////////////////////////////////////////
 	{
 		msdb::Context ctx;
@@ -145,7 +147,6 @@ int main()
 			),
 			msdb::Domain(msdb::Coordinates({ 500, 500 }), msdb::Coordinates({ 505, 505 }))
 		);
-
 
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;

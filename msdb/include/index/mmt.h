@@ -3,13 +3,12 @@
 #define _MSDB_MMT_H_
 
 #include <pch.h>
+#include <compression/compressionParam.h>
 #include <array/arrayUtil.h>
 #include <index/mmtNode.h>
 #include <io/serializable.h>
 #include <util/coordinate.h>
 #include <util/logger.h>
-
-#define _STR_PARAM_MMT_LEVEL_	"mmt_level"
 
 namespace msdb
 {

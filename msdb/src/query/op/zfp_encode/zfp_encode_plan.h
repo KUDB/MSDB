@@ -25,6 +25,11 @@ class zfp_encode_array_pset : public opArrayParamSet
 public:
 	zfp_encode_array_pset(parameters& pSet);
 };
+class zfp_encode_plan_pset : public opPlanParamSet
+{
+public:
+	zfp_encode_plan_pset(parameters& pSet);
+};
 }		// core
 }		// msdb
 #endif	// _MSDB_OP_ZFP_ENCODE_PLAN_H_

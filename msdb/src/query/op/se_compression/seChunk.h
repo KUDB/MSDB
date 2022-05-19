@@ -3,13 +3,11 @@
 #define _MSDB_SE_CHUNK_H_
 
 #include <pch.h>
+#include <compression/compressionParam.h>
 #include <array/flattenChunk.h>
 #include <array/block.h>
 #include <compression/waveletUtil.h>
 #include <numeric>
-
-#define _STR_PARAM_SE_LEVEL_		"se_level"
-#define _STR_PARAM_SOURCE_CHUNKID_	"source_chunkid"
 
 namespace msdb
 {

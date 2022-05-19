@@ -3,11 +3,10 @@
 #define _MSDB_COMPASS_H_
 
 #include <pch.h>
+#include <compression/compressionParam.h>
 #include <index/attributeIndex.h>
 #include <util/element.h>
 #include <array/chunkIterator.h>
-
-#define _STR_PARAM_COMPASS_BINS_	"compass_bins"
 
 namespace msdb
 {

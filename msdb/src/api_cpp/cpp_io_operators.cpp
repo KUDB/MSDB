@@ -21,6 +21,10 @@
 #include <op/zip_save/zip_save_plan.h>
 #include <op/wavelet_encode/wavelet_encode_plan.h>
 #include <op/wavelet_encode/wavelet_decode_plan.h>
+#include <op/zfp_encode/zfp_encode_plan.h>
+#include <op/zfp_encode/zfp_decode_plan.h>
+#include <op/tthresh_encode/tthresh_encode_plan.h>
+#include <op/tthresh_encode/tthresh_decode_plan.h>
 
 #include <op/mmt_build/mmt_build_plan.h>
 #include <op/mmt_save/mmt_save_plan.h>
@@ -352,6 +356,28 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
+	case compressionType::ZFP:
+	{
+		auto qryPlan = std::make_shared<core::zfp_encode_plan>();
+		core::parameters params = {
+			std::make_shared<core::opParamPlan>(childQry_->getPlan())
+		};
+		qryPlan->setParamSet(
+			std::make_shared<core::zfp_encode_plan_pset>(params));
+		return qryPlan;
+		break;
+	}
+	case compressionType::TTHRESH:
+	{
+		auto qryPlan = std::make_shared<core::tthresh_encode_plan>();
+		core::parameters params = {
+			std::make_shared<core::opParamPlan>(childQry_->getPlan())
+		};
+		qryPlan->setParamSet(
+			std::make_shared<core::tthresh_encode_plan_pset>(params));
+		return qryPlan;
+		break;
+	}
 	//////////////////////////////
 	default:
 		return nullptr;
@@ -584,6 +610,28 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
+	case compressionType::ZFP:
+	{
+		auto qryPlan = std::make_shared<core::zfp_decode_plan>();
+		core::parameters params = {
+			std::make_shared<core::opParamArray>(this->getArrayDesc())
+		};
+		qryPlan->setParamSet(
+			std::make_shared<core::zfp_decode_array_pset>(params));
+		return qryPlan;
+		break;
+	}
+	case compressionType::TTHRESH:
+	{
+		auto qryPlan = std::make_shared<core::tthresh_decode_plan>();
+		core::parameters params = {
+			std::make_shared<core::opParamArray>(this->getArrayDesc())
+		};
+		qryPlan->setParamSet(
+			std::make_shared<core::tthresh_decode_array_pset>(params));
+		return qryPlan;
+		break;
+	}
 	default:
 		return nullptr;
 	};

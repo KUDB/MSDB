@@ -28,6 +28,8 @@ public:
 public:
 	virtual void serialize(bstream& os) override;
 	virtual void deserialize(bstream& is) override;
+
+	virtual void serialize(std::stringstream& os);
 };
 
 template <typename Ty_>
@@ -62,9 +64,9 @@ public:
 		return this->blocks_[bId];
 	}
 
-//public:
-//	virtual void serialize(std::ostream& os) override;
-//	virtual void deserialize(std::istream& is) override;
+public:
+	virtual void serialize(std::ostream& os) override;
+	virtual void deserialize(std::istream& is) override;
 };
 //////////////////////////////
 // zfpChunkFactory

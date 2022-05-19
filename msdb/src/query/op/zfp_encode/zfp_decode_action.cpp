@@ -65,6 +65,7 @@ void zfp_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 			chunkId cid = cit->seqPos();
 			//auto inChunk = this->makeInChunk(outArr, attrDesc, cid);
 			auto outChunk = outArr->makeChunk(attrDesc->id_, cid);
+			outChunk->makeAllBlocks();
 
 			io_service_->post(boost::bind(&zfp_decode_action::loadChunk, this,
 										  qry, currentThreadId, outArr, attrDesc->id_, outChunk));
