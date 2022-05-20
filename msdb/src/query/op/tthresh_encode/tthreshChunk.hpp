@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "tthreshChunk.h"
 #include <tthreshCompressor.h>
+#include <io/io_util.h>
 
 namespace msdb
 {
@@ -78,7 +79,8 @@ void tthreshBlock<Ty_>::serialize(std::ostream& os)
 	comp.compress(inputDim, (char*)this->cached_->getData(), (size_t)this->getDesc()->mSize_, oss, io_type,
 				  tthresh::Target::eps, target_value, skip_bytes, 
 				  verbose, debug);
-
+	uint64_t streamSize = size_of_stream(oss);
+	os << streamSize;
 	os << oss.str();
 
 	//std::vector<uint32_t> dims, char* input, size_t inputSize, std::ostream& output, string io_type,
@@ -100,9 +102,32 @@ void tthreshBlock<Ty_>::deserialize(std::istream& is)
 	bool verbose = false;
 	bool debug = false;
 
-	comp.decompress(is, oss, data, cutout, autocrop, verbose, debug);
+	uint64_t streamSize = 0;
+	is >> streamSize;
 
-	memcpy(this->cached_->getData(), oss.str().c_str(), this->getDesc()->mSize_);
+	char* inData = nullptr;
+	try
+	{
+		inData = new char[streamSize];
+		is.read(inData, streamSize);
+
+		std::stringstream iss;
+		iss.write(inData, streamSize);
+		iss.seekg(0);
+
+		comp.decompress(iss, oss, data, cutout, autocrop, verbose, debug);
+
+		memcpy(this->cached_->getData(), oss.str().c_str(), this->getDesc()->mSize_);
+	}
+	catch (...)
+	{
+		if (inData)
+		{
+			delete[] inData;
+		}
+
+		throw;
+	}
 }
 // ===========================
 
@@ -150,7 +175,7 @@ inline void tthreshChunk<Ty_>::deserialize(std::istream& is)
 	auto it = this->getBlockIterator();
 	while (!it->isEnd())
 	{
-		std::static_pointer_cast<tthreshBlock<Ty_>>(**it)->deserialize(is);
+		std::static_pointer_cast<tthreshBlock<Ty_>>(**it)->deserialize(oss);
 
 		++(*it);
 	}

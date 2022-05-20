@@ -28,8 +28,6 @@ public:
 public:
 	virtual void serialize(bstream& os) override;
 	virtual void deserialize(bstream& is) override;
-
-	virtual void serialize(std::stringstream& os);
 };
 
 template <typename Ty_>

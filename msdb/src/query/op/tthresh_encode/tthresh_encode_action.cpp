@@ -45,6 +45,7 @@ pArray tthresh_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
             auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
             auto outChunk = outArr->makeChunk(cDesc);
             outChunk->bufferRef(**cit);
+            outChunk->makeAllBlocks();
 
             //========================================//
             qry->getTimer()->nextWork(0, workType::IO);

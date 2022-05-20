@@ -49,10 +49,6 @@ TEST(tthresh_encode, tthresh_encode_int8_t)
 		// Compress block
 		std::static_pointer_cast<core::tthreshBlock<char>>(blk)->serialize(ssComp);
 
-		// Compress raw source array
-		uint8_t* libOutput = nullptr;
-		//zfp_lib_compress(libInput, libOutput, inputSize, outputBytes);
-
 		EXPECT_TRUE(true);
 	}
 	catch (...)
@@ -64,7 +60,7 @@ TEST(tthresh_encode, tthresh_encode_int8_t)
 TEST(tthresh_encode, tthresh_encode_decode_int8_t)
 {
 	std::stringstream ssComp;
-	core::dimension dim({ 32, 32 });
+	core::dimension dim({ 128, 128 });
 	int64_t inputSize = dim.area() * sizeof(char);
 	int64_t outputBytes = 0;
 	uint8_t* source = new uint8_t[inputSize];

@@ -894,8 +894,12 @@ double* tthreshCompressor::compress(string input_file, string compressed_file,
     close_write();
     delete[] c;
     size_t newbits = _zs.total_written_bytes * 8;
-    cout << "oldbits = " << size * io_type_size * 8L << ", newbits = " << newbits << ", compressionratio = " << size * io_type_size * 8L / double(newbits)
-        << ", bpv = " << newbits / double(size) << endl << flush;
+    if (verbose)
+    {
+        cout << "oldbits = " << size * io_type_size * 8L << ", newbits = " << newbits << ", compressionratio = " << size * io_type_size * 8L / double(newbits)
+            << ", bpv = " << newbits / double(size) << endl << flush;
+    }
+
     return data;
 }
 void tthreshCompressor::compress(std::vector<uint32_t> dims,
@@ -1182,8 +1186,11 @@ void tthreshCompressor::compress(std::vector<uint32_t> dims,
     delete[] c;
     delete[] data;
     size_t newbits = _zs.total_written_bytes * 8;
-    cout << "oldbits = " << size * io_type_size * 8L << ", newbits = " << newbits << ", compressionratio = " << size * io_type_size * 8L / double(newbits)
-        << ", bpv = " << newbits / double(size) << endl << flush;
+    if (verbose)
+    {
+        cout << "oldbits = " << size * io_type_size * 8L << ", newbits = " << newbits << ", compressionratio = " << size * io_type_size * 8L / double(newbits)
+            << ", bpv = " << newbits / double(size) << endl << flush;
+    }
 }
 
 //////////////////////////////
