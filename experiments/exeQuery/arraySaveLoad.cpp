@@ -8,20 +8,18 @@ namespace dummy
 msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string& filePath, const core::compressionType& compType)
 {
 	msdb::Context ctx;
-	auto afl = msdb::dummy::getInsertSaveAFL(
-		msdb::dummy::data_star1024x1024::arrName,
-		msdb::dummy::data_star1024x1024::filePath,
-		msdb::core::compressionType::SEACOW);
+	auto afl = msdb::Consume(msdb::dummy::getInsertSaveAFL(
+		arrName, filePath, compType));
 
-	std::cout << "=====" << std::endl;
-	std::cout << afl->toString(0) << std::endl;
-	std::cout << "=====" << std::endl;
+	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
+	BOOST_LOG_TRIVIAL(info) << afl->toString(0) << std::endl;
+	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
 
 	auto qry = msdb::Query(afl);
 	auto ra = qry.execute();
 	ra.close();
-	std::cout << qry.strStatus() << std::endl;
-	std::cout << qry.getTimer()->getDetailResult() << std::endl;
+	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
+	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
 
 	return qry;
 }
@@ -30,19 +28,19 @@ msdb::Query executeLoadArray(const std::string& arrName, const core::compression
 	msdb::Context ctx;
 	auto afl = msdb::Consume(msdb::dummy::getLoadAFL(arrName, compType));
 
-	std::cout << "=====" << std::endl;
-	std::cout << afl->toString(0) << std::endl;
-	std::cout << "=====" << std::endl;
+	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
+	BOOST_LOG_TRIVIAL(info) << afl->toString(0) << std::endl;
+	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
 
 	auto qry = msdb::Query(afl);
 	auto ra = qry.execute();
 	ra.close();
 	if (qry.getStatus() == msdb::Query::Status::FAIL)
 	{
-		std::cout << ra.getQuery()->getErrorMsg() << std::endl;;
+		BOOST_LOG_TRIVIAL(info) << ra.getQuery()->getErrorMsg() << std::endl;;
 	}
-	std::cout << qry.strStatus() << std::endl;
-	std::cout << qry.getTimer()->getDetailResult() << std::endl;
+	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
+	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
 
 	return qry;
 }
@@ -53,19 +51,19 @@ msdb::Query executeRangeQryArray(const std::string& arrName, const core::compres
 		msdb::dummy::getLoadAFL(arrName, compType),
 		range);
 
-	std::cout << "=====" << std::endl;
-	std::cout << afl->toString(0) << std::endl;
-	std::cout << "=====" << std::endl;
+	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
+	BOOST_LOG_TRIVIAL(info) << afl->toString(0) << std::endl;
+	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
 
 	auto qry = msdb::Query(afl);
 	auto ra = qry.execute();
 	msdb::printResultArray(ra);
 	if (qry.getStatus() == msdb::Query::Status::FAIL)
 	{
-		std::cout << ra.getQuery()->getErrorMsg() << std::endl;;
+		BOOST_LOG_TRIVIAL(info) << ra.getQuery()->getErrorMsg() << std::endl;;
 	}
-	std::cout << qry.strStatus() << std::endl;
-	std::cout << qry.getTimer()->getDetailResult() << std::endl;
+	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
+	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
 
 	return qry;
 }
