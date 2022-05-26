@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <util/timer.h>
 #include <util/logger.h>
 #include <util/experimentRecorder.h>
@@ -315,7 +315,7 @@ std::string timer::getDetailResult()
 
 	std::map<std::string, float> jobWork;
 
-	bool printDetail = true;
+	bool printDetail = false;
 
 	if (printDetail)
 	{

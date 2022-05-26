@@ -59,6 +59,10 @@
 #include <boost/thread/thread.hpp>
 #include <boost/lexical_cast.hpp>
 
+// For error handler
+#include <boost/exception/diagnostic_information.hpp> 
+#include <boost/exception_ptr.hpp> 
+
 // For zip compression
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/copy.hpp>

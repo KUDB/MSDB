@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <typeinfo>
 #include <api_cpp/cpp_query.h>
 #include <api_cpp/cpp_operators.h>
@@ -63,5 +63,13 @@ std::string Query::strStatus()
 	};
 	ss << dimBuffer->size() << " cells (" << boost::format("%1$.5f") % this->qry_->getTimer()->getExecutionTime() << " sec)" << std::endl;
 	return ss.str();
+}
+void Query::setVerbose()
+{
+	this->qry_->setVerbose();
+}
+void Query::unsetVerbose()
+{
+	this->qry_->unsetVerbose();
 }
 }		// msdb

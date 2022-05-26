@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_INSERT_ACTION_H_
 #define _MSDB_OP_INSERT_ACTION_H_
 
@@ -33,7 +33,7 @@ private:
 	 * length: number of Ty_ elements
 	 */
 	template<typename Ty_>
-	void insertData(pArray inArr, Ty_* data, size_t length);
+	void insertData(pArray inArr, pAttributeDesc attr, Ty_* data, size_t length);
 };
 }		// core
 }		// msdb

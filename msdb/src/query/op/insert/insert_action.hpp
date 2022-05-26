@@ -9,20 +9,41 @@ template<typename Ty_>
 void insert_action::insertFromFile(pArray inArr, pAttributeDesc attr)
 {
 	size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getDims(), sizeof(Ty_));
-	Ty_* fileData = new Ty_[bufferSize];
+	Ty_* fileData = new Ty_[bufferSize / sizeof(Ty_)];
 
-	std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[2]->getParam()));
-	std::ifstream in(filePath, std::ios::binary);
+	_MSDB_TRY_BEGIN
+	{
+		std::filesystem::path filePath = *(std::static_pointer_cast<std::string>(this->params_[2]->getParam()));
+		std::ifstream in(filePath, std::ios::binary);
 
-	// Get file size
-	in.seekg(0, std::ios::end);
-	size_t fileLength = (size_t)in.tellg();
-	in.seekg(0, std::ios::beg);
+		if (!in)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_CANNOT_OPEN_FILE));
+		}
+		// Get file size
+		//in.seekg(0, std::ios::end);
+		std::streampos begin, end;
+		begin = in.tellg();
+		in.seekg(0, std::ios::end);
+		end = in.tellg();
 
-	in.read((char*)(fileData), fileLength);
-	in.close();
+		size_t fileLength = end - begin;
+		in.seekg(0, std::ios::beg);
 
-	this->insertData(inArr, fileData, fileLength);
+		if (fileLength < bufferSize)
+		{
+			BOOST_LOG_TRIVIAL(warning) << "File size(" << fileLength << ") is smaller than buffer size(" << bufferSize << ").";
+		}
+
+		in.read((char*)(fileData), std::min(fileLength, bufferSize));
+		in.close();
+
+		this->insertData(inArr, attr, fileData, std::min(fileLength, bufferSize));
+	}
+	_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "Error: insertFromFile(" << inArr->getDesc()->name_ << ", " << attr->getName();
+	}
 
 	delete[] fileData;
 }
@@ -46,7 +67,7 @@ void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 		memcpy(fileData, mem.get(), memSize);
 
 		// TODO:: copy memory to temporal buffer
-		this->insertData(inArr, fileData, memSize / sizeof(Ty_));
+		this->insertData(inArr, attr, fileData, memSize / sizeof(Ty_));
 	}
 	_MSDB_CATCH(const std::out_of_range & e)
 	{
@@ -64,61 +85,58 @@ void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 }
 
 template<typename Ty_>
-void insert_action::insertData(pArray inArr, Ty_* data, size_t length)
+void insert_action::insertData(pArray inArr, pAttributeDesc attr, Ty_* data, size_t length)
 {
 	auto dims = inArr->getDesc()->getDimDescs()->getDims();
 	auto globalItr = mdItr(dims);
 
-	for (auto attr : *inArr->getDesc()->attrDescs_)
+	_MSDB_TRY_BEGIN
 	{
-		_MSDB_TRY_BEGIN
+		auto chunkItr = inArr->getChunkIterator(attr->id_);
+		while (!chunkItr->isEnd())
 		{
-			auto chunkItr = inArr->getChunkIterator(attr->id_);
-			while (!chunkItr->isEnd())
+			inArr->makeChunk(attr->id_, chunkItr->seqPos());
+			if (chunkItr->isExist())
 			{
-				inArr->makeChunk(attr->id_, chunkItr->seqPos());
-				if (chunkItr->isExist())
+				auto inChunk = (**chunkItr);
+				inChunk->bufferAlloc();
+				inChunk->makeAllBlocks();
+				auto chunkGlobalCoor = inChunk->getDesc()->sp_;
+				auto blockItr = inChunk->getBlockIterator();
+				while (!blockItr->isEnd())
 				{
-					auto inChunk = (**chunkItr);
-					inChunk->bufferAlloc();
-					inChunk->makeAllBlocks();
-					auto chunkGlobalCoor = inChunk->getDesc()->sp_;
-					auto blockItr = inChunk->getBlockIterator();
-					while (!blockItr->isEnd())
+					if (blockItr->isExist())
 					{
-						if (blockItr->isExist())
+						auto inBlock = (**blockItr);
+						auto itemItr = inBlock->getItemIterator();
+						auto blockGlobalCoor = chunkGlobalCoor + inBlock->getDesc()->getSp();
+
+						while (!itemItr->isEnd())
 						{
-							auto inBlock = (**blockItr);
-							auto itemItr = inBlock->getItemIterator();
-							auto blockGlobalCoor = chunkGlobalCoor + inBlock->getDesc()->getSp();
+							auto mySeqPos = globalItr.coorToSeq(itemItr->coor() + blockGlobalCoor);
 
-							while (!itemItr->isEnd())
+							if (mySeqPos < length)
 							{
-								auto mySeqPos = globalItr.coorToSeq(itemItr->coor() + blockGlobalCoor);
-
-								if (mySeqPos < length)
-								{
-									(**itemItr).set<Ty_>(data[mySeqPos]);
-								}
-								++(*itemItr);
+								(**itemItr).set<Ty_>(data[mySeqPos]);
 							}
+							++(*itemItr);
 						}
-
-						++(*blockItr);
 					}
-				}
 
-				++(*chunkItr);
+					++(*blockItr);
+				}
 			}
+
+			++(*chunkItr);
 		}
-		_MSDB_CATCH_ALL
-		{
-			// TODO::logging exceptions
-			BOOST_LOG_TRIVIAL(error) << "Insert: error for the attribute (" << attr->id_ << ")";
-			throw;
-		}
-		_MSDB_CATCH_END
 	}
+	_MSDB_CATCH_ALL
+	{
+		// TODO::logging exceptions
+		BOOST_LOG_TRIVIAL(error) << "Insert: error for the attribute (" << attr->id_ << ")";
+		throw;
+	}
+	_MSDB_CATCH_END
 }
 }		// core
 }		// msdb

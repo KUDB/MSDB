@@ -8,7 +8,7 @@ namespace msdb
 namespace core
 {
 query::query(std::shared_ptr<opPlan> qryPlan)
-	: qryPlan_(qryPlan), timer_(std::make_shared<timer>()), arrDesc_(nullptr), dimBuffer_(std::make_shared<std::vector<coor>>())
+	: qryPlan_(qryPlan), timer_(std::make_shared<timer>()), arrDesc_(nullptr), dimBuffer_(std::make_shared<std::vector<coor>>()), verbose_ = false
 {
 
 }
@@ -24,7 +24,7 @@ status query::process()
 		this->arrDesc_ = this->qryPlan_->inferSchema();
 		this->qryPlan_->process(shared_from_this());
 	}
-	_MSDB_CATCH(msdb_exception e)
+	_MSDB_CATCH(const msdb_exception& e)
 	{
 		std::stringstream ss;
 		ss << "Error in query processing:\n" << e._what << std::endl;;
@@ -35,7 +35,20 @@ status query::process()
 		BOOST_LOG_TRIVIAL(error) << ss.str();
 		this->errorMsg_ = ss.str();
 
+		std::cout << "MSDB error" << std::endl;
+		std::cout << ss.str() << std::endl;
+
 		return status(statusSectionCode::ERR, (statusSubCodeType)e._error_code);
+	}
+	_MSDB_CATCH(const boost::exception& ex)
+	{
+		BOOST_LOG_TRIVIAL(error) << boost::diagnostic_information(ex);
+		this->errorMsg_ = boost::diagnostic_information(ex);
+
+		std::cout << "Boost error" << std::endl;
+		std::cout << boost::diagnostic_information(ex) << std::endl;
+
+		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}
 	_MSDB_CATCH_EXCEPTION(e)
 	{
@@ -44,6 +57,9 @@ status query::process()
 		
 		BOOST_LOG_TRIVIAL(error) << ss.str();
 		this->errorMsg_ = ss.str();
+
+		std::cout << "Boost error" << std::endl;
+		std::cout << ss.str() << std::endl;
 
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}
@@ -54,6 +70,8 @@ status query::process()
 		
 		BOOST_LOG_TRIVIAL(error) << ss.str();
 		this->errorMsg_ = ss.str();
+
+		std::cout << "Unknwon error" << std::endl;
 		
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}

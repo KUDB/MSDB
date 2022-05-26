@@ -54,6 +54,10 @@ public:
 		return this->errorMsg_;
 	}
 
+	inline void setVerbose() { this->verbose_ = true; }
+	inline void unsetVerbose() { this->verbose_ = false; }
+	inline bool isVerbose() { return this->verbose_; }
+
 protected:
 	pTimer timer_;
 	pArrayDesc arrDesc_;
@@ -61,6 +65,7 @@ protected:
 	std::map<attributeId, outBuffer> attrBuffers_;
 	std::shared_ptr<opPlan> qryPlan_;
 	std::string errorMsg_;
+	bool verbose_;
 };
 }		// core
 }		// msdb

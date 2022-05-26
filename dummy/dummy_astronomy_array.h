@@ -5,7 +5,7 @@
 #include <api_cpp/msdb.h>
 #include <dummy_array.h>
 
-#define DUMMY_PATH(path) "../dummy/"#path
+#define DUMMY_PATH(path) "../../dummy/"#path
 
 namespace msdb
 {

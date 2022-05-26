@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_API_CPP_QUERY_H_
 #define _MSDB_API_CPP_QUERY_H_
 
@@ -34,6 +34,10 @@ public:
 	}
 	core::pTimer getTimer();
 	std::string strStatus();
+
+	void setVerbose();
+	void unsetVerbose();
+	inline bool isVerbose() { return this->qry_->isVerbose(); }
 
 protected:
 	Status status_;		// Initial status: READY
