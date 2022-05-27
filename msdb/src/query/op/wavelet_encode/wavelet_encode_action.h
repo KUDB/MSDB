@@ -39,20 +39,36 @@ private:
 
 		while(!cItr->isEnd())
 		{
-			// --------------------
-			// TODO::PARALLEL
-			auto convertedChunkList = this->chunkEncode<Ty_>((**cItr), w, maxLevel, q);
-			// --------------------
-			for(auto chk : convertedChunkList)
+			if (cItr->isExist())
 			{
-				auto cid = outArr->chunkCoorToChunkId(chk->getDesc()->chunkCoor_);
-				chk->setId(cid);
+				// --------------------
+				// TODO::PARALLEL
+				auto convertedChunkList = this->chunkEncode<Ty_>((**cItr), w, maxLevel, q);
+				// --------------------
+				for (auto chk : convertedChunkList)
+				{
+					auto cid = outArr->chunkCoorToChunkId(chk->getDesc()->chunkCoor_);
+					chk->setId(cid);
+				}
+
+				outArr->insertChunk(attrDesc->id_, convertedChunkList.begin(), convertedChunkList.end());
 			}
 
-			outArr->insertChunk(attrDesc->id_, convertedChunkList.begin(), convertedChunkList.end());
 			++(*cItr);
 		}
 	}
+
+	template <>
+	void attributeEncode(const concreteTy<float>& type, 
+						 pArray outArr, pArray inArr, 
+						 pAttributeDesc attrDesc, pQuery q)
+	{}
+
+	template <>
+	void attributeEncode(const concreteTy<double>& type,
+						 pArray outArr, pArray inArr,
+						 pAttributeDesc attrDesc, pQuery q)
+	{}
 
 	template <class Ty_>
 	std::list<pChunk> chunkEncode(pChunk inChunk,
@@ -124,6 +140,8 @@ private:
 						 range& arrRange, dimensionId basisDim,
 						 pWavelet w, pQuery q)
 	{
+		Ty_ signMask = 0x1 << (sizeof(Ty_) * CHAR_BIT - 1);
+
 		size_t length = arrRange.getEp()[basisDim];
 		size_t halfLength = length / 2;
 		bool oddLength = (length % 2) != 0;
@@ -162,8 +180,25 @@ private:
 				Ty_ x1 = (**iit).get<Ty_>();
 				++(*iit);
 
+				///// >> 220526 SIGNED MOD << /////
 				row[di] = x1 - x0;
-				row[ai] = x0 + std::floor(row[di] / 2.0);
+				if (row[di] & signMask)
+				{
+					row[ai] = x0 - std::floor((Ty_)(~row[di] + 1) / 2.0);
+				}
+				else
+				{
+					row[ai] = x0 + std::floor(row[di] / 2.0);
+				}
+				//if (row[ai] == 127 || row[di] == 127)
+				//{
+				//	std::cout << "";
+				//}
+				///// >> 220526 SIGNED ORI << /////
+				//row[di] = x1 - x0;
+				//row[ai] = x0 + std::floor(row[di] / 2.0);
+				///// -- 220526 SIGNED END -- /////
+
 			}
 
 			for(size_t ai = 0, di = halfLength; ai < halfLength; ++ai, ++di)

@@ -56,22 +56,26 @@ private:
 
 		while (!cit->isEnd())
 		{
-			auto inChunk = std::static_pointer_cast<wtChunk<Ty_>>(**cit);
-			auto cDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
-			auto outChunk = std::static_pointer_cast<seChunk<Ty_>>(outArr->makeChunk(cDesc));
+			if (cit->isExist())
+			{
+				auto inChunk = std::static_pointer_cast<wtChunk<Ty_>>(**cit);
+				auto cDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
+				auto outChunk = std::static_pointer_cast<seChunk<Ty_>>(outArr->makeChunk(cDesc));
 
-			outChunk->setLevel(inChunk->getLevel());
-			//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
-			outChunk->bufferRef(inChunk);
-			outChunk->makeAllBlocks();
+				outChunk->setLevel(inChunk->getLevel());
+				//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
+				outChunk->bufferRef(inChunk);
+				outChunk->makeAllBlocks();
 
-			this->compressChunk<Ty_>(outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
+				this->compressChunk<Ty_>(outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
 
-			auto attr = outChunk->getDesc()->attrDesc_;
-			storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-											  std::static_pointer_cast<serializable>(outChunk));
-			mSizeTotal += outChunk->getSerializedSize();
-			//synopsisSizeTotal += std::static_pointer_cast<seChunk>(outChunk)->getSynopsisSize();
+				auto attr = outChunk->getDesc()->attrDesc_;
+				storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+												  std::static_pointer_cast<serializable>(outChunk));
+				mSizeTotal += outChunk->getSerializedSize();
+				//synopsisSizeTotal += std::static_pointer_cast<seChunk>(outChunk)->getSynopsisSize();
+			}
+
 			++(*cit);
 		}
 
@@ -131,28 +135,58 @@ private:
 	{
 		auto bItemItr = curBlock->getItemRangeIterator(bandRange);
 		bit_cnt_type maxValueBits = 0;
+		///// >> 220526 SIGNED MOD << /////
+		//Ty_ mask = ((Ty_)-1) >> 1;
+		Ty_ signMask = ((Ty_)1) << (sizeof(Ty_) * CHAR_BIT - 1);
+		bool hasNegative = false;		// to treat -128, 128
+		///// >> 220526 SIGNED ORI << /////
+		// No code
+		///// -- 220526 SIGNED END -- /////
 #ifndef NDEBUG
 		Ty_ maxValue = 0;
 #endif
 
 		while(!bItemItr->isEnd())
 		{
+			///// >> 220526 SIGNED MOD << /////
 			Ty_ value = (**bItemItr).get<Ty_>();
+
+			if (value & signMask)
+			{
+				value = ((Ty_)~value) + 1;
+				hasNegative = true;
+			}
 			bit_cnt_type valueBits = static_cast<bit_cnt_type>(msb<Ty_>(abs_(value)));
 			if (maxValueBits < valueBits)
 			{
 				maxValueBits = valueBits;
-#ifndef NDEBUG
+			#ifndef NDEBUG
 				maxValue = value;
-#endif
+			#endif
 			}
 			++(*bItemItr);
+			///// >> 220526 SIGNED ORI << /////
+//			Ty_ value = (**bItemItr).get<Ty_>();
+//			bit_cnt_type valueBits = static_cast<bit_cnt_type>(msb<Ty_>(abs_(value)));
+//			if (maxValueBits < valueBits)
+//			{
+//				maxValueBits = valueBits;
+//#ifndef NDEBUG
+//				maxValue = value;
+//#endif
+//			}
+//			++(*bItemItr);
+			///// -- 220526 SIGNED END -- /////
 		}
 
 #ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "Max value: " << static_cast<int>(maxValue) << ", maxValueBits: " << static_cast<int>(maxValueBits);
 #endif
-		return maxValueBits;
+		if (!hasNegative && maxValueBits == 0)
+		{
+			return 0;				// no -128 and has only zeros
+		}
+		return maxValueBits + 1;	// In normal case, add sign bit
 	}
 
 	template <class Ty_>
@@ -172,7 +206,9 @@ private:
 
 		for (size_t band = 0; band <= numBandsInLevel; ++band)
 		{
-			bit_cnt_type requiredBits = this->findRequiredBits<Ty_>(outBlock, getBandRange(band, bandDims)) + static_cast<char>(hasNegative);
+			// 220526
+			//bit_cnt_type requiredBits = this->findRequiredBits<Ty_>(outBlock, getBandRange(band, bandDims)) + static_cast<char>(hasNegative);
+			bit_cnt_type requiredBits = this->findRequiredBits<Ty_>(outBlock, getBandRange(band, bandDims));
 			
 			outChunk->rBitFromDelta.push_back(requiredBits);
 			outChunk->rBitFromMMT.push_back(fromMMT);
@@ -212,10 +248,12 @@ private:
 					dimension targetEp = targetSp + bandDims;
 
 					bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, range(targetSp, targetEp));
-					if(rbFromDelta > 0)
-					{
-						rbFromDelta += static_cast<char>(hasNegative);
-					}
+					// 220526
+					//bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, range(targetSp, targetEp));
+					//if(rbFromDelta > 0)
+					//{
+					//	rbFromDelta += static_cast<char>(hasNegative);
+					//}
 					outChunk->rBitFromDelta.push_back(rbFromDelta);
 					outChunk->rBitFromMMT.push_back(rbFromMMT);
 

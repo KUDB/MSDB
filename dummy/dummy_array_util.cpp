@@ -64,11 +64,17 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	//case compressionType::SEACOW_HUFFMAN:
 	{
 		msdb::Context ctx;
+		//auto afl = msdb::Comp(
+		//	msdb::Between(
+		//		msdb::Insert(
+		//			getArrayAFL(arrName, compType), filePath),
+		//			msdb::Domain(msdb::Coordinates({ 0, 512 }), msdb::Coordinates({64, 576}))
+		//		),
+		//	compType, paramOne, paramTwo);
 		auto afl = msdb::Comp(
-			msdb::Insert(
-				getArrayAFL(arrName, compType), filePath),
-			compType, paramOne, paramTwo
-		);
+				msdb::Insert(
+					getArrayAFL(arrName, compType), filePath),
+			compType, paramOne, paramTwo);
 		return afl;
 	}
 	default:

@@ -1,5 +1,7 @@
 #include <pch_test.h>
 #include <dummy_astronomy_array.h>
+#include <exeQuery/exe_build_astronomy_array.h>
+#include <exeQuery/exe_save_astronomy_array.h>
 
 #include <array/arrayMgr.h>
 
@@ -25,7 +27,22 @@ TEST(seacow_encode, seacoe_afl)
 	);
 
 	std::cout << afl->toString(0);
+}
 
+TEST(seacow_encode, seacoe_data_star1024x1024)
+{
+	dummy::data_star1024x1024::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+
+	dummy::data_star1024x1024::executeBuildIndex(
+		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	dummy::executeInsertSaveArray(msdb::dummy::data_star1024x1024::arrName,
+								  msdb::dummy::data_star1024x1024::filePath,
+								  msdb::core::compressionType::SEACOW);
+
+	dummy::executeLoadArray(msdb::dummy::data_star1024x1024::arrName,
+							msdb::core::compressionType::SEACOW);
 }
 }		// test
 }		// msdb

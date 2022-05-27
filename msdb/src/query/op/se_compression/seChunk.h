@@ -224,7 +224,17 @@ public:
 
 			for (size_t band = 0; band <= numBandsInLevel; ++band, ++seqId)
 			{
-				this->serializeBand(bs, myBlock, seqId, band, bandDims);
+				if (band == 0)
+				{
+					size_t startPos = bs.getOutBitPos();
+					this->serializeBand(bs, myBlock, seqId, band, bandDims);
+					this->synopsisSize_ = bs.getOutBitPos() - startPos;
+				}
+				else
+				{
+					this->serializeBand(bs, myBlock, seqId, band, bandDims);
+				}
+				//this->serializeBand(bs, myBlock, seqId, band, bandDims);
 			}
 
 #ifndef NDEBUG
@@ -254,7 +264,16 @@ public:
 #endif
 
 		this->serializeGap(bs, rbFromMMT - rbFromDelta);
-		bs << setw(rbFromDelta);
+		///// >> 220526 SIGNED MOD << /////
+		if (rbFromDelta == 0)
+		{
+			return;
+		}
+		///// >> 220526 SIGNED ORI << /////
+		// None
+		///// -- 220526 SIGNED END -- /////
+
+		bs << setw(rbFromDelta);							// TODO::rbFromDelta=0일 경우 8bit 모두 사용해서 값이 입력됨
 		Ty_ signMask = 0x1 << rbFromDelta - 1;
 
 		auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
@@ -267,11 +286,19 @@ public:
 			Ty_ value = (**bItemItr).get<Ty_>();
 			//value -= this->min_;
 
-			if (value < 0)
+			///// >> 220526 SIGNED MOD << /////
+			if (value & signMask)
 			{
-				value = abs_(value);
+				value = (Ty_)(~value) + 1;
 				value |= signMask;
 			}
+			///// >> 220526 SIGNED ORI << /////
+			//if (value < 0)
+			//{
+			//	value = abs_(value);
+			//	value |= signMask;
+			//}
+			///// -- 220526 SIGNED END -- /////
 
 			bs << value;
 			++(*bItemItr);
@@ -330,11 +357,20 @@ public:
 						while (!bItemItr->isEnd())
 						{
 							Ty_ value = (**bItemItr).get<Ty_>();
-							if (value < 0)
+							///// >> 220526 SIGNED MOD << /////
+							if (value & signMask)
 							{
-								value = abs_(value);
+								//value = abs_(value);
+								value = (Ty_)(~value) + 1;
 								value |= signMask;
 							}
+							///// >> 220526 SIGNED ORI << /////
+							//if (value < 0)
+							//{
+							//	value = abs_(value);
+							//	value |= signMask;
+							//}
+							///// -- 220526 SIGNED END -- /////
 							bs << value;
 							++(*bItemItr);
 						}
@@ -419,59 +455,124 @@ public:
 		//assert(rbFromMMT >= gap);
 #endif
 
-		bs >> setw(rbFromDelta);
-		Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
-		Ty_ negativeMask = (Ty_)-1 ^ signMask;
-		Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
-
-		auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
-
-		//////////////////////////////
-		// 01
-		auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
-		auto itemCapa = bandDims.area();
-		char* spData = (char*)this->getBuffer()->getData() + spOffset;
-
-		if ((Ty_)-1 < 0)
+		///// >> 220526 SIGNED MOD << /////
+		if (rbFromDelta)
 		{
-			// Ty_ has negative values
-			for (int i = 0; i < itemCapa; ++i)
-			{
-				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+			bs >> setw(rbFromDelta);
+			Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+			Ty_ negativeMask = (Ty_)-1 ^ signMask;
+			Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
 
-				*pValue = 0;
-				bs >> *pValue;
-				if (*pValue & signMask)
+			auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
+
+			//////////////////////////////
+			// 01
+			auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
+			auto itemCapa = bandDims.area();
+			char* spData = (char*)this->getBuffer()->getData() + spOffset;
+
+			if ((Ty_)-1 < 0)
+			{
+				// Ty_ has negative values
+				for (int i = 0; i < itemCapa; ++i)
 				{
-					*pValue &= negativeMask;
-					*pValue *= -1;
-					*pValue |= signBit;
+					auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+					*pValue = 0;
+					bs >> *pValue;
+					if (*pValue & signMask)
+					{
+						*pValue &= negativeMask;
+						*pValue *= -1;
+						*pValue |= signBit;
+					}
+					//*pValue += this->min_;
+
+					//Ty_ value = 0;
+					//bs >> value;
+					//if (value & signMask)
+					//{
+					//	value &= negativeMask;
+					//	value *= -1;
+					//	value |= signBit;	// for 128 (1000 0000)
+					//}
+
+					//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
 				}
-				//*pValue += this->min_;
-
-				//Ty_ value = 0;
-				//bs >> value;
-				//if (value & signMask)
-				//{
-				//	value &= negativeMask;
-				//	value *= -1;
-				//	value |= signBit;	// for 128 (1000 0000)
-				//}
-
-				//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
 			}
-		} else
-		{
-			// Ty_ only has positive values
-			for (int i = 0; i < itemCapa; ++i)
+			else
 			{
-				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+				// Ty_ only has positive values
+				for (int i = 0; i < itemCapa; ++i)
+				{
+					auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
 
-				*pValue = 0;
-				bs >> *pValue;
+					*pValue = 0;
+					bs >> *pValue;
+				}
 			}
 		}
+		else
+		{
+			// Do nothing, the buffer should be initialized in 0(zeor).
+		}
+		///// >> 220526 SIGNED ORI << /////
+		//bs >> setw(rbFromDelta);
+		//Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+		//Ty_ negativeMask = (Ty_)-1 ^ signMask;
+		//Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+		//auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
+
+		////////////////////////////////
+		//// 01
+		//auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
+		//auto itemCapa = bandDims.area();
+		//char* spData = (char*)this->getBuffer()->getData() + spOffset;
+
+		//if ((Ty_)-1 < 0)
+		//{
+		//	// Ty_ has negative values
+		//	for (int i = 0; i < itemCapa; ++i)
+		//	{
+		//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+		//		*pValue = 0;
+		//		bs >> *pValue;
+		//		if (*pValue & signMask)
+		//		{
+		//			*pValue &= negativeMask;
+		//			*pValue *= -1;
+		//			*pValue |= signBit;
+		//		}
+		//		//*pValue += this->min_;
+
+		//		//Ty_ value = 0;
+		//		//bs >> value;
+		//		//if (value & signMask)
+		//		//{
+		//		//	value &= negativeMask;
+		//		//	value *= -1;
+		//		//	value |= signBit;	// for 128 (1000 0000)
+		//		//}
+
+		//		//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
+		//	}
+		//}
+		//else
+		//{
+		//	// Ty_ only has positive values
+		//	for (int i = 0; i < itemCapa; ++i)
+		//	{
+		//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+		//		*pValue = 0;
+		//		bs >> *pValue;
+		//	}
+		//}
 		//////////////////////////////
+		///// -- 220526 SIGNED END -- /////
+
 
 		//////////////////////////////
 		// 02
@@ -555,6 +656,7 @@ public:
 						//////////////////////////////
 					} else
 					{
+						///// >> 220526 SIGNED MOD << /////
 						bs >> setw(rbFromDelta);
 						Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
 						Ty_ negativeMask = (Ty_)-1 ^ signMask;
@@ -562,32 +664,56 @@ public:
 
 						//////////////////////////////
 						// 01
-						if ((Ty_)-1 < 0)
+						for (size_t i = 0; i < itemCapa; ++i)
 						{
-							for (size_t i = 0; i < itemCapa; ++i)
-							{
-								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+							auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
 
-								*pValue = 0;
-								bs >> *pValue;
-								if (*pValue & signMask)
-								{
-									*pValue &= negativeMask;
-									*pValue *= -1;
-									*pValue |= signBit;
-								}
-							}
-						} else
-						{
-							for (size_t i = 0; i < itemCapa; ++i)
+							*pValue = 0;
+							bs >> *pValue;
+							if (*pValue & signMask)
 							{
-								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-								*pValue = 0;
-								bs >> *pValue;
+								*pValue &= negativeMask;
+								*pValue *= -1;
+								*pValue |= signBit;
 							}
 						}
+
 						//////////////////////////////
+						///// >> 220526 SIGNED ORI << /////
+						//bs >> setw(rbFromDelta);
+						//Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+						//Ty_ negativeMask = (Ty_)-1 ^ signMask;
+						//Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+						////////////////////////////////
+						//// 01
+						//if ((Ty_)-1 < 0)
+						//{
+						//	for (size_t i = 0; i < itemCapa; ++i)
+						//	{
+						//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+						//		*pValue = 0;
+						//		bs >> *pValue;
+						//		if (*pValue & signMask)
+						//		{
+						//			*pValue &= negativeMask;
+						//			*pValue *= -1;
+						//			*pValue |= signBit;
+						//		}
+						//	}
+						//} else
+						//{
+						//	for (size_t i = 0; i < itemCapa; ++i)
+						//	{
+						//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+						//		*pValue = 0;
+						//		bs >> *pValue;
+						//	}
+						//}
+						////////////////////////////////
+						///// -- 220526 SIGNED END -- /////
 
 						//////////////////////////////
 						// 02
@@ -633,6 +759,7 @@ public:
 
 protected:
 	size_t level_;
+	size_t synopsisSize_;
 	//chunkId sourceChunkId_;
 
 public:

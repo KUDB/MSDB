@@ -34,6 +34,9 @@ private:
 		pWavelet w = std::make_shared<wavelet>(this->waveletName_.c_str());
 		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
 
+
+
+
 		//========================================//
 		qry->getTimer()->nextWork(0, workType::COMPUTING);
 		//----------------------------------------//
@@ -81,6 +84,18 @@ private:
 			++(*ocItr);
 		}
 	}
+
+	template <>
+	void attributeDecode(const concreteTy<float>& type,
+						 pArray outArr, pArray inArr,
+						 pAttributeDesc attrDesc, pQuery qry)
+	{}
+
+	template <>
+	void attributeDecode(const concreteTy<double>& type,
+						 pArray outArr, pArray inArr,
+						 pAttributeDesc attrDesc, pQuery qry)
+	{}
 
 	template <typename Ty_>
 	void parallelChunkDecode(pArray outArr, pChunk outChunk, pChunkIterator icItr,
@@ -214,6 +229,8 @@ private:
 						 const range& encodeRange, const dimensionId& basisDim,
 						 pWavelet w, pQuery q)
 	{
+		Ty_ signMask = 0x1 << (sizeof(Ty_) * CHAR_BIT - 1);
+
 		size_t length = encodeRange.getEp()[basisDim];
 		size_t halfLength = length / 2;
 		bool oddLength = (length % 2) != 0;
@@ -252,8 +269,20 @@ private:
 				Ty_ y0 = (**ait).get<Ty_>();
 				Ty_ y1 = (**dit).get<Ty_>();
 
-				row[i] = y0 - std::floor(y1 / 2.0);
+				///// >> 220526 SIGNED MOD << /////
+				if (y1 & signMask)
+				{
+					row[i] = y0 + std::floor((Ty_)(~y1 + 1) / 2.0);
+				}
+				else
+				{
+					row[i] = y0 - std::floor(y1 / 2.0);
+				}
 				row[i + 1] = y1 + row[i];
+				///// >> 220526 SIGNED ORI << /////
+				//row[i] = y0 - std::floor(y1 / 2.0);
+				//row[i + 1] = y1 + row[i];
+				///// -- 220526 SIGNED END -- /////
 
 				++(*ait);
 				++(*dit);
