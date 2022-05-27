@@ -471,45 +471,31 @@ public:
 			auto itemCapa = bandDims.area();
 			char* spData = (char*)this->getBuffer()->getData() + spOffset;
 
-			if ((Ty_)-1 < 0)
+			// Ty_ has negative values
+			for (int i = 0; i < itemCapa; ++i)
 			{
-				// Ty_ has negative values
-				for (int i = 0; i < itemCapa; ++i)
+				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+				*pValue = 0;
+				bs >> *pValue;
+				if (*pValue & signMask)
 				{
-					auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-					*pValue = 0;
-					bs >> *pValue;
-					if (*pValue & signMask)
-					{
-						*pValue &= negativeMask;
-						*pValue *= -1;
-						*pValue |= signBit;
-					}
-					//*pValue += this->min_;
-
-					//Ty_ value = 0;
-					//bs >> value;
-					//if (value & signMask)
-					//{
-					//	value &= negativeMask;
-					//	value *= -1;
-					//	value |= signBit;	// for 128 (1000 0000)
-					//}
-
-					//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
+					*pValue &= negativeMask;
+					*pValue *= -1;
+					*pValue |= signBit;
 				}
-			}
-			else
-			{
-				// Ty_ only has positive values
-				for (int i = 0; i < itemCapa; ++i)
-				{
-					auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+				//*pValue += this->min_;
 
-					*pValue = 0;
-					bs >> *pValue;
-				}
+				//Ty_ value = 0;
+				//bs >> value;
+				//if (value & signMask)
+				//{
+				//	value &= negativeMask;
+				//	value *= -1;
+				//	value |= signBit;	// for 128 (1000 0000)
+				//}
+
+				//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
 			}
 		}
 		else
@@ -672,6 +658,8 @@ public:
 							bs >> *pValue;
 							if (*pValue & signMask)
 							{
+								//*pValue = (Ty_)(~*pValue) + 1;
+								//*pValue |= 
 								*pValue &= negativeMask;
 								*pValue *= -1;
 								*pValue |= signBit;
