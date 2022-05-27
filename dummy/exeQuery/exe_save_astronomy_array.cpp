@@ -1,5 +1,4 @@
-#include <pch_experiments.h>
-#include "arraySaveLoad.h"
+#include "exe_save_astronomy_array.h"
 
 namespace msdb
 {
@@ -16,6 +15,9 @@ msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string
 	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
 
 	auto qry = msdb::Query(afl);
+	// TODO::Remove
+	//qry.setVerbose();
+	// TODO::Remove
 	auto ra = qry.execute();
 	ra.close();
 	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
@@ -33,6 +35,9 @@ msdb::Query executeLoadArray(const std::string& arrName, const core::compression
 	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
 
 	auto qry = msdb::Query(afl);
+	// TODO::Remove
+	//qry.setVerbose();
+	// TODO::Remove
 	auto ra = qry.execute();
 	ra.close();
 	if (qry.getStatus() == msdb::Query::Status::FAIL)

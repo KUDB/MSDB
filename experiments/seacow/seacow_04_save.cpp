@@ -1,7 +1,7 @@
 #include <pch_experiments.h>
 
-#include <exeQuery/arrayBuild.h>
-#include <exeQuery/arraySaveLoad.h>
+#include <exeQuery/exe_build_astronomy_array.h>
+#include <exeQuery/exe_save_astronomy_array.h>
 
 namespace msdb
 {
@@ -79,5 +79,5 @@ TEST(seacow_04_save, lunar102400x40960)
 								  msdb::dummy::data_lunar102400x40960::filePath,
 								  msdb::core::compressionType::SEACOW);
 }
-}
-}
+}		// experiment
+}		// msdb

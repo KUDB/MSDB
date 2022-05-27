@@ -3,7 +3,7 @@
 #include <dummy.h>
 #include <dummy_astronomy_array.h>
 #include <api_cpp/msdb.h>
-#include <exeQuery/arrayBuild.h>
+#include <exeQuery/exe_build_astronomy_array.h>
 
 namespace msdb
 {

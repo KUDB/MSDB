@@ -1,7 +1,7 @@
 #include <pch_experiments.h>
 
-#include <exeQuery/arrayBuild.h>
-#include <exeQuery/arraySaveLoad.h>
+#include <exeQuery/exe_build_astronomy_array.h>
+#include <exeQuery/exe_save_astronomy_array.h>
 
 namespace msdb
 {

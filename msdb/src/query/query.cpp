@@ -8,7 +8,7 @@ namespace msdb
 namespace core
 {
 query::query(std::shared_ptr<opPlan> qryPlan)
-	: qryPlan_(qryPlan), timer_(std::make_shared<timer>()), arrDesc_(nullptr), dimBuffer_(std::make_shared<std::vector<coor>>()), verbose_ = false
+	: qryPlan_(qryPlan), timer_(std::make_shared<timer>()), arrDesc_(nullptr), dimBuffer_(std::make_shared<std::vector<coor>>()), verbose_(false)
 {
 
 }

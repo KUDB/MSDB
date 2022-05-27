@@ -1,8 +1,10 @@
 #pragma once
-#ifndef _MSDB_EXPERIMENTS_ARRAYBUILD_H_
-#define _MSDB_EXPERIMENTS_ARRAYBUILD_H_
+#ifndef _MSDB_DUMMY_EXE_BUILD_ASTRONOMY_ARRAY_H_
+#define _MSDB_DUMMY_EXE_BUILD_ASTRONOMY_ARRAY_H_
 
-#include <pch_experiments.h>
+#include <api_cpp/msdb.h>
+#include <dummy.h>
+#include <dummy_astronomy_array.h>
 #include <index/attributeIndex.h>
 
 namespace msdb
@@ -46,4 +48,4 @@ msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexTyp
 }		// data_star64x64x64
 }		// dummy
 }		// msdb
-#endif	// _MSDB_EXPERIMENTS_ARRAYBUILD_H_
+#endif	// _MSDB_DUMMY_EXE_BUILD_ASTRONOMY_ARRAY_H_

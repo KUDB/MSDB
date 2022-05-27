@@ -1,8 +1,11 @@
 #pragma once
-#ifndef _MSDB_EXPERIMENTS_ARRAYSAVELOAD_H_
-#define _MSDB_EXPERIMENTS_ARRAYSAVELOAD_H_
+#ifndef _MSDB_DUMMY_EXE_SAVE_ASTRONOMY_ARRAY_H_
+#define _MSDB_DUMMY_EXE_SAVE_ASTRONOMY_ARRAY_H_
 
-#include <pch_experiments.h>
+#include <iostream>
+#include <api_cpp/msdb.h>
+#include <dummy.h>
+#include <dummy_astronomy_array.h>
 
 namespace msdb
 {
@@ -17,4 +20,4 @@ msdb::Query executeRangeQryArray(const std::string& arrName, const core::compres
 }
 }
 
-#endif	// _MSDB_EXPERIMENTS_ARRAYSAVELOAD_H_
+#endif	// _MSDB_DUMMY_EXE_SAVE_ASTRONOMY_ARRAY_H_

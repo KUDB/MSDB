@@ -1,6 +1,4 @@
-#include <pch_experiments.h>
-
-#include "arrayBuild.h"
+#include "exe_build_astronomy_array.h"
 #include <dummy.h>
 #include <dummy_astronomy_array.h>
 #include <dummy_astronomy_array_3d.h>

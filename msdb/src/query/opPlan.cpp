@@ -91,6 +91,20 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 	try
 	{
 		auto outArr = this->getAction()->execute(inArr, qry);
+
+		// TODO::Remove //
+		if (qry->isVerbose())
+		{
+			auto cit = outArr->getChunkIterator(0);
+			//for (int i = 0; i < 8; ++i)
+			//{
+			//	cit->next();
+			//}
+			//(**cit)->print();
+			outArr->print();
+		}
+		// TODO::Remove //
+
 		qry->setArrayDesc(outArr->getDesc());
 		return outArr;
 	}
