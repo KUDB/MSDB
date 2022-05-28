@@ -52,13 +52,13 @@ namespace data_nexrad_16x1024x2048
 {
 static const std::string arrName = "nexrad_16x1024x2048";
 static const core::arrayId aid = 3100;
-static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20171201T000000Z.data);
+static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20151101T060000Z.data);
 
 static const core::dimension dims({ 16, 1024, 2048 });
 static const core::dimension chunkDims({ 16, 32, 32 });
 static const core::dimension blockDims({ 16, 32, 32 });
-static const int wtLevel = 3;
-static const int mmtLevel = 3;
+static const int wtLevel = 2;
+static const int mmtLevel = 2;
 static const int compassBins = 128;
 
 static const std::string nameDim_0 = "Z";

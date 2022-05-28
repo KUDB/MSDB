@@ -96,12 +96,12 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 		if (qry->isVerbose())
 		{
 			auto cit = outArr->getChunkIterator(0);
-			//for (int i = 0; i < 8; ++i)
-			//{
-			//	cit->next();
-			//}
-			//(**cit)->print();
-			outArr->print();
+			for (int i = 0; i < 0; ++i)
+			{
+				cit->next();
+			}
+			(**cit)->print();
+			//outArr->print();
 		}
 		// TODO::Remove //
 

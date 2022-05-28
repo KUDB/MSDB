@@ -41,11 +41,6 @@ namespace data_lunar102400x40960
 msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
 msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
 }		// data_lunar102400x40960
-namespace data_star64x64x64
-{
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
-}		// data_star64x64x64
 }		// dummy
 }		// msdb
 #endif	// _MSDB_DUMMY_EXE_BUILD_ASTRONOMY_ARRAY_H_

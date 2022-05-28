@@ -37,7 +37,7 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	//case compressionType::ADAPTHUFFMAN:
 	//case compressionType::LZW_HUFFMAN:
 	//case compressionType::LZW:
-	//case compressionType::ZIP:
+	case compressionType::ZIP:
 	case compressionType::TTHRESH:
 	case compressionType::ZFP:
 	{
@@ -98,7 +98,7 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 	//case compressionType::ADAPTHUFFMAN:
 	//case compressionType::LZW_HUFFMAN:
 	//case compressionType::LZW:
-	//case compressionType::ZIP:
+	case compressionType::ZIP:
 	case compressionType::TTHRESH:
 	case compressionType::ZFP:
 	{

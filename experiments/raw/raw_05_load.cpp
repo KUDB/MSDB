@@ -1,6 +1,7 @@
 #include <pch_experiments.h>
 
 #include <exeQuery/exe_build_astronomy_array.h>
+#include <exeQuery/exe_build_astronomy_array_3d.h>
 #include <exeQuery/exe_save_astronomy_array.h>
 
 namespace msdb
@@ -55,5 +56,24 @@ TEST(raw_05_load, lunar102400x40960)
 	dummy::executeLoadArray(msdb::dummy::data_lunar102400x40960::arrName,
 							core::compressionType::NONE);
 }
+////////////////////////////////////////
+// 3D Data
+////////////////////////////////////////
+TEST(raw_05_load, data_star64x64x64)
+{
+	dummy::data_star64x64x64::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::NONE);
+
+	dummy::executeLoadArray(msdb::dummy::data_star64x64x64::arrName,
+							core::compressionType::NONE);
 }
+TEST(raw_05_load, data_nexrad_16x1024x2048)
+{
+	dummy::data_nexrad_16x1024x2048::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::NONE);
+
+	dummy::executeLoadArray(msdb::dummy::data_nexrad_16x1024x2048::arrName,
+							core::compressionType::NONE);
 }
+}		// experiments
+}		// msdb

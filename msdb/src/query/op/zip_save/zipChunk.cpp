@@ -1,5 +1,5 @@
 ﻿#include <pch.h>
-#include <compression/zipChunk.h>
+#include "zipChunk.h"
 
 namespace msdb
 {

@@ -1,6 +1,7 @@
 #include <pch_experiments.h>
 
 #include <exeQuery/exe_build_astronomy_array.h>
+#include <exeQuery/exe_build_astronomy_array_3d.h>
 #include <exeQuery/exe_save_astronomy_array.h>
 
 namespace msdb
@@ -73,5 +74,30 @@ TEST(seacow_05_load, lunar102400x40960)
 	dummy::executeLoadArray(msdb::dummy::data_lunar102400x40960::arrName,
 							msdb::core::compressionType::SEACOW);
 }
+////////////////////////////////////////
+// 3D Data
+////////////////////////////////////////
+TEST(seacow_05_load, data_star64x64x64)
+{
+	dummy::data_star64x64x64::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+
+	dummy::data_star64x64x64::executeBuildIndex(
+		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	dummy::executeLoadArray(msdb::dummy::data_star64x64x64::arrName,
+							msdb::core::compressionType::SEACOW);
 }
+TEST(seacow_05_load, data_nexrad_16x1024x2048)
+{
+	dummy::data_nexrad_16x1024x2048::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+
+	dummy::data_nexrad_16x1024x2048::executeBuildIndex(
+		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	dummy::executeLoadArray(msdb::dummy::data_nexrad_16x1024x2048::arrName,
+							msdb::core::compressionType::SEACOW);
 }
+}		// experiments
+}		// msdb

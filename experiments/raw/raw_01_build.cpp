@@ -5,6 +5,7 @@
 #include <dummy_astronomy_array_3d.h>
 #include <api_cpp/msdb.h>
 #include <exeQuery/exe_build_astronomy_array.h>
+#include <exeQuery/exe_build_astronomy_array_3d.h>
 
 namespace msdb
 {
@@ -40,9 +41,17 @@ TEST(raw_01_build, lunar102400x40960)
 	dummy::data_lunar102400x40960::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::NONE);
 }
+////////////////////////////////////////
+// 3D Data
+////////////////////////////////////////
 TEST(raw_01_build, data_star64x64x64)
 {
 	dummy::data_star64x64x64::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::NONE);
+}
+TEST(raw_01_build, data_nexrad_16x1024x2048)
+{
+	dummy::data_nexrad_16x1024x2048::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::NONE);
 }
 }		// experiments

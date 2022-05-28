@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_ZIP_ACTION_H_
 #define _MSDB_OP_ZIP_ACTION_H_
 
 #include <pch.h>
 #include <query/opAction.h>
-#include <compression/zipChunk.h>
+#include "zipChunk.h"
 
 namespace msdb
 {
@@ -20,8 +20,8 @@ public:
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 	void loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry);
-	void loadChunk(pArray outArr, pChunk outChunk, pZipChunk inChunk, attributeId attrId, pQuery qry, const size_t parentThreadId);
-	pZipChunk makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid);
+	void loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId);
+	//pZipChunk makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid);
 };
 }		// core
 }		// msdb

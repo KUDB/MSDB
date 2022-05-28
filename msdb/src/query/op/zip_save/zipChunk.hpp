@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <compression/zipChunk.h>
+#include "zipChunk.h"
 
 namespace msdb
 {
