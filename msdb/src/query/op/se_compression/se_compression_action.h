@@ -103,8 +103,6 @@ private:
 	{
 		size_t dSize = inChunk->getDSize();
 
-		//auto outChunk = this->makeOutChunk(inChunk);
-
 #ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "Chunkcoor: " << chunkCoor.toString() << " / MMT NODE: " << mNode->toString<Ty_>();
 		//assert(outChunk->rBitFromMMT <= sizeof(Ty_) * CHAR_BIT);
@@ -126,8 +124,6 @@ private:
 											mmtIndex,
 											bandDims, inChunk->getLevel(),
 											numBandsInLevel, hasNegative);
-
-		//return outChunk;
 	}
 
 	template <class Ty_>

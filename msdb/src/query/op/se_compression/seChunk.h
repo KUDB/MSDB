@@ -70,38 +70,6 @@ public:
 	{
 		bstream bs;
 		this->seEncode(bs);
-		//switch (this->desc_->attrDesc_->type_)
-		//{
-		//case eleType::CHAR:
-		//	this->serialize<char>(bs);
-		//	break;
-		//case eleType::INT8:
-		//	this->serialize<int8_t>(bs);
-		//	break;
-		//case eleType::INT16:
-		//	this->serialize<int16_t>(bs);
-		//	break;
-		//case eleType::INT32:
-		//	this->serialize<int32_t>(bs);
-		//	break;
-		//case eleType::INT64:
-		//	this->serialize<int64_t>(bs);
-		//	break;
-		//case eleType::UINT8:
-		//	this->serialize<int8_t>(bs);
-		//	break;
-		//case eleType::UINT16:
-		//	this->serialize<int16_t>(bs);
-		//	break;
-		//case eleType::UINT32:
-		//	this->serialize<int32_t>(bs);
-		//	break;
-		//case eleType::UINT64:
-		//	this->serialize<int64_t>(bs);
-		//	break;
-		//default:
-		//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-		//}
 
 		this->serializedSize_ = bs.capacity();
 		this->getOutHeader()->serialize(os);
@@ -117,38 +85,6 @@ public:
 		is.read(bs.data(), this->serializedSize_);
 
 		this->seDecode(bs);
-		//switch (this->desc_->attrDesc_->type_)
-		//{
-		//case eleType::CHAR:
-		//	this->deserialize<char>(bs);
-		//	break;
-		//case eleType::INT8:
-		//	this->deserialize<int8_t>(bs);
-		//	break;
-		//case eleType::INT16:
-		//	this->deserialize<int16_t>(bs);
-		//	break;
-		//case eleType::INT32:
-		//	this->deserialize<int32_t>(bs);
-		//	break;
-		//case eleType::INT64:
-		//	this->deserialize<int64_t>(bs);
-		//	break;
-		//case eleType::UINT8:
-		//	this->deserialize<int8_t>(bs);
-		//	break;
-		//case eleType::UINT16:
-		//	this->deserialize<int16_t>(bs);
-		//	break;
-		//case eleType::UINT32:
-		//	this->deserialize<int32_t>(bs);
-		//	break;
-		//case eleType::UINT64:
-		//	this->deserialize<int64_t>(bs);
-		//	break;
-		//default:
-		//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-		//}
 	}
 
 	void serializeGap(bstream& bs, int64_t gap)
@@ -197,7 +133,7 @@ public:
 	//{
 	//	this->seEncode<Ty_>(bs);
 	//}
-
+public:
 	void seEncode(bstream& bs)
 	{
 		pBlock myBlock = this->blocks_.at(0);
@@ -413,6 +349,7 @@ public:
 	//}
 
 	//template <typename Ty_>
+	public:
 	void seDecode(bstream& bs)
 	{
 		pBlock myBlock = this->blocks_.at(0);

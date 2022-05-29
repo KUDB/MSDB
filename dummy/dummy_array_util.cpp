@@ -61,7 +61,7 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	//	return afl;
 	//}
 	case compressionType::SEACOW:
-	//case compressionType::SEACOW_HUFFMAN:
+	case compressionType::SEACOW_HUFFMAN:
 	{
 		msdb::Context ctx;
 		//auto afl = msdb::Comp(
@@ -120,7 +120,7 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 	//	return afl;
 	//}
 	case compressionType::SEACOW:
-	//case compressionType::SEACOW_HUFFMAN:
+	case compressionType::SEACOW_HUFFMAN:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Decomp(

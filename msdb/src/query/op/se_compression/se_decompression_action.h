@@ -90,9 +90,9 @@ private:
 				outChunk->setLevel(maxLevel);
 				// TODO::Copy buffer, etc...
 				
-				this->decompressChunk<Ty_>(inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId);
-				//io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
-				//							  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
+				//this->decompressChunk<Ty_>(inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId);
+				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
+											  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
 
 				outChunk->bufferCopy(inChunk);
 			}

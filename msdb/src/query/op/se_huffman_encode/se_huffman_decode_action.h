@@ -9,7 +9,7 @@
 #include <index/mmt.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <op/wavelet_encode/wtChunk.h>
-#include <compression/seHuffmanChunk.h>
+#include <op/se_huffman_encode/seHuffmanChunk.h>
 #include <util/threadUtil.h>
 
 namespace msdb
@@ -27,11 +27,14 @@ public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 
 private:
-	pSeHuffmanChunk makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
-								chunkId cid, coor chunkCoor);
+	//pSeHuffmanChunk makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
+	//							chunkId cid, coor chunkCoor);
 
+	//void decompressAttribute(std::shared_ptr<wavelet_encode_array>outArr, pAttributeDesc attrDesc, pQuery qry)
 	template <typename Ty_>
-	void decompressAttribute(std::shared_ptr<wavelet_encode_array>outArr, pAttributeDesc attrDesc, pQuery qry)
+	void decompressAttribute(const concreteTy<Ty_>& type,
+							 pArray outArr, pArray inArr,
+							 pAttributeDesc attrDesc, pQuery qry)
 	{
 		//========================================//
 		qry->getTimer()->nextWork(0, workType::COMPUTING);
@@ -45,8 +48,13 @@ private:
 			_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_TYPE_DIFF));
 		}
 		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(arrIndex);
+
+		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_SE_LEVEL_));
+		auto outAttrDesc = outArr->getDesc()->getAttrDescs()->at(attrDesc->getId());
+		outAttrDesc->setParam(_STR_PARAM_SE_LEVEL_, std::to_string(maxLevel));
+
 		auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
-		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr);
+		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr, maxLevel);
 
 		//----------------------------------------//
 		qry->getTimer()->nextWork(0, workType::PARALLEL);
@@ -60,14 +68,30 @@ private:
 			if (cit->isExist())
 			{
 				// make chunk
+				//chunkId cid = cit->seqPos();
+				//coor chunkCoor = cit->coor();
+				//auto inChunk = this->makeInChunk(outArr, attrDesc, cid, chunkCoor);
+				//inChunk->setTileOffset(offsets);
+				//auto outChunk = outArr->makeChunk(*inChunk->getDesc());
+
 				chunkId cid = cit->seqPos();
 				coor chunkCoor = cit->coor();
-				auto inChunk = this->makeInChunk(outArr, attrDesc, cid, chunkCoor);
+				auto inChunk = std::static_pointer_cast<seHuffmanChunk<Ty_>>(**cit);
+
 				inChunk->setTileOffset(offsets);
-				auto outChunk = outArr->makeChunk(*inChunk->getDesc());
+				auto cDesc = inChunk->getDesc();
+				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(std::make_shared<chunkDesc>(*cDesc)));
+
+				inChunk->makeAllBlocks();
+				outChunk->makeAllBlocks();
+
+				inChunk->setLevel(maxLevel);
+				outChunk->setLevel(maxLevel);
 
 				io_service_->post(boost::bind(&se_huffman_decode_action::decompressChunk<Ty_>, this,
-												std::static_pointer_cast<wtChunk>(outChunk), inChunk, qry, outArr, attrId, mmtIndex, currentThreadId));
+												inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
+
+				outChunk->bufferCopy(inChunk);
 			}
 
 			++(*cit);
@@ -83,12 +107,28 @@ private:
 		this->getArrayStatus(outArr);
 	}
 
+	template <>
+	void decompressAttribute(const concreteTy<float>& type,
+							 pArray inArr, pArray outArr,
+							 pAttributeDesc attrDesc, pQuery qry)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_huffman_decompress not support data compression for float"));
+	}
+
+	template <>
+	void decompressAttribute(const concreteTy<double>& type,
+							 pArray inArr, pArray outArr,
+							 pAttributeDesc attrDesc, pQuery qry)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_huffman_decompress not support data compression for double"));
+	}
+
 	template <typename Ty_>
-	std::vector<uint64_t> getSeqOffInBand(std::shared_ptr<wavelet_encode_array> outArr)
+	std::vector<uint64_t> getSeqOffInBand(pArray outArr, const size_t& maxLevel)
 	{
 		dimension blockDims = outArr->getDesc()->getDimDescs()->getChunkDims();
 		size_t blockCapa = blockDims.area();
-		dimension bandDims = blockDims / std::pow(2, outArr->getMaxLevel() + 1);
+		dimension bandDims = blockDims / std::pow(2, maxLevel + 1);
 		size_t bandCapa = bandDims.area();
 
 		std::vector<uint64_t> offsets;
@@ -104,7 +144,9 @@ private:
 	}
 
 	template <typename Ty_>
-	void decompressChunk(pWtChunk outChunk, pSeChunk inChunk, pQuery qry, std::shared_ptr<wavelet_encode_array> outArr, attributeId attrId,
+	void decompressChunk(std::shared_ptr<seHuffmanChunk<Ty_>> inChunk, std::shared_ptr<wtChunk<Ty_>> outChunk, 
+						 pQuery qry, pArray outArr, attributeId attrId,
+						 const size_t maxLevel,
 						 std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex, const size_t parentThreadId)
 	{
 		auto threadId = getThreadId();
@@ -112,7 +154,7 @@ private:
 		//========================================//
 		qry->getTimer()->nextJob(threadId, this->name(), workType::COMPUTING);
 		//----------------------------------------//
-		auto maxLevel = outArr->getMaxLevel();
+		//auto maxLevel = outArr->getMaxLevel();
 		arrayId arrId = outArr->getId();
 
 		bool hasNegative = false;
@@ -138,10 +180,10 @@ private:
 		qry->getTimer()->nextWork(threadId, workType::COMPUTING);
 		//----------------------------------------//
 
-		outChunk->setLevel(inChunk->getLevel());
-		outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
-		outChunk->makeBlocks();
-		outChunk->bufferCopy(inChunk);
+		//outChunk->setLevel(inChunk->getLevel());
+		//outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
+		//outChunk->makeBlocks();
+		//outChunk->bufferCopy(inChunk);
 		outChunk->setSerializedSize(inChunk->getSerializedSize());
 
 		//----------------------------------------//
@@ -150,7 +192,7 @@ private:
 	}
 
 	template <typename Ty_>
-	void requiredBitsFindingForChunk(pSeChunk inChunk,
+	void requiredBitsFindingForChunk(std::shared_ptr<seHuffmanChunk<Ty_>> inChunk,
 									 std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									 size_t maxLevel,
 									 bool hasNegative)
@@ -173,7 +215,7 @@ private:
 	}
 
 	template <typename Ty_>
-	void findRequiredBitsForRootLevel(pSeChunk inChunk,
+	void findRequiredBitsForRootLevel(std::shared_ptr<seHuffmanChunk<Ty_>> inChunk,
 									  std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									  const size_t numBandsInLevel,
 									  const bool hasNegative)
@@ -194,7 +236,7 @@ private:
 	}
 
 	template <typename Ty_>
-	void findRequiredBitsForChildLevel(pSeChunk inChunk,
+	void findRequiredBitsForChildLevel(std::shared_ptr<seHuffmanChunk<Ty_>> inChunk,
 									   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 									   const size_t maxLevel,
 									   const size_t numBandsInLevel,
