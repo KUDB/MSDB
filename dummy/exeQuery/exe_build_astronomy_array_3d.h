@@ -16,12 +16,16 @@ namespace data_star64x64x64
 msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
 msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
 }		// data_star64x64x64
-
 namespace data_nexrad_16x1024x2048
 {
 msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
 msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
 }		// data_nexrad_16x1024x2048
+namespace data_solar_sdo_1024x1024x512
+{
+msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
+msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
+}		// data_solar_sdo_1024x1024x512
 }		// dummy
 }		// msdb
 #endif	// _MSDB_DUMMY_EXE_BUILD_ASTRONOMY_ARRAY_3D_H_

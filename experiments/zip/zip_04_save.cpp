@@ -74,5 +74,14 @@ TEST(zip_04_save, data_nexrad_16x1024x2048)
 								  dummy::data_nexrad_16x1024x2048::filePath,
 								  core::compressionType::ZIP);
 }
+TEST(zip_04_save, solar_sdo_1024x1024x512)
+{
+	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::ZIP);
+
+	dummy::executeInsertSaveArray(dummy::data_solar_sdo_1024x1024x512::arrName,
+								  dummy::data_solar_sdo_1024x1024x512::filePath,
+								  core::compressionType::ZIP);
+}
 }		// experiments
 }		// msdb

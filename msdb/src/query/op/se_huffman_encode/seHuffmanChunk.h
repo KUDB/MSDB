@@ -7,6 +7,7 @@
 #include <io/bitstream.h>
 #include <op/se_compression/seChunk.h>
 #include <compression/huffmanCode.h>
+#include <compression/fixedHuffmanCoder.h>
 #include "seHuffmanBlock.h"
 
 namespace msdb
@@ -48,50 +49,7 @@ public:
 	virtual void serialize(std::ostream& os) override
 	{
 		bstream bs;
-		bstream seOut;
-		this->seEncode(seOut);
-		//seChunk<Ty_>::seEncode(seOut);
-
-		bs << setw(sizeof(size_t) * CHAR_BIT) << seOut.capacity();
-
-		//////////////////////////////
-		
-		huffmanCoder<uint16_t, uint8_t> huffmanEncoder;
-		huffmanEncoder.encode(bs, (uint8_t*)seOut.data(), seOut.capacity());
-		//////////////////////////////
-		// 
-		//switch (this->desc_->attrDesc_->type_)
-		//{
-		//case eleType::CHAR:
-		//	this->serializeTy<char>(bs);
-		//	break;
-		//case eleType::INT8:
-		//	this->serializeTy<int8_t>(bs);
-		//	break;
-		//case eleType::INT16:
-		//	this->serializeTy<int16_t>(bs);
-		//	break;
-		//case eleType::INT32:
-		//	this->serializeTy<int32_t>(bs);
-		//	break;
-		//case eleType::INT64:
-		//	this->serializeTy<int64_t>(bs);
-		//	break;
-		//case eleType::UINT8:
-		//	this->serializeTy<uint8_t>(bs);
-		//	break;
-		//case eleType::UINT16:
-		//	this->serializeTy<uint16_t>(bs);
-		//	break;
-		//case eleType::UINT32:
-		//	this->serializeTy<uint32_t>(bs);
-		//	break;
-		//case eleType::UINT64:
-		//	this->serializeTy<uint64_t>(bs);
-		//	break;
-		//default:
-		//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-		//}
+		this->seHuffmanEncode(bs);
 
 		this->serializedSize_ = bs.capacity();
 		this->getOutHeader()->serialize(os);
@@ -106,87 +64,344 @@ public:
 		bs.resize(this->serializedSize_);
 		is.read(bs.data(), this->serializedSize_);
 
-		size_t seSize = 0;
-		bs >> setw(sizeof(size_t) * CHAR_BIT) >> seSize;
-		uint8_t* tempBuffer = new uint8_t[seSize];
-
-		huffmanCoder<uint16_t, uint8_t> huffmanDecoder;
-		huffmanDecoder.decode((uint8_t*)tempBuffer, seSize, bs);
-
-		//////////////////////////////
-		bstream seIn;
-		seIn.resize(seSize);
-		memcpy(seIn.data(), tempBuffer, seSize);
-		delete[] tempBuffer;
-
-		this->seDecode(seIn);
-		//////////////////////////////
-
-		//switch (this->desc_->attrDesc_->type_)
-		//{
-		//case eleType::CHAR:
-		//	this->deserializeTy<char>(bs);
-		//	break;
-		//case eleType::INT8:
-		//	this->deserializeTy<int8_t>(bs);
-		//	break;
-		//case eleType::INT16:
-		//	this->deserializeTy<int16_t>(bs);
-		//	break;
-		//case eleType::INT32:
-		//	this->deserializeTy<int32_t>(bs);
-		//	break;
-		//case eleType::INT64:
-		//	this->deserializeTy<int64_t>(bs);
-		//	break;
-		//case eleType::UINT8:
-		//	this->deserializeTy<uint8_t>(bs);
-		//	break;
-		//case eleType::UINT16:
-		//	this->deserializeTy<uint16_t>(bs);
-		//	break;
-		//case eleType::UINT32:
-		//	this->deserializeTy<uint32_t>(bs);
-		//	break;
-		//case eleType::UINT64:
-		//	this->deserializeTy<uint64_t>(bs);
-		//	break;
-		//default:
-		//	_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
-		//}
+		this->seHuffmanDecode(bs);
 	}
 
-	//template<typename Ty_>
-	//void serializeTy(bstream& out)
-	//{
-	//	bstream seOut;
-	//	this->seEncode<Ty_>(seOut);
+	void seHuffmanEncode(bstream& bs)
+	{
+		pBlock myBlock = this->blocks_.at(0);
 
-	//	out << setw(sizeof(size_t) * CHAR_BIT) << seOut.capacity();
+		size_t dSize = this->getDSize();
+		size_t numBandsInLevel = std::pow(2, dSize) - 1;
+		dimension inBlockDims = this->getDesc()->getBlockDims();
+		dimension bandDims = inBlockDims / std::pow(2, this->level_ + 1);
 
-	//	//////////////////////////////
-	//	huffmanCoder<uint16_t, uint8_t> huffmanEncoder;
-	//	huffmanEncoder.encode(out, (uint8_t*)seOut.data(), seOut.capacity());
-	//}
+		size_t seqId = 0;
+		// Level 0
+		{
+			for (size_t band = 0; band <= numBandsInLevel; ++band, ++seqId)
+			{
+				if (band == 0)
+				{
+					size_t startPos = bs.getOutBitPos();
+					this->serializeBand(bs, myBlock, seqId, band, bandDims);
+					this->synopsisSize_ = bs.getOutBitPos() - startPos;
+				}
+				else
+				{
+					this->serializeBand(bs, myBlock, seqId, band, bandDims);
+				}
+			}
+		}
 
-	//template<class Ty_>
-	//void deserializeTy(bstream& in)
-	//{
-	//	size_t seSize = 0;
-	//	in >> setw(sizeof(size_t) * CHAR_BIT) >> seSize;
-	//	uint8_t* tempBuffer = new uint8_t[seSize];
+		this->serializeChildLevelBand(bs, myBlock, seqId, bandDims, numBandsInLevel);
+	}
 
-	//	huffmanCoder<uint16_t, uint8_t> huffmanDecoder;
-	//	huffmanDecoder.decode((uint8_t*)tempBuffer, seSize, in);
+	void serializeBand(bstream& bs, pBlock myBlock,
+					   size_t seqId, size_t bandId, dimension& bandDims)
+	{
+		bit_cnt_type rbFromDelta = this->rBitFromDelta[seqId];
+		bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
 
-	//	//////////////////////////////
-	//	bstream seIn;
-	//	seIn.resize(seSize);
-	//	memcpy(seIn.data(), tempBuffer, seSize);
-	//	delete[] tempBuffer;
+		this->serializeGap(bs, rbFromMMT - rbFromDelta);
+		if (rbFromDelta == 0)
+		{
+			return;
+		}
 
-	//	this->seDecode<Ty_>(seIn);
-	//}
+		bs << setw(rbFromDelta);
+		Ty_ signMask = 0x1 << rbFromDelta - 1;
+
+		auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
+		auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
+		size_t beforeBitPos = bs.getOutBitPos();
+
+		while (!bItemItr->isEnd())
+		{
+			Ty_ value = (**bItemItr).get<Ty_>();
+
+			if (value & signMask)
+			{
+				value = (Ty_)(~value) + 1;
+				value |= signMask;
+			}
+
+			coder->encode(bs, &value, 1);
+			//bs << value;
+			++(*bItemItr);
+		}
+
+		auto after = bs.getOutBitPos();
+		//BOOST_LOG_TRIVIAL(debug) << "Bits: " << bs.getOutBitPos() - beforeBitPos;
+	}
+
+	void serializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
+	{
+		//BOOST_LOG_TRIVIAL(debug) << "SE HUFFMAN CHUNK - serializeChildLevelBand";
+		auto dSize = this->getDSize();
+
+		for (size_t level = 1; level <= this->level_; ++level)
+		{
+			auto innerSize = pow(2, level);
+			dimension innerSpace = dimension(dSize, innerSize);
+			mdItr innerItr(innerSpace);
+			while (!innerItr.isEnd())
+			{
+				coor innerCoor(innerItr.coor() + this->getChunkCoor() * innerSpace);
+				for (size_t band = 1; band <= numBandsInLevel; ++band)
+				{
+					dimension targetSp = getBandRange(band, bandDims * pow(2, level)).getSp() + innerItr.coor() * bandDims;
+					dimension targetEp = targetSp + bandDims;
+					auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
+
+					bit_cnt_type rbFromDelta = this->rBitFromDelta[seqId];
+					bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
+
+					//BOOST_LOG_TRIVIAL(debug) << "Lv: " << level << ", Bd: " << band << ", Block: " << bs.getOutBlockPos() << ", Bit: " << bs.getOutBitPosInBlock();
+					//BOOST_LOG_TRIVIAL(debug) << "Block: " << bs.getOutLastBlock();
+
+					this->serializeGap(bs, (int64_t)rbFromMMT - (int64_t)rbFromDelta);
+
+					//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta << ", After Block: " << bs.getOutLastBlock();
+					//BOOST_LOG_TRIVIAL(debug) << "delta: " << static_cast<int64_t>(rbFromDelta) << " / mmt: " << static_cast<int64_t>(rbFromMMT) << " / gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta;
+
+					//assert(rbFromDelta <= 8);
+					//iFixedHuffmanCoder coder[8] = { nullptr };
+					//for (size_t bi = 0; bi < (size_t)(rbFromDelta + CHAR_BIT - 1) / (size_t)CHAR_BIT; ++bi)
+					//{
+					//	coder[bi] = this->fixedHuffmanCoders[std::min((bit_cnt_type)rbFromDelta - bi * CHAR_BIT, (bit_cnt_type)CHAR_BIT)];
+					//}
+					auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
+
+					if (rbFromDelta != 0)
+					{
+						size_t beforeBitPos = bs.getOutBitPos();
+						bs << setw(rbFromDelta);
+						Ty_ signMask = 0x1 << rbFromDelta - 1;
+
+						while (!bItemItr->isEnd())
+						{
+							Ty_ value = (**bItemItr).get<Ty_>();
+							if (value & signMask)
+							{
+								//value = abs_(value);
+								value = (Ty_)(~value) + 1;
+								value |= signMask;
+							}
+							coder->encode(bs, &value, 1);
+							//bs << value;
+							++(*bItemItr);
+						}
+
+						//BOOST_LOG_TRIVIAL(debug) << "Bits: " << bs.getOutBitPos() - beforeBitPos;
+					}
+
+					++seqId;
+				}
+				++innerItr;
+			}
+		}
+	}
+
+	void seHuffmanDecode(bstream& bs)
+	{
+		pBlock myBlock = this->blocks_.at(0);
+
+		size_t dSize = this->getDSize();
+		size_t numBandsInLevel = std::pow(2, dSize) - 1;
+		dimension inBlockDims = this->getDesc()->getBlockDims();
+		dimension bandDims = inBlockDims / std::pow(2, this->level_ + 1);
+
+		size_t seqId = 0;
+		// Level 0
+		{
+			for (size_t band = 0; band <= numBandsInLevel; ++band, ++seqId)
+			{
+				this->deserializeBand(bs, myBlock, seqId, band, bandDims);
+			}
+		}
+
+		this->deserializeChildLevelBand(bs, myBlock, seqId, bandDims, numBandsInLevel);
+	}
+
+	void deserializeBand(bstream& bs, pBlock myBlock,
+						 const size_t seqId, const size_t bandId, dimension& bandDims)
+	{
+		int64_t gap = this->deserializeGap(bs);
+		assert(gap <= 64);
+		bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
+		size_t rbFromDelta = rbFromMMT - gap;
+
+		bs >> setw(rbFromDelta);
+		Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+		Ty_ negativeMask = (Ty_)-1 ^ signMask;
+		Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+		auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
+		//assert(rbFromDelta <= 16);
+		auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
+
+		//////////////////////////////
+		// 01
+		auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
+		auto itemCapa = bandDims.area();
+		char* spData = (char*)this->getBuffer()->getData() + spOffset;
+
+		size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / CHAR_BIT * 2), (size_t)(bs.capacity() - bs.getInBlockPos()) });
+		bstream bsHuffman;
+		bsHuffman.resize(tempBufferSize);
+		memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
+		bsHuffman.jumpBits(bs.getInBitPosInBlock());
+
+		Ty_* huffmanDecoded = new Ty_[itemCapa];
+		auto readBits = coder->decode(static_cast<void*>(huffmanDecoded), itemCapa, bsHuffman);
+		bs.jumpBits(readBits);
+		//BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
+
+		if ((Ty_)-1 < 0)
+		{
+			// Ty_ has negative values
+			for (int i = 0; i < itemCapa; ++i)
+			{
+				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+				*pValue = huffmanDecoded[i];
+				//bs >> *pValue;
+
+				if (*pValue & signMask)
+				{
+					*pValue &= negativeMask;
+					*pValue *= -1;
+					*pValue |= signBit;
+				}
+			}
+		}
+		else
+		{
+			// Ty_ only has positive values
+			for (int i = 0; i < itemCapa; ++i)
+			{
+				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+				*pValue = huffmanDecoded[i];
+			}
+		}
+
+		delete[] huffmanDecoded;
+		//////////////////////////////
+	}
+
+	void deserializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
+	{
+		//BOOST_LOG_TRIVIAL(debug) << "SE HUFFMAN CHUNK - deserializeChildLevelBand";
+		auto dSize = this->getDSize();
+		for (size_t level = 1; level <= this->level_; ++level)
+		{
+			auto innerSize = pow(2, level);
+			dimension innerSpace = dimension(dSize, innerSize);
+			mdItr innerItr(innerSpace);
+			while (!innerItr.isEnd())
+			{
+				coor innerCoor(innerItr.coor() + this->getChunkCoor() * innerSpace);
+				//BOOST_LOG_TRIVIAL(trace) << "area: " << static_cast<int>(innerCoor.area());
+				for (size_t band = 1; band <= numBandsInLevel; ++band)
+				{
+					dimension targetSp = getBandRange(band, bandDims * pow(2, level)).getSp() + innerItr.coor() * bandDims;
+					dimension targetEp = targetSp + bandDims;
+
+					//BOOST_LOG_TRIVIAL(debug) << "Lv: " << level << ", Bd: " << band << ", Block: " << bs.getInBlockPos() << ", Bit: " << bs.getInBitPosInBlock();
+					//BOOST_LOG_TRIVIAL(debug) << "Block: " << bs.getInFrontBlock();
+
+					int64_t gap = this->deserializeGap(bs);
+
+					//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)gap << ", After Block: " << bs.getInFrontBlock();
+
+					if (gap > 64)
+					{
+						assert(gap <= 64);
+					}
+					bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
+					size_t rbFromDelta = rbFromMMT - gap;
+
+					//BOOST_LOG_TRIVIAL(debug) << "delta: " << static_cast<int64_t>(rbFromDelta) << " / mmt: " << static_cast<int64_t>(rbFromMMT) << " / gap: " << static_cast<int64_t>(gap);
+
+					auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
+					//////////////////////////////
+					// 01
+					auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
+					auto itemCapa = bandDims.area();
+					char* spData = (char*)this->getBuffer()->getData() + spOffset;
+					//////////////////////////////
+
+					if (rbFromDelta == 0)
+					{
+						//////////////////////////////
+						// 01
+						Ty_ value = 0;
+						for (size_t i = 0; i < itemCapa; ++i)
+						{
+							*((Ty_*)(spData + this->tileOffset_[i])) = 0;
+						}
+						//////////////////////////////
+					}
+					else
+					{
+						//assert(rbFromDelta <= 16);
+						auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
+
+						// Read more buffer
+						size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / (double)CHAR_BIT * 2), (size_t)(bs.capacity() - bs.getInBlockPos()) });
+						bstream bsHuffman;
+						bsHuffman.resize(tempBufferSize);
+						memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
+						bsHuffman.jumpBits(bs.getInBitPosInBlock());
+
+						Ty_* huffmanDecoded = new Ty_[itemCapa];
+						auto readBits = coder->decode(static_cast<void*>(huffmanDecoded), itemCapa, bsHuffman);
+						//BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
+						bs.jumpBits(readBits);
+
+						bs >> setw(rbFromDelta);
+						Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+						Ty_ negativeMask = (Ty_)-1 ^ signMask;
+						Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+						//////////////////////////////
+						// 01
+						if ((Ty_)-1 < 0)
+						{
+							for (size_t i = 0; i < itemCapa; ++i)
+							{
+								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+								*pValue = huffmanDecoded[i];
+
+								if (*pValue & signMask)
+								{
+									*pValue &= negativeMask;
+									*pValue *= -1;
+									*pValue |= signBit;
+								}
+							}
+						}
+						else
+						{
+							for (size_t i = 0; i < itemCapa; ++i)
+							{
+								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+								*pValue = huffmanDecoded[i];
+							}
+						}
+						//////////////////////////////
+
+						delete[] huffmanDecoded;
+					}
+					++seqId;
+				}
+				++innerItr;
+			}
+		}
+	}
+
+private:
+	static std::vector<std::vector<iFixedHuffmanCoder*>> fixedHuffmanCoders;
 };
 
 template <>

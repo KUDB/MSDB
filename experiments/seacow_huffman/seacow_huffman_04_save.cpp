@@ -107,5 +107,17 @@ TEST(seacow_huffman_04_save, data_nexrad_16x1024x2048)
 								  msdb::dummy::data_nexrad_16x1024x2048::filePath,
 								  msdb::core::compressionType::SEACOW_HUFFMAN);
 }
+TEST(seacow_huffman_04_save, data_solar_sdo_1024x1024x512)
+{
+	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::SEACOW_HUFFMAN);
+
+	dummy::data_solar_sdo_1024x1024x512::executeBuildIndex(
+		core::compressionType::SEACOW_HUFFMAN, core::attrIndexType::MMT);
+
+	dummy::executeInsertSaveArray(msdb::dummy::data_solar_sdo_1024x1024x512::arrName,
+								  msdb::dummy::data_solar_sdo_1024x1024x512::filePath,
+								  msdb::core::compressionType::SEACOW_HUFFMAN);
+}
 }		// experiment
 }		// msdb

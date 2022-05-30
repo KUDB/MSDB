@@ -49,7 +49,6 @@ std::shared_ptr<AFLOperator> getSaveIndexAFL(
 std::shared_ptr<AFLOperator> getLoadIndexAFL(
 	compressionType compType, attrIndexType idxType);
 }
-
 namespace data_saturn1024x1024
 {
 static const std::string arrName = "saturn1024x1024";
@@ -88,13 +87,13 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(
 
 namespace data_solar1024x1024
 {
-static const std::string arrName = "solar1024x1024";
-static const core::arrayId aid = 2000;
-static const std::string filePath = DUMMY_PATH(Binary_Solar_latest10240171_1024x1024.data);
+static const std::string arrName = "solar4096x4096";
+static const core::arrayId aid = 7000;
+static const std::string filePath = DUMMY_PATH(Binary_SOLAR_220530_002315_4096_HMID.data);
 
-static const core::dimension dims({ 1024, 1024 });
-static const core::dimension chunkDims({ 64, 64 });
-static const core::dimension blockDims({ 64, 64 });
+static const core::dimension dims({ 4096, 4096 });
+static const core::dimension chunkDims({ 128, 128 });
+static const core::dimension blockDims({ 128, 128 });
 
 static const int wtLevel = 3;
 static const int mmtLevel = 3;
@@ -121,7 +120,6 @@ std::shared_ptr<AFLOperator> getSaveIndexAFL(
 std::shared_ptr<AFLOperator> getLoadIndexAFL(
 	compressionType compType, attrIndexType idxType);
 }		// data_solar1024x1024
-
 namespace data_mars4096x2048
 {
 static const std::string arrName = "mars4096x2048";
