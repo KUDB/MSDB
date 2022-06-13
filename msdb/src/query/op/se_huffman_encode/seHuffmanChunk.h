@@ -103,6 +103,11 @@ public:
 		bit_cnt_type rbFromDelta = this->rBitFromDelta[seqId];
 		bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
 
+		if (rbFromMMT == 0)
+		{
+			return;
+		}
+
 		this->serializeGap(bs, rbFromMMT - rbFromDelta);
 		if (rbFromDelta == 0)
 		{
@@ -160,40 +165,44 @@ public:
 					//BOOST_LOG_TRIVIAL(debug) << "Lv: " << level << ", Bd: " << band << ", Block: " << bs.getOutBlockPos() << ", Bit: " << bs.getOutBitPosInBlock();
 					//BOOST_LOG_TRIVIAL(debug) << "Block: " << bs.getOutLastBlock();
 
-					this->serializeGap(bs, (int64_t)rbFromMMT - (int64_t)rbFromDelta);
-
-					//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta << ", After Block: " << bs.getOutLastBlock();
-					//BOOST_LOG_TRIVIAL(debug) << "delta: " << static_cast<int64_t>(rbFromDelta) << " / mmt: " << static_cast<int64_t>(rbFromMMT) << " / gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta;
-
-					//assert(rbFromDelta <= 8);
-					//iFixedHuffmanCoder coder[8] = { nullptr };
-					//for (size_t bi = 0; bi < (size_t)(rbFromDelta + CHAR_BIT - 1) / (size_t)CHAR_BIT; ++bi)
-					//{
-					//	coder[bi] = this->fixedHuffmanCoders[std::min((bit_cnt_type)rbFromDelta - bi * CHAR_BIT, (bit_cnt_type)CHAR_BIT)];
-					//}
-					auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
-
-					if (rbFromDelta != 0)
+					if (rbFromMMT != 0)
 					{
-						size_t beforeBitPos = bs.getOutBitPos();
-						bs << setw(rbFromDelta);
-						Ty_ signMask = 0x1 << rbFromDelta - 1;
+						this->serializeGap(bs, (int64_t)rbFromMMT - (int64_t)rbFromDelta);
 
-						while (!bItemItr->isEnd())
+						//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta << ", After Block: " << bs.getOutLastBlock();
+						//BOOST_LOG_TRIVIAL(debug) << "delta: " << static_cast<int64_t>(rbFromDelta) << " / mmt: " << static_cast<int64_t>(rbFromMMT) << " / gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta;
+
+						//assert(rbFromDelta <= 8);
+						//iFixedHuffmanCoder coder[8] = { nullptr };
+						//for (size_t bi = 0; bi < (size_t)(rbFromDelta + CHAR_BIT - 1) / (size_t)CHAR_BIT; ++bi)
+						//{
+						//	coder[bi] = this->fixedHuffmanCoders[std::min((bit_cnt_type)rbFromDelta - bi * CHAR_BIT, (bit_cnt_type)CHAR_BIT)];
+						//}
+						
+						if (rbFromDelta != 0)
 						{
-							Ty_ value = (**bItemItr).get<Ty_>();
-							if (value & signMask)
-							{
-								//value = abs_(value);
-								value = (Ty_)(~value) + 1;
-								value |= signMask;
-							}
-							coder->encode(bs, &value, 1);
-							//bs << value;
-							++(*bItemItr);
-						}
+							auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
 
-						//BOOST_LOG_TRIVIAL(debug) << "Bits: " << bs.getOutBitPos() - beforeBitPos;
+							size_t beforeBitPos = bs.getOutBitPos();
+							bs << setw(rbFromDelta);
+							Ty_ signMask = 0x1 << rbFromDelta - 1;
+
+							while (!bItemItr->isEnd())
+							{
+								Ty_ value = (**bItemItr).get<Ty_>();
+								if (value & signMask)
+								{
+									//value = abs_(value);
+									value = (Ty_)(~value) + 1;
+									value |= signMask;
+								}
+								coder->encode(bs, &value, 1);
+								//bs << value;
+								++(*bItemItr);
+							}
+
+							//BOOST_LOG_TRIVIAL(debug) << "Bits: " << bs.getOutBitPos() - beforeBitPos;
+						}
 					}
 
 					++seqId;
@@ -227,10 +236,22 @@ public:
 	void deserializeBand(bstream& bs, pBlock myBlock,
 						 const size_t seqId, const size_t bandId, dimension& bandDims)
 	{
+		bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
+		if (rbFromMMT == 0)
+		{
+			// Do nothing, the buffer should be initialized in 0(zeor).
+			return;
+		}
+
 		int64_t gap = this->deserializeGap(bs);
 		assert(gap <= 64);
-		bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
 		size_t rbFromDelta = rbFromMMT - gap;
+
+		if (rbFromDelta == 0)
+		{
+			// Do nothing, the buffer should be initialized in 0(zeor).
+			return;
+		}
 
 		bs >> setw(rbFromDelta);
 		Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
@@ -310,89 +331,98 @@ public:
 					//BOOST_LOG_TRIVIAL(debug) << "Lv: " << level << ", Bd: " << band << ", Block: " << bs.getInBlockPos() << ", Bit: " << bs.getInBitPosInBlock();
 					//BOOST_LOG_TRIVIAL(debug) << "Block: " << bs.getInFrontBlock();
 
-					int64_t gap = this->deserializeGap(bs);
 
-					//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)gap << ", After Block: " << bs.getInFrontBlock();
-
-					if (gap > 64)
-					{
-						assert(gap <= 64);
-					}
 					bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
-					size_t rbFromDelta = rbFromMMT - gap;
 
-					//BOOST_LOG_TRIVIAL(debug) << "delta: " << static_cast<int64_t>(rbFromDelta) << " / mmt: " << static_cast<int64_t>(rbFromMMT) << " / gap: " << static_cast<int64_t>(gap);
-
-					auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
-					//////////////////////////////
-					// 01
-					auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
-					auto itemCapa = bandDims.area();
-					char* spData = (char*)this->getBuffer()->getData() + spOffset;
-					//////////////////////////////
-
-					if (rbFromDelta == 0)
+					if (rbFromMMT)
 					{
+						int64_t gap = this->deserializeGap(bs);
+						//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)gap << ", After Block: " << bs.getInFrontBlock();
+						if (gap > 64)
+						{
+							assert(gap <= 64);
+						}
+						size_t rbFromDelta = rbFromMMT - gap;
+
+						//BOOST_LOG_TRIVIAL(debug) << "delta: " << static_cast<int64_t>(rbFromDelta) << " / mmt: " << static_cast<int64_t>(rbFromMMT) << " / gap: " << static_cast<int64_t>(gap);
+
+						auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
 						//////////////////////////////
 						// 01
-						Ty_ value = 0;
-						for (size_t i = 0; i < itemCapa; ++i)
-						{
-							*((Ty_*)(spData + this->tileOffset_[i])) = 0;
-						}
+						auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
+						auto itemCapa = bandDims.area();
+						char* spData = (char*)this->getBuffer()->getData() + spOffset;
 						//////////////////////////////
+
+
+						//if (rbFromDelta == 0)
+						//{
+						//	//////////////////////////////
+						//	// 01
+						//	Ty_ value = 0;
+						//	for (size_t i = 0; i < itemCapa; ++i)
+						//	{
+						//		*((Ty_*)(spData + this->tileOffset_[i])) = 0;
+						//	}
+						//	//////////////////////////////
+						//}
+						if (rbFromDelta)
+						{
+							//assert(rbFromDelta <= 16);
+							auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
+
+							// Read more buffer
+							size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / (double)CHAR_BIT * 2), (size_t)(bs.capacity() - bs.getInBlockPos()) });
+							bstream bsHuffman;
+							bsHuffman.resize(tempBufferSize);
+							memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
+							bsHuffman.jumpBits(bs.getInBitPosInBlock());
+
+							Ty_* huffmanDecoded = new Ty_[itemCapa];
+							auto readBits = coder->decode(static_cast<void*>(huffmanDecoded), itemCapa, bsHuffman);
+							//BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
+							bs.jumpBits(readBits);
+
+							bs >> setw(rbFromDelta);
+							Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+							Ty_ negativeMask = (Ty_)-1 ^ signMask;
+							Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+							//////////////////////////////
+							// 01
+							if ((Ty_)-1 < 0)
+							{
+								for (size_t i = 0; i < itemCapa; ++i)
+								{
+									auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+									*pValue = huffmanDecoded[i];
+
+									if (*pValue & signMask)
+									{
+										*pValue &= negativeMask;
+										*pValue *= -1;
+										*pValue |= signBit;
+									}
+								}
+							}
+							else
+							{
+								for (size_t i = 0; i < itemCapa; ++i)
+								{
+									auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+									*pValue = huffmanDecoded[i];
+								}
+							}
+							//////////////////////////////
+
+							delete[] huffmanDecoded;
+						}
 					}
 					else
 					{
-						//assert(rbFromDelta <= 16);
-						auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
-
-						// Read more buffer
-						size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / (double)CHAR_BIT * 2), (size_t)(bs.capacity() - bs.getInBlockPos()) });
-						bstream bsHuffman;
-						bsHuffman.resize(tempBufferSize);
-						memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
-						bsHuffman.jumpBits(bs.getInBitPosInBlock());
-
-						Ty_* huffmanDecoded = new Ty_[itemCapa];
-						auto readBits = coder->decode(static_cast<void*>(huffmanDecoded), itemCapa, bsHuffman);
-						//BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
-						bs.jumpBits(readBits);
-
-						bs >> setw(rbFromDelta);
-						Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
-						Ty_ negativeMask = (Ty_)-1 ^ signMask;
-						Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
-
-						//////////////////////////////
-						// 01
-						if ((Ty_)-1 < 0)
-						{
-							for (size_t i = 0; i < itemCapa; ++i)
-							{
-								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-								*pValue = huffmanDecoded[i];
-
-								if (*pValue & signMask)
-								{
-									*pValue &= negativeMask;
-									*pValue *= -1;
-									*pValue |= signBit;
-								}
-							}
-						}
-						else
-						{
-							for (size_t i = 0; i < itemCapa; ++i)
-							{
-								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-								*pValue = huffmanDecoded[i];
-							}
-						}
-						//////////////////////////////
-
-						delete[] huffmanDecoded;
+						// Do nothing
 					}
+
 					++seqId;
 				}
 				++innerItr;

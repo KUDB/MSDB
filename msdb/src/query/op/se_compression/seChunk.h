@@ -31,7 +31,7 @@ public:
 		{
 			this->level_ = 0;
 			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
-				MSDB_EC_QUERY_ERROR, MSDB_ER_FAIL_TO_PARSE_PARAM, 
+				MSDB_EC_QUERY_ERROR, MSDB_ER_FAIL_TO_PARSE_PARAM,
 				"seChunK::level: " + std::string(_STR_PARAM_SE_LEVEL_)));
 		}
 	}
@@ -143,20 +143,20 @@ public:
 		dimension inBlockDims = this->getDesc()->getBlockDims();
 		dimension bandDims = inBlockDims / std::pow(2, this->level_ + 1);
 
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		for (int d = 0; d < dSize; ++d)
 		{
 			assert(bandDims[d] > 0);	// Level is too high for block dim
 		}
-#endif
+	#endif
 
 		size_t seqId = 0;
 		// Level 0
 		{
-#ifndef NDEBUG
+		#ifndef NDEBUG
 			//auto before = bs.capacity();
 			//BOOST_LOG_TRIVIAL(debug) << "MIN: " << this->min_;
-#endif
+		#endif
 
 			for (size_t band = 0; band <= numBandsInLevel; ++band, ++seqId)
 			{
@@ -173,10 +173,10 @@ public:
 				//this->serializeBand(bs, myBlock, seqId, band, bandDims);
 			}
 
-#ifndef NDEBUG
+		#ifndef NDEBUG
 			//auto synopsisSize = bs.capacity() - before;
 			//BOOST_LOG_TRIVIAL(debug) << "Save Synopsis[" << this->desc_->id_ << "] : " << synopsisSize << " Bytes";
-#endif
+		#endif
 		}
 
 		//this->serializeChildLevelBand<Ty_>(bs, myBlock, seqId, bandDims, numBandsInLevel);
@@ -189,7 +189,7 @@ public:
 	{
 		bit_cnt_type rbFromDelta = this->rBitFromDelta[seqId];
 		bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "seqId: " << static_cast<int>(seqId) << ", setw: " << static_cast<int>(rbFromDelta);
 		//BOOST_LOG_TRIVIAL(trace) << "rBitFromMMT: " << static_cast<int>(rbFromMMT) << "/ from Delta: " << static_cast<int>(rbFromDelta);
 		//if(rbFromMMT < rbFromDelta)
@@ -197,7 +197,11 @@ public:
 		//	BOOST_LOG_TRIVIAL(warning) << "rBitFromMMT: " << static_cast<int>(rbFromMMT) << "/ from Delta: " << static_cast<int>(rbFromDelta);
 		//}
 		//assert(rbFromMMT >= rbFromDelta);
-#endif
+	#endif
+		if (rbFromMMT == 0)
+		{
+			return;
+		}
 
 		this->serializeGap(bs, rbFromMMT - rbFromDelta);
 		///// >> 220526 SIGNED MOD << /////
@@ -246,9 +250,9 @@ public:
 	{
 		auto dSize = this->getDSize();
 
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		std::vector<int64_t> gaps;
-#endif
+	#endif
 
 		for (size_t level = 1; level <= this->level_; ++level)
 		{
@@ -268,7 +272,7 @@ public:
 					bit_cnt_type rbFromDelta = this->rBitFromDelta[seqId];
 					bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
 
-#ifndef NDEBUG
+				#ifndef NDEBUG
 					//BOOST_LOG_TRIVIAL(trace) << "seqId: " << static_cast<int>(seqId) << ", setw: " << static_cast<int>(rbFromDelta);
 					//BOOST_LOG_TRIVIAL(trace) << "rBitFromMMT: " << static_cast<int>(rbFromMMT) << "/ from Delta: " << static_cast<int>(rbFromDelta) << "/ gap: " << static_cast<int>(rbFromMMT - rbFromDelta) << " (" << inBlock->getId() << ", " << band << ")";
 					//BOOST_LOG_TRIVIAL(trace) << targetSp.toString() << ", " << targetEp.toString();
@@ -277,38 +281,39 @@ public:
 					//	BOOST_LOG_TRIVIAL(warning) << "rBitFromMMT: " << static_cast<int>(rbFromMMT) << "/ from Delta: " << static_cast<int>(rbFromDelta);
 					//}
 					//assert(rbFromMMT >= rbFromDelta);
-#endif
-
-					this->serializeGap(bs, (int64_t)rbFromMMT - (int64_t)rbFromDelta);
-
-#ifndef NDEBUG
-					gaps.push_back((int64_t)rbFromMMT - (int64_t)rbFromDelta);
-#endif
-
-					if (rbFromDelta != 0)
+				#endif
+					if (rbFromMMT)
 					{
-						bs << setw(rbFromDelta);
-						Ty_ signMask = 0x1 << rbFromDelta - 1;
+						this->serializeGap(bs, (int64_t)rbFromMMT - (int64_t)rbFromDelta);
+					#ifndef NDEBUG
+						gaps.push_back((int64_t)rbFromMMT - (int64_t)rbFromDelta);
+					#endif
 
-						while (!bItemItr->isEnd())
+						if (rbFromDelta)
 						{
-							Ty_ value = (**bItemItr).get<Ty_>();
-							///// >> 220526 SIGNED MOD << /////
-							if (value & signMask)
+							bs << setw(rbFromDelta);
+							Ty_ signMask = 0x1 << rbFromDelta - 1;
+
+							while (!bItemItr->isEnd())
 							{
-								//value = abs_(value);
-								value = (Ty_)(~value) + 1;
-								value |= signMask;
+								Ty_ value = (**bItemItr).get<Ty_>();
+								///// >> 220526 SIGNED MOD << /////
+								if (value & signMask)
+								{
+									//value = abs_(value);
+									value = (Ty_)(~value) + 1;
+									value |= signMask;
+								}
+								///// >> 220526 SIGNED ORI << /////
+								//if (value < 0)
+								//{
+								//	value = abs_(value);
+								//	value |= signMask;
+								//}
+								///// -- 220526 SIGNED END -- /////
+								bs << value;
+								++(*bItemItr);
 							}
-							///// >> 220526 SIGNED ORI << /////
-							//if (value < 0)
-							//{
-							//	value = abs_(value);
-							//	value |= signMask;
-							//}
-							///// -- 220526 SIGNED END -- /////
-							bs << value;
-							++(*bItemItr);
 						}
 					}
 
@@ -318,7 +323,7 @@ public:
 			}
 		}
 
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		//{
 		//	std::stringstream ss;
 		//	for (auto b : this->rBitFromMMT)
@@ -339,7 +344,7 @@ public:
 		//BOOST_LOG_TRIVIAL(debug) << "avg gaps: " << static_cast<double>(std::accumulate(gaps.begin(), gaps.end(), 0.0) / gaps.size());
 		//BOOST_LOG_TRIVIAL(debug) << "avg from MMT: " << static_cast<double>(std::accumulate(rBitFromMMT.begin(), rBitFromMMT.end(), 0.0) / rBitFromMMT.size());
 		//BOOST_LOG_TRIVIAL(debug) << "avg from Delta: " << static_cast<double>(std::accumulate(rBitFromDelta.begin(), rBitFromDelta.end(), 0.0) / rBitFromDelta.size());
-#endif
+	#endif
 	}
 
 	//template<typename Ty_>
@@ -349,7 +354,7 @@ public:
 	//}
 
 	//template <typename Ty_>
-	public:
+public:
 	void seDecode(bstream& bs)
 	{
 		pBlock myBlock = this->blocks_.at(0);
@@ -377,11 +382,17 @@ public:
 	void deserializeBand(bstream& bs, pBlock myBlock,
 						 const size_t seqId, const size_t bandId, dimension& bandDims)
 	{
-		size_t gap = this->deserializeGap(bs);
 		bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
+		if (rbFromMMT == 0)
+		{
+			// Do nothing, the buffer should be initialized in 0(zeor).
+			return;
+		}
+
+		size_t gap = this->deserializeGap(bs);
 		size_t rbFromDelta = rbFromMMT - gap;
 
-#ifndef DEBUG
+	#ifndef DEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "seqId: " << static_cast<int>(seqId) << ", setw: " << static_cast<int>(rbFromDelta);
 		//BOOST_LOG_TRIVIAL(trace) << "fromMMT: " << static_cast<int>(rbFromMMT) << ", gap: " << static_cast<int>(gap) << ", rbDelta: " << static_cast<int>(rbFromDelta);
 		//if (rbFromMMT < gap)
@@ -390,55 +401,54 @@ public:
 		//	BOOST_LOG_TRIVIAL(warning) << "fromMMT: " << static_cast<int>(rbFromMMT) << ", gap: " << static_cast<int>(gap) << ", rbDelta: " << static_cast<int>(rbFromDelta);
 		//}
 		//assert(rbFromMMT >= gap);
-#endif
+	#endif
 
-		///// >> 220526 SIGNED MOD << /////
-		if (rbFromDelta)
-		{
-			bs >> setw(rbFromDelta);
-			Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
-			Ty_ negativeMask = (Ty_)-1 ^ signMask;
-			Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
-
-			auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
-
-			//////////////////////////////
-			// 01
-			auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
-			auto itemCapa = bandDims.area();
-			char* spData = (char*)this->getBuffer()->getData() + spOffset;
-
-			// Ty_ has negative values
-			for (int i = 0; i < itemCapa; ++i)
-			{
-				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-				*pValue = 0;
-				bs >> *pValue;
-				if (*pValue & signMask)
-				{
-					*pValue &= negativeMask;
-					*pValue *= -1;
-					*pValue |= signBit;
-				}
-				//*pValue += this->min_;
-
-				//Ty_ value = 0;
-				//bs >> value;
-				//if (value & signMask)
-				//{
-				//	value &= negativeMask;
-				//	value *= -1;
-				//	value |= signBit;	// for 128 (1000 0000)
-				//}
-
-				//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
-			}
-		}
-		else
+			///// >> 220526 SIGNED MOD << /////
+		if (rbFromDelta == 0)
 		{
 			// Do nothing, the buffer should be initialized in 0(zeor).
+			return;
 		}
+
+		bs >> setw(rbFromDelta);
+		Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+		Ty_ negativeMask = (Ty_)-1 ^ signMask;
+		Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+		auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
+
+		//////////////////////////////
+		// 01
+		auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
+		auto itemCapa = bandDims.area();
+		char* spData = (char*)this->getBuffer()->getData() + spOffset;
+
+		// Ty_ has negative values
+		for (int i = 0; i < itemCapa; ++i)
+		{
+			auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+			*pValue = 0;
+			bs >> *pValue;
+			if (*pValue & signMask)
+			{
+				*pValue = (Ty_)(~*pValue) + 1;
+				*pValue |= signMask;
+			}
+			//*pValue += this->min_;
+
+			//Ty_ value = 0;
+			//bs >> value;
+			//if (value & signMask)
+			//{
+			//	value &= negativeMask;
+			//	value *= -1;
+			//	value |= signBit;	// for 128 (1000 0000)
+			//}
+
+			//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
+		}
+
 		///// >> 220526 SIGNED ORI << /////
 		//bs >> setw(rbFromDelta);
 		//Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
@@ -534,129 +544,130 @@ public:
 					dimension targetSp = getBandRange(band, bandDims * pow(2, level)).getSp() + innerItr.coor() * bandDims;
 					dimension targetEp = targetSp + bandDims;
 
-					size_t gap = this->deserializeGap(bs);
 					bit_cnt_type rbFromMMT = this->rBitFromMMT[seqId];
-					size_t rbFromDelta = rbFromMMT - gap;
-#ifndef DEBUG
-					//BOOST_LOG_TRIVIAL(trace) << targetSp.toString() << ", " << targetEp.toString();
-					//BOOST_LOG_TRIVIAL(trace) << "seqId: " << static_cast<int>(seqId) << ", setw: " << static_cast<int>(rbFromDelta);
-					//BOOST_LOG_TRIVIAL(trace) << "fromMMT: " << static_cast<int>(rbFromMMT) << ", gap: " << static_cast<int>(gap) << ", rbDelta: " << static_cast<int>(rbFromDelta);
-					//if (rbFromMMT < gap)
-					//{
-					//	BOOST_LOG_TRIVIAL(warning) << "deserializeChildLevelBand: " << static_cast<int>(level) << ", " << seqId;
-					//	BOOST_LOG_TRIVIAL(warning) << "fromMMT: " << static_cast<int>(rbFromMMT) << ", gap: " << static_cast<int>(gap) << ", rbDelta: " << static_cast<int>(rbFromDelta);
-					//}
-					//assert(rbFromMMT >= gap);
-#endif
 
-					auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
-
-					//////////////////////////////
-					// 01
-					auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
-					auto itemCapa = bandDims.area();
-					char* spData = (char*)this->getBuffer()->getData() + spOffset;
-					//////////////////////////////
-
-					if (rbFromDelta == 0)
+					if (rbFromMMT)
 					{
-						//////////////////////////////
-						// 01
-						Ty_ value = 0;
-						for (size_t i = 0; i < itemCapa; ++i)
-						{
-							*((Ty_*)(spData + this->tileOffset_[i])) = 0;
-						}
-						//////////////////////////////
-
-						//////////////////////////////
-						// 02
-						//while (!bItemItr->isEnd())
+						size_t gap = this->deserializeGap(bs);
+						size_t rbFromDelta = rbFromMMT - gap;
+					#ifndef DEBUG
+						//BOOST_LOG_TRIVIAL(trace) << targetSp.toString() << ", " << targetEp.toString();
+						//BOOST_LOG_TRIVIAL(trace) << "seqId: " << static_cast<int>(seqId) << ", setw: " << static_cast<int>(rbFromDelta);
+						//BOOST_LOG_TRIVIAL(trace) << "fromMMT: " << static_cast<int>(rbFromMMT) << ", gap: " << static_cast<int>(gap) << ", rbDelta: " << static_cast<int>(rbFromDelta);
+						//if (rbFromMMT < gap)
 						//{
-						//	(**bItemItr).set<Ty_>(0);
-						//	++(*bItemItr);
+						//	BOOST_LOG_TRIVIAL(warning) << "deserializeChildLevelBand: " << static_cast<int>(level) << ", " << seqId;
+						//	BOOST_LOG_TRIVIAL(warning) << "fromMMT: " << static_cast<int>(rbFromMMT) << ", gap: " << static_cast<int>(gap) << ", rbDelta: " << static_cast<int>(rbFromDelta);
 						//}
-						//////////////////////////////
-					} else
-					{
-						///// >> 220526 SIGNED MOD << /////
-						bs >> setw(rbFromDelta);
-						Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
-						Ty_ negativeMask = (Ty_)-1 ^ signMask;
-						Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+						//assert(rbFromMMT >= gap);
+					#endif
+
+						auto bItemItr = inBlock->getItemRangeIterator(range(targetSp, targetEp));
 
 						//////////////////////////////
 						// 01
-						for (size_t i = 0; i < itemCapa; ++i)
-						{
-							auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-							*pValue = 0;
-							bs >> *pValue;
-							if (*pValue & signMask)
-							{
-								//*pValue = (Ty_)(~*pValue) + 1;
-								//*pValue |= 
-								*pValue &= negativeMask;
-								*pValue *= -1;
-								*pValue |= signBit;
-							}
-						}
-
+						auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
+						auto itemCapa = bandDims.area();
+						char* spData = (char*)this->getBuffer()->getData() + spOffset;
 						//////////////////////////////
-						///// >> 220526 SIGNED ORI << /////
-						//bs >> setw(rbFromDelta);
-						//Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
-						//Ty_ negativeMask = (Ty_)-1 ^ signMask;
-						//Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
 
-						////////////////////////////////
-						//// 01
-						//if ((Ty_)-1 < 0)
+						//if (rbFromDelta == 0)
 						//{
-						//	for (size_t i = 0; i < itemCapa; ++i)
-						//	{
-						//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-						//		*pValue = 0;
-						//		bs >> *pValue;
-						//		if (*pValue & signMask)
-						//		{
-						//			*pValue &= negativeMask;
-						//			*pValue *= -1;
-						//			*pValue |= signBit;
-						//		}
-						//	}
-						//} else
-						//{
-						//	for (size_t i = 0; i < itemCapa; ++i)
-						//	{
-						//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-						//		*pValue = 0;
-						//		bs >> *pValue;
-						//	}
-						//}
-						////////////////////////////////
-						///// -- 220526 SIGNED END -- /////
-
-						//////////////////////////////
-						// 02
-						//while (!bItemItr->isEnd())
-						//{
+						//	//////////////////////////////
+						//	// 01
 						//	Ty_ value = 0;
-						//	bs >> value;
-						//	if (value & signMask)
+						//	for (size_t i = 0; i < itemCapa; ++i)
 						//	{
-						//		value &= negativeMask;
-						//		value *= -1;
-						//		value |= signBit;	// for 128 (1000 0000)
+						//		*((Ty_*)(spData + this->tileOffset_[i])) = 0;
 						//	}
-						//
-						//	(**bItemItr).set<Ty_>(value);
-						//	++(*bItemItr);
+						//	//////////////////////////////
 						//}
-						//////////////////////////////
+						if (rbFromDelta)
+						{
+							///// >> 220526 SIGNED MOD << /////
+							bs >> setw(rbFromDelta);
+							Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+							Ty_ negativeMask = (Ty_)-1 ^ signMask;
+							Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+							//////////////////////////////
+							// 01
+							for (size_t i = 0; i < itemCapa; ++i)
+							{
+								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+								*pValue = 0;
+								bs >> *pValue;
+								if (*pValue & signMask)
+								{
+									*pValue = (Ty_)(~*pValue) + 1;
+									*pValue |= signMask;
+								}
+							}
+
+							//////////////////////////////
+							///// >> 220526 SIGNED ORI << /////
+							//bs >> setw(rbFromDelta);
+							//Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
+							//Ty_ negativeMask = (Ty_)-1 ^ signMask;
+							//Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+
+							////////////////////////////////
+							//// 01
+							//if ((Ty_)-1 < 0)
+							//{
+							//	for (size_t i = 0; i < itemCapa; ++i)
+							//	{
+							//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+							//		*pValue = 0;
+							//		bs >> *pValue;
+							//		if (*pValue & signMask)
+							//		{
+							//			*pValue &= negativeMask;
+							//			*pValue *= -1;
+							//			*pValue |= signBit;
+							//		}
+							//	}
+							//} else
+							//{
+							//	for (size_t i = 0; i < itemCapa; ++i)
+							//	{
+							//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+							//		*pValue = 0;
+							//		bs >> *pValue;
+							//	}
+							//}
+							////////////////////////////////
+							///// -- 220526 SIGNED END -- /////
+
+							//////////////////////////////
+							// 02
+							//while (!bItemItr->isEnd())
+							//{
+							//	Ty_ value = 0;
+							//	bs >> value;
+							//	if (value & signMask)
+							//	{
+							//		value &= negativeMask;
+							//		value *= -1;
+							//		value |= signBit;	// for 128 (1000 0000)
+							//	}
+							//
+							//	(**bItemItr).set<Ty_>(value);
+							//	++(*bItemItr);
+							//}
+							//////////////////////////////
+						}
+						else
+						{
+							// Do nothing
+						}
+					}
+					else
+					{
+						// Do nothing
 					}
 
 					++seqId;

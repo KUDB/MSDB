@@ -83,18 +83,9 @@ private:
 				//outChunk->bufferAlloc();
 				//inChunk->bufferRef(outChunk);		// outChunk should hold the buffer -> used latter
 				
-				inChunk->makeAllBlocks();
-				outChunk->makeAllBlocks();
-
-				inChunk->setLevel(maxLevel);
-				outChunk->setLevel(maxLevel);
-				// TODO::Copy buffer, etc...
-				
 				//this->decompressChunk<Ty_>(inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId);
 				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
 											  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
-
-				outChunk->bufferCopy(inChunk);
 			}
 
 			++(*cit);
@@ -160,6 +151,12 @@ private:
 		//auto maxLevel = outArr->getMaxLevel();
 		arrayId arrId = outArr->getId();
 
+		inChunk->makeAllBlocks();
+		outChunk->makeAllBlocks();
+
+		inChunk->setLevel(maxLevel);
+		outChunk->setLevel(maxLevel);
+
 		bool hasNegative = false;
 		if ((Ty_)-1 < 0)
 		{
@@ -188,6 +185,7 @@ private:
 		//outChunk->makeBlocks();
 		//outChunk->bufferCopy(inChunk);
 		outChunk->setSerializedSize(inChunk->getSerializedSize());
+		outChunk->bufferCopy(inChunk);
 
 		//----------------------------------------//
 		qry->getTimer()->pause(threadId);
@@ -255,15 +253,23 @@ private:
 			{
 				coor innerCoor(innerItr.coor() + inChunk->getChunkCoor() * innerSpace);
 				auto mNode = mmtIndex->getNode(innerCoor, mmtIndex->getBlockLevel() - level);
-				bit_cnt_type rbFromMMT = std::max(static_cast<int64_t>(getRBitFromMMT<Ty_>(mNode, hasNegative) - (int64_t)level), static_cast<int64_t>(static_cast<char>(hasNegative)));
-				for (size_t band = 1; band <= numBandsInLevel; ++band)
-				{
-					inChunk->rBitFromMMT.push_back(rbFromMMT);
+				bit_cnt_type rbFromMMT = getRBitFromMMT<Ty_>(mNode, hasNegative);
 
-//#ifndef NDEBUG
-//					BOOST_LOG_TRIVIAL(trace) << "level: " << level << ", band: " << band;
-//					BOOST_LOG_TRIVIAL(trace) << mNode->toString<Ty_>();
-//#endif
+				if (rbFromMMT == 0)
+				{
+					for (size_t band = 1; band <= numBandsInLevel; ++band)
+					{
+						inChunk->rBitFromMMT.push_back(0);
+					}
+				}
+				else
+				{
+					// Minimum rBit = 2:: sign=1bit, value>=1bit 
+					rbFromMMT = std::max(static_cast<int64_t>(rbFromMMT - (int64_t)level), static_cast<int64_t>(2));
+					for (size_t band = 1; band <= numBandsInLevel; ++band)
+					{
+						inChunk->rBitFromMMT.push_back(rbFromMMT);
+					}
 				}
 
 				++innerItr;
@@ -273,4 +279,4 @@ private:
 };
 }		// core
 }		// msdb
-#endif		// _MSDB_OP_SE_DECOMPRESSION_ACTION_H_
+#endif	// _MSDB_OP_SE_DECOMPRESSION_ACTION_H_

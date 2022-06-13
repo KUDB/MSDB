@@ -184,17 +184,28 @@ private:
 		auto chunkCoor = outChunk->getChunkCoor();
 		auto blockLevel = mmtIndex->getBlockLevel();
 		auto mNode = mmtIndex->getNode(chunkCoor, blockLevel);
-		bit_cnt_type fromMMT = getRBitFromMMT<Ty_>(mNode, hasNegative);
+		bit_cnt_type rbFromMMT = getRBitFromMMT<Ty_>(mNode, hasNegative);
 
 		outChunk->setMin(0);
 
-		for (size_t band = 0; band <= numBandsInLevel; ++band)
+		if (rbFromMMT == 0)
 		{
-			//bit_cnt_type requiredBits = this->findRequiredBits<Ty_>(outBlock, getBandRange(band, bandDims)) + static_cast<char>(hasNegative);
-			bit_cnt_type requiredBits = this->findRequiredBits<Ty_>(outBlock, getBandRange(band, bandDims));
+			for (size_t band = 0; band <= numBandsInLevel; ++band)
+			{
+				outChunk->rBitFromDelta.push_back(0);
+				outChunk->rBitFromMMT.push_back(0);
+			}
+		}
+		else
+		{
+			for (size_t band = 0; band <= numBandsInLevel; ++band)
+			{
+				//bit_cnt_type requiredBits = this->findRequiredBits<Ty_>(outBlock, getBandRange(band, bandDims)) + static_cast<char>(hasNegative);
+				bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, getBandRange(band, bandDims));
 
-			outChunk->rBitFromDelta.push_back(requiredBits);
-			outChunk->rBitFromMMT.push_back(fromMMT);
+				outChunk->rBitFromDelta.push_back(rbFromDelta);
+				outChunk->rBitFromMMT.push_back(rbFromMMT);
+			}
 		}
 	}
 
@@ -217,20 +228,34 @@ private:
 			{
 				coor innerCoor(innerItr.coor() + outChunk->getChunkCoor() * innerSpace);
 				auto mNode = mmtIndex->getNode(innerCoor, blockLevel - level);
-				bit_cnt_type rbFromMMT = std::max(static_cast<int64_t>(getRBitFromMMT<Ty_>(mNode, hasNegative) - (int64_t)level), static_cast<int64_t>(static_cast<char>(hasNegative)));
-				for (size_t band = 1; band <= numBandsInLevel; ++band)
+				bit_cnt_type rbFromMMT = getRBitFromMMT<Ty_>(mNode, hasNegative);
+				
+				if (rbFromMMT == 0)
 				{
-					dimension targetSp = getBandRange(band, bandDims * pow(2, level)).getSp() + innerItr.coor() * bandDims;
-					dimension targetEp = targetSp + bandDims;
+					for (size_t band = 1; band <= numBandsInLevel; ++band)
+					{
+						outChunk->rBitFromDelta.push_back(0);
+						outChunk->rBitFromMMT.push_back(0);
+					}
+				}
+				else
+				{
+					// Minimum rBit = 2:: sign=1bit, value>=1bit 
+					rbFromMMT = std::max(static_cast<int64_t>(rbFromMMT - (int64_t)level), static_cast<int64_t>(2));
+					for (size_t band = 1; band <= numBandsInLevel; ++band)
+					{
+						dimension targetSp = getBandRange(band, bandDims * pow(2, level)).getSp() + innerItr.coor() * bandDims;
+						dimension targetEp = targetSp + bandDims;
 
-					bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, range(targetSp, targetEp));
-					//bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, range(targetSp, targetEp));
-					//if (rbFromDelta > 0)
-					//{
-					//	rbFromDelta += static_cast<char>(hasNegative);
-					//}
-					outChunk->rBitFromDelta.push_back(rbFromDelta);
-					outChunk->rBitFromMMT.push_back(rbFromMMT);
+						bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, range(targetSp, targetEp));
+						//bit_cnt_type rbFromDelta = this->findRequiredBits<Ty_>(outBlock, range(targetSp, targetEp));
+						//if (rbFromDelta > 0)
+						//{
+						//	rbFromDelta += static_cast<char>(hasNegative);
+						//}
+						outChunk->rBitFromDelta.push_back(rbFromDelta);
+						outChunk->rBitFromMMT.push_back(rbFromMMT);
+					}
 				}
 
 				++innerItr;

@@ -82,16 +82,8 @@ private:
 				auto cDesc = inChunk->getDesc();
 				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(std::make_shared<chunkDesc>(*cDesc)));
 
-				inChunk->makeAllBlocks();
-				outChunk->makeAllBlocks();
-
-				inChunk->setLevel(maxLevel);
-				outChunk->setLevel(maxLevel);
-
 				io_service_->post(boost::bind(&se_huffman_decode_action::decompressChunk<Ty_>, this,
 												inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
-
-				outChunk->bufferCopy(inChunk);
 			}
 
 			++(*cit);
@@ -157,6 +149,12 @@ private:
 		//auto maxLevel = outArr->getMaxLevel();
 		arrayId arrId = outArr->getId();
 
+		inChunk->makeAllBlocks();
+		outChunk->makeAllBlocks();
+
+		inChunk->setLevel(maxLevel);
+		outChunk->setLevel(maxLevel);
+
 		bool hasNegative = false;
 		if ((Ty_)-1 < 0)
 		{
@@ -185,6 +183,7 @@ private:
 		//outChunk->makeBlocks();
 		//outChunk->bufferCopy(inChunk);
 		outChunk->setSerializedSize(inChunk->getSerializedSize());
+		outChunk->bufferCopy(inChunk);
 
 		//----------------------------------------//
 		qry->getTimer()->pause(threadId);
@@ -223,7 +222,7 @@ private:
 		auto chunkCoor = inChunk->getChunkCoor();
 		auto blockLevel = mmtIndex->getBlockLevel();
 		auto mNode = mmtIndex->getNode(chunkCoor, blockLevel);
-		bit_cnt_type fromMMT = getRBitFromMMT<Ty_>(mNode, hasNegative);
+		bit_cnt_type rbFromMMT = getRBitFromMMT<Ty_>(mNode, hasNegative);
 
 		// TODO::Synopsis Delta Decoding
 		//inChunk->setMin(mNode->getMin<Ty_>());
@@ -231,7 +230,7 @@ private:
 
 		for (size_t band = 0; band <= numBandsInLevel; ++band)
 		{
-			inChunk->rBitFromMMT.push_back(fromMMT);
+			inChunk->rBitFromMMT.push_back(rbFromMMT);
 		}
 	}
 
@@ -252,10 +251,22 @@ private:
 			{
 				coor innerCoor(innerItr.coor() + inChunk->getChunkCoor() * innerSpace);
 				auto mNode = mmtIndex->getNode(innerCoor, mmtIndex->getBlockLevel() - level);
-				bit_cnt_type rbFromMMT = std::max(static_cast<int64_t>(getRBitFromMMT<Ty_>(mNode, hasNegative) - (int64_t)level), static_cast<int64_t>(static_cast<char>(hasNegative)));
-				for (size_t band = 1; band <= numBandsInLevel; ++band)
+				bit_cnt_type rbFromMMT = getRBitFromMMT<Ty_>(mNode, hasNegative);
+
+				if (rbFromMMT == 0)
 				{
-					inChunk->rBitFromMMT.push_back(rbFromMMT);
+					for (size_t band = 1; band <= numBandsInLevel; ++band)
+					{
+						inChunk->rBitFromMMT.push_back(0);
+					}
+				}
+				else
+				{
+					rbFromMMT = std::max(static_cast<int64_t>(rbFromMMT - (int64_t)level), static_cast<int64_t>(2));
+					for (size_t band = 1; band <= numBandsInLevel; ++band)
+					{
+						inChunk->rBitFromMMT.push_back(rbFromMMT);
+					}
 				}
 
 				++innerItr;

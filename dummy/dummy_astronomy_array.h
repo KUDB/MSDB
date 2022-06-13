@@ -163,6 +163,8 @@ static const core::arrayId aid = 5000;
 static const std::string filePath = DUMMY_PATH(Binary_Mercury_Messenger_DEM_Global_665m_v2_max_23040x11520.data);
 
 static const core::dimension dims({ 8192, 16384 });
+//static const core::dimension dims({ 10240, 20480 });
+//static const core::dimension dims({ 256, 256 });
 static const core::dimension chunkDims({ 128, 128 });
 static const core::dimension blockDims({ 128, 128 });
 

@@ -14,7 +14,7 @@ namespace msdb
 {
 namespace test
 {
-TEST(seacow_encode, seacoe_afl)
+TEST(seacow_encode, seacow_afl)
 {
 	msdb::Context ctx;
 	auto afl = msdb::Between(
@@ -29,7 +29,7 @@ TEST(seacow_encode, seacoe_afl)
 	std::cout << afl->toString(0);
 }
 
-TEST(seacow_encode, seacoe_data_star1024x1024)
+TEST(seacow_encode, seacow_data_star1024x1024)
 {
 	dummy::data_star1024x1024::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
