@@ -33,10 +33,10 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 		);
 		return afl;
 	}
-	//case compressionType::HUFFMAN:
-	//case compressionType::ADAPTHUFFMAN:
-	//case compressionType::LZW_HUFFMAN:
-	//case compressionType::LZW:
+	case compressionType::HUFFMAN:
+	case compressionType::ADAPTHUFFMAN:
+	case compressionType::LZW_HUFFMAN:
+	case compressionType::LZW:
 	case compressionType::ZIP:
 	case compressionType::TTHRESH:
 	case compressionType::ZFP:
@@ -49,28 +49,21 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 		);
 		return afl;
 	}
-	//case compressionType::SPIHT:
-	//case compressionType::COMPASS:
-	//{
-	//	msdb::Context ctx;
-	//	auto afl = msdb::Comp(
-	//		msdb::Insert(
-	//			getArrayAFL(arrName, compType), filePath),
-	//		compType, paramOne
-	//	);
-	//	return afl;
-	//}
+	case compressionType::SPIHT:
+	case compressionType::COMPASS:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::Comp(
+			msdb::Insert(
+				getArrayAFL(arrName, compType), filePath),
+			compType, paramOne
+		);
+		return afl;
+	}
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{
 		msdb::Context ctx;
-		//auto afl = msdb::Comp(
-		//	msdb::Between(
-		//		msdb::Insert(
-		//			getArrayAFL(arrName, compType), filePath),
-		//			msdb::Domain(msdb::Coordinates({ 0, 512 }), msdb::Coordinates({64, 576}))
-		//		),
-		//	compType, paramOne, paramTwo);
 		auto afl = msdb::Comp(
 				msdb::Insert(
 					getArrayAFL(arrName, compType), filePath),
@@ -94,10 +87,10 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 			getArrayAFL(arrName));
 		return afl;
 	}
-	//case compressionType::HUFFMAN:
-	//case compressionType::ADAPTHUFFMAN:
-	//case compressionType::LZW_HUFFMAN:
-	//case compressionType::LZW:
+	case compressionType::HUFFMAN:
+	case compressionType::ADAPTHUFFMAN:
+	case compressionType::LZW_HUFFMAN:
+	case compressionType::LZW:
 	case compressionType::ZIP:
 	case compressionType::TTHRESH:
 	case compressionType::ZFP:
@@ -109,16 +102,16 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 		);
 		return afl;
 	}
-	//case compressionType::SPIHT:
-	//case compressionType::COMPASS:
-	//{
-	//	msdb::Context ctx;
-	//	auto afl = msdb::Decomp(
-	//		getArrayAFL(arrName, compType),
-	//		compType, paramOne
-	//	);
-	//	return afl;
-	//}
+	case compressionType::SPIHT:
+	case compressionType::COMPASS:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::Decomp(
+			getArrayAFL(arrName, compType),
+			compType, paramOne
+		);
+		return afl;
+	}
 	case compressionType::SEACOW:
 	case compressionType::SEACOW_HUFFMAN:
 	{
@@ -148,16 +141,16 @@ std::shared_ptr<AFLOperator> getBuildIndexAFL(std::string arrName, std::string f
 		);
 		return afl;
 	}
-	//case attrIndexType::COMPASS:
-	//{
-	//	msdb::Context ctx;
-	//	auto afl = msdb::BuildIndex(
-	//		msdb::Insert(
-	//			getArrayAFL(arrName, compType), filePath),
-	//		idxType, paramOne
-	//	);
-	//	return afl;
-	//}
+	case attrIndexType::COMPASS:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::BuildIndex(
+			msdb::Insert(
+				getArrayAFL(arrName, compType), filePath),
+			idxType, paramOne
+		);
+		return afl;
+	}
 	default:
 		return nullptr;
 	}

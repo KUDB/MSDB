@@ -1,81 +1,103 @@
 #include <pch_experiments.h>
 
-#include <dummy.h>
-#include <dummy_astronomy_array.h>
-#include <api_cpp/msdb.h>
 #include <exeQuery/exe_build_astronomy_array.h>
 #include <exeQuery/exe_build_astronomy_array_3d.h>
+#include <experiments/experiments_filter.h>
 
 namespace msdb
 {
 namespace experiments
 {
-TEST(seacow_02_build_index, data_star1024x1024)
+TEST(seacow_10_filter, star1024x1024)
 {
 	dummy::data_star1024x1024::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_star1024x1024::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_star1024x1024::arrName,
+										msdb::core::compressionType::SEACOW);
 }
-TEST(seacow_02_build_index, data_saturn1024x1024)
+TEST(seacow_10_filter, saturn1024x1024)
 {
 	dummy::data_saturn1024x1024::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_saturn1024x1024::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_saturn1024x1024::arrName,
+										msdb::core::compressionType::SEACOW);
 }
-TEST(seacow_02_build_index, data_solar1024x1024)
+TEST(seacow_10_filter, solar1024x1024)
 {
 	dummy::data_solar1024x1024::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_solar1024x1024::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_solar1024x1024::arrName,
+										msdb::core::compressionType::SEACOW);
 }
-TEST(seacow_02_build_index, data_mars4096x2048)
+TEST(seacow_10_filter, mars4096x2048)
 {
 	dummy::data_mars4096x2048::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_mars4096x2048::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_mars4096x2048::arrName,
+										msdb::core::compressionType::SEACOW);
 }
-TEST(seacow_02_build_index, data_mercury20480x10240)
+TEST(seacow_10_filter, mercury20480x10240)
 {
 	dummy::data_mercury20480x10240::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_mercury20480x10240::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_mercury20480x10240::arrName,
+										msdb::core::compressionType::SEACOW);
 }
-TEST(seacow_02_build_index, data_lunar102400x40960)
+TEST(seacow_10_filter, lunar102400x40960)
 {
 	dummy::data_lunar102400x40960::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_lunar102400x40960::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint16_t>(msdb::dummy::data_lunar102400x40960::arrName,
+										 msdb::core::compressionType::SEACOW);
 }
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-TEST(seacow_02_build_index, data_star64x64x64)
+TEST(seacow_10_filter, data_star64x64x64)
 {
 	dummy::data_star64x64x64::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_star64x64x64::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_star64x64x64::arrName,
+										msdb::core::compressionType::SEACOW);
 }
-TEST(seacow_02_build_index, data_nexrad_16x1024x2048)
+TEST(seacow_10_filter, data_nexrad_16x1024x2048)
 {
 	dummy::data_nexrad_16x1024x2048::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
 	dummy::data_nexrad_16x1024x2048::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_nexrad_16x1024x2048::arrName,
+										msdb::core::compressionType::SEACOW);
 }
 }		// experiments
 }		// msdb

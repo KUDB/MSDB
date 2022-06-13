@@ -15,8 +15,6 @@ msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string
 								   const core::compressionType& compType = core::compressionType::NONE);
 
 msdb::Query executeLoadArray(const std::string& arrName, const core::compressionType& compType);
-
-msdb::Query executeRangeQryArray(const std::string& arrName, const core::compressionType& compType, const msdb::Domain& range);
 }
 }
 

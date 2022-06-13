@@ -40,10 +40,10 @@ void printResultArray(ResultArray& ra)
 
 	for (int i = 0; i < dimBuffer->size(); ++i)
 	{
-		std::cout << dimBuffer->at(i).toString() << ": " << static_cast<int>(attr_01_buffer->at(i)) << std::endl;
+		BOOST_LOG_TRIVIAL(info) << dimBuffer->at(i).toString() << ": " << static_cast<int>(attr_01_buffer->at(i)) << std::endl;
 	}
 	ra.close();
-	std::cout << std::endl;
+	BOOST_LOG_TRIVIAL(info) << std::endl;
 }
 
 DefDimension::DefDimension(std::string name, uint64_t start, uint64_t end, uint64_t chunkSize, uint64_t blockSize)

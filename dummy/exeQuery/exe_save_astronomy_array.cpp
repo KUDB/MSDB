@@ -49,28 +49,5 @@ msdb::Query executeLoadArray(const std::string& arrName, const core::compression
 
 	return qry;
 }
-msdb::Query executeRangeQryArray(const std::string& arrName, const core::compressionType& compType, const msdb::Domain& range)
-{
-	msdb::Context ctx;
-	auto afl = msdb::Between(
-		msdb::dummy::getLoadAFL(arrName, compType),
-		range);
-
-	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
-	BOOST_LOG_TRIVIAL(info) << afl->toString(0) << std::endl;
-	BOOST_LOG_TRIVIAL(info) << "=====" << std::endl;
-
-	auto qry = msdb::Query(afl);
-	auto ra = qry.execute();
-	msdb::printResultArray(ra);
-	if (qry.getStatus() == msdb::Query::Status::FAIL)
-	{
-		BOOST_LOG_TRIVIAL(info) << ra.getQuery()->getErrorMsg() << std::endl;;
-	}
-	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
-	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
-
-	return qry;
-}
 }		// dummy
 }		// msdb

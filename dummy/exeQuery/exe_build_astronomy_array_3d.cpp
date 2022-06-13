@@ -2,6 +2,7 @@
 #include <dummy.h>
 #include <dummy_astronomy_array.h>
 #include <dummy_astronomy_array_3d.h>
+#include <dummy_query_util.h>
 #include <api_cpp/msdb.h>
 
 namespace msdb
@@ -29,13 +30,22 @@ msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexTyp
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_star64x64x64::getBuildIndexAFL(compType, indexType));
-	BOOST_LOG_TRIVIAL(info) << afl->toString(0) << std::endl;
-	auto qry = msdb::Query(afl);
-	auto ra = qry.execute();
-	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
-	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
 
-	return qry;
+	return exeQuery_print_Timer(afl);
+}
+msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType)
+{
+	auto afl = msdb::Consume(
+		msdb::dummy::data_star64x64x64::getSaveIndexAFL(compType, indexType));
+
+	return exeQuery_print_Timer(afl);
+}
+msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType)
+{
+	auto afl = msdb::Consume(
+		msdb::dummy::data_star64x64x64::getLoadIndexAFL(compType, indexType));
+
+	return exeQuery_print_Timer(afl);
 }
 }		// data_star64x64x64
 namespace data_nexrad_16x1024x2048
@@ -59,13 +69,22 @@ msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexTyp
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_nexrad_16x1024x2048::getBuildIndexAFL(compType, indexType));
-	BOOST_LOG_TRIVIAL(info) << afl->toString(0) << std::endl;
-	auto qry = msdb::Query(afl);
-	auto ra = qry.execute();
-	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
-	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
 
-	return qry;
+	return exeQuery_print_Timer(afl);
+}
+msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType)
+{
+	auto afl = msdb::Consume(
+		msdb::dummy::data_nexrad_16x1024x2048::getSaveIndexAFL(compType, indexType));
+
+	return exeQuery_print_Timer(afl);
+}
+msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType)
+{
+	auto afl = msdb::Consume(
+		msdb::dummy::data_nexrad_16x1024x2048::getLoadIndexAFL(compType, indexType));
+
+	return exeQuery_print_Timer(afl);
 }
 }		// data_nexrad_16x1024x2048
 namespace data_solar_sdo_1024x1024x512
@@ -89,13 +108,22 @@ msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexTyp
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_solar_sdo_1024x1024x512::getBuildIndexAFL(compType, indexType));
-	BOOST_LOG_TRIVIAL(info) << afl->toString(0) << std::endl;
-	auto qry = msdb::Query(afl);
-	auto ra = qry.execute();
-	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
-	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
 
-	return qry;
+	return exeQuery_print_Timer(afl);
+}
+msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType)
+{
+	auto afl = msdb::Consume(
+		msdb::dummy::data_solar_sdo_1024x1024x512::getSaveIndexAFL(compType, indexType));
+
+	return exeQuery_print_Timer(afl);
+}
+msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType)
+{
+	auto afl = msdb::Consume(
+		msdb::dummy::data_solar_sdo_1024x1024x512::getLoadIndexAFL(compType, indexType));
+
+	return exeQuery_print_Timer(afl);
 }
 }		// data_solar_sdo_1024x1024x512
 }		// dummy
