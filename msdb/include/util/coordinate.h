@@ -118,6 +118,7 @@ public:
 
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
+			// TODO:: >=
 			if (this->coor_[d] > rhs[d])
 			{
 				return false;
@@ -132,6 +133,7 @@ public:
 
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
+			// TODO:: <=
 			if (this->coor_[d] < rhs[d])
 			{
 				return false;
@@ -184,6 +186,15 @@ public:
 
 		return *this;
 	}
+	inline self_type& operator+= (const int64_t mit)
+	{
+		for (dimensionId d = 0; d < this->dSize_; ++d)
+		{
+			this->coor_[d] += mit;
+		}
+
+		return *this;
+	}
 	inline self_type& operator-= (const self_type& mit)
 	{
 		assert(this->dSize_ == mit.dSize_);
@@ -191,6 +202,15 @@ public:
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
 			this->coor_[d] -= mit[d];
+		}
+
+		return *this;
+	}
+	inline self_type& operator-= (const int64_t mit)
+	{
+		for (dimensionId d = 0; d < this->dSize_; ++d)
+		{
+			this->coor_[d] -= mit;
 		}
 
 		return *this;
@@ -897,7 +917,9 @@ public:
 	inline bool operator!=(const self_type& rhs) const { return ptr_ != rhs.ptr_ || this->seqPos_ != rhs.seqPos_; }
 
 	// Pointer
-	virtual Ty_& operator*() { return *(ptr_ + this->seqPos_); }
+	virtual Ty_& operator*() { 
+		return *(ptr_ + this->seqPos_); 
+	}
 	//element operator->() { return element((void*)(ptr_ + this->seqPos_ * this->eSize_), this->eType_); }
 	//////////////////////////////
 

@@ -92,8 +92,8 @@ static const core::arrayId aid = 7000;
 static const std::string filePath = DUMMY_PATH(Binary_SOLAR_220530_002315_4096_HMID.data);
 
 static const core::dimension dims({ 4096, 4096 });
-static const core::dimension chunkDims({ 128, 128 });
-static const core::dimension blockDims({ 128, 128 });
+static const core::dimension chunkDims({ 64, 64});
+static const core::dimension blockDims({ 64, 64 });
 
 static const int wtLevel = 3;
 static const int mmtLevel = 3;

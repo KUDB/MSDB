@@ -492,20 +492,23 @@ protected:
 
 		////////////////////////////////////////
 		// Create new mmtNodes
-		this->nodeSpace_.push_back(dimension(this->dSize_, 1));
+		// Already build root in init node space
+		//this->nodeSpace_.push_back(dimension(this->dSize_, 1));
 
 		dimension prevNodeSpace = this->nodeSpace_[this->maxLevel_ - 1];
-		dimension nodeSpace(this->dSize_, 1);
-		size_type blockCnt = nodeSpace.area();
+		dimension rootNodeSpace = this->nodeSpace_[this->maxLevel_];
+		//dimension nodeSpace(this->dSize_, 1);
+		//size_type blockCnt = nodeSpace.area();
 
-		if(this->nodeSpace_.size() <= this->maxLevel_)
-		{
-			this->nodeSpace_.push_back(nodeSpace);
-		}else
-		{
-			this->nodeSpace_[this->maxLevel_] = nodeSpace;
-		}
-		this->nodes_.push_back(std::vector<pMmtNode>(nodeSpace.area()));
+		//if(this->nodeSpace_.size() <= this->maxLevel_)
+		//{
+		//	this->nodeSpace_.push_back(nodeSpace);
+		//}else
+		//{
+		//	this->nodeSpace_[this->maxLevel_] = nodeSpace;
+		//}
+		//this->nodes_.push_back(std::vector<pMmtNode>(nodeSpace.area()));
+		this->nodes_.push_back(std::vector<pMmtNode>(rootNodeSpace.area()));
 		this->nodes_[this->maxLevel_][0] = std::make_shared<mmtNode>();	// Root has a single mmtNode
 
 		////////////////////////////////////////
@@ -611,14 +614,37 @@ protected:
 						cur[d] += 1;
 					}
 				}
-				cit.moveTo(cur);
 
-				// Update
-				pMmtNode curNode = (*cit);
-				assert(pcit.coor() == this->getParentCoor(cit.coor()));
-				backwardUpdateNode(prevNode, curNode, isFinished(prevNode), isChildOrderChanged(prevNode), cID);
+				if (this->isLeftInsideRight(cur, cit.getEp()))
+				{
+					cit.moveTo(cur);
+
+					if (cit.getCapacity() <= cit.seqPos())
+					{
+						std::cout << "error";
+					}
+
+					// Update
+					pMmtNode curNode = (*cit);
+					assert(pcit.coor() == this->getParentCoor(cit.coor()));
+					backwardUpdateNode(prevNode, curNode, isFinished(prevNode), isChildOrderChanged(prevNode), cID);
+				}
 			}
 		}
+	}
+
+	// TODO:: use operator, after fixed <=, >= problem
+	bool isLeftInsideRight(coordinates& left, coordinates& right)
+	{
+		for (dimensionId d = 0; d < this->dSize_; ++d)
+		{
+			if (left[d] >= right[d])
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	void backwardUpdateNode(pMmtNode prevNode, pMmtNode curNode, bool finished, bool orderChanged, int i)
@@ -832,7 +858,7 @@ protected:
 		itemIterator<pMmtNode> pcit(this->nodes_[level + 1].data(), this->dSize_,
 										  pChunksInDim.data());
 
-		   // Current
+		// Current
 		itemIterator<pMmtNode> cit(this->nodes_[level].data(), this->dSize_,
 										 chunksInDim.data());
 
@@ -985,7 +1011,7 @@ protected:
 
 			if(fatherMerge)
 			{
-				nodeSpace /= 2;
+				nodeSpace = (nodeSpace + 1) / 2;
 				++level;
 			}
 		}
@@ -995,7 +1021,7 @@ protected:
 		{
 			if (nodeSpace[d] > 1)
 			{
-				this->nodeSpace_.push_back(dimension(this->dSize_));
+				this->nodeSpace_.push_back(dimension(this->dSize_, 1));
 				++level;
 				break;
 			}
