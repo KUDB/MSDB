@@ -74,7 +74,7 @@ private:
 												  std::static_pointer_cast<serializable>(outChunk));
 				mSizeTotal += outChunk->getSerializedSize();
 				synopsisSizeTotal += std::static_pointer_cast<seChunk<Ty_>>(outChunk)->getSynopsisSize();
-				BOOST_LOG_TRIVIAL(info) << "Chunk[" << outChunk->getId() << "]: " << outChunk->getSerializedSize();
+				//BOOST_LOG_TRIVIAL(info) << "Chunk[" << outChunk->getId() << "]: " << outChunk->getSerializedSize();
 			}
 
 			++(*cit);

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_TIMER_H_
 #define _MSDB_TIMER_H_
 
@@ -26,6 +26,17 @@ enum class workType
 
 extern std::vector<const char*> strTimerWorkType;
 
+class timerResult
+{
+public:
+	std::map<size_t, float> thread;
+	std::map<std::string, float> job;
+	std::map<std::string, float> mainThreadJob;
+	std::map<std::string, float> workType;
+
+	std::map<std::string, float> jobWork;
+};
+
 class timer
 {
 public:
@@ -49,6 +60,8 @@ public:
 	double getExecutionTime();
 	std::string getResult();
 	std::string getDetailResult();
+
+
 
 protected:
 	void _start_NoLock_(size_t threadId, const std::string& nextJobName, workType nextWorkType);

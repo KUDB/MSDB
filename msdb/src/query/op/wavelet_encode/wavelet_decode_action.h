@@ -208,8 +208,6 @@ private:
 		for (size_t level = maxLevel; level != (size_t)-1; --level)
 		{
 			this->levelDecode<Ty_>(outBlock, w, level, q);
-			//std::cout << "Level Decode" << std::endl;
-			//outBlock->print();
 		}
 	}
 
