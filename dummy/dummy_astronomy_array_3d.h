@@ -124,6 +124,45 @@ std::shared_ptr<AFLOperator> getSaveIndexAFL(
 std::shared_ptr<AFLOperator> getLoadIndexAFL(
 	compressionType compType, attrIndexType idxType);
 }		// data_solar_sdo_1024x1024x512
+
+namespace data_nexrad_201711_64x24x1024x2048
+{
+static const std::string arrName = "nexrad_201711_64x24x1024x2048";
+static const core::arrayId aid = 3100;
+//static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20151101T060000Z.data);
+static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_201711.data);
+
+static const core::dimension dims({ 64, 24, 1024, 2048 });
+static const core::dimension chunkDims({ 8, 8, 64, 64 });
+static const core::dimension blockDims({ 8, 8, 64, 64 });
+static const int wtLevel = 2;
+static const int mmtLevel = 2;
+static const int compassBins = 128;
+
+static const std::string nameDim_0 = "T";
+static const std::string nameDim_1 = "Z";
+static const std::string nameDim_2 = "Y";
+static const std::string nameDim_3 = "X";
+static const std::string nameAttr_0 = "ATTR_1";
+static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
+
+// TODO::Remove getParam
+std::pair<int, int> getParam(compressionType compType);
+core::pArrayDesc getDummyArrayDesc();
+std::shared_ptr<AFLOperator> getArrayBuildAFL(
+	materializedType matType = materializedType::FLATTEN,
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getInsertSaveAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getLoadAFL(
+	compressionType compType = compressionType::RAW);
+std::shared_ptr<AFLOperator> getBuildIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getSaveIndexAFL(
+	compressionType compType, attrIndexType idxType);
+std::shared_ptr<AFLOperator> getLoadIndexAFL(
+	compressionType compType, attrIndexType idxType);
+}		// data_nexrad_201711_64x24x1024x2048
 }		// dummy
 }		// msdb
 

@@ -99,5 +99,16 @@ TEST(seacow_10_filter, data_nexrad_16x1024x2048)
 	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_nexrad_16x1024x2048::arrName,
 										msdb::core::compressionType::SEACOW);
 }
+TEST(seacow_10_filter, data_nexrad_201711_64x24x1024x2048)
+{
+	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildArray(
+		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+
+	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildIndex(
+		core::compressionType::SEACOW, core::attrIndexType::MMT);
+
+	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_nexrad_201711_64x24x1024x2048::arrName,
+									  msdb::core::compressionType::SEACOW);
+}
 }		// experiments
 }		// msdb
