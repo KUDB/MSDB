@@ -4,7 +4,7 @@
 
 #include <pch.h>
 #include <array/flattenChunk.h>
-#include <compression/huffmanBlock.h>
+#include <op/huffman_encode/huffmanBlock.h>
 #include <compression/huffmanCode.h>
 
 namespace msdb

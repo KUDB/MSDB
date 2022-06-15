@@ -1,8 +1,9 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/huffman_encode/huffman_encode_action.h>
 #include <system/storageMgr.h>
-#include <compression/huffmanChunk.h>
+#include <op/huffman_encode/huffmanChunk.h>
 #include <util/logger.h>
+#include "huffmanArray.h"
 
 namespace msdb
 {
@@ -28,26 +29,35 @@ pArray huffman_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	size_t mSizeTotal = 0;
 	pArray sourceArr = inputArrays[0];
 	arrayId arrId = sourceArr->getId();
+	pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*sourceArr->getDesc());
+	pArray outArr = std::make_shared<huffmanArray>(outArrDesc);
 
 	for (auto attr : *sourceArr->getDesc()->attrDescs_)
 	{
 		auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
 		while (!cit->isEnd())
 		{
-			auto outChunk = this->makeOutChunk((**cit));
+			if (cit->isExist())
+			{
+				auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
+				auto outChunk = outArr->makeChunk(cDesc);
+				outChunk->bufferCopy(**cit);
+				outChunk->makeAllBlocks();
 
-			//========================================//
-			qry->getTimer()->nextWork(0, workType::IO);
-			//----------------------------------------//
-			pSerializable serialChunk
-				= std::static_pointer_cast<serializable>(outChunk);
-			storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-											  serialChunk);
+				//========================================//
+				qry->getTimer()->nextWork(0, workType::IO);
+				//----------------------------------------//
+				pSerializable serialChunk
+					= std::static_pointer_cast<serializable>(outChunk);
+				storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+												  serialChunk);
 
-										  //========================================//
-			qry->getTimer()->nextWork(0, workType::COMPUTING);
-			//----------------------------------------//
-			mSizeTotal += serialChunk->getSerializedSize();
+				//========================================//
+				qry->getTimer()->nextWork(0, workType::COMPUTING);
+				//----------------------------------------//
+				mSizeTotal += serialChunk->getSerializedSize();
+			}
+
 			++(*cit);
 		}
 	}
@@ -58,15 +68,15 @@ pArray huffman_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 
 	return sourceArr;
 }
-pHuffmanChunk huffman_encode_action::makeOutChunk(pChunk inChunk)
-{
-	auto outChunkDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
-	pHuffmanChunk outChunk = std::make_shared<huffmanChunk>(outChunkDesc);
-	outChunk->copyBlockBitmap(inChunk->getBlockBitmap());
-	outChunk->makeBlocks();
-	outChunk->bufferRef(inChunk);
-
-	return outChunk;
-}
+//pHuffmanChunk huffman_encode_action::makeOutChunk(pChunk inChunk)
+//{
+//	auto outChunkDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
+//	pHuffmanChunk outChunk = std::make_shared<huffmanChunk>(outChunkDesc);
+//	outChunk->copyBlockBitmap(inChunk->getBlockBitmap());
+//	outChunk->makeBlocks();
+//	outChunk->bufferRef(inChunk);
+//
+//	return outChunk;
+//}
 }	// core
 }	// msdb

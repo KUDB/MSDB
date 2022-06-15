@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_HUFFMAN_DECODE_ACTION_H_
 #define _MSDB_OP_HUFFMAN_DECODE_ACTION_H_
 
 #include <pch.h>
 #include <query/opAction.h>
-#include <compression/huffmanChunk.h>
+#include <op/huffman_encode/huffmanChunk.h>
 
 namespace msdb
 {
@@ -22,8 +22,8 @@ public:
 
 private:
 	void loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry);
-	void loadChunk(pArray outArr, pChunk outChunk, pHuffmanChunk inChunk, attributeId attrId, pQuery qry, const size_t paraentThreadId);
-	pHuffmanChunk makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid);
+	void loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t paraentThreadId);
+	//pHuffmanChunk makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid);
 };
 }		// core
 }		// msdb

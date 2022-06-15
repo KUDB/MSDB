@@ -1,8 +1,9 @@
 ﻿#include <pch.h>
-#include <op/lzw_decode/lzw_decode_action.h>
+#include <op/lzw_encode/lzw_decode_action.h>
 #include <array/flattenArray.h>
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
+#include "lzwArray.h"
 
 namespace msdb
 {
@@ -29,7 +30,8 @@ pArray lzw_decode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	pArray sourceArr = inputArrays[0];
 	arrayId arrId = sourceArr->getId();
 
-	auto outArr = std::make_shared<flattenArray>(this->getArrayDesc());
+	pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*sourceArr->getDesc());
+	pArray outArr = std::make_shared<lzwArray>(outArrDesc);
 	outArr->copyChunkBitmap(this->getPlanInChunkBitmap());
 
 	for (auto attr : *sourceArr->getDesc()->attrDescs_)
@@ -60,11 +62,13 @@ void lzw_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 		if (cit->isExist())
 		{
 			chunkId cid = cit->seqPos();
-			auto inChunk = this->makeInChunk(outArr, attrDesc, cid);
-			auto outChunk = outArr->makeChunk(*inChunk->getDesc());
+			//auto inChunk = this->makeInChunk(outArr, attrDesc, cid);
+			//auto outChunk = outArr->makeChunk(*inChunk->getDesc());
+			auto outChunk = outArr->makeChunk(attrDesc->id_, cid);
+			outChunk->makeAllBlocks();
 
 			io_service_->post(boost::bind(&lzw_decode_action::loadChunk, this,
-							  outArr, outChunk, inChunk, attrDesc->id_, qry, currentThreadId));
+							  outArr, outChunk, attrDesc->id_, qry, currentThreadId));
 		}
 
 		++(*cit);
@@ -80,7 +84,7 @@ void lzw_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 	this->getArrayStatus(outArr);
 }
 
-void lzw_decode_action::loadChunk(pArray outArr, pChunk outChunk, pLzwChunk inChunk, attributeId attrId, pQuery qry, const size_t parentThreadId)
+void lzw_decode_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId)
 {
 	auto threadId = getThreadId();
 
@@ -89,40 +93,40 @@ void lzw_decode_action::loadChunk(pArray outArr, pChunk outChunk, pLzwChunk inCh
 	//----------------------------------------//
 
 	pSerializable serialChunk
-		= std::static_pointer_cast<serializable>(inChunk);
-	storageMgr::instance()->loadChunk(outArr->getId(), attrId, (inChunk)->getId(),
+		= std::static_pointer_cast<serializable>(outChunk);
+	storageMgr::instance()->loadChunk(outArr->getId(), attrId, (outChunk)->getId(),
 									  serialChunk);
 
 	//----------------------------------------//
 	qry->getTimer()->nextWork(threadId, workType::COMPUTING);
 	//----------------------------------------//
 
-	outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
-	outChunk->makeBlocks();
-	outChunk->bufferCopy(inChunk);
-	outChunk->setSerializedSize(inChunk->getSerializedSize());
+	//outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
+	//outChunk->makeBlocks();
+	//outChunk->bufferCopy(inChunk);
+	//outChunk->setSerializedSize(inChunk->getSerializedSize());
 
 	//----------------------------------------//
 	qry->getTimer()->pause(threadId);
 	//========================================//
 }
 
-pLzwChunk lzw_decode_action::makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid)
-{
-	auto inChunkDesc = std::make_shared<chunkDesc>(*inArr->getChunkDesc(attrDesc->id_, cid));
-	auto inChunk = std::make_shared<lzwChunk>(inChunkDesc);
-	auto blockBitmap = this->getPlanBlockBitmap(cid);
-	if (blockBitmap)
-	{
-		inChunk->copyBlockBitmap(blockBitmap);
-	} else
-	{
-		// If there were no bitmap, set all blocks as true.
-		inChunk->replaceBlockBitmap(std::make_shared<bitmap>(inChunk->getBlockCapacity(), true));
-	}
-	inChunk->makeBlocks();
-
-	return inChunk;
-}
+//pLzwChunk lzw_decode_action::makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid)
+//{
+//	auto inChunkDesc = std::make_shared<chunkDesc>(*inArr->getChunkDesc(attrDesc->id_, cid));
+//	auto inChunk = std::make_shared<lzwChunk>(inChunkDesc);
+//	auto blockBitmap = this->getPlanBlockBitmap(cid);
+//	if (blockBitmap)
+//	{
+//		inChunk->copyBlockBitmap(blockBitmap);
+//	} else
+//	{
+//		// If there were no bitmap, set all blocks as true.
+//		inChunk->replaceBlockBitmap(std::make_shared<bitmap>(inChunk->getBlockCapacity(), true));
+//	}
+//	inChunk->makeBlocks();
+//
+//	return inChunk;
+//}
 }		// core
 }		// msdb

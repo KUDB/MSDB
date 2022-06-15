@@ -1,10 +1,11 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/spiht_encode/spiht_encode_action.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <system/storageMgr.h>
 #include <array/monoChunk.h>
-#include <compression/spihtChunk.h>
+#include <op/spiht_encode/spihtChunk.h>
 #include <util/logger.h>
+#include "spihtArray.h"
 
 namespace msdb
 {
@@ -25,50 +26,57 @@ const char* spiht_encode_action::name()
 
 pArray spiht_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
-	assert(inputArrays.size() == 1);
+    assert(inputArrays.size() == 1);
 
-	//========================================//
-	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
+    //========================================//
+    qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 
-	size_t mSizeTotal = 0;
-	pArray sourceArr = inputArrays[0];
-	auto wArray = std::static_pointer_cast<wavelet_encode_array>(sourceArr);
-	arrayId arrId = sourceArr->getId();
+    size_t mSizeTotal = 0;
+    pArray sourceArr = inputArrays[0];
+    pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*sourceArr->getDesc());
+    pArray outArr = std::make_shared<spihtArray>(outArrDesc);
 
-	for (auto attr : *sourceArr->getDesc()->attrDescs_)
-	{
-		auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
-		while (!cit->isEnd())
-		{
-			pChunk inChunk = (**cit);
-			auto outChunkDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
-			pSpihtChunk outChunk = std::make_shared<spihtChunk>(outChunkDesc);
-			outChunk->setLevel(wArray->getMaxLevel());
-			outChunk->makeAllBlocks();
-			outChunk->bufferRef(inChunk);
+    arrayId arrId = sourceArr->getId();
 
-			//========================================//
-			qry->getTimer()->nextWork(0, workType::IO);
-			//----------------------------------------//
-			pSerializable serialChunk
-				= std::static_pointer_cast<serializable>(outChunk);
-			storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-											  serialChunk);
+    for (auto attr : *sourceArr->getDesc()->attrDescs_)
+    {
+        if (attr->getCompType() != compressionType::SPIHT)
+        {
+            continue;
+        }
+        auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
+        while (!cit->isEnd())
+        {
+            if (cit->isExist())
+            {
+                auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
+                auto outChunk = outArr->makeChunk(cDesc);
+                outChunk->bufferCopy(**cit);
+                outChunk->makeAllBlocks();
 
-			//========================================//
-			qry->getTimer()->nextWork(0, workType::COMPUTING);
-			//----------------------------------------//
-			mSizeTotal += serialChunk->getSerializedSize();
-			//std::cout << serialChunk->getSerializedSize() << std::endl;
-			++(*cit);
-		}
-	}
+                //========================================//
+                qry->getTimer()->nextWork(0, workType::IO);
+                //----------------------------------------//
+                pSerializable serialChunk
+                    = std::static_pointer_cast<serializable>(outChunk);
+                storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+                                                  serialChunk);
 
-	BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
-	qry->getTimer()->pause(0);
-	//========================================//
+                //========================================//
+                qry->getTimer()->nextWork(0, workType::COMPUTING);
+                //----------------------------------------//
+                mSizeTotal += serialChunk->getSerializedSize();
+            }
 
-	return sourceArr;
+            ++(*cit);
+        }
+    }
+
+    BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+    qry->getTimer()->pause(0);
+    //========================================//
+
+    return sourceArr;
 }
 }		// core
 }		// msdb

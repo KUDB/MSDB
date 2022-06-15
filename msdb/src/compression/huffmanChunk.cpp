@@ -1,6 +1,6 @@
 ﻿#include <pch.h>
-#include <compression/huffmanChunk.h>
-#include <compression/huffmanBlock.h>
+#include <op/huffman_encode/huffmanChunk.h>
+#include <op/huffman_encode/huffmanBlock.h>
 #include <compression/adaptiveHuffmanCode.h>
 
 namespace msdb

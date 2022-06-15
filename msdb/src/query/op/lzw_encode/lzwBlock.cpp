@@ -1,5 +1,5 @@
 ﻿#include <pch.h>
-#include <compression/lzwBlock.h>
+#include <op/lzw_encode/lzwBlock.h>
 #include <util/ioutil.h>
 
 namespace msdb

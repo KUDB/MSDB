@@ -7,7 +7,7 @@
 #include <io/bitstream.h>
 #include <compression/lzwEncoder.h>
 #include <compression/huffmanCode.h>
-#include <compression/lzwHuffmanBlock.h>
+#include <op/lzw_huffman_encode/lzwHuffmanBlock.h>
 #include <util/ioutil.h>
 
 namespace msdb

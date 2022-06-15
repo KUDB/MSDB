@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_LZW_HUFFMAN_ENCODE_ACTION_H_
 #define _MSDB_OP_LZW_HUFFMAN_ENCODE_ACTION_H_
 
 #include <pch.h>
 #include <query/opAction.h>
-#include <compression/lzwHuffmanChunk.h>
+#include <op/lzw_huffman_encode/lzwHuffmanChunk.h>
 
 namespace msdb
 {
@@ -20,8 +20,8 @@ public:
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 
-private:
-	pLzwHuffmanChunk makeOutChunk(pChunk inChunk);
+//private:
+//	pLzwHuffmanChunk makeOutChunk(pChunk inChunk);
 };
 }		// core
 }		// msdb

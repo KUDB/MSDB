@@ -5,9 +5,8 @@
 #include <pch.h>
 #include <array/flattenChunk.h>
 #include <compression/lzwEncoder.h>
-#include <compression/lzwBlock.h>
+#include <op/lzw_encode/lzwBlock.h>
 #include <io/bitstream.h>
-
 
 namespace msdb
 {

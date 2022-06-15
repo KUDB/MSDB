@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <compression/huffmanChunk.h>
+#include <op/huffman_encode/huffmanChunk.h>
 
 namespace msdb
 {

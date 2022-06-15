@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <compression/lzwChunk.h>
+#include <op/lzw_encode/lzwChunk.h>
 
 namespace msdb
 {

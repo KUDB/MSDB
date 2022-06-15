@@ -1,5 +1,5 @@
 ﻿#include <pch.h>
-#include <compression/lzwHuffmanChunk.h>
+#include <op/lzw_huffman_encode/lzwHuffmanChunk.h>
 
 namespace msdb
 {
