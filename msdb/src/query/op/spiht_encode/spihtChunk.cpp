@@ -1,6 +1,6 @@
 ﻿#include <pch.h>
-#include <compression/spihtChunk.h>
-#include <compression/spihtBlock.h>
+#include <op/spiht_encode/spihtChunk.h>
+#include <op/spiht_encode/spihtBlock.h>
 #include <array/monoChunkBuffer.h>
 #include <array/monoChunk.h>
 

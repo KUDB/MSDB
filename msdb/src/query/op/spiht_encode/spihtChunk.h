@@ -4,7 +4,7 @@
 
 #include <pch.h>
 #include <array/monoChunk.h>
-#include <compression/spihtBlock.h>
+#include <op/spiht_encode/spihtBlock.h>
 #include <io/bitstream.h>
 
 namespace msdb
@@ -139,48 +139,56 @@ public:
 	void serialize(bstream& bs)
 	{
 		// TODO::serialize spihtChunk
-		//auto blockItr = this->getBlockIterator();
-		//while (!blockItr->isEnd())
-		//{
-		//	// TODO::check isExist()
-		//	std::static_pointer_cast<spihtBlock>(**blockItr)->setLevel(this->maxLevel_);
-		//	this->blockSerialize<Ty_>(bs, (**blockItr));
-		//	++(*blockItr);
-		//}
+		auto blockItr = this->getBlockIterator();
+		while (!blockItr->isEnd())
+		{
+			if (blockItr->isExist())
+			{
+				auto sBlock = std::static_pointer_cast<spihtBlock<Ty_>>(**blockItr);
+				sBlock->setLevel(this->maxLevel_);
+				sBlock->serializeTy<Ty_>(bs);
+				//this->blockSerialize<Ty_>(bs, (**blockItr));
+			}
+
+			++(*blockItr);
+		}
 	}
 
-	template <typename Ty_>
-	void blockSerialize(bstream& bs, pBlock curBlock)
-	{
-		// TODO::serialize spihtChunk
-		//pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
-		//spBlock->serializeTy<Ty_>(bs);
-	}
+	//template <typename Ty_>
+	//void blockSerialize(bstream& bs, pBlock curBlock)
+	//{
+	//	// TODO::serialize spihtChunk
+	//	pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
+	//	spBlock->serializeTy<Ty_>(bs);
+	//}
 
 	template<class Ty_>
 	void deserialize(bstream& bs)
 	{
 		// TODO::deserialize spihtChunk
-		//auto blockItr = this->getBlockIterator();
-		//while (!blockItr->isEnd())
-		//{
-		//	if(blockItr->isExist())
-		//	{
-		//		std::static_pointer_cast<spihtBlock>(**blockItr)->setLevel(this->maxLevel_);
-		//		this->blockDeserialize<Ty_>(bs, (**blockItr));
-		//	}
-		//	
-		//	++(*blockItr);
-		//}
+		auto blockItr = this->getBlockIterator();
+		while (!blockItr->isEnd())
+		{
+			if(blockItr->isExist())
+			{
+				auto sBlock = std::static_pointer_cast<spihtBlock<Ty_>>(**blockItr);
+				sBlock->setLevel(this->maxLevel_);
+				sBlock->deserializeTy<Ty_>(bs);
+				//this->blockDeserialize<Ty_>(bs, (**blockItr));
+				
+			}
+			
+			++(*blockItr);
+		}
 	}
 
-	template <typename Ty_>
-	void blockDeserialize(bstream& bs, pBlock curBlock)
-	{
-		// TODO::deserialize spihtChunk
-		//pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
-		//spBlock->deserializeTy<Ty_>(bs);
-	}
+	//template <typename Ty_>
+	//void blockDeserialize(bstream& bs, pBlock curBlock)
+	//{
+	//	// TODO::deserialize spihtChunk
+	//	pSpihtBlock spBlock = std::static_pointer_cast<spihtBlock>(curBlock);
+	//	spBlock->deserializeTy<Ty_>(bs);
+	//}
 
 public:
 	inline void setLevel(size_t maxLevel)

@@ -34,9 +34,6 @@ private:
 		pWavelet w = std::make_shared<wavelet>(this->waveletName_.c_str());
 		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
 
-
-
-
 		//========================================//
 		qry->getTimer()->nextWork(0, workType::COMPUTING);
 		//----------------------------------------//

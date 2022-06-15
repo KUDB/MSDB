@@ -1,6 +1,6 @@
 #include <pch.h>
-#include <op/compass_decode/compass_decode_plan.h>
-#include <op/compass_decode/compass_decode_action.h>
+#include <op/compass_encode/compass_decode_plan.h>
+#include <op/compass_encode/compass_decode_action.h>
 
 namespace msdb
 {

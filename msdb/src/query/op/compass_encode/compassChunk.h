@@ -5,21 +5,40 @@
 #include <pch.h>
 #include <array/flattenChunk.h>
 #include <array/chunkType.h>
-#include <compression/compassBlock.h>
+#include <op/compass_encode/compassBlock.h>
 #include <io/bitstream.h>
 
 namespace msdb
 {
 namespace core
 {
+class iCompassChunk
+{
+public:
+	iCompassChunk()
+		: numBins_(0)
+	{
+
+	}
+
+public:
+	inline void setNumBins(size_t numBins)
+	{
+		this->numBins_ = numBins;
+	}
+
+protected:
+	size_t numBins_;
+};
+
 template <typename Ty_>
-class compassChunk : public flattenChunk<Ty_>
+class compassChunk : public flattenChunk<Ty_>, public iCompassChunk
 {
 public:
 	compassChunk(pChunkDesc desc)
 		:flattenChunk<Ty_>(desc)
 	{
-
+		
 	}
 	virtual ~compassChunk()
 	{
@@ -127,53 +146,44 @@ public:
 	template<typename Ty_>
 	void serializeTy(bstream& bs)
 	{
-		// TODO::serializeTy
-		//auto blockItr = this->getBlockIterator();
-		//while (!blockItr->isEnd())
-		//{
-		//	if (blockItr->isExist())
-		//	{
-		//		pCompassBlock cpBlock = std::static_pointer_cast<compassBlock>(**blockItr);
-		//		cpBlock->setNumBins(this->numBins_);
-		//		try
-		//		{
-		//			cpBlock->serializeTy<Ty_>(bs);
-		//		} catch (...)
-		//		{
-		//			std::cout << "Exception" << std::endl;
-		//		}
-		//	}
+		 //TODO::serializeTy
+		auto blockItr = this->getBlockIterator();
+		while (!blockItr->isEnd())
+		{
+			if (blockItr->isExist())
+			{
+				std::shared_ptr<compassBlock<Ty_>> cpBlock = std::static_pointer_cast<compassBlock<Ty_>>(**blockItr);
+				cpBlock->setNumBins(this->numBins_);
+				try
+				{
+					cpBlock->serializeTy<Ty_>(bs);
+				} catch (...)
+				{
+					BOOST_LOG_TRIVIAL(error) << "compassChunk::serializeTy Exception";
+				}
+			}
 
-		//	++(*blockItr);
-		//}
+			++(*blockItr);
+		}
 	}
 
 	template<class Ty_>
 	void deserializeTy(bstream& bs)
 	{
-		// TODO::deserializeTy
-		//auto blockItr = this->getBlockIterator();
-		//while (!blockItr->isEnd())
-		//{
-		//	if (blockItr->isExist())
-		//	{
-		//		pCompassBlock cpBlock = std::static_pointer_cast<compassBlock>(**blockItr);
-		//		cpBlock->setNumBins(this->numBins_);
-		//		cpBlock->deserializeTy<Ty_>(bs);
-		//	}
+		 //TODO::deserializeTy
+		auto blockItr = this->getBlockIterator();
+		while (!blockItr->isEnd())
+		{
+			if (blockItr->isExist())
+			{
+				std::shared_ptr<compassBlock<Ty_>> cpBlock = std::static_pointer_cast<compassBlock<Ty_>>(**blockItr);
+				cpBlock->setNumBins(this->numBins_);
+				cpBlock->deserializeTy<Ty_>(bs);
+			}
 
-		//	++(*blockItr);
-		//}
+			++(*blockItr);
+		}
 	}
-
-public:
-	inline void setNumBins(size_t numBins)
-	{
-		this->numBins_ = numBins;
-	}
-
-private:
-	size_t numBins_;
 };
 
 //////////////////////////////

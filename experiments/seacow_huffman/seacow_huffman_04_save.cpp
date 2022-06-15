@@ -83,18 +83,18 @@ TEST(seacow_huffman_04_save, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-TEST(seacow_huffman_04_save, data_star64x64x64)
-{
-	dummy::data_star64x64x64::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW_HUFFMAN);
-
-	dummy::data_star64x64x64::executeBuildIndex(
-		core::compressionType::SEACOW_HUFFMAN, core::attrIndexType::MMT);
-
-	dummy::executeInsertSaveArray(msdb::dummy::data_star64x64x64::arrName,
-								  msdb::dummy::data_star64x64x64::filePath,
-								  msdb::core::compressionType::SEACOW_HUFFMAN);
-}
+//TEST(seacow_huffman_04_save, data_star64x64x64)
+//{
+//	dummy::data_star64x64x64::executeBuildArray(
+//		core::materializedType::FLATTEN, core::compressionType::SEACOW_HUFFMAN);
+//
+//	dummy::data_star64x64x64::executeBuildIndex(
+//		core::compressionType::SEACOW_HUFFMAN, core::attrIndexType::MMT);
+//
+//	dummy::executeInsertSaveArray(msdb::dummy::data_star64x64x64::arrName,
+//								  msdb::dummy::data_star64x64x64::filePath,
+//								  msdb::core::compressionType::SEACOW_HUFFMAN);
+//}
 TEST(seacow_huffman_04_save, data_nexrad_16x1024x2048)
 {
 	dummy::data_nexrad_16x1024x2048::executeBuildArray(

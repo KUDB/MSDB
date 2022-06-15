@@ -25,6 +25,7 @@ pArray lzw_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 	//========================================//
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
+	//----------------------------------------//
 
 	size_t mSizeTotal = 0;
 	pArray inArr = inputArrays[0];

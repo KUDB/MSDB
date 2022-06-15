@@ -1,5 +1,5 @@
 ﻿#include <pch.h>
-#include <compression/compassBlock.h>
+#include <op/compass_encode/compassBlock.h>
 
 namespace msdb
 {

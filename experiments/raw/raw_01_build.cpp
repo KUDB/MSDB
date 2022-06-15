@@ -44,11 +44,11 @@ TEST(raw_01_build, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-TEST(raw_01_build, data_star64x64x64)
-{
-	dummy::data_star64x64x64::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::NONE);
-}
+//TEST(raw_01_build, data_star64x64x64)
+//{
+//	dummy::data_star64x64x64::executeBuildArray(
+//		core::materializedType::FLATTEN, core::compressionType::NONE);
+//}
 TEST(raw_01_build, data_nexrad_16x1024x2048)
 {
 	dummy::data_nexrad_16x1024x2048::executeBuildArray(

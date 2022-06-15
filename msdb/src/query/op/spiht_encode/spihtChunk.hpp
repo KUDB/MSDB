@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <compression/spihtChunk.h>
+#include <op/spiht_encode/spihtChunk.h>
 
 namespace msdb
 {

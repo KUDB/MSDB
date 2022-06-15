@@ -1,8 +1,10 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/compass_encode/compass_encode_action.h>
 #include <system/storageMgr.h>
-#include <compression/compassChunk.h>
+#include <op/compass_encode/compassChunk.h>
 #include <util/logger.h>
+#include "compassArray.h"
+#include <compression/compressionParam.h>
 
 namespace msdb
 {
@@ -26,49 +28,40 @@ pArray compass_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 	//----------------------------------------//
 
-	size_t mSizeTotal = 0;
-	pArray sourceArr = inputArrays[0];
-	arrayId arrId = sourceArr->getId();
+	pArray inArr = inputArrays[0];
+	pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*inArr->getDesc());
+	pArray outArr = std::make_shared<compassArray>(outArrDesc);
+	arrayId arrId = inArr->getId();
 
 	// Get Parameter - NumBin
-	eleDefault numBins;
-	std::static_pointer_cast<stableElement>(this->params_[1]->getParam())->getData(&numBins);
+	//eleDefault numBins;
+	//std::static_pointer_cast<stableElement>(this->params_[1]->getParam())->getData(&numBins);
 
-	for (auto attr : *sourceArr->getDesc()->attrDescs_)
+	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
-		auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
-		while (!cit->isEnd())
+		if (attr->getCompType() != compressionType::COMPASS)
 		{
-			pChunk inChunk = (**cit);
-			auto outChunkDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
-			pCompassChunk outChunk = std::make_shared<compassChunk>(outChunkDesc);
-			outChunk->setNumBins(numBins);
-			outChunk->makeAllBlocks();
-			outChunk->bufferRef(inChunk);
-
-			//========================================//
-			qry->getTimer()->nextWork(0, workType::IO);
-			//----------------------------------------//
-			pSerializable serialChunk
-				= std::static_pointer_cast<serializable>(outChunk);
-			storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-											  serialChunk);
-
-			//========================================//
-			qry->getTimer()->nextWork(0, workType::COMPUTING);
-			//----------------------------------------//
-			mSizeTotal += serialChunk->getSerializedSize();
-			++(*cit);
+			continue;
 		}
-	}
 
-	BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+		size_t numBins = std::stoi(attr->getParam(_STR_PARAM_COMPASS_BINS_));
+
+		std::visit(
+			visitHelper
+			{
+				[this, &outArr, &inArr, &attr, &qry, &numBins](const auto& vType)
+				{
+					compressAttribute(vType, outArr, inArr, attr, qry, numBins);
+				}
+			},
+			attr->getDataType());
+	}
 
 	//----------------------------------------//
 	qry->getTimer()->pause(0);
 	//========================================//
 
-	return sourceArr;
+	return inArr;
 }
 }		// core
 }		// msdb

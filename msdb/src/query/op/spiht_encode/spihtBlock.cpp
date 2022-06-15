@@ -1,5 +1,5 @@
 ﻿#include <pch.h>
-#include <compression/spihtBlock.h>
+#include <op/spiht_encode/spihtBlock.h>
 
 namespace msdb
 {

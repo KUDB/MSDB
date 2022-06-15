@@ -1,6 +1,6 @@
-#include <pch.h>
-#include <op/spiht_decode/spiht_decode_plan.h>
-#include <op/spiht_decode/spiht_decode_action.h>
+﻿#include <pch.h>
+#include <op/spiht_encode/spiht_decode_plan.h>
+#include <op/spiht_encode/spiht_decode_action.h>
 
 namespace msdb
 {
