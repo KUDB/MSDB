@@ -6,6 +6,7 @@
 #include <op/spiht_encode/spihtChunk.h>
 #include <util/logger.h>
 #include "spihtArray.h"
+#include <compression/compressionParam.h>
 
 namespace msdb
 {
@@ -30,53 +31,42 @@ pArray spiht_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry
 
     //========================================//
     qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
+    //----------------------------------------//
 
     size_t mSizeTotal = 0;
-    pArray sourceArr = inputArrays[0];
-    pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*sourceArr->getDesc());
+    pArray inArr = inputArrays[0];
+    pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*inArr->getDesc());
     pArray outArr = std::make_shared<spihtArray>(outArrDesc);
 
-    arrayId arrId = sourceArr->getId();
+    arrayId arrId = inArr->getId();
 
-    for (auto attr : *sourceArr->getDesc()->attrDescs_)
+    for (auto attr : *inArr->getDesc()->attrDescs_)
     {
         if (attr->getCompType() != compressionType::SPIHT)
         {
             continue;
         }
-        auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
-        while (!cit->isEnd())
-        {
-            if (cit->isExist())
+
+        size_t level = std::stoi(attr->getParam(_STR_PARAM_WAVELET_LEVEL_));
+
+        std::visit(
+            visitHelper
             {
-                auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
-                auto outChunk = outArr->makeChunk(cDesc);
-                outChunk->bufferCopy(**cit);
-                outChunk->makeAllBlocks();
-
-                //========================================//
-                qry->getTimer()->nextWork(0, workType::IO);
-                //----------------------------------------//
-                pSerializable serialChunk
-                    = std::static_pointer_cast<serializable>(outChunk);
-                storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-                                                  serialChunk);
-
-                //========================================//
-                qry->getTimer()->nextWork(0, workType::COMPUTING);
-                //----------------------------------------//
-                mSizeTotal += serialChunk->getSerializedSize();
-            }
-
-            ++(*cit);
-        }
+                [this, &outArr, &inArr, &attr, &qry, &level](const auto& vType)
+                {
+                    compressAttribute(vType, outArr, inArr, attr, qry, level);
+                }
+            },
+            attr->getDataType());
     }
 
     BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+
+    //----------------------------------------//
     qry->getTimer()->pause(0);
     //========================================//
 
-    return sourceArr;
+    return inArr;
 }
 }		// core
 }		// msdb

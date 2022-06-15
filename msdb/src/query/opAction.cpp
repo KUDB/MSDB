@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <query/opAction.h>
 
 namespace msdb
@@ -124,7 +124,7 @@ const int opAction::getDefaultThreadNum()
 {
 	////////////////////////////////////////
 	// TODO:: Change Default Thread Num for opAction
-	return 1;
+	return 6;
 	////////////////////////////////////////
 }
 }		// core
