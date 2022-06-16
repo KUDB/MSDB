@@ -11,6 +11,7 @@
 #include <array/attributeId.h>
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
+#include <compression/compressionParam.h>
 
 namespace msdb
 {
@@ -36,6 +37,7 @@ public:
 	{
 		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 		auto attrId = attrDesc->id_;
+		size_t wtLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
 
 		//========================================//
 		qry->getTimer()->nextWork(0, workType::PARALLEL);
@@ -52,10 +54,13 @@ public:
 
 				auto inChunk = std::static_pointer_cast<spihtChunk<Ty_>>(inArr->makeChunk(attrDesc->id_, cid));
 				inChunk->makeAllBlocks();
+				inChunk->setLevel(wtLevel);
 
 				auto cDesc = inChunk->getDesc();
 				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(attrDesc->id_, cid));
-				outChunk->makeAllBlocks();
+				//outChunk->makeAllBlocks();
+				outChunk->setLevel(wtLevel);
+				// make block in decompressChunk()
 
 				//auto inChunk = this->makeInChunk(outArr, attrDesc, cid);
 				//auto outChunk = outArr->makeChunk(*inChunk->getDesc());
@@ -98,7 +103,7 @@ public:
 		qry->getTimer()->nextWork(threadId, workType::COMPUTING);
 		//----------------------------------------//
 
-		outChunk->setLevel(inChunk->getLevel());
+		//outChunk->setLevel(inChunk->getLevel());
 		outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
 		outChunk->makeBlocks();
 		outChunk->bufferCopy(inChunk);	// If ref bitmap from inChunk, it might be deleted in 'inChunk' when it destroied.

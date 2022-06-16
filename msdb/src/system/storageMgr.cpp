@@ -133,9 +133,15 @@ void storageMgr::loadChunk(const arrayId arrId, const attributeId attrId, const 
 		}else
 		{
 			BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << chkId << "] : MSDB EXCEPTION";
+			BOOST_LOG_TRIVIAL(error) << msex.what();
 		}
 
 		return;
+	}
+	_MSDB_CATCH_EXCEPTION(e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << chkId << "] : STD::EXCEPTION";
+		BOOST_LOG_TRIVIAL(error) << e.what();
 	}
 	_MSDB_CATCH_ALL
 	{

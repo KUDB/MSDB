@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <util/logger.h>
 
 namespace msdb
@@ -9,8 +9,9 @@ bool initBoostLogger()
 {
 	logging::add_file_log(
 		keywords::file_name = "../logs/log_%Y%m%d_%H%M%S_%5N.log",	// file name pattern
-		keywords::rotation_size = 10 * 1024 * 1024,			// rotate files every 10 MiB
-		keywords::format = "[%TimeStamp%] %Message%"		// log record format
+		keywords::rotation_size = 10 * 1024 * 1024,					// rotate files every 10 MiB
+		keywords::format = "[%TimeStamp%] %Message%",				// log record format
+		keywords::auto_flush = true
 	);
 	
 	boost::shared_ptr< logging::core > core = logging::core::get();

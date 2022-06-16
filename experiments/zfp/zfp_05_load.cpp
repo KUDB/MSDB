@@ -59,14 +59,6 @@ TEST(zfp_05_load, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-TEST(zfp_05_load, data_nexrad_16x1024x2048)
-{
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::ZFP);
-
-	dummy::executeLoadArray(dummy::data_nexrad_16x1024x2048::arrName,
-							core::compressionType::ZFP);
-}
 TEST(zfp_05_load, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
