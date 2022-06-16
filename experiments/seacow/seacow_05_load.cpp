@@ -77,26 +77,26 @@ TEST(seacow_05_load, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-TEST(seacow_05_load, data_star64x64x64)
+//TEST(seacow_05_load, data_star64x64x64)
+//{
+//	dummy::data_star64x64x64::executeBuildArray(
+//		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+//
+//	dummy::data_star64x64x64::executeBuildIndex(
+//		core::compressionType::SEACOW, core::attrIndexType::MMT);
+//
+//	dummy::executeLoadArray(msdb::dummy::data_star64x64x64::arrName,
+//							msdb::core::compressionType::SEACOW);
+//}
+TEST(seacow_05_load, data_solar_sdo_1024x1024x512)
 {
-	dummy::data_star64x64x64::executeBuildArray(
+	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SEACOW);
 
-	dummy::data_star64x64x64::executeBuildIndex(
+	dummy::data_solar_sdo_1024x1024x512::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
-	dummy::executeLoadArray(msdb::dummy::data_star64x64x64::arrName,
-							msdb::core::compressionType::SEACOW);
-}
-TEST(seacow_05_load, data_nexrad_16x1024x2048)
-{
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
-
-	dummy::data_nexrad_16x1024x2048::executeBuildIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
-
-	dummy::executeLoadArray(msdb::dummy::data_nexrad_16x1024x2048::arrName,
+	dummy::executeLoadArray(msdb::dummy::data_solar_sdo_1024x1024x512::arrName,
 							msdb::core::compressionType::SEACOW);
 }
 TEST(seacow_05_load, data_nexrad_201711_64x24x1024x2048)
