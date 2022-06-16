@@ -53,7 +53,7 @@ private:
 		auto outAttrDesc = outArr->getDesc()->getAttrDescs()->at(attrDesc->getId());
 		outAttrDesc->setParam(_STR_PARAM_SE_LEVEL_, std::to_string(maxLevel));
 
-		auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr, maxLevel);
 
 		//----------------------------------------//

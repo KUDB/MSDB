@@ -323,9 +323,8 @@ public:
 								if (this->encodeValueRepeatLevel_ > 0)
 								{
 									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
-									if (value == encodePrevValue_)
+									if (value == this->encodePrevValue_)
 									{
-										
 										valueList.push_back(value);
 										if (valueList.size() == pow(2, this->encodeValueRepeatLevel_))
 										{
@@ -359,6 +358,7 @@ public:
 
 										//BOOST_LOG_TRIVIAL(debug) << "bs << v: " << static_cast<int64_t>(value);
 										// out the current value
+										this->encodePrevValue_ = value;
 										if (value & signMask)
 										{
 											value = (Ty_)(~value) + 1;
@@ -373,16 +373,7 @@ public:
 									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
 									//BOOST_LOG_TRIVIAL(debug) << "bs<<value: " << static_cast<int64_t>(value);
 
-									// out the current value
-									bs << setw(rbFromDelta);
-									if (value & signMask)
-									{
-										value = (Ty_)(~value) + 1;
-										value |= signMask;
-									}
-									bs << value;
-
-									if (value == encodePrevValue_)
+									if (value == this->encodePrevValue_)
 									{
 										//BOOST_LOG_TRIVIAL(debug) << "Equal";
 										++(this->encodeValueRepeatLevel_);
@@ -392,12 +383,20 @@ public:
 										//BOOST_LOG_TRIVIAL(debug) << "Diff";
 										--(this->encodeValueRepeatLevel_);
 									}
-
 									this->encodePrevValue_ = value;
+
+									// out the current value
+									bs << setw(rbFromDelta);
+									if (value & signMask)
+									{
+										value = (Ty_)(~value) + 1;
+										value |= signMask;
+									}
+									bs << value;
 								}
 
 								////////////////////////////////////////
-								//if (value == encodePrevValue_)
+								//if (value == this->encodePrevValue_)
 								//{
 								//	valueList.push_back(value);
 
@@ -467,6 +466,7 @@ public:
 								bs << setw(1);
 								bs << 0x1;		// set True
 								valueList.clear();
+								++(this->encodeValueRepeatLevel_);
 							}
 						}
 					}
@@ -705,7 +705,7 @@ public:
 
 					if (rbFromMMT)
 					{
-						size_t gap = this->deserializeGap(bs);
+						int64_t gap = this->deserializeGap(bs);
 						size_t rbFromDelta = rbFromMMT - gap;
 					#ifndef DEBUG
 						//BOOST_LOG_TRIVIAL(trace) << targetSp.toString() << ", " << targetEp.toString();
@@ -790,13 +790,14 @@ public:
 												*pValue |= signMask;
 											}
 											value = *pValue;
+											++i;
 											//if (value == this->encodePrevValue_)
 											//{
 											//	BOOST_LOG_TRIVIAL(debug) << "Equal";
 											//}
 											//BOOST_LOG_TRIVIAL(debug) << "bs >> v: " << static_cast<int64_t>(value);
-										} while (value == this->encodePrevValue_);
-
+										} while (value == this->encodePrevValue_ && i < itemCapa);
+										--i;
 
 										//BOOST_LOG_TRIVIAL(debug) << static_cast<int64_t>(value) << "<diff>" << static_cast<int64_t>(this->encodePrevValue_);
 

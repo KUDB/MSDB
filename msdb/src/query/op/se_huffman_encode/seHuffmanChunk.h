@@ -142,6 +142,13 @@ public:
 
 	void serializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
 	{
+		this->encodePrevValue_ = 0;
+		this->encodeValueRepeatLevel_ = 1;
+
+	#ifndef NDEBUG
+		std::vector<int64_t> gaps;
+	#endif
+
 		//BOOST_LOG_TRIVIAL(debug) << "SE HUFFMAN CHUNK - serializeChildLevelBand";
 		auto dSize = this->getDSize();
 
@@ -168,6 +175,9 @@ public:
 					if (rbFromMMT != 0)
 					{
 						this->serializeGap(bs, (int64_t)rbFromMMT - (int64_t)rbFromDelta);
+					#ifndef NDEBUG
+						gaps.push_back((int64_t)rbFromMMT - (int64_t)rbFromDelta);
+					#endif
 
 						//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta << ", After Block: " << bs.getOutLastBlock();
 						//BOOST_LOG_TRIVIAL(debug) << "delta: " << static_cast<int64_t>(rbFromDelta) << " / mmt: " << static_cast<int64_t>(rbFromMMT) << " / gap: " << (int64_t)rbFromMMT - (int64_t)rbFromDelta;
@@ -183,24 +193,106 @@ public:
 						{
 							auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
 
-							size_t beforeBitPos = bs.getOutBitPos();
+							//size_t beforeBitPos = bs.getOutBitPos();
 							bs << setw(rbFromDelta);
 							Ty_ signMask = 0x1 << rbFromDelta - 1;
 
+							std::list<Ty_> valueList;
 							while (!bItemItr->isEnd())
 							{
 								Ty_ value = (**bItemItr).get<Ty_>();
-								if (value & signMask)
+
+								if (this->encodeValueRepeatLevel_ > 0)
 								{
-									//value = abs_(value);
-									value = (Ty_)(~value) + 1;
-									value |= signMask;
+									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
+									if (value == this->encodePrevValue_)
+									{
+										valueList.push_back(value);
+										if (valueList.size() == pow(2, this->encodeValueRepeatLevel_))
+										{
+											//BOOST_LOG_TRIVIAL(debug) << static_cast<int64_t>(value) << "=equal=" << static_cast<int64_t>(this->encodePrevValue_);
+											//BOOST_LOG_TRIVIAL(debug) << "Size: " << pow(2, this->encodeValueRepeatLevel_);
+											bs << setw(1);
+											bs << 0x1;		// set True
+											valueList.clear();
+											++(this->encodeValueRepeatLevel_);
+										}
+									}
+									else
+									{
+										//BOOST_LOG_TRIVIAL(debug) << static_cast<int64_t>(value) << "<diff>" << static_cast<int64_t>(this->encodePrevValue_);
+										bs << setw(1);
+										bs << 0x0;		// set False
+
+										// out the values in List
+										bs << setw(rbFromDelta);
+										for (Ty_ v : valueList)
+										{
+											//BOOST_LOG_TRIVIAL(debug) << "bs << v: " << static_cast<int64_t>(v);
+											if (v & signMask)
+											{
+												v = (Ty_)(~v) + 1;
+												v |= signMask;
+											}
+											coder->encode(bs, &v, 1);
+											//bs << v;
+										}
+										valueList.clear();
+
+										//BOOST_LOG_TRIVIAL(debug) << "bs << v: " << static_cast<int64_t>(value);
+										// out the current value
+										this->encodePrevValue_ = value;
+										if (value & signMask)
+										{
+											value = (Ty_)(~value) + 1;
+											value |= signMask;
+										}
+										coder->encode(bs, &value, 1);
+										//bs << value;
+										--(this->encodeValueRepeatLevel_);
+									}
 								}
-								coder->encode(bs, &value, 1);
-								//bs << value;
+								else
+								{
+									if (value == this->encodePrevValue_)
+									{
+										++(this->encodeValueRepeatLevel_);
+									}
+									else
+									{
+										--(this->encodeValueRepeatLevel_);
+									}
+									this->encodePrevValue_ = value;
+
+									// out the current value
+									bs << setw(rbFromDelta);
+									if (value & signMask)
+									{
+										value = (Ty_)(~value) + 1;
+										value |= signMask;
+									}
+									coder->encode(bs, &value, 1);
+									//bs << value;
+								}
+
+
+								//if (value & signMask)
+								//{
+								//	value = (Ty_)(~value) + 1;
+								//	value |= signMask;
+								//}
+								//coder->encode(bs, &value, 1);
+								////bs << value;
 								++(*bItemItr);
 							}
 
+							if (valueList.size())
+							{
+								bs << setw(1);
+								bs << 0x1;		// set True
+								valueList.clear();
+								++(this->encodeValueRepeatLevel_);
+							}
 							//BOOST_LOG_TRIVIAL(debug) << "Bits: " << bs.getOutBitPos() - beforeBitPos;
 						}
 					}
@@ -268,7 +360,7 @@ public:
 		auto itemCapa = bandDims.area();
 		char* spData = (char*)this->getBuffer()->getData() + spOffset;
 
-		size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / CHAR_BIT * 2), (size_t)(bs.capacity() - bs.getInBlockPos()) });
+		size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / (double)CHAR_BIT * 2) + 2, (size_t)(bs.capacity() - bs.getInBlockPos()) });
 		bstream bsHuffman;
 		bsHuffman.resize(tempBufferSize);
 		memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
@@ -279,30 +371,20 @@ public:
 		bs.jumpBits(readBits);
 		//BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
 
-		if ((Ty_)-1 < 0)
-		{
-			// Ty_ has negative values
-			for (int i = 0; i < itemCapa; ++i)
-			{
-				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-				*pValue = huffmanDecoded[i];
-				//bs >> *pValue;
 
-				if (*pValue & signMask)
-				{
-					*pValue &= negativeMask;
-					*pValue *= -1;
-					*pValue |= signBit;
-				}
-			}
-		}
-		else
+		// Ty_ has negative values
+		for (int i = 0; i < itemCapa; ++i)
 		{
-			// Ty_ only has positive values
-			for (int i = 0; i < itemCapa; ++i)
+			auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+			*pValue = huffmanDecoded[i];
+			//bs >> *pValue;
+
+			if (*pValue & signMask)
 			{
-				auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-				*pValue = huffmanDecoded[i];
+				//*pValue &= negativeMask;
+				//*pValue *= -1;
+				*pValue = (Ty_)(~*pValue) + 1;
+				*pValue |= signBit;
 			}
 		}
 
@@ -312,6 +394,13 @@ public:
 
 	void deserializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
 	{
+		this->encodePrevValue_ = 0;
+		this->encodeValueRepeatLevel_ = 1;
+
+	#ifndef NDEBUG
+		std::vector<int64_t> gaps;
+	#endif
+
 		//BOOST_LOG_TRIVIAL(debug) << "SE HUFFMAN CHUNK - deserializeChildLevelBand";
 		auto dSize = this->getDSize();
 		for (size_t level = 1; level <= this->level_; ++level)
@@ -337,6 +426,9 @@ public:
 					if (rbFromMMT)
 					{
 						int64_t gap = this->deserializeGap(bs);
+					#ifndef NDEBUG
+						gaps.push_back(gap);
+					#endif
 						//BOOST_LOG_TRIVIAL(debug) << "Gap: " << (int64_t)gap << ", After Block: " << bs.getInFrontBlock();
 						if (gap > 64)
 						{
@@ -371,51 +463,143 @@ public:
 							//assert(rbFromDelta <= 16);
 							auto coder = this->fixedHuffmanCoders[sizeof(Ty_)][std::min({ (bit_cnt_type)rbFromDelta, (bit_cnt_type)(sizeof(Ty_) * CHAR_BIT) })];
 
-							// Read more buffer
-							size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / (double)CHAR_BIT * 2), (size_t)(bs.capacity() - bs.getInBlockPos()) });
-							bstream bsHuffman;
-							bsHuffman.resize(tempBufferSize);
-							memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
-							bsHuffman.jumpBits(bs.getInBitPosInBlock());
+							//// Read more buffer
+							//size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / (double)CHAR_BIT * 2), (size_t)(bs.capacity() - bs.getInBlockPos()) });
+							//bstream bsHuffman;
+							//bsHuffman.resize(tempBufferSize);
+							//memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
+							//bsHuffman.jumpBits(bs.getInBitPosInBlock());
 
-							Ty_* huffmanDecoded = new Ty_[itemCapa];
-							auto readBits = coder->decode(static_cast<void*>(huffmanDecoded), itemCapa, bsHuffman);
-							//BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
-							bs.jumpBits(readBits);
+							//Ty_* huffmanDecoded = new Ty_[itemCapa];
+							//auto readBits = coder->decode(static_cast<void*>(huffmanDecoded), itemCapa, bsHuffman);
+							////BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
+							//bs.jumpBits(readBits);
 
 							bs >> setw(rbFromDelta);
 							Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
 							Ty_ negativeMask = (Ty_)-1 ^ signMask;
 							Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
+							char repeatFlag = 0;
+
+							for (size_t i = 0; i < itemCapa; ++i)
+							{
+								if (this->encodeValueRepeatLevel_ > 0)
+								{
+									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
+
+									bs >> setw(1);
+									bs >> repeatFlag;
+
+									if (repeatFlag)
+									{
+										for (int j = 0; j < pow(2, this->encodeValueRepeatLevel_) && i < itemCapa; ++j, ++i)
+										{
+											auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+											*pValue = this->encodePrevValue_;
+										}
+
+										//BOOST_LOG_TRIVIAL(debug) << "=equal=" << static_cast<int64_t>(this->encodePrevValue_);
+										//BOOST_LOG_TRIVIAL(debug) << "Size: " << pow(2, this->encodeValueRepeatLevel_);
+
+										++(this->encodeValueRepeatLevel_);
+										--i;
+									}
+									else
+									{
+										bs >> setw(rbFromDelta);
+
+										Ty_ value = 0;
+										do
+										{
+											auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+											*pValue = this->getHuffmanDecode(bs, coder, rbFromDelta);
+											//bs >> *pValue;
+											if (*pValue & signMask)
+											{
+												*pValue = (Ty_)(~*pValue) + 1;
+												*pValue |= signMask;
+											}
+											value = *pValue;
+											++i;
+											//if (value == this->encodePrevValue_)
+											//{
+											//	BOOST_LOG_TRIVIAL(debug) << "Equal";
+											//}
+											//BOOST_LOG_TRIVIAL(debug) << "bs >> v: " << static_cast<int64_t>(value);
+										} while (value == this->encodePrevValue_ && i < itemCapa);
+										--i;
+
+										//BOOST_LOG_TRIVIAL(debug) << static_cast<int64_t>(value) << "<diff>" << static_cast<int64_t>(this->encodePrevValue_);
+
+										this->encodePrevValue_ = value;
+										--(this->encodeValueRepeatLevel_);
+									}
+								}
+								else
+								{
+									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
+
+									bs >> setw(rbFromDelta);
+
+									auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+									*pValue = this->getHuffmanDecode(bs, coder, rbFromDelta);
+									//bs >> *pValue;
+									if (*pValue & signMask)
+									{
+										*pValue = (Ty_)(~*pValue) + 1;
+										*pValue |= signMask;
+									}
+
+									//BOOST_LOG_TRIVIAL(debug) << "bs>>value: " << static_cast<int64_t>(*pValue);
+
+									if (*pValue == this->encodePrevValue_)
+									{
+										//BOOST_LOG_TRIVIAL(debug) << "Equal";
+										++(this->encodeValueRepeatLevel_);
+									}
+									else
+									{
+										//BOOST_LOG_TRIVIAL(debug) << "Diff";
+										--(this->encodeValueRepeatLevel_);
+									}
+									this->encodePrevValue_ = (Ty_)*pValue;
+								}
+							}
+
 
 							//////////////////////////////
 							// 01
-							if ((Ty_)-1 < 0)
-							{
-								for (size_t i = 0; i < itemCapa; ++i)
-								{
-									auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-									*pValue = huffmanDecoded[i];
+							//if ((Ty_)-1 < 0)
+							//{
+							//	for (size_t i = 0; i < itemCapa; ++i)
+							//	{
+							//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+							//		*pValue = huffmanDecoded[i];
 
-									if (*pValue & signMask)
-									{
-										*pValue &= negativeMask;
-										*pValue *= -1;
-										*pValue |= signBit;
-									}
-								}
-							}
-							else
-							{
-								for (size_t i = 0; i < itemCapa; ++i)
-								{
-									auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-									*pValue = huffmanDecoded[i];
-								}
-							}
+							//		if (*pValue & signMask)
+							//		{
+							//			*pValue &= negativeMask;
+							//			*pValue *= -1;
+							//			*pValue |= signBit;
+							//		}
+							//	}
+							//}
+							//else
+							//{
+							//	for (size_t i = 0; i < itemCapa; ++i)
+							//	{
+							//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+							//		*pValue = huffmanDecoded[i];
+							//	}
+							//}
 							//////////////////////////////
 
-							delete[] huffmanDecoded;
+							//delete[] huffmanDecoded;
+						}
+						else
+						{
+						// Do nothing
 						}
 					}
 					else
@@ -428,6 +612,30 @@ public:
 				++innerItr;
 			}
 		}
+	}
+
+	Ty_ getHuffmanDecode(bstream& bs, iFixedHuffmanCoder* coder, bit_cnt_type rbFromDelta)
+	{
+		static size_t itemCapa = 1;
+
+		// Read more buffer
+		size_t tempBufferSize = std::min({ (size_t)(rbFromDelta * itemCapa * sizeof(Ty_) / (double)CHAR_BIT * 2) + 2, (size_t)(bs.capacity() - bs.getInBlockPos()) });
+		bstream bsHuffman;
+		bsHuffman.resize(tempBufferSize);
+		memcpy(bsHuffman.data(), bs.data() + bs.getInBlockPos() * bs.getBlockBytes(), tempBufferSize);
+		bsHuffman.jumpBits(bs.getInBitPosInBlock());
+
+		//Ty_ huffmanDecoded = new Ty_[itemCapa];
+		//auto readBits = coder->decode(static_cast<void*>(huffmanDecoded), itemCapa, bsHuffman);
+		////BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
+		//bs.jumpBits(readBits);
+
+		Ty_ huffmanDecoded = 0;
+		auto readBits = coder->decode(static_cast<void*>(&huffmanDecoded), itemCapa, bsHuffman);
+		//BOOST_LOG_TRIVIAL(debug) << "Bits: " << readBits;
+		bs.jumpBits(readBits);
+
+		return huffmanDecoded;
 	}
 
 private:
