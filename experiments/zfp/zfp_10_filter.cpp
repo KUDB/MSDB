@@ -67,14 +67,6 @@ TEST(zfp_10_filter, lunar102400x40960)
 //	experimentFilterQry<uint8_t>(msdb::dummy::data_star64x64x64::arrName,
 //								 msdb::core::compressionType::ZFP);
 //}
-TEST(zfp_10_filter, data_nexrad_16x1024x2048)
-{
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::ZFP);
-
-	experimentFilterQry<uint8_t>(msdb::dummy::data_nexrad_16x1024x2048::arrName,
-								 msdb::core::compressionType::ZFP);
-}
 TEST(zfp_10_filter, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(

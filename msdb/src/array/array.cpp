@@ -125,6 +125,7 @@ void array::flush()
 pChunk array::makeChunk(const attributeId attrId, const chunkId cId)
 {
 	return this->makeChunk(this->getChunkDesc(attrId, cId));
+	// TODO:: this->insertChunk(chunkObj);
 }
 
 pChunk array::makeChunk(pChunkDesc desc)
@@ -142,7 +143,8 @@ void array::makeChunks(const attributeId attrId, const bitmap& input)
 	{
 		if(input.isExist(cid) && !this->attrChunkBitmaps_[attrId]->isExist(cid))
 		{
-			this->makeChunk(attrId, cid);
+			auto chunkObj = this->makeChunk(attrId, cid);
+			this->insertChunk(chunkObj);
 		}
 	}
 }

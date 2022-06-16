@@ -83,30 +83,18 @@ TEST(seacow_04_save, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-TEST(seacow_04_save, data_star64x64x64)
-{
-	dummy::data_star64x64x64::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
-
-	dummy::data_star64x64x64::executeBuildIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
-
-	dummy::executeInsertSaveArray(msdb::dummy::data_star64x64x64::arrName,
-								  msdb::dummy::data_star64x64x64::filePath,
-								  msdb::core::compressionType::SEACOW);
-}
-TEST(seacow_04_save, data_nexrad_16x1024x2048)
-{
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
-
-	dummy::data_nexrad_16x1024x2048::executeBuildIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
-
-	dummy::executeInsertSaveArray(msdb::dummy::data_nexrad_16x1024x2048::arrName,
-								  msdb::dummy::data_nexrad_16x1024x2048::filePath,
-								  msdb::core::compressionType::SEACOW);
-}
+//TEST(seacow_04_save, data_star64x64x64)
+//{
+//	dummy::data_star64x64x64::executeBuildArray(
+//		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+//
+//	dummy::data_star64x64x64::executeBuildIndex(
+//		core::compressionType::SEACOW, core::attrIndexType::MMT);
+//
+//	dummy::executeInsertSaveArray(msdb::dummy::data_star64x64x64::arrName,
+//								  msdb::dummy::data_star64x64x64::filePath,
+//								  msdb::core::compressionType::SEACOW);
+//}
 TEST(seacow_04_save, solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(

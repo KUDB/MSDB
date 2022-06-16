@@ -68,22 +68,31 @@ TEST(raw_04_save, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-TEST(raw_04_save, data_star64x64x64)
+//TEST(raw_04_save, data_star64x64x64)
+//{
+//	dummy::data_star64x64x64::executeBuildArray(
+//		core::materializedType::FLATTEN, core::compressionType::NONE);
+//
+//	dummy::executeInsertSaveArray(msdb::dummy::data_star64x64x64::arrName,
+//								  msdb::dummy::data_star64x64x64::filePath,
+//								  core::compressionType::NONE);
+//}
+TEST(raw_04_save, data_solar_sdo_1024x1024x512)
 {
-	dummy::data_star64x64x64::executeBuildArray(
+	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::NONE);
 
-	dummy::executeInsertSaveArray(msdb::dummy::data_star64x64x64::arrName,
-								  msdb::dummy::data_star64x64x64::filePath,
+	dummy::executeInsertSaveArray(msdb::dummy::data_solar_sdo_1024x1024x512::arrName,
+								  msdb::dummy::data_solar_sdo_1024x1024x512::filePath,
 								  core::compressionType::NONE);
 }
-TEST(raw_04_save, data_nexrad_16x1024x2048)
+TEST(raw_04_save, data_nexrad_201711_64x24x1024x2048)
 {
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
+	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::NONE);
 
-	dummy::executeInsertSaveArray(msdb::dummy::data_nexrad_16x1024x2048::arrName,
-								  msdb::dummy::data_nexrad_16x1024x2048::filePath,
+	dummy::executeInsertSaveArray(msdb::dummy::data_nexrad_201711_64x24x1024x2048::arrName,
+								  msdb::dummy::data_nexrad_201711_64x24x1024x2048::filePath,
 								  core::compressionType::NONE);
 }
 }
