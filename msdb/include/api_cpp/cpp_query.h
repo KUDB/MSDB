@@ -38,6 +38,7 @@ public:
 	void setVerbose();
 	void unsetVerbose();
 	inline bool isVerbose() { return this->qry_->isVerbose(); }
+	inline core::pQuery getQueryObj() { return this->qry_; }
 
 protected:
 	Status status_;		// Initial status: READY

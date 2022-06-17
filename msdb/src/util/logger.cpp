@@ -15,14 +15,25 @@ bool initBoostLogger()
 	);
 	
 	boost::shared_ptr< logging::core > core = logging::core::get();
+#ifdef NDEBUG
 	core->set_filter(
-		logging::trivial::severity >= logging::trivial::trace
+		logging::trivial::severity >= logging::trivial::info
 	);
-
+#else
+	core->set_filter(
+		logging::trivial::severity >= logging::trivial::debug
+	);
+#endif
+	
 	core->add_global_attribute("LineID", attrs::counter< unsigned int >(1));
 	core->add_global_attribute("TimeStamp", attrs::local_clock());
 
 	return true;
 }
+
+namespace logger
+{
+
+}		// logger
 }		// core
 }		// msdb
