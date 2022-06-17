@@ -22,16 +22,19 @@ void zfpBlock<Ty_>::serialize(bstream& os)
         size_t inputFieldSize = this->getDesc()->dims_.area();
         if (sizeof(Ty_) < sizeof(int32_t))
         {
+            size_t numFieldsInt32Pack = sizeof(int32_t) / sizeof(Ty_);
             // To prevent out of range exception, use temp input buffer
-            if (inputFieldSize % sizeof(int32_t))
+            if (inputFieldSize % numFieldsInt32Pack)
             {
-                inputFieldSize = std::ceil(((double)inputFieldSize) / sizeof(int32_t));
-                input = new uint8_t[inputFieldSize * sizeof(int32_t)];
+                inputFieldSize = (inputFieldSize + numFieldsInt32Pack - 1) / numFieldsInt32Pack;
+                input = new uint8_t[inputFieldSize * sizeof(int32_t)]();
+                assert(inputFieldSize * sizeof(int32_t) <= this->getBuffer()->size());
+                memcpy((void*)input, (void*)this->getBuffer()->getData(), this->getBuffer()->size());
                 useTempInput = true;
             }
             else
             {
-                inputFieldSize /= sizeof(int32_t);
+                inputFieldSize /= numFieldsInt32Pack;
             }
         }
 
@@ -108,17 +111,24 @@ void zfpBlock<Ty_>::deserialize(bstream& is)
 
     // TODO
     uint8_t* output = nullptr;
-    size_t outputFieldSize = 0;
+    size_t outputFieldSize = this->getDesc()->dims_.area();
 
     if (sizeof(Ty_) < sizeof(int32_t))
     {
-        outputFieldSize = std::ceil(((double)this->getBuffer()->size()) / sizeof(int32_t));
-        output = new uint8_t[outputFieldSize * sizeof(int32_t) * 1.5];
+        size_t numFieldsInt32Pack = sizeof(int32_t) / sizeof(Ty_);
+        if (outputFieldSize % numFieldsInt32Pack)
+        {
+            outputFieldSize = (outputFieldSize + numFieldsInt32Pack - 1) / numFieldsInt32Pack;
+        }
+        else
+        {
+            outputFieldSize /= numFieldsInt32Pack;
+        }
+        output = new uint8_t[outputFieldSize * sizeof(int32_t) * 1.5]();
     }
     else
     {
-        outputFieldSize = this->getBuffer()->size() / sizeof(Ty_);
-        output = new uint8_t[outputFieldSize * sizeof(Ty_) * 1.5];
+        output = new uint8_t[outputFieldSize * sizeof(Ty_) * 1.5]();
     }
     
     zfp_field* outputField = zfp_field_alloc();
