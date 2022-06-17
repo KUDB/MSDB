@@ -14,7 +14,9 @@ TEST(huffman_10_filter, star1024x1024)
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
 	experimentFilterQry<uint8_t>(msdb::dummy::data_star1024x1024::arrName,
-								 msdb::core::compressionType::HUFFMAN);
+								 msdb::core::compressionType::HUFFMAN,
+								 dummy::data_star1024x1024::valueRange[0],
+								 dummy::data_star1024x1024::valueRange[1]);
 }
 TEST(huffman_10_filter, saturn1024x1024)
 {
@@ -22,7 +24,9 @@ TEST(huffman_10_filter, saturn1024x1024)
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
 	experimentFilterQry<uint8_t>(msdb::dummy::data_saturn1024x1024::arrName,
-								 msdb::core::compressionType::HUFFMAN);
+								 msdb::core::compressionType::HUFFMAN,
+								 dummy::data_saturn1024x1024::valueRange[0],
+								 dummy::data_saturn1024x1024::valueRange[1]);
 }
 TEST(huffman_10_filter, solar1024x1024)
 {
@@ -30,7 +34,9 @@ TEST(huffman_10_filter, solar1024x1024)
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
 	experimentFilterQry<uint8_t>(msdb::dummy::data_solar1024x1024::arrName,
-								 msdb::core::compressionType::HUFFMAN);
+								 msdb::core::compressionType::HUFFMAN,
+								 dummy::data_solar1024x1024::valueRange[0],
+								 dummy::data_solar1024x1024::valueRange[1]);
 }
 TEST(huffman_10_filter, mars4096x2048)
 {
@@ -38,7 +44,9 @@ TEST(huffman_10_filter, mars4096x2048)
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
 	experimentFilterQry<uint8_t>(msdb::dummy::data_mars4096x2048::arrName,
-								 msdb::core::compressionType::HUFFMAN);
+								 msdb::core::compressionType::HUFFMAN,
+								 dummy::data_mars4096x2048::valueRange[0],
+								 dummy::data_mars4096x2048::valueRange[1]);
 }
 TEST(huffman_10_filter, mercury20480x10240)
 {
@@ -46,7 +54,9 @@ TEST(huffman_10_filter, mercury20480x10240)
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
 	experimentFilterQry<uint8_t>(msdb::dummy::data_mercury20480x10240::arrName,
-								 msdb::core::compressionType::HUFFMAN);
+								 msdb::core::compressionType::HUFFMAN,
+								 dummy::data_mercury20480x10240::valueRange[0],
+								 dummy::data_mercury20480x10240::valueRange[1]);
 }
 TEST(huffman_10_filter, lunar102400x40960)
 {
@@ -54,34 +64,32 @@ TEST(huffman_10_filter, lunar102400x40960)
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
 	experimentFilterQry<uint16_t>(msdb::dummy::data_lunar102400x40960::arrName,
-								  msdb::core::compressionType::HUFFMAN);
+								  msdb::core::compressionType::HUFFMAN,
+								  dummy::data_lunar102400x40960::valueRange[0],
+								  dummy::data_lunar102400x40960::valueRange[1]);
 }
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-//TEST(huffman_10_filter, data_star64x64x64)
-//{
-//	dummy::data_star64x64x64::executeBuildArray(
-//		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
-//
-//	experimentFilterQry<uint8_t>(msdb::dummy::data_star64x64x64::arrName,
-//								 msdb::core::compressionType::HUFFMAN);
-//}
 TEST(huffman_10_filter, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
 	experimentFilterQry<uint8_t>(msdb::dummy::data_solar_sdo_1024x1024x512::arrName,
-								 msdb::core::compressionType::HUFFMAN);
+								 msdb::core::compressionType::HUFFMAN,
+								 dummy::data_solar_sdo_1024x1024x512::valueRange[0],
+								 dummy::data_solar_sdo_1024x1024x512::valueRange[1]);
 }
-TEST(huffman_10_filter, data_nexrad_16x1024x2048)
+TEST(huffman_10_filter, data_nexrad_201711_64x24x1024x2048)
 {
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
+	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::HUFFMAN);
 
-	experimentFilterQry<uint8_t>(msdb::dummy::data_nexrad_16x1024x2048::arrName,
-								 msdb::core::compressionType::HUFFMAN);
+	experimentFilterQry<uint8_t>(msdb::dummy::data_nexrad_201711_64x24x1024x2048::arrName,
+								 msdb::core::compressionType::HUFFMAN,
+								 dummy::data_nexrad_201711_64x24x1024x2048::valueRange[0],
+								 dummy::data_nexrad_201711_64x24x1024x2048::valueRange[1]);
 }
 }		// experiments
 }		// msdb

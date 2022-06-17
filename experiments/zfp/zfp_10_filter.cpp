@@ -59,14 +59,6 @@ TEST(zfp_10_filter, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-//TEST(zfp_10_filter, data_star64x64x64)
-//{
-//	dummy::data_star64x64x64::executeBuildArray(
-//		core::materializedType::FLATTEN, core::compressionType::ZFP);
-//
-//	experimentFilterQry<uint8_t>(msdb::dummy::data_star64x64x64::arrName,
-//								 msdb::core::compressionType::ZFP);
-//}
 TEST(zfp_10_filter, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(

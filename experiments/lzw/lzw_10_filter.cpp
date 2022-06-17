@@ -59,14 +59,6 @@ TEST(lzw_10_filter, lunar102400x40960)
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-//TEST(lzw_10_filter, data_star64x64x64)
-//{
-//	dummy::data_star64x64x64::executeBuildArray(
-//		core::materializedType::FLATTEN, core::compressionType::LZW);
-//
-//	experimentFilterQry<uint8_t>(msdb::dummy::data_star64x64x64::arrName,
-//								 msdb::core::compressionType::LZW);
-//}
 TEST(lzw_10_filter, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
@@ -75,12 +67,12 @@ TEST(lzw_10_filter, data_solar_sdo_1024x1024x512)
 	experimentFilterQry<uint8_t>(msdb::dummy::data_solar_sdo_1024x1024x512::arrName,
 								 msdb::core::compressionType::LZW);
 }
-TEST(lzw_10_filter, data_nexrad_16x1024x2048)
+TEST(lzw_10_filter, data_nexrad_201711_64x24x1024x2048)
 {
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
+	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::LZW);
 
-	experimentFilterQry<uint8_t>(msdb::dummy::data_nexrad_16x1024x2048::arrName,
+	experimentFilterQry<uint8_t>(msdb::dummy::data_nexrad_201711_64x24x1024x2048::arrName,
 								 msdb::core::compressionType::LZW);
 }
 }		// experiments

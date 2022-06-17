@@ -31,6 +31,7 @@ static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
+static const std::vector<uint8_t> valueRange({ std::numeric_limits<uint8_t>::max() / 2, std::numeric_limits<uint8_t>::max() });
 
 // TODO::Remove getParam
 std::pair<int, int> getParam(compressionType compType);
@@ -67,6 +68,7 @@ static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
+static const std::vector<uint8_t> valueRange({ std::numeric_limits<uint8_t>::max() / 2, std::numeric_limits<uint8_t>::max() });
 
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
@@ -103,6 +105,7 @@ static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
+static const std::vector<uint8_t> valueRange({ std::numeric_limits<uint8_t>::max() / 2, std::numeric_limits<uint8_t>::max() });
 
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
@@ -138,6 +141,7 @@ static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
+static const std::vector<uint8_t> valueRange({ std::numeric_limits<uint8_t>::max() / 2, std::numeric_limits<uint8_t>::max() });
 
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
@@ -176,6 +180,7 @@ static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
+static const std::vector<uint8_t> valueRange({ std::numeric_limits<uint8_t>::max() / 2, std::numeric_limits<uint8_t>::max() });
 
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();
@@ -212,6 +217,7 @@ static const std::string nameDim_0 = "Y";
 static const std::string nameDim_1 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint16_t>();
+static const std::vector<uint8_t> valueRange({ std::numeric_limits<uint8_t>::max() / 2, std::numeric_limits<uint8_t>::max() });
 
 std::pair<int, int> getParam(compressionType compType);
 core::pArrayDesc getDummyArrayDesc();

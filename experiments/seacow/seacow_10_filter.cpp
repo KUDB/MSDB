@@ -17,7 +17,9 @@ TEST(seacow_10_filter, star1024x1024)
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
 	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_star1024x1024::arrName,
-										msdb::core::compressionType::SEACOW);
+									  msdb::core::compressionType::SEACOW,
+									  dummy::data_star1024x1024::valueRange[0],
+									  dummy::data_star1024x1024::valueRange[1]);
 }
 TEST(seacow_10_filter, saturn1024x1024)
 {
@@ -28,7 +30,9 @@ TEST(seacow_10_filter, saturn1024x1024)
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
 	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_saturn1024x1024::arrName,
-										msdb::core::compressionType::SEACOW);
+									  msdb::core::compressionType::SEACOW,
+									  dummy::data_saturn1024x1024::valueRange[0],
+									  dummy::data_saturn1024x1024::valueRange[1]);
 }
 TEST(seacow_10_filter, solar1024x1024)
 {
@@ -39,7 +43,9 @@ TEST(seacow_10_filter, solar1024x1024)
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
 	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_solar1024x1024::arrName,
-										msdb::core::compressionType::SEACOW);
+									  msdb::core::compressionType::SEACOW,
+									  dummy::data_solar1024x1024::valueRange[0],
+									  dummy::data_solar1024x1024::valueRange[1]);
 }
 TEST(seacow_10_filter, mars4096x2048)
 {
@@ -50,7 +56,9 @@ TEST(seacow_10_filter, mars4096x2048)
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
 	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_mars4096x2048::arrName,
-										msdb::core::compressionType::SEACOW);
+									  msdb::core::compressionType::SEACOW,
+									  dummy::data_mars4096x2048::valueRange[0],
+									  dummy::data_mars4096x2048::valueRange[1]);
 }
 TEST(seacow_10_filter, mercury20480x10240)
 {
@@ -61,7 +69,9 @@ TEST(seacow_10_filter, mercury20480x10240)
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
 	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_mercury20480x10240::arrName,
-										msdb::core::compressionType::SEACOW);
+									  msdb::core::compressionType::SEACOW,
+									  dummy::data_mercury20480x10240::valueRange[0],
+									  dummy::data_mercury20480x10240::valueRange[1]);
 }
 TEST(seacow_10_filter, lunar102400x40960)
 {
@@ -72,22 +82,13 @@ TEST(seacow_10_filter, lunar102400x40960)
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
 	experimentIndexFilterQry<uint16_t>(msdb::dummy::data_lunar102400x40960::arrName,
-										 msdb::core::compressionType::SEACOW);
+									   msdb::core::compressionType::SEACOW,
+									   dummy::data_lunar102400x40960::valueRange[0],
+									   dummy::data_lunar102400x40960::valueRange[1]);
 }
 ////////////////////////////////////////
 // 3D Data
 ////////////////////////////////////////
-//TEST(seacow_10_filter, data_star64x64x64)
-//{
-//	dummy::data_star64x64x64::executeBuildArray(
-//		core::materializedType::FLATTEN, core::compressionType::SEACOW);
-//
-//	dummy::data_star64x64x64::executeBuildIndex(
-//		core::compressionType::SEACOW, core::attrIndexType::MMT);
-//
-//	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_star64x64x64::arrName,
-//										msdb::core::compressionType::SEACOW);
-//}
 TEST(seacow_10_filter, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
@@ -97,7 +98,9 @@ TEST(seacow_10_filter, data_solar_sdo_1024x1024x512)
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
 	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_solar_sdo_1024x1024x512::arrName,
-									  msdb::core::compressionType::SEACOW);
+									  msdb::core::compressionType::SEACOW,
+									  dummy::data_solar_sdo_1024x1024x512::valueRange[0],
+									  dummy::data_solar_sdo_1024x1024x512::valueRange[1]);
 }
 TEST(seacow_10_filter, data_nexrad_201711_64x24x1024x2048)
 {
@@ -107,8 +110,10 @@ TEST(seacow_10_filter, data_nexrad_201711_64x24x1024x2048)
 	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildIndex(
 		core::compressionType::SEACOW, core::attrIndexType::MMT);
 
-	experimentIndexFilterQry<uint8_t>(msdb::dummy::data_nexrad_201711_64x24x1024x2048::arrName,
-									  msdb::core::compressionType::SEACOW);
+	experimentIndexFilterQry<uint8_t>(dummy::data_nexrad_201711_64x24x1024x2048::arrName,
+									  core::compressionType::SEACOW,
+									  dummy::data_nexrad_201711_64x24x1024x2048::valueRange[0],
+									  dummy::data_nexrad_201711_64x24x1024x2048::valueRange[1]);
 }
 }		// experiments
 }		// msdb
