@@ -10,7 +10,7 @@ namespace msdb
 {
 namespace dummy
 {
-msdb::Query exeQuery(std::shared_ptr<AFLOperator> afl, bool printAFL, bool printResult, bool printTimer);
+msdb::Query exeQuery(std::shared_ptr<AFLOperator> afl, bool printAFL = true, bool printResult = false, bool printTimer = false);
 msdb::Query exeQuery_print_Timer(std::shared_ptr<AFLOperator> afl);
 msdb::Query exeQuery_print_Result_Timer(std::shared_ptr<AFLOperator> afl);
 
@@ -27,6 +27,18 @@ msdb::Query exeFilterQry(const std::string& arrName, const core::compressionType
 msdb::Query exeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, const int64_t value);
 msdb::Query exeIndexFilterQry(const std::string& arrName, const core::compressionType& compType, const int64_t value);
 msdb::Query exeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, const int64_t value);
+
+////////////////////////////////////////
+// Range-Filter
+////////////////////////////////////////
+msdb::Query exeRangeFilterQry(const std::string& arrName, const core::compressionType& compType,
+							  const msdb::Domain& range, const int64_t value);
+msdb::Query exeRangeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType,
+										 const msdb::Domain& range, const int64_t value);
+msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::compressionType& compType,
+								   const msdb::Domain& range, const int64_t value);
+msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType,
+											  const msdb::Domain& range, const int64_t value);
 }
 }
 #endif	// _MSDB_DUMMY_QUERY_UTIL_H_

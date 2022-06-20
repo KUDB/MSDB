@@ -52,7 +52,7 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(
 namespace data_nexrad_16x1024x2048
 {
 static const std::string arrName = "nexrad_16x1024x2048";
-static const core::arrayId aid = 3100;
+static const core::arrayId aid = 3300;
 //static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20151101T060000Z.data);
 static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20171201T000000Z.data);
 
@@ -148,7 +148,7 @@ static const std::string nameDim_2 = "Y";
 static const std::string nameDim_3 = "X";
 static const std::string nameAttr_0 = "ATTR_1";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
-static const std::vector<uint8_t> valueRange({0, 32});
+static const std::vector<uint8_t> valueRange({4, 32});
 
 // TODO::Remove getParam
 std::pair<int, int> getParam(compressionType compType);

@@ -14,7 +14,6 @@ extern std::vector<const char*> strTimerWorkType = {
 timer::timer()
 	: jobId_(0)
 {
-	static bool isBoostInit = initBoostLogger();
 }
 
 void timer::start(size_t threadId, const std::string& nextJobName, workType nextWorkType)

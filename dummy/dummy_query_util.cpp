@@ -57,7 +57,7 @@ msdb::Query exeRangeQry(const std::string& arrName, const core::compressionType&
 			msdb::dummy::getLoadAFL(arrName, compType),
 		range));
 
-	return exeQuery_print_Timer(afl);
+	return exeQuery(afl);
 }
 msdb::Query exeRangeQryPrintResult(const std::string& arrName, const core::compressionType& compType,
 								   const msdb::Domain& range)
@@ -81,7 +81,7 @@ msdb::Query exeFilterQry(const std::string& arrName, const core::compressionType
 			msdb::dummy::getLoadAFL(arrName, compType),
 			msdb::Attribute("ATTR_1") == value));
 
-	return exeQuery_print_Timer(afl);
+	return exeQuery(afl);
 }
 msdb::Query exeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, 
 									const int64_t value)
@@ -101,7 +101,7 @@ msdb::Query exeIndexFilterQry(const std::string& arrName, const core::compressio
 			msdb::dummy::getLoadAFL(arrName, compType),
 			msdb::Attribute("ATTR_1") == value));
 
-	return exeQuery_print_Timer(afl);
+	return exeQuery(afl);
 }
 msdb::Query exeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, 
 										 const int64_t value)
@@ -125,7 +125,7 @@ msdb::Query exeRangeFilterQry(const std::string& arrName, const core::compressio
 				msdb::Attribute("ATTR_1") == value),
 			range));
 
-	return exeQuery_print_Timer(afl);
+	return exeQuery(afl);
 }
 msdb::Query exeRangeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, 
 										 const msdb::Domain& range, const int64_t value)
@@ -149,7 +149,7 @@ msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::compr
 				msdb::Attribute("ATTR_1") == value),
 			range));
 
-	return exeQuery_print_Timer(afl);
+	return exeQuery(afl);
 }
 msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType,
 											  const msdb::Domain& range, const int64_t value)
