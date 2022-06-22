@@ -1,14 +1,23 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CPP_ARRAY_H_
 #define _MSDB_CPP_ARRAY_H_
 
 #include <pch.h>
+#include <compression/compressionType.h>
+#include <compression/materializedType.h>
 #include <array/array.h>
 #include <query/query.h>
 #include <api_cpp/cpp_context.h.>
+#include <index/attributeIndex.h>
+#include <util/dataType.h>
 
 namespace msdb
 {
+using typename core::eleType;
+using typename core::compressionType;
+using typename core::materializedType;
+using typename core::attrIndexType;
+
 class Array
 {
 public:
@@ -36,6 +45,14 @@ public:
 	std::shared_ptr<std::vector<Ty_>> getAttrBuffer(core::attributeId attrId)
 	{
 		return std::static_pointer_cast<std::vector<Ty_>>(this->qry_->getAttrBuffer<Ty_>(attrId));
+	}
+	inline core::pQuery getQuery()
+	{
+		return this->qry_;
+	}
+	inline core::pArrayDesc getArrayDesc()
+	{
+		return this->arrDesc_;
 	}
 
 public:
@@ -66,7 +83,18 @@ private:
 class DefAttribute
 {
 public:
-	DefAttribute(std::string name, core::eleType type);
+	// Both materialized method and compression method requires additional params
+	DefAttribute(const std::string name, const core::dataType type,
+				 const core::materializedType matType = materializedType::FLATTEN,
+				 const std::map<std::string, std::string> optionalParams = {});
+
+	DefAttribute(const std::string name, const core::dataType type,
+				 const core::compressionType compType,
+				 const std::map<std::string, std::string> optionalParams = {});
+
+	DefAttribute(const std::string name, const core::dataType type,
+				 const core::materializedType matType, const core::compressionType compType,
+				 const std::map<std::string, std::string> optionalParams = {});
 
 public:
 	std::shared_ptr<core::attributeDesc> getDesc();

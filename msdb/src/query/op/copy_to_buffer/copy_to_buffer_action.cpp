@@ -75,7 +75,7 @@ pArray copy_to_buffer_action::execute(std::vector<pArray>& inputArrays, pQuery q
 }
 void copy_to_buffer_action::dimensionEncode(pArray inArr, pQuery qry)
 {
-	auto cItr = inArr->getChunkIterator();
+	auto cItr = inArr->getChunkIterator(inArr->getDesc()->getAttrDescs()->at(0)->id_);
 	auto dSize = cItr->dSize();
 	auto cSize = cItr->getSeqEnd();
 

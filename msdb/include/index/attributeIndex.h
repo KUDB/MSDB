@@ -3,17 +3,14 @@
 #define _MSDB_ATTRIBUTE_INDEX_H_
 
 #include <pch.h>
+#include <util/enumType.h>
 
 namespace msdb
 {
 namespace core
 {
-enum class attrIndexType
-{
-	MMT,
-	COMPASS,
-	NONE
-};
+ENUM_MACRO(attrIndexType,
+		   NONE, MMT, COMPASS);
 
 class attributeIndex
 {

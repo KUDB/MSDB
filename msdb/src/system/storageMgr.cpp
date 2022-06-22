@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <system/storageMgr.h>
 #include <system/exceptions.h>
 #include <array/arrayMgr.h>
@@ -133,9 +133,15 @@ void storageMgr::loadChunk(const arrayId arrId, const attributeId attrId, const 
 		}else
 		{
 			BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << chkId << "] : MSDB EXCEPTION";
+			BOOST_LOG_TRIVIAL(error) << msex.what();
 		}
 
 		return;
+	}
+	_MSDB_CATCH_EXCEPTION(e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << chkId << "] : STD::EXCEPTION";
+		BOOST_LOG_TRIVIAL(error) << e.what();
 	}
 	_MSDB_CATCH_ALL
 	{
@@ -174,7 +180,7 @@ filePath storageMgr::getBasePath()
 	return this->basePath_;
 }
 
-filePath storageMgr::getArrayPath(const arrayId arrId)
+filePath storageMgr::getArrayRelativePath(const arrayId arrId)
 {
 	return this->arrayPath_ / this->getArrayFolder(arrId);
 }
@@ -186,12 +192,12 @@ filePath storageMgr::getArrayFolder(const arrayId arrId)
 
 filePath storageMgr::getArrayIndexPath(const arrayId arrId)
 {
-	return this->getArrayPath(arrId) / this->indexFolder_;
+	return this->getBasePath() / this->getArrayRelativePath(arrId) / this->indexFolder_;
 }
 
 filePath storageMgr::getChunkPath(const arrayId arrId, const attributeId attrId, const chunkId chkId)
 {
-	return this->getArrayPath(arrId) / std::to_string(attrId) / std::to_string(chkId);
+	return this->getBasePath() / this->getArrayRelativePath(arrId) / std::to_string(attrId) / std::to_string(chkId);
 }
 
 void storageMgr::getOfstream(std::ofstream& fs, filePath fPath, const char* ext)

@@ -10,7 +10,7 @@ namespace core
 const bufferSize INVALID_BUFFER_SIZE = static_cast<bufferSize>(~0);
 
 buffer::buffer()
-	:bodySize_(0), isAllocated_(false)
+	:bodySize_(0), isOwned_(false)
 {
 }
 

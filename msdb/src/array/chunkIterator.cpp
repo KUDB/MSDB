@@ -8,7 +8,7 @@ namespace core
 chunkIterator::chunkIterator(const dimension dims,
 							 chunkContainer* chunks, pBitmap chunkBitmap, 
 							 iterateMode itMode)
-	: coorItr(dims), 
+	: mdItr(dims), 
 	chunks_(chunks), chunkBitmap_(chunkBitmap),
 	itMode_(itMode)
 {
@@ -17,14 +17,14 @@ chunkIterator::chunkIterator(const dimension dims,
 //chunkIterator::chunkIterator(const dimension dims,
 //							 chunkContainer* chunks,
 //							 iterateMode itMode)
-//	: coorItr(dims),
+//	: mdItr(dims),
 //	chunks_(chunks),
 //	itMode_(itMode)
 //{
 //}
 
 chunkIterator::chunkIterator(const self_type& mit)
-	: coorItr(mit), 
+	: mdItr(mit), 
 	chunks_(mit.chunks_), chunkBitmap_(mit.chunkBitmap_), 
 	itMode_(mit.itMode_)
 {

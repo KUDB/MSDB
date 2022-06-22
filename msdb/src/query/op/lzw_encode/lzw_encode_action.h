@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_LZW_ENCODE_ACTION_H_
 #define _MSDB_OP_LZW_ENCODE_ACTION_H_
 
 #include <pch.h>
 #include <query/opAction.h>
 #include <util/math.h>
-#include <compression/lzwChunk.h>
+#include <op/lzw_encode/lzwChunk.h>
 
 namespace msdb
 {
@@ -21,8 +21,8 @@ public:
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 
-private:
-	pLzwChunk makeOutChunk(pChunk inChunk);
+//private:
+	//pLzwChunk makeOutChunk(pChunk inChunk);
 };
 }		// core
 }		// msdb

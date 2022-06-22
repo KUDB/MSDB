@@ -10,6 +10,7 @@ namespace msdb
 namespace core
 {
 using chunkContainer = std::map<chunkId, pChunk>;
+using multiAttrChunkContainer = std::map<attributeId, chunkContainer>;
 using chunkPair = std::pair<chunkId, pChunk>;
 }		// core
 }		// msdb

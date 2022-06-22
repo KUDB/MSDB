@@ -16,7 +16,7 @@ save_plan::~save_plan()
 
 const char* save_plan::name()
 {
-	return "save_plan";
+	return "save";
 }
 
 pAction save_plan::makeAction()

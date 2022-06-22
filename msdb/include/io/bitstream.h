@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BITSTREAM_H_
 #define _MSDB_BITSTREAM_H_
 
@@ -207,17 +207,6 @@ namespace core
 		* Here is an example of a bitstream with 4 bits block.
 		*
 		*
-		* ?뚢?????????????
-		* ??pos]      ??
-		* ?귘뼹 ->		  ??
-		* ?쒋???р???р???р???ㅲ뵆???р???р???р????
-		* ??3??2??1??0?귘봻 3??2??1??0??bitset<4>
-		* ?쒋???닳???닳???닳???ㅲ뵜???닳???닳???닳????
-		* ??[0]	      ?귘봻 [1]	   ??vector<bitset<4>>
-		* ?붴????????????섃뵒?????????????
-		* ?뚢???р???р???р???먥뵆???р???р???р????
-		* ??0??1??2??3?귘봻 4??5??6??7??global bit order
-		* ?붴???닳???닳???닳???섃뵒???닳???닳???닳????
 		*/
 		pos_type fill(const unsigned char c, pos_type length = CHAR_BIT)
 		{
@@ -418,6 +407,13 @@ namespace core
 			this->_container->resize(bytes);
 		}
 
+		void moveToFront()
+		{
+			this->blockPos = 0;
+			this->bitPos = 0;
+			this->frontBlock = reinterpret_cast<block_bitset_type*>(&this->_container->front());
+		}
+
 		virtual void flush()
 		{
 			_myBase::flush();
@@ -539,7 +535,7 @@ namespace core
 		using pos_type = typename _Traits::pos_type;
 
 		vector_iobitstream()
-			: _myIs(_STD addressof(this->_concreateContainer)), _myOs(_STD addressof(this->_concreateContainer))
+			: _myIs(_STD addressof(this->_concreateContainer)), _myOs(_STD addressof(this->_concreateContainer)), isFlushed(false)
 		{
 			_myOs::addNewBlock();
 		}
@@ -563,6 +559,8 @@ namespace core
 
 		virtual void flush()
 		{
+			assert(isFlushed = false);
+			isFlushed = true;
 			_myIs::flush();
 			_myOs::flush();
 		}
@@ -580,6 +578,7 @@ namespace core
 
 	protected:
 		container_type _concreateContainer;
+		bool isFlushed;
 	};
 
 	// STRUCT TEMPLATE _BitSmanip
@@ -614,6 +613,13 @@ namespace core
 		return _Ostr;
 	}
 
+
+	template <class _Block, class _Traits>
+	vector_obitstream<_Block, _Traits>& operator<<(vector_obitstream<_Block, _Traits>& _Ostr, const bool _val)
+	{
+		_Ostr.fillChar(static_cast<const unsigned char>(_val), 1);
+		return _Ostr;
+	}
 	template <class _Block, class _Traits>
 	vector_obitstream<_Block, _Traits>& operator<<(vector_obitstream<_Block, _Traits>& _Ostr, const char _val)
 	{
@@ -699,6 +705,13 @@ namespace core
 	}
 
 	//////////////////////////////
+	template <class _Block, class _Traits>
+	vector_ibitstream<_Block, _Traits>& operator>>(vector_ibitstream<_Block, _Traits>& _is, bool& _val)
+	{
+		_val = (unsigned char)_is.getChar(1);
+		return _is;
+	}
+
 	template <class _Block, class _Traits>
 	vector_ibitstream<_Block, _Traits>& operator>>(vector_ibitstream<_Block, _Traits>& _is, char& _val)
 	{

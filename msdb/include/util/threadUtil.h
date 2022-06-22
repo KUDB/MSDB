@@ -2,8 +2,6 @@
 #ifndef _MSDB_THREADUTIL_
 #define _MSDB_THREADUTIL_
 
-#define _MSDB_ACTION_THREAD_NUM_	8
-
 #include <pch.h>
 
 namespace msdb

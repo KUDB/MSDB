@@ -58,7 +58,7 @@ wavelet_encode_plan_pset::wavelet_encode_plan_pset(parameters& pSet)
 }
 pArrayDesc wavelet_encode_plan_pset::inferSchema()
 {
-	pArrayDesc aSourceDesc = std::static_pointer_cast<opParamArray::paramType>(this->params_[0]->getParam());
+	pArrayDesc aSourceDesc = std::static_pointer_cast<opParamPlan::paramType>(this->params_[0]->getParam())->inferSchema();
 	pArrayDesc aInferDesc = std::make_shared<opParamArray::paramType>(*aSourceDesc);
 
 	for (dimensionId d = 0; d < aInferDesc->dimDescs_->size(); d++)
@@ -74,7 +74,7 @@ pBitmapTree wavelet_encode_plan_pset::inferBottomUpBitmap()
 {
 	auto sourceBitmap = this->getSourcePlanBottomUpBitmap();
 	//TODO::Implement inferBottomUpBitmap
-	return nullptr;
+	return sourceBitmap;
 }
 }		// core
 }		// msdb

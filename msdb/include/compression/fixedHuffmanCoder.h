@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_FIXED_HUFFMAN_CODER_H_
 #define _MSDB_FIXED_HUFFMAN_CODER_H_
 
@@ -55,7 +55,7 @@ protected:
 		this->buildTree(freq);
 		buildEncodeDecodeTable();
 
-		BOOST_LOG_TRIVIAL(debug) << "Fixed Huffman Coder<" << this->bits_ << "> is initialized.";
+		BOOST_LOG_TRIVIAL(trace) << "Fixed Huffman Coder<" << this->bits_ << "> is initialized.";
 	}
 
 private:
@@ -74,7 +74,7 @@ private:
 
 		freq[0] = (boost::math::pdf(ndNarrow, 0.0) + boost::math::pdf(ndWide, 0.0)) * precision;
 		freq[range] = 1;
-		BOOST_LOG_TRIVIAL(debug) << "Freq==>narrow: " << sdNarrow << ", wide: " << sdWide << ", range: " << range;;
+		BOOST_LOG_TRIVIAL(trace) << "Freq==>narrow: " << sdNarrow << ", wide: " << sdWide << ", range: " << range;;
 		for (size_t x = 1; x < range; ++x)
 		{
 			freq[x] = (boost::math::pdf(ndNarrow, (double)x) + boost::math::pdf(ndWide, (double)x)) * precision;
@@ -83,7 +83,7 @@ private:
 				freq[x] = 1;
 			}
 			freq[x + range] = freq[x];
-			//BOOST_LOG_TRIVIAL(debug) << "[" << x << "]: " << boost::math::pdf(ndNarrow, (double)x) << "+" << boost::math::pdf(ndWide, (double)x) << "=" << freq[x];
+			//BOOST_LOG_TRIVIAL(trace) << "[" << x << "]: " << boost::math::pdf(ndNarrow, (double)x) << "+" << boost::math::pdf(ndWide, (double)x) << "=" << freq[x];
 		}
 
 		this->printFreq(freq);
@@ -91,10 +91,10 @@ private:
 
 	void printFreq(std::vector<size_t>& freq)
 	{
-		BOOST_LOG_TRIVIAL(debug) << "Freq=====";
+		BOOST_LOG_TRIVIAL(trace) << "Freq=====";
 		for (size_t i = 0; i < freq.size(); ++i)
 		{
-			BOOST_LOG_TRIVIAL(debug) << "[" << i << "]: " << freq[i];
+			BOOST_LOG_TRIVIAL(trace) << "[" << i << "]: " << freq[i];
 		}
 	}
 
@@ -186,7 +186,7 @@ public:
 			code = (code << result.second) | nextCode;
 
 			readBits += result.second;
-			//BOOST_LOG_TRIVIAL(debug) << "S: " << static_cast<uint64_t>(result.first) << "/ L: " << static_cast<uint64_t>(result.second);
+			//BOOST_LOG_TRIVIAL(trace) << "S: " << static_cast<uint64_t>(result.first) << "/ L: " << static_cast<uint64_t>(result.second);
 		}
 
 		return readBits;
@@ -433,7 +433,7 @@ public:
 				readBits += result.second;
 			}
 
-			//BOOST_LOG_TRIVIAL(debug) << "S: " << static_cast<uint64_t>(result.first) << "/ L: " << static_cast<uint64_t>(result.second);
+			//BOOST_LOG_TRIVIAL(trace) << "S: " << static_cast<uint64_t>(result.first) << "/ L: " << static_cast<uint64_t>(result.second);
 		}
 
 		return readBits;

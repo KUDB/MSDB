@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <util/experimentRecorder.h>
 #include <util/logger.h>
 
@@ -196,7 +196,7 @@ void experimentRecorder::printLine(size_t tag, std::map<size_t, record>& line)
 	{
 		// Print if line exist
 		std::stringstream ss;
-		ss << "{" << tag << "} / ";	// dataId
+		ss << tag << " / ";	// dataId
 		for (auto r : line)
 		{
 			ss << boost::format("%1$.5f") % r.second.procTime << ", ";		// procTimes

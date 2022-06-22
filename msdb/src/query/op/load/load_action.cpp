@@ -1,7 +1,7 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/load/load_action.h>
-#include <array/memBlockArray.h>
-#include <array/blockChunk.h>
+#include <array/flattenArray.h>
+#include <array/flattenChunk.h>
 #include <system/storageMgr.h>
 #include <array/arrayMgr.h>
 #include <util/threadUtil.h>
@@ -29,8 +29,8 @@ pArray load_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	assert(inputArrays.size() == 1);
 	auto planChunkBitmap = this->getPlanInChunkBitmap();
 
-	//pArray outArr = arrayMgr::instance()->makeArray<memBlockArray>(this->getArrayDesc());
-	pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	//pArray outArr = arrayMgr::instance()->makeArray<flattenArray>(this->getArrayDesc());
+	pArray outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	outArr->copyChunkBitmap(planChunkBitmap);
 	arrayId arrId = outArr->getId();
 
@@ -53,38 +53,45 @@ void load_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery q
 	//========================================//
 	qry->getTimer()->nextWork(0, workType::PARALLEL);
 	//----------------------------------------//
-
-	this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
-
-	auto cit = outArr->getChunkIterator(iterateMode::ALL);
-
-	while (!cit->isEnd())
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
+	if (cit == nullptr)
 	{
-		if (cit->isExist())
+		// TODO::make empty chunk
+		// set all bitmap null
+	}
+	else
+	{
+		this->threadCreate();
+
+		while (!cit->isEnd())
 		{
-			chunkId cId = cit->seqPos();
-			auto outChunk = outArr->makeChunk(attrDesc->id_, cId);
+			if (cit->isExist())
+			{
+				chunkId cId = cit->seqPos();
+				auto outChunk = outArr->makeChunk(attrDesc->id_, cId);
 
-			auto blockBitmap = this->getPlanBlockBitmap(cId);
-			if (blockBitmap)
-			{
-				outChunk->copyBlockBitmap(blockBitmap);
-			} else
-			{
-				// If there were no bitmap, set all blocks as true.
-				outChunk->replaceBlockBitmap(std::make_shared<bitmap>(outChunk->getBlockCapacity(), true));
+				auto blockBitmap = this->getPlanBlockBitmap(cId);
+				if (blockBitmap)
+				{
+					outChunk->copyBlockBitmap(blockBitmap);
+				}
+				else
+				{
+					// If there were no bitmap, set all blocks as true.
+					outChunk->replaceBlockBitmap(std::make_shared<bitmap>(outChunk->getBlockCapacity(), true));
+				}
+				outChunk->makeBlocks();
+
+				io_service_->post(boost::bind(&load_action::loadChunk, this,
+											  outArr, outChunk, attrDesc->id_, qry, currentThreadId));
 			}
-			outChunk->makeBlocks();
 
-			io_service_->post(boost::bind(&load_action::loadChunk, this,
-							  outArr, outChunk, attrDesc->id_, qry, currentThreadId));
+			++(*cit);
 		}
 
-		++(*cit);
+		this->threadStop();
+		this->threadJoin();
 	}
-
-	this->threadStop();
-	this->threadJoin();
 
 	//----------------------------------------//
 	qry->getTimer()->nextWork(0, workType::COMPUTING);
@@ -101,10 +108,36 @@ void load_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, 
 	qry->getTimer()->nextJob(threadId, this->name(), workType::IO);
 	//----------------------------------------//
 
-	pSerializable serialChunk
+	_MSDB_TRY_BEGIN
+	{
+		pSerializable serialChunk
 		= std::static_pointer_cast<serializable>(outChunk);
-	storageMgr::instance()->loadChunk(outArr->getId(), attrId, outChunk->getId(),
-									  serialChunk);
+		storageMgr::instance()->loadChunk(outArr->getId(), attrId, outChunk->getId(),
+											serialChunk);
+	}
+	_MSDB_CATCH_EXCEPTION(e)
+	{
+		if (outChunk != nullptr)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: " << outChunk->getId() << e.what();
+		}
+		else
+		{
+			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: nullptr" << e.what();
+		}
+	}
+	_MSDB_CATCH_ALL
+	{
+		if (outChunk != nullptr)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: " << outChunk->getId();
+		}
+		else
+		{
+			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: nullptr";
+		}
+	}
+	_MSDB_CATCH_END
 
 	//----------------------------------------//
 	qry->getTimer()->pause(threadId);

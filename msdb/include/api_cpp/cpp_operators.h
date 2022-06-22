@@ -9,6 +9,7 @@
 #include <api_cpp/cpp_domain.h>
 #include <api_cpp/cpp_predicate.h>
 #include <query/opPlan.h>
+#include <op/insert/insert_plan.h>
 #include <parse/predicate.h>
 
 namespace msdb
@@ -43,19 +44,28 @@ private:
 /* ************************ */
 /* Insert					*/
 /* ************************ */
+enum InsertOprType {
+	single_from_file,
+	multi_from_file,
+	multi_from_memory
+};
+
 class InsertOpr : public AFLOperator
 {
 public:
-	InsertOpr(Array arr, std::string filePath);
+	InsertOpr(Array arr, core::parameters params, InsertOprType type);
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
 	virtual std::string toString(int depth);
 
 private:
-	std::string filePath_;
+	core::parameters params_;
+	InsertOprType type_;
 };
 std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath);
+std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_file_pset::containerType attrFiles);
+std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_memory_pset::containerType attrMem);
 
 /* ************************ */
 /* Save 					*/
@@ -123,7 +133,7 @@ public:
 	virtual std::string toString(int depth);
 
 public:
-	//BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize);
+	//BuildOpr& AddAxis(id_t dimId, std::string axis, Coordinates dim, position_t chunkSize, position_t blockSize);
 	//BuildOpr& AddAttribute(id_t attrId, std::string name, core::eleType eType);
 	//BuildOpr& SetArray(id_t arrId, std::string name);
 };
@@ -148,6 +158,21 @@ private:
 };
 std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm);
 
+class IndexFilterOpr : public AFLOperator
+{
+public:
+	IndexFilterOpr(std::shared_ptr<AFLOperator> qry, std::shared_ptr<PredicateImpl> pred);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
+	std::shared_ptr<PredicateImpl> pred_;
+};
+std::shared_ptr<IndexFilterOpr> IndexFilter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm);
+
 
 /* ************************ */
 /* ToBuffer					*/
@@ -165,5 +190,22 @@ private:
 	std::shared_ptr<AFLOperator> childQry_;
 };
 std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry);
+
+/* ************************ */
+/* Consume					*/
+/* ************************ */
+class ConsumeOpr : public AFLOperator
+{
+public:
+	ConsumeOpr(std::shared_ptr<AFLOperator> qry);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
+};
+std::shared_ptr<ConsumeOpr> Consume(std::shared_ptr<AFLOperator> qry);
 }		// msdb
 #endif	// _MSDB_API_CPP_OPERATORS_H_

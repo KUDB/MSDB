@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_LOGGER_H_
 #define _MSDB_LOGGER_H_
 
@@ -21,6 +21,11 @@ namespace core
 //
 
 bool initBoostLogger();
+
+namespace logger
+{
+static const bool isLoggerInit = initBoostLogger();
+}
 }		// core
 }		// msdb
 #endif	// _MSDB_LOGGER_H_

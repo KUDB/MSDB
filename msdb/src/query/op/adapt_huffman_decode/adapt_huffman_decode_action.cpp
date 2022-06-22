@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/adapt_huffman_decode/adapt_huffman_decode_action.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
 
@@ -29,7 +29,7 @@ pArray adapt_huffman_decode_action::execute(std::vector<pArray>& inputArrays, pQ
 	pArray sourceArr = inputArrays[0];
 	arrayId arrId = sourceArr->getId();
 
-	auto outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	auto outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	outArr->copyChunkBitmap(this->getPlanInChunkBitmap());
 
 	for (auto attr : *sourceArr->getDesc()->attrDescs_)
@@ -51,9 +51,9 @@ void adapt_huffman_decode_action::loadAttribute(pArray outArr, pAttributeDesc at
 	qry->getTimer()->nextWork(0, workType::PARALLEL);
 	//----------------------------------------//
 
-	this->threadCreate(_MSDB_ACTION_THREAD_NUM_);
+	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(iterateMode::EXIST);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 	while (!cit->isEnd())
 	{
 		if (cit->isExist())

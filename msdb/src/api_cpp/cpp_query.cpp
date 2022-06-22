@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <typeinfo>
 #include <api_cpp/cpp_query.h>
 #include <api_cpp/cpp_operators.h>
@@ -16,7 +16,7 @@ Query::Query(std::shared_ptr<AFLOperator> afl)
 	 * 
 	 * - Note: except 'consume' operator, which does not use the output result.
 	 */
-	if(typeid(*afl) != typeid(CopyToBufferOpr) && typeid(*afl) != typeid(BuildOpr) && typeid(*afl) != typeid(SaveOpr))
+	if(typeid(*afl) != typeid(CopyToBufferOpr) && typeid(*afl) != typeid(ConsumeOpr) && typeid(*afl) != typeid(BuildOpr) && typeid(*afl) != typeid(SaveOpr))
 	{
 		afl = CopyToBuffer(afl);
 	}
@@ -63,5 +63,13 @@ std::string Query::strStatus()
 	};
 	ss << dimBuffer->size() << " cells (" << boost::format("%1$.5f") % this->qry_->getTimer()->getExecutionTime() << " sec)" << std::endl;
 	return ss.str();
+}
+void Query::setVerbose()
+{
+	this->qry_->setVerbose();
+}
+void Query::unsetVerbose()
+{
+	this->qry_->unsetVerbose();
 }
 }		// msdb

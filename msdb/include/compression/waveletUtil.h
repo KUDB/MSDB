@@ -9,7 +9,7 @@ namespace msdb
 {
 namespace core
 {
-coorRange getBandRange(const size_t bandId, const coor& bandDims);
+range getBandRange(const size_t bandId, const coor& bandDims);
 
 // Get wavelet band info
 

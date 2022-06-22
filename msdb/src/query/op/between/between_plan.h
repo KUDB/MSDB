@@ -26,7 +26,7 @@ protected:
 	template<typename Ty_>
 	pBitmapTree inferBottomUpAttrBitmap(pArrayDesc arrDesc, pAttributeDesc attrDesc, pBitmapTree boUpBitmap, pCoor sp, pCoor ep)
 	{
-		auto qRange = coorRange(*sp, *ep);
+		auto qRange = range(*sp, *ep);
 
 		dimension chunkSpace = arrDesc->getDimDescs()->getChunkSpace();
 		dimension blockSpace = arrDesc->getDimDescs()->getBlockSpace();
@@ -39,12 +39,12 @@ protected:
 
 		dimension mmtNodeSpace = chunkSpace * blockSpace;
 
-		coorItr cit(chunkSpace);
-		coorItr bit(blockSpace);
+		mdItr cit(chunkSpace);
+		mdItr bit(blockSpace);
 		size_t dSize = arrDesc->getDSize();
 
 		auto chunkBitmap = std::make_shared<bitmapTree>(chunkNums, false);
-		auto chunkRange = coorRange(coor(chunkDims.size()), chunkDims);
+		auto chunkRange = range(coor(chunkDims.size()), chunkDims);
 
 		for (chunkId cid = 0; cid < chunkNums; ++cid)
 		{
@@ -53,7 +53,7 @@ protected:
 				auto chunkCoor = cit.seqToCoor(cid);
 				auto chunkSp = chunkCoor * chunkDims;
 				auto chunkEp = chunkSp + chunkDims;
-				auto chunkRange = coorRange(chunkSp, chunkEp);
+				auto chunkRange = range(chunkSp, chunkEp);
 
 				if(chunkRange.isIntersect(qRange))
 				{
@@ -88,7 +88,7 @@ protected:
 									auto blockCoor = bit.seqToCoor(bid);
 									auto blockSp = blockCoor * blockDims;
 									auto blockEp = blockSp + blockDims;
-									auto blockRange = coorRange(blockSp, blockEp);
+									auto blockRange = range(blockSp, blockEp);
 									
 									if(blockRange.isIntersect(qRangeInChunk))
 									{
@@ -106,7 +106,7 @@ protected:
 								auto blockCoor = bit.seqToCoor(bid);
 								auto blockSp = blockCoor * blockDims;
 								auto blockEp = blockSp + blockDims;
-								auto blockRange = coorRange(blockSp, blockEp);
+								auto blockRange = range(blockSp, blockEp);
 
 								if (blockRange.isIntersect(qRangeInChunk))
 								{

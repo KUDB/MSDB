@@ -16,7 +16,7 @@ load_plan::~load_plan()
 
 const char* load_plan::name()
 {
-	return "load_plan";
+	return "load";
 }
 
 pAction load_plan::makeAction()

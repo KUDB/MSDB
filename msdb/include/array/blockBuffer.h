@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BLOCKBUFFER_H_
 #define _MSDB_BLOCKBUFFER_H_
 
@@ -23,11 +23,11 @@ public:
 	void refChunkBufferWithoutOwnership(void* data, bufferSize size);
 };
 
-class memBlockBuffer : public blockBuffer
+class flattenBlockBuffer : public blockBuffer
 {
 public:
-	memBlockBuffer(void* data, bufferSize size);
-	virtual ~memBlockBuffer();
+	flattenBlockBuffer(void* data, bufferSize size);
+	virtual ~flattenBlockBuffer();
 };
 }		// core
 }		// msdb

@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/dimensionDesc.h>
 #include <util/math.h>
 #include <xml/xmlFile.h>
@@ -7,9 +7,107 @@ namespace msdb
 {
 namespace core
 {
-dimensionDesc::dimensionDesc(dimensionId id, std::string name,
-							 dimension_type start, dimension_type end, 
-							 position_t chunkSize, position_t blockSize)
+//////////////////////////////
+// dimensionDescs
+//
+// ***************************
+// Constructor
+dimensionDescs::dimensionDescs()
+{
+}
+dimensionDescs::dimensionDescs(const dimensionDescs& mit)
+{
+	for (auto desc : mit)
+	{
+		this->push_back(std::make_shared<dimensionDesc>(*desc));
+	}
+}
+// ***************************
+dimension dimensionDescs::getDims()
+{
+	dimension dims(this->size());
+	for (dimensionId d = 0; d < this->size(); ++d)
+	{
+		dims[d] = this->at(d)->getLength();
+	}
+	return dims;
+}
+dimension dimensionDescs::getChunkDims()
+{
+	dimension dims(this->size());
+	for (dimensionId d = 0; d < this->size(); ++d)
+	{
+		dims[d] = this->at(d)->chunkSize_;
+	}
+	return dims;
+}
+
+dimension dimensionDescs::getChunkSpace()
+{
+	return this->getDims() / this->getChunkDims();
+}
+
+dimension dimensionDescs::getBlockDims()
+{
+	dimension blockDims(this->size());
+	for (dimensionId d = 0; d < this->size(); ++d)
+	{
+		blockDims[d] = this->at(d)->blockSize_;
+	}
+	return blockDims;
+}
+
+dimension dimensionDescs::getBlockSpace()
+{
+	return dimension(this->getChunkDims()) / this->getBlockDims();
+}
+
+// ***************************
+// Friends
+bool operator== (const dimensionDescs& lhs_, const dimensionDescs& rhs_)
+{
+	if (lhs_.size() != rhs_.size())		return false;
+
+	auto size = lhs_.size();
+	for (int i = 0; i < size; ++i)
+	{
+		_MSDB_TRY_BEGIN
+		{
+			// shared_ptr obj
+			if (lhs_.at(i) != rhs_.at(i))
+			{
+				if (lhs_.at(i) == nullptr || rhs_.at(i) == nullptr)	return false;
+				if (*(lhs_.at(i)) != *(rhs_.at(i)))					return false;
+			}
+		}
+		_MSDB_CATCH(std::out_of_range e)
+		{
+			return false;
+		}
+		_MSDB_CATCH_END
+	}
+
+	return true;
+}
+bool operator!= (const dimensionDescs& lhs_, const dimensionDescs& rhs_)
+{
+	if (lhs_ == rhs_)
+		return false;
+
+	return true;
+}
+
+
+//////////////////////////////
+// dimensionDesc
+//
+dimensionDesc::dimensionDesc()
+	: id_(0), name_(""), start_(0), end_(0), chunkSize_(0), blockSize_(0)
+{
+}
+dimensionDesc::dimensionDesc(const dimensionId id, const std::string name,
+							 const dimension_type start, const dimension_type end,
+							 const position_t chunkSize, const position_t blockSize)
 	: id_(id), name_(name), start_(start), end_(end), 
 	chunkSize_(chunkSize), blockSize_(blockSize)
 {
@@ -19,6 +117,12 @@ dimensionDesc::dimensionDesc(const dimensionDesc& mit)
 	: id_(mit.id_), name_(mit.name_), start_(mit.start_), end_(mit.end_),
 	chunkSize_(mit.chunkSize_), blockSize_(mit.blockSize_)
 {
+}
+
+dimensionDesc::dimensionDesc(dimensionDesc&& src) noexcept
+	: dimensionDesc()
+{
+	swap(*this, src);
 }
 
 position_t msdb::core::dimensionDesc::getLength()
@@ -66,63 +170,63 @@ pDimensionDesc dimensionDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 
 	return std::make_shared<dimensionDesc>(id, name, start, end, chunkSize, blockSize);
 }
-dimensionDescs::dimensionDescs()
+
+
+//////////////////////////////
+// Operators
+// ***************************
+// Assign
+dimensionDesc& dimensionDesc::operator=(const dimensionDesc& src)
 {
-}
-dimensionDescs::dimensionDescs(const dimensionDescs& mit)
-{
-	for(auto desc : mit)
+	if (this == &src)
 	{
-		this->push_back(std::make_shared<dimensionDesc>(*desc));
+		return *this;
 	}
-}
-dimension dimensionDescs::getDims()
-{
-	dimension dims(this->size());
-	for (dimensionId d = 0; d < this->size(); ++d)
-	{
-		dims[d] = this->at(d)->getLength();
-	}
-	return dims;
-}
-dimension dimensionDescs::getChunkDims()
-{
-	dimension dims(this->size());
-	for (dimensionId d = 0; d < this->size(); ++d)
-	{
-		dims[d] = this->at(d)->chunkSize_;
-	}
-	return dims;
+
+	dimensionDesc temp(src);
+	swap(*this, temp);
+	return *this;
 }
 
-dimension dimensionDescs::getChunkSpace()
+dimensionDesc& dimensionDesc::operator=(dimensionDesc&& src) noexcept
 {
-	return this->getDims() / this->getChunkDims();
+	dimensionDesc temp(std::move(src));
+	swap(*this, temp);
+	return *this;
 }
 
-dimension dimensionDescs::getBlockDims()
+// ***************************
+// Friends
+void swap(dimensionDesc& lhs, dimensionDesc& rhs)
 {
-	dimension blockDims(this->size());
-	for (dimensionId d = 0; d < this->size(); ++d)
-	{
-		blockDims[d] = this->at(d)->blockSize_;
-	}
-	return blockDims;
-}
+	using std::swap;
 
-dimension dimensionDescs::getBlockSpace()
-{
-	return dimension(this->getChunkDims()) / this->getBlockDims();
-}
+	swap(lhs.id_, rhs.id_);
+	swap(lhs.name_, rhs.name_);
 
-bool dimensionDesc::operator==(const dimensionDesc& right_)
+	swap(lhs.start_, rhs.start_);
+	swap(lhs.end_, rhs.end_);
+
+	swap(lhs.chunkSize_, rhs.chunkSize_);
+	swap(lhs.blockSize_, rhs.blockSize_);
+}
+bool operator== (const dimensionDesc& lhs_, const dimensionDesc& rhs_)
 {
-	if (this->id_ != right_.id_) return false;
-	if (this->name_ != right_.name_) return false;
-	if (this->start_ != right_.start_) return false;
-	if (this->end_ != right_.end_) return false;
-	if (this->chunkSize_ != right_.chunkSize_) return false;
-	if (this->blockSize_ != right_.blockSize_) return false;
+	if (lhs_.id_ != rhs_.id_) return false;
+	if (lhs_.name_ != rhs_.name_) return false;
+
+	if (lhs_.start_ != rhs_.start_) return false;
+	if (lhs_.end_ != rhs_.end_) return false;
+
+	if (lhs_.chunkSize_ != rhs_.chunkSize_) return false;
+	if (lhs_.blockSize_ != rhs_.blockSize_) return false;
+
+	return true;
+}
+bool operator!= (const dimensionDesc& lhs_, const dimensionDesc& rhs_)
+{
+	if (lhs_ == rhs_)
+		return false;
 
 	return true;
 }

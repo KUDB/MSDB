@@ -20,10 +20,17 @@ public:
 	virtual pAction makeAction() override;
 };
 
+//////////////////////////////
+// ParamSets
 class spiht_encode_array_pset : public opArrayParamSet
 {
 public:
 	spiht_encode_array_pset(parameters& pSet);
+};
+class spiht_encode_plan_pset : public opPlanParamSet
+{
+public:
+	spiht_encode_plan_pset(parameters& pSet);
 };
 }		// core
 }		// msdb

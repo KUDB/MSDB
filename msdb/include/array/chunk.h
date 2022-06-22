@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CHUNK_H_
 #define _MSDB_CHUNK_H_
 
@@ -14,6 +14,7 @@ namespace msdb
 namespace core
 {
 class chunk;
+class chunkTester;
 using pChunk = std::shared_ptr<chunk>;
 
 class chunk : public std::enable_shared_from_this<chunk>, public serializable
@@ -36,7 +37,7 @@ public:
 	size_type getDSize();
 	size_type numCells();
 	coor getChunkCoor();
-	coorRange getChunkRange();
+	range getChunkRange();
 	void flush();
 
 protected:
@@ -52,8 +53,8 @@ protected:
 	virtual void referenceAllBufferToBlock();
 
 public:
-	virtual void bufferAlloc();
-	virtual void bufferAlloc(bufferSize size);
+	virtual void bufferAlloc();					// allocate new buffer accoring to the 'mSize' described in 'chunkDesc'
+	virtual void bufferAlloc(bufferSize size);	// allocate new buffer sized 'size' and replace 'mSize' in 'chunkDesc'
 	virtual void bufferCopy(void* data, bufferSize size);
 	virtual void bufferCopy(pChunk source);
 	virtual void bufferCopy(pBlock source);
@@ -63,6 +64,8 @@ public:
 
 protected:
 	pChunkBuffer getBuffer();
+
+	friend class chunkTester;
 
 protected:
 	pChunkBuffer cached_;	// hold materialized chunk
@@ -86,7 +89,7 @@ public:
 	//virtual blockId getBlockIdFromItemCoor(coor& itemCoor) = 0;
 	//virtual blockId getBlockIdFromBlockCoor(coor& blockCoor) = 0;
 	//virtual coor itemCoorToBlockCoor(coor& itemCoor) = 0;
-	virtual coor getBlockCoor(const blockId bId);
+	virtual coor blockId2blockCoor(const blockId bId);
 	virtual pBlockIterator getBlockIterator(
 		const iterateMode itMode = iterateMode::ALL) = 0;
 	void copyBlockBitmap(cpBitmap blockBitmap);
@@ -104,25 +107,13 @@ protected:
 //////////////////////////////
 public:
 	//virtual pChunkItemIterator getItemIterator() = 0;
-	//virtual pChunkItemRangeIterator getItemRangeIterator(const coorRange& range) = 0;
+	//virtual pChunkItemRangeIterator getItemRangeIterator(const range& range) = 0;
 
 //////////////////////////////
 // Print
 //////////////////////////////
 public:
 	void print();
-
-protected:
-	template <class Ty_>
-	void printImp()
-	{
-
-	}
-	template<>
-	void printImp<char>()
-	{
-
-	}
 
 //////////////////////////////
 // Serializable
@@ -152,10 +143,15 @@ protected:
 			//std::cout << this->version_ << ", " << this->bodySize_ << std::endl;
 		}
 	};
-
 public:
 	virtual void updateToHeader() override;
 	virtual void updateFromHeader() override;
+};
+
+class chunkTester
+{
+public:
+	static pChunkBuffer getBuffer(pChunk source);
 };
 }		// core
 }		// msdb

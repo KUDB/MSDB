@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <io/file.h>
-#include <io/io.h>
+#include <system/exceptions.h>
 
 namespace msdb
 {
@@ -8,10 +8,16 @@ namespace core
 {
 file::file(char const* path, int flags)
 {
-	_MSDB_TRY_IO_BEGIN
+	_MSDB_TRY_BEGIN
+	{
 		this->fs_.open(path, flags);
 		this->closed_ = false;
-	_MSDB_CATCH_IO_END
+	}
+	_MSDB_CATCH_ALL
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_IO_ERROR, MSDB_ER_ALL_IO_ERROR));
+	}
+	_MSDB_CATCH_END
 
 	if (!this->fs_)
 	{
@@ -34,12 +40,18 @@ int file::close()
 		return 0;
 	}
 
-	_MSDB_TRY_IO_BEGIN
+	_MSDB_TRY_BEGIN
+	{
 		this->fs_.close();
 		this->closed_ = true;
-	_MSDB_CATCH_IO_END
+	}
+	_MSDB_CATCH_ALL
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_IO_ERROR, MSDB_ER_ALL_IO_ERROR));
+	}
+	_MSDB_CATCH_END
 
-		return 0;
+	return 0;
 }
 
 bool file::isClosed()

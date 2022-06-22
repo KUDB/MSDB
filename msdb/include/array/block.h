@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BLOCK_H_
 #define _MSDB_BLOCK_H_
 
@@ -8,6 +8,7 @@
 #include <array/blockDesc.h>
 #include <io/bitstream.h>
 #include <util/logger.h>
+#include <io/iterator.h>
 
 namespace msdb
 {
@@ -32,8 +33,8 @@ public:
 	dimensionId getDSize();
 	//inline void setIsp(coor isp);
 	//inline void setIep(coor iep);
-	coorRange getBlockRange();
-	coorRange getBlockItemRange();
+	range getBlockRange();
+	range getBlockItemRange();
 	void setBlockDesc(const pBlockDesc inDesc);
 
 	virtual void serialize(bstream& os) = 0;
@@ -65,8 +66,15 @@ protected:
 // Item Iterators
 //////////////////////////////
 public:
+	// TODO
+	//[[deprecated("")]] 
 	virtual pBlockItemIterator getItemIterator() = 0;
-	virtual pBlockItemRangeIterator getItemRangeIterator(const coorRange& range) = 0;
+	// TODO
+	//[[deprecated("")]] 
+	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range) = 0;
+
+	virtual vpItemIterator getValueIterator() = 0;
+	virtual vpItemIterator getValueRangeIterator(const range& range) = 0;
 
 	void copyBitmap(cpBitmap itemBitmap);
 	void replaceBitmap(pBitmap itemBitmap);

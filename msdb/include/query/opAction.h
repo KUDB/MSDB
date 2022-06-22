@@ -43,6 +43,7 @@ protected:
 	parameters params_;
 
 	void threadCreate(size_t threadNums);
+	void threadCreate();
 	void threadStop();
 	void threadJoin();
 
@@ -52,6 +53,9 @@ protected:
 	std::shared_ptr<boost::asio::io_service> io_service_;
 	std::shared_ptr<boost::asio::io_service::work> work_;
 	boost::thread_group threadpool_;
+
+private:
+	static const int getDefaultThreadNum();
 };
 }		// core
 }		// msdb

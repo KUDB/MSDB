@@ -1,12 +1,15 @@
 #include <pch.h>
 #include <api_cpp/cpp_operators.h>
 #include <op/insert/insert_plan.h>
+#include <op/insert/insert_action.h>
 #include <op/save/save_plan.h>
 #include <op/load/load_plan.h>
 #include <op/between/between_plan.h>
 #include <op/copy_to_buffer/copy_to_buffer_plan.h>
 #include <op/naive_filter/naive_filter_plan.h>
+#include <op/index_filter/index_filter_plan.h>
 #include <op/build/build_plan.h>
+#include <op/consume/consume_plan.h>
 #include <array/dimensionDesc.h>
 #include <array/attributeDesc.h>
 
@@ -50,19 +53,36 @@ std::string AFLOperator::getStrStart()
 /* ************************ */
 /* Insert					*/
 /* ************************ */
-InsertOpr::InsertOpr(Array arr, std::string filePath)
-	: filePath_(filePath), AFLOperator(arr.getDesc())
+InsertOpr::InsertOpr(Array arr, core::parameters params, InsertOprType type)
+	: params_(params), type_(type), AFLOperator(arr.getDesc())
 {
 }
 std::shared_ptr<core::opPlan> InsertOpr::getPlan()
 {
 	auto qryPlan = std::make_shared<core::insert_plan>();
-
-	core::parameters params = {
-		std::make_shared<core::opParamArray>(this->getArrayDesc()),
-		std::make_shared<core::opParamString>(std::make_shared<std::string>(this->filePath_))
-	};
-	qryPlan->setParamSet(std::make_shared<core::insert_array_pset>(params));
+	
+	switch (this->type_)
+	{
+	case single_from_file:
+	{
+		qryPlan->setParamSet(std::make_shared<core::insert_array_file_pset>(this->params_));
+		break;
+	}
+	case multi_from_file:
+	{
+		qryPlan->setParamSet(std::make_shared<core::insert_array_multi_attr_file_pset>(this->params_));
+		break;
+	}
+	case multi_from_memory:
+	{
+		qryPlan->setParamSet(std::make_shared<core::insert_array_multi_attr_memory_pset>(this->params_));
+		break;
+	}
+	default:
+	{
+		// TODO::throw exception
+	}
+	}
 
 	return qryPlan;
 }
@@ -73,14 +93,99 @@ std::string InsertOpr::toString(int depth)
 	std::stringstream ss;
 	ss << AFLOperator::toString(depth) << strIndent << "Insert(" << std::endl;
 	ss << strChildIndent << "\"" <<this->getArrayDesc()->name_ << "\"" << std::endl;
-	ss << strChildIndent << "\"" << this->filePath_ << "\")";
+
+	switch (this->type_)
+	{
+	case single_from_file:
+	{
+		assert(this->params_[2]->type() == core::opParamType::STRING);
+		// File path
+		ss << strChildIndent << "\"" << std::static_pointer_cast<std::string>(this->params_[2]->getParam())->c_str() << "\")";
+		
+		break;
+	}
+	case multi_from_file:
+	{
+		// TODO::print parameters for multi attribute from file
+		//ss << strChildIndent << (int64_t)this->mem_.get() << std::endl;		// print pointer address
+		//ss << strChildIndent << this->size_ << ")";
+		break;
+	}
+	case multi_from_memory:
+	{
+		// TODO::print parameters for multi attribute from memory
+		break;
+	}
+	default:
+	{
+
+	}
+	}
+	// TODO:: switch case according to the type of params
+
+
+	ss << "\")";
 
 	return ss.str();
 }
 std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath)
 {
-	return std::make_shared<InsertOpr>(arr, filePath);
+	core::parameters params = {
+		std::make_shared<core::opParamArray>(arr.getDesc()),
+		std::make_shared<core::opParamEnum<core::opInsertType>>(core::opInsertType::FILE),
+		std::make_shared<core::opParamString>(std::make_shared<std::string>(filePath))
+	};
+
+	return std::make_shared<InsertOpr>(arr, params, InsertOprType::single_from_file);
 }
+// TODO::Insert multi-attribute from file
+std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_file_pset::containerType attrFiles)
+{
+	//core::parameters params = {
+	//	std::make_shared<core::opParamArray>(arr.getDesc()),
+	//	std::make_shared<core::opParamEnum>(std::make_shared<std::string>(core::opInsertTypeToString(core::opInsertType::FILE))),
+	//	std::make_shared<core::opParamContainer<
+	//		core::insert_array_multi_attr_file_pset::keyType, core::insert_array_multi_attr_file_pset::valueType>>(attrFiles)
+	//};
+
+	core::parameters params = {
+		std::make_shared<core::opParamArray>(arr.getDesc()),
+		std::make_shared<core::opParamEnum<core::opInsertType>>(core::opInsertType::FILE)
+	};
+
+	return std::make_shared<InsertOpr>(arr, params, InsertOprType::multi_from_file);
+}
+// TODO::Insert multi-attribute from memory
+std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_memory_pset::containerType attrMem)
+{
+	auto pMemAttrs = std::make_shared<core::insert_array_multi_attr_memory_pset::containerType>(attrMem);
+
+	core::parameters params = {
+		std::make_shared<core::opParamArray>(arr.getDesc()),
+		std::make_shared<core::opParamEnum<core::opInsertType>>(core::opInsertType::MEMORY),
+		std::make_shared<core::opParamContainer<
+			core::insert_array_multi_attr_memory_pset::keyType, core::insert_array_multi_attr_memory_pset::valueType>>(pMemAttrs)
+	};
+
+	//std::make_shared<core::opParamMemory>(mem),
+		//std::make_shared<core::opParamConst>(std:k:make_shared<core::stableElement>(&size, _ELE_DEFAULT_TYPE))
+
+	return std::make_shared<InsertOpr>(arr, params, InsertOprType::multi_from_memory);
+}
+//////////
+// Deprecated: OLD Synopsis that can insert only one attribute from memory.
+//
+//std::shared_ptr<InsertOpr> Insert(Array arr, std::shared_ptr<void> mem, int64_t size)
+//{
+//	core::parameters params = {
+//		std::make_shared<core::opParamArray>(arr.getDesc()),
+//		std::make_shared<core::opParamEnum>(std::make_shared<std::string>(core::opInsertTypeToString(core::opInsertType::MEMORY))),
+//		std::make_shared<core::opParamMemory>(mem),
+//		std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&size, _ELE_DEFAULT_TYPE))
+//	};
+//
+//	return std::make_shared<InsertOpr>(arr, params);
+//}
 
 /* ************************ */
 /* Save						*/
@@ -98,7 +203,6 @@ std::shared_ptr<core::opPlan> SaveOpr::getPlan()
 		std::make_shared<core::opParamPlan>(childQry_->getPlan())
 	};
 	qryPlan->setParamSet(std::make_shared<core::save_plan_pset>(params));
-
 	return qryPlan;
 }
 std::string SaveOpr::toString(int depth)
@@ -252,7 +356,7 @@ std::shared_ptr<BuildOpr> Build(const core::arrayId aid, const std::string name,
 	return std::make_shared<BuildOpr>(aid, name, outDims, outAttrs);
 }
 
-//BuildOpr& BuildOpr::AddAxis(id_t dimId, std::string axis, Coordinate dim, position_t chunkSize, position_t blockSize)
+//BuildOpr& BuildOpr::AddAxis(id_t dimId, std::string axis, Coordinates dim, position_t chunkSize, position_t blockSize)
 //{
 //	//arrDesc_->dimDescs_->push_back(std::make_shared<core::dimensionDesc>(dimId, axis, dim.getCoor().at(0), dim.getCoor().at(1), chunkSize, blockSize));
 //	//core::arrayMgr::instance()->setArrayDesc(arrDesc_->id_, arrDesc_);
@@ -314,6 +418,39 @@ std::shared_ptr<FilterOpr> Filter(std::shared_ptr<AFLOperator> qry, std::shared_
 	return std::make_shared<FilterOpr>(qry, std::make_shared<PredicateImpl>(std::make_shared<core::singlePredicate>(singleTerm->getTerm())));
 }
 
+IndexFilterOpr::IndexFilterOpr(std::shared_ptr<AFLOperator> qry, std::shared_ptr<PredicateImpl> pred)
+	: childQry_(qry), pred_(pred), AFLOperator(qry->getArrayDesc())
+{
+}
+std::shared_ptr<core::opPlan> IndexFilterOpr::getPlan()
+{
+	auto qryPlan = std::make_shared<core::index_filter_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+		std::make_shared<core::opParamPredicate>(this->pred_->getPredicate())
+	};
+	qryPlan->setParamSet(std::make_shared<core::index_filter_plan_pset>(params));
+
+	return qryPlan;
+}
+std::string IndexFilterOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "IndexFilter(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << "," << std::endl;
+	ss << strChildIndent << this->pred_->toString() << ")";
+
+	return ss.str();
+}
+std::shared_ptr<IndexFilterOpr> IndexFilter(std::shared_ptr<AFLOperator> qry, std::shared_ptr<TermImpl> singleTerm)
+{
+	return std::make_shared<IndexFilterOpr>(qry, std::make_shared<PredicateImpl>(std::make_shared<core::singlePredicate>(singleTerm->getTerm())));
+}
+
+
 /* ************************ */
 /* ToBuffer					*/
 /* ************************ */
@@ -345,5 +482,38 @@ std::string CopyToBufferOpr::toString(int depth)
 std::shared_ptr<CopyToBufferOpr> CopyToBuffer(std::shared_ptr<AFLOperator> qry)
 {
 	return std::make_shared<CopyToBufferOpr>(qry);
+}
+
+/* ************************ */
+/* Consume					*/
+/* ************************ */
+ConsumeOpr::ConsumeOpr(std::shared_ptr<AFLOperator> qry)
+	: childQry_(qry), AFLOperator(qry->getArrayDesc())
+{
+}
+std::shared_ptr<core::opPlan> ConsumeOpr::getPlan()
+{
+	auto qryPlan = std::make_shared<core::consume_plan>();
+
+	core::parameters params = {
+		std::make_shared<core::opParamPlan>(childQry_->getPlan())
+	};
+	qryPlan->setParamSet(std::make_shared<core::consume_plan_pset>(params));
+
+	return qryPlan;
+}
+std::string ConsumeOpr::toString(int depth)
+{
+	std::string strIndent = this->getIndentString(depth);
+	std::string strChildIndent = this->getIndentString(depth + 1);
+	std::stringstream ss;
+	ss << AFLOperator::toString(depth) << strIndent << "Consume(" << std::endl;
+	ss << this->childQry_->toString(depth + 1) << ")";
+
+	return ss.str();
+}
+std::shared_ptr<ConsumeOpr> Consume(std::shared_ptr<AFLOperator> qry)
+{
+	return std::make_shared<ConsumeOpr>(qry);
 }
 }		// msdb

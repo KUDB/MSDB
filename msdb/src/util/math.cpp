@@ -1,5 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <util/math.h>
+#include <system/exceptions.h>
 
 namespace msdb
 {
@@ -39,6 +40,10 @@ unsigned long long int abs_(unsigned long long int num) noexcept
 }
 int64_t intDivCeil(int64_t li, int64_t ri)
 {
+	if (!ri)
+	{
+		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_LOGIC_ERROR, MSDB_ER_DIVIDE_BY_ZERO));
+	}
 	return li / ri + (li % ri != 0);
 }
 

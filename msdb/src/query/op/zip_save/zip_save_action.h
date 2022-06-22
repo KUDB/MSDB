@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_ZIP_ENCODE_ACTION_H_
 #define _MSDB_OP_ZIP_ENCODE_ACTION_H_
 
 #include <pch.h>
 #include <query/opAction.h>
 #include <util/math.h>
-#include <compression/zipChunk.h>
+#include "zipChunk.h"
 
 namespace msdb
 {
@@ -22,7 +22,7 @@ public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 
 private:
-	pZipChunk makeOutChunk(pChunk inChunk);
+	//pZipChunk makeOutChunk(pChunk inChunk);
 };
 }		// core
 }		// msdb

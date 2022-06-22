@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/arrayDesc.h>
 #include <xml/xmlFile.h>
 
@@ -7,8 +7,8 @@ namespace msdb
 namespace core
 {
 arrayDesc::arrayDesc()
+	: id_(0), name_(""), dimDescs_(nullptr), attrDescs_(nullptr)
 {
-	// TODO::
 }
 
 arrayDesc::arrayDesc(const arrayId aid, const std::string arrayName,
@@ -33,6 +33,12 @@ arrayDesc::arrayDesc(const arrayDesc& mit)
 	{
 		this->attrDescs_->push_back(std::make_shared<attributeDesc>(*mit.attrDescs_->at(i)));
 	}
+}
+
+arrayDesc::arrayDesc(arrayDesc&& src) noexcept
+	: arrayDesc()
+{
+	swap(*this, src);
 }
 
 arrayDesc::~arrayDesc()
@@ -79,13 +85,9 @@ std::string arrayDesc::toString(std::string strIndent)
 
 	return ss.str();
 }
-size_t arrayDesc::getDSize()
-{
-	return this->dimDescs_->size();
-}
 
 /**
- * Save/load in XML file
+ * Save/ad in XML file
  */
 tinyxml2::XMLElement* arrayDesc::convertToXMLDoc(std::shared_ptr<tinyxml2::XMLDocument> doc)
 {
@@ -93,7 +95,7 @@ tinyxml2::XMLElement* arrayDesc::convertToXMLDoc(std::shared_ptr<tinyxml2::XMLDo
 
 	desc->SetAttribute(_MSDB_STR_ARR_ID_, this->id_);
 	desc->SetAttribute(_MSDB_STR_ARR_NAME_, this->name_.c_str());
-
+	
 	auto dimDescs = doc->NewElement(_MSDB_STR_DIMENSION_DESCS_);
 	auto attrDescs = doc->NewElement(_MSDB_STR_ATTRIBUTE_DESCS_);
 
@@ -120,7 +122,7 @@ std::shared_ptr<arrayDesc> arrayDesc::buildDescFromXML(std::shared_ptr<tinyxml2:
 
 		auto aid = nodeArrDesc->IntAttribute(_MSDB_STR_ARR_ID_);
 		auto arrName = xmlErrorHandler(nodeArrDesc->Attribute(_MSDB_STR_ARR_NAME_));
-
+		
 		auto dimDescs = buildDimensionDescsFromXML(nodeArrDesc);
 		auto attrDescs = buildAttributeDescsFromXML(nodeArrDesc);
 
@@ -160,30 +162,75 @@ pAttributeDescs arrayDesc::buildAttributeDescsFromXML(tinyxml2::XMLElement* node
 
 	return attrDescs;
 }
-bool arrayDesc::operator==(const arrayDesc& right_)
-{
-	if (this->id_ != right_.id_) return false;
-	if (this->name_ != right_.name_) return false;
 
-	pDimensionDescs leftDim = this->dimDescs_;
-	pDimensionDescs rightDim = right_.dimDescs_;
-	if (leftDim->size() != rightDim->size()) return false;
-	
-	for (int i = 0; i < leftDim->size(); i++)
+//////////////////////////////
+// Operators
+// ***************************
+// Assign
+arrayDesc& arrayDesc::operator=(const arrayDesc& src)
+{
+	std::cout << "arrayDesc& arrayDesc::operator=(const arrayDesc& src)" << std::endl;
+
+	if (this == &src)
 	{
-		if (!(*leftDim->at(i) == *rightDim->at(i))) return false;
+		return *this;
 	}
 
-	pAttributeDescs leftAttr = this->attrDescs_;
-	pAttributeDescs rightAttr = right_.attrDescs_;
-	if (leftAttr->size() != rightAttr->size()) return false;
+	arrayDesc temp(src);
+	swap(*this, temp);
+	return *this;
+}
+arrayDesc& arrayDesc::operator=(arrayDesc&& src) noexcept
+{
+	std::cout << "arrayDesc& arrayDesc::operator=(arrayDesc&& src) noexcept" << std::endl;
 
-	for (int i = 0; i < leftAttr->size(); i++)
+	arrayDesc temp(std::move(src));
+	swap(*this, temp);
+	return *this;
+}
+
+// ***************************
+// Friend
+bool operator== (const arrayDesc& lhs_, const arrayDesc& rhs_)
+{
+	if (lhs_.id_ != rhs_.id_)		return false;
+	if (lhs_.name_ != rhs_.name_)	return false;
+
+	// shared_ptr obj
+	if (lhs_.dimDescs_ != rhs_.dimDescs_)
 	{
-		if (!(*leftAttr->at(i) == *rightAttr->at(i))) return false;
+		if (lhs_.dimDescs_ == nullptr || rhs_.dimDescs_ == nullptr)	return false;
+		if(*(lhs_.dimDescs_) != *(rhs_.dimDescs_))					return false;
+	}
+
+	// shared_ptr obj
+	if (lhs_.attrDescs_ != rhs_.attrDescs_)
+	{
+		if (lhs_.attrDescs_ == nullptr || rhs_.attrDescs_ == nullptr)	return false;
+		if (*(lhs_.attrDescs_) != *(rhs_.attrDescs_))					return false;
 	}
 
 	return true;
+}
+bool operator!= (const arrayDesc& lhs_, const arrayDesc& rhs_)
+{
+	if (lhs_ == rhs_)
+		return false;
+
+	return true;
+}
+
+void swap(arrayDesc& first, arrayDesc& second) noexcept
+{
+	std::cout << "void swap(arrayDesc& first, arrayDesc& second) noexcept" << std::endl;
+
+	using std::swap;
+
+	swap(first.id_, second.id_);
+	swap(first.name_, second.name_);
+
+	swap(first.dimDescs_, second.dimDescs_);
+	swap(first.attrDescs_, second.attrDescs_);
 }
 }		// core
 }		// msdb

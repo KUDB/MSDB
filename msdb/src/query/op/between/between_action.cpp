@@ -1,8 +1,8 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/between/between_action.h>
 #include <array/arrayMgr.h>
-#include <array/blockChunk.h>
-#include <array/memBlockArray.h>
+#include <array/flattenChunk.h>
+#include <array/flattenArray.h>
 
 namespace msdb
 {
@@ -27,15 +27,15 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 
 	pArray inArr = inputArrays[0];
-	//pArray outArr = arrayMgr::instance()->makeArray<memBlockArray>(this->getArrayDesc());
-	pArray outArr = std::make_shared<memBlockArray>(this->getArrayDesc());
+	//pArray outArr = arrayMgr::instance()->makeArray<flattenArray>(this->getArrayDesc());
+	pArray outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	pCoor sp = std::static_pointer_cast<coor>(this->params_[1]->getParam());
 	pCoor ep = std::static_pointer_cast<coor>(this->params_[2]->getParam());
-	coorRange betweenRange(*sp, *ep);
+	range betweenRange(*sp, *ep);
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
-		auto chunkItr = inArr->getChunkIterator();
+		auto chunkItr = inArr->getChunkIterator(attr->id_);
 		while (!chunkItr->isEnd())
 		{
 			if(chunkItr->isExist())
@@ -48,10 +48,15 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 				if (chunkRange.isIntersect(betweenRange))
 				{
-					//std::cout << "Intersect" << std::endl;
+					/**
+					 * Intersect chunk
+					 *
+					 * Note: Do not copy blockBitmap from inChunk to outChunk.
+					 *       makeBlock() of the outChunk automatically set
+					 *       the exist block bit in its blockBitmap.
+					 */
 					auto outChunk = outArr->makeChunk(attr->id_, inChunk->getId());
 					outChunk->setChunkDesc(inChunk->getDesc());
-					outChunk->copyBlockBitmap(inChunk->getBlockBitmap());
 					outChunk->bufferCopy(inChunk);
 					//outChunk->bufferRef(inChunk);
 
@@ -94,7 +99,7 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	return outArr;
 }
 
-void between_action::betweenChunk(pChunk outChunk, pChunk inChunk, coorRange& betweenRange)
+void between_action::betweenChunk(pChunk outChunk, pChunk inChunk, range& betweenRange)
 {
 	auto blockItr = inChunk->getBlockIterator();
 	auto betweenRangeInChunk = betweenRange;
@@ -128,7 +133,7 @@ void between_action::fullyInsideChunk(pChunk outChunk, pChunk inChunk)
 {
 	outChunk->makeBlocks(*inChunk->getBlockBitmap());
 }
-void between_action::betweenBlock(pBlock outBlock, pBlock inBlock, coorRange& betweenRangeInChunk)
+void between_action::betweenBlock(pBlock outBlock, pBlock inBlock, range& betweenRangeInChunk)
 {
 	auto inDesc = inBlock->getDesc();
 	auto outDesc = outBlock->getDesc();
@@ -139,7 +144,7 @@ void between_action::betweenBlock(pBlock outBlock, pBlock inBlock, coorRange& be
 	outDesc->setIep(outDesc->getIep() - outDesc->getSp());
 	outBlock->initEmptyBitmap();
 
-	coorRange itRange(outDesc->getIsp(), outDesc->getIep());
+	range itRange(outDesc->getIsp(), outDesc->getIep());
 	auto iit = inBlock->getItemRangeIterator(itRange);
 	auto oit = outBlock->getItemRangeIterator(itRange);
 	

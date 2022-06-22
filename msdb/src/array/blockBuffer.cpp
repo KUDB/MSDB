@@ -18,15 +18,15 @@ blockBuffer::~blockBuffer()
 // WARNING:: data is deleted when the chunkBuffer is disappear in a destructor.
 void blockBuffer::refChunkBufferWithoutOwnership(void* data, bufferSize size)
 {
-	this->isAllocated_ = false;
+	this->isOwned_ = false;
 	this->data_ = data;
 	this->bodySize_ = size;
 }
-memBlockBuffer::memBlockBuffer(void* data, bufferSize size)
+flattenBlockBuffer::flattenBlockBuffer(void* data, bufferSize size)
 	: blockBuffer(data, size)
 {
 }
-memBlockBuffer::~memBlockBuffer()
+flattenBlockBuffer::~flattenBlockBuffer()
 {
 }
 }		// core

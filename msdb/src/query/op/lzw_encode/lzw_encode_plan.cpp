@@ -25,5 +25,11 @@ lzw_encode_array_pset::lzw_encode_array_pset(parameters& pSet)
 {
 
 }
+
+lzw_encode_plan_pset::lzw_encode_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
+{
+
+}
 }		// core
 }		// msdb

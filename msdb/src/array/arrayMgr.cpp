@@ -13,6 +13,7 @@ arrayMgr::arrayMgr()
 
 arrayMgr::~arrayMgr()
 {
+	this->saveAllArrayDesc();
 }
 
 bool arrayMgr::hasAttributeIndex(arrayId arrId, attributeId attrId)

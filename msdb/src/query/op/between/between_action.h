@@ -20,9 +20,9 @@ namespace core
 		pArray execute(std::vector<pArray>& inputArrays, pQuery q);
 
 	private:
-		void betweenChunk(pChunk outChunk, pChunk inChunk, coorRange& betweenRange);
+		void betweenChunk(pChunk outChunk, pChunk inChunk, range& betweenRange);
 		void fullyInsideChunk(pChunk outChunk, pChunk inChunk);
-		void betweenBlock(pBlock outBlock, pBlock inBlock, coorRange& betweenRangeInChunk);
+		void betweenBlock(pBlock outBlock, pBlock inBlock, range& betweenRangeInChunk);
 		void fullyInsideBlock(pBlock outBlock, pBlock inBlock);
 	};
 }		// core

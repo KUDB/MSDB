@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ARRAYDESC_H_
 #define _MSDB_ARRAYDESC_H_
 
@@ -15,6 +15,7 @@ namespace core
 #define _MSDB_STR_ARRAY_DESC_		"ARRAY_DESCRIPTION"
 #define _MSDB_STR_ARR_ID_			"ARRAY_ID"
 #define _MSDB_STR_ARR_NAME_			"ARRAY_NAME"
+#define _MSDB_STR_ARR_TYPE_			"ARRAY_TYPE"
 
 class arrayDesc;
 
@@ -26,14 +27,20 @@ public:
 	arrayDesc();
 	arrayDesc(const arrayId aid, const std::string arrayName, 
 			  pDimensionDescs dimDescs, pAttributeDescs attrDescs);
-	arrayDesc(const arrayDesc& mit);
+	arrayDesc(const arrayDesc& src);
+	arrayDesc(arrayDesc&& src) noexcept;
 	~arrayDesc();
+
+	friend void swap(arrayDesc& first, arrayDesc& second) noexcept;
 
 public:
 	pDimensionDescs getDimDescs();
 	pAttributeDescs getAttrDescs();
 	std::string toString(std::string strIndent = "");
-	size_t getDSize();
+	inline size_t getDSize()
+	{
+		return this->dimDescs_->size();
+	}
 
 	/**
 	 * Save/load in XML file
@@ -42,8 +49,18 @@ public:
 	static pArrayDesc buildDescFromXML(std::shared_ptr<tinyxml2::XMLDocument> doc);
 	static pDimensionDescs buildDimensionDescsFromXML(tinyxml2::XMLElement*);
 	static pAttributeDescs buildAttributeDescsFromXML(tinyxml2::XMLElement*);
+	
+public:
+	//////////////////////////////
+	// Operators
+	// ***************************
+	// Assign
+	arrayDesc& operator=(const arrayDesc& src);
+	arrayDesc& operator=(arrayDesc&& src) noexcept;
 
-	bool operator == (const arrayDesc& right_);
+	// ***************************
+	// Comparison
+	friend bool operator == (const arrayDesc& lhs_, const arrayDesc& rhs_);
 
 public:
 	arrayId id_;
@@ -52,6 +69,10 @@ public:
 	pDimensionDescs dimDescs_;
 	pAttributeDescs attrDescs_;
 };
+
+void swap(arrayDesc& first, arrayDesc& second) noexcept;
+bool operator == (const arrayDesc& lhs_, const arrayDesc& rhs_);
+bool operator!= (const arrayDesc& lhs_, const arrayDesc& rhs_);
 }		// core
 }		// msdb
 #endif	// _MSDB_ARRAYDESC_H_

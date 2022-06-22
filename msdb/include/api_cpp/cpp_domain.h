@@ -6,22 +6,23 @@
 
 namespace msdb
 {
-class Coordinate
+class Coordinates
 {
 public:
 	using Dty_ = int64_t;
 
 public:
-	Coordinate(std::vector<Dty_> vecInt);
+	//Coordinates(std::vector vecInt);
+	Coordinates(core::coordinates coor);
 
 public:
-	inline core::coordinate<Dty_> getCoor() const
+	inline core::coordinates getCoor() const
 	{
 		return this->coor_;
 	}
 
 private:
-	core::coordinate<Dty_> coor_;
+	core::coordinates coor_;
 };
 
 class Domain
@@ -30,20 +31,20 @@ public:
 	using Dty_ = int64_t;
 
 public:
-	Domain(Coordinate start, Coordinate end);
+	Domain(Coordinates start, Coordinates end);
 
 public:
-	inline core::coordinateRange<Dty_> getRange() const
+	inline core::range getRange() const
 	{
 		return this->range_;
 	}
 
-	inline core::coordinate<Dty_> getStart() const
+	inline core::coordinates getStart() const
 	{
 		return this->range_.getSp();
 	}
 
-	inline core::coordinate<Dty_> getEnd() const
+	inline core::coordinates getEnd() const
 	{
 		return this->range_.getEp();
 	}
@@ -51,7 +52,7 @@ public:
 	std::string toString();
 
 private:
-	core::coordinateRange<Dty_> range_;
+	core::range range_;
 };
 }		// msdb
 #endif	// _MSDB_CPP_DOMAIN_H_

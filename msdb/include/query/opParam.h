@@ -26,14 +26,18 @@ using pPlan = std::shared_ptr<opPlan>;
 enum class opParamType
 {
 	PLAN,
+	CONTAINER,
 	ARRAY,
 	ATTRIBUTE,
 	DIMENSION,
 	CONST_TYPE,
 	INTLIST,
+	STRING_LIST,
 	PREDICATE,
 	COOR,
 	STRING,
+	ENUM,
+	MEMORY
 };
 
 class opParam : public std::enable_shared_from_this<opParam>
@@ -79,6 +83,22 @@ public:
 
 private:
 	pAttributeDesc desc_;
+};
+
+class opParamStringList : public opParam
+{
+public:
+	using paramType = std::vector<std::string>;
+
+public:
+	opParamStringList(std::shared_ptr<std::vector<std::string>> strList);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	std::shared_ptr<std::vector<std::string>> strList_;
 };
 
 class opParamDim : public opParam
@@ -177,6 +197,47 @@ private:
 	std::shared_ptr<predicate> predicates_;
 };
 
+// Make 
+// std::shared_ptr<Ty> ptr(new Ty[10], std::default_delete<Ty[]>());
+class opParamMemory : public opParam
+{
+public:
+	using paramType = std::tuple<std::shared_ptr<void>, uint64_t>;
+
+public:
+	/////
+	// Default constructor
+	//
+	// default constructor is required to use the class in 'map' container with 'operator[]'
+	//
+	// data_type& operator[](const key_type& k)
+	// operator[] inserts the default object data_type()
+	opParamMemory();
+
+	/**
+	 * memSize: size of memory (== length * sizeof(Ty_))
+	 */
+	opParamMemory(std::shared_ptr<void> mem, const uint64_t memSize);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+	//inline uint64_t getMemsize()
+	//{
+	//	return this->size_;
+	//}
+
+private:
+	std::shared_ptr<void> mem_;
+	uint64_t size_;
+};
+
+template <typename Ty_>
+std::shared_ptr<Ty_> makeParamMemory(size_t bytes)
+{
+	return std::shared_ptr<Ty_>(new Ty_[bytes / sizeof(Ty_)], std::default_delete<Ty_[]>());
+}
+
 //////////////////////////////
 // Placeholder classes
 class opParamPlaceholder
@@ -268,6 +329,44 @@ public:
 public:
 	virtual opParamType type();
 };
+
+template <typename TyEnum_>
+class opParamEnum : public opParam
+{
+public:
+	using paramType = int64_t;
+
+public:
+	opParamEnum(TyEnum_ value);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	std::shared_ptr<TyEnum_> value_;
+};
+
+template <typename TyKey_, typename TyValue_>
+class opParamContainer : public opParam
+{
+public:
+	using paramType = std::map<TyKey_, TyValue_>;
+	using pContainer = std::shared_ptr<paramType>;
+
+public:
+	opParamContainer(pContainer container);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type();
+
+private:
+	pContainer container_;
+};
 }		// core
 }		// msdb
+
+#include "opParam.hpp"
+
 #endif	// _MSDB_OPPARAM_H_

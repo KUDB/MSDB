@@ -5,6 +5,8 @@
 #include <pch.h>
 #include <util/coordinate.h>
 #include <parse/term.h>
+#include <index/mmtNode.h>
+#include <index/compass.h>
 
 namespace msdb
 {
@@ -22,6 +24,8 @@ public:
 public:
 	virtual void setEvaluateFunc(eleType eType) = 0;
 	virtual bool evaluate(pItemItr iit) = 0;
+	virtual bool evaluateNode(pMmtNode node) = 0;
+	virtual bool evaluateCompassBin(pCompassBlockIndex) = 0;
 	virtual std::string toString() = 0;
 
 protected:
@@ -37,6 +41,8 @@ public:
 public:
 	virtual void setEvaluateFunc(eleType eType) override;
 	virtual bool evaluate(pItemItr iit) override;
+	virtual bool evaluateNode(pMmtNode node) override;
+	virtual bool evaluateCompassBin(pCompassBlockIndex bin) override;
 	virtual std::string toString();
 
 	template <typename Ty_>
@@ -45,10 +51,28 @@ public:
 		return this->lTerm->evaluate<Ty_>(iit);
 	}
 
+	template <typename Ty_>
+	bool evaluateNodeImpl(pMmtNode node)
+	{
+		return this->lTerm->evaluateNode<Ty_>(node);
+	}
+
+	template <typename Ty_>
+	bool evaluateBinImpl(pCompassBlockIndex bin)
+	{
+		return this->lTerm->evaluateCompassBin<Ty_>(bin);
+	}
+
 private:
 	typedef bool(singlePredicate::* eFunc)(pItemItr);
+	typedef bool(singlePredicate::* enFunc)(pMmtNode);
+	typedef bool(singlePredicate::* ebFunc)(pCompassBlockIndex);
 	eFunc findEvaluateFunc(eleType type);
+	enFunc findEvaluateNodeFunc(eleType type);
+	ebFunc findEvaluateBinFunc(eleType type);
 	bool (singlePredicate::* evaluateFunc)(pItemItr);
+	bool (singlePredicate::* evaluateNodeFunc)(pMmtNode);
+	bool (singlePredicate::* evaluateBinFunc)(pCompassBlockIndex);
 };
 
 class andPredicate : public predicate
@@ -59,6 +83,8 @@ public:
 public:
 	virtual void setEvaluateFunc(eleType eType) override;
 	virtual bool evaluate(pItemItr iit) override;
+	virtual bool evaluateNode(pMmtNode node) override;
+	virtual bool evaluateCompassBin(pCompassBlockIndex bin) override;
 	virtual std::string toString();
 
 	template <typename Ty_>
@@ -67,10 +93,28 @@ public:
 		return this->lTerm->evaluate<Ty_>(iit) && this->rTerm->evaluate<Ty_>(iit);
 	}
 
+	template <typename Ty_>
+	bool evaluateNodeImpl(pMmtNode node)
+	{
+		return this->lTerm->evaluateNode<Ty_>(node);
+	}
+
+	template <typename Ty_>
+	bool evaluateBinImpl(pCompassBlockIndex bin)
+	{
+		return this->lTerm->evaluateCompassBin<Ty_>(bin);
+	}
+
 private:
 	typedef bool(andPredicate::* eFunc)(pItemItr);
+	typedef bool(andPredicate::* enFunc)(pMmtNode);
+	typedef bool(andPredicate::* ebFunc)(pCompassBlockIndex);
 	eFunc findEvaluateFunc(eleType type);
+	enFunc findEvaluateNodeFunc(eleType type);
+	ebFunc findEvaluateBinFunc(eleType type);
 	bool (andPredicate::* evaluateFunc)(pItemItr);
+	bool (andPredicate::* evaluateNodeFunc)(pMmtNode);
+	bool (andPredicate::* evaluateBinFunc)(pCompassBlockIndex);
 };
 
 class orPredicate : public predicate
@@ -81,6 +125,8 @@ public:
 public:
 	virtual void setEvaluateFunc(eleType eType) override;
 	virtual bool evaluate(pItemItr iit) override;
+	virtual bool evaluateNode(pMmtNode node) override;
+	virtual bool evaluateCompassBin(pCompassBlockIndex bin) override;
 	virtual std::string toString();
 
 	template <typename Ty_>
@@ -89,10 +135,28 @@ public:
 		return this->lTerm->evaluate<Ty_>(iit) || this->rTerm->evaluate<Ty_>(iit);
 	}
 
+	template <typename Ty_>
+	bool evaluateNodeImpl(pMmtNode node)
+	{
+		return this->lTerm->evaluateNode<Ty_>(node);
+	}
+
+	template <typename Ty_>
+	bool evaluateBinImpl(pCompassBlockIndex bin)
+	{
+		return this->lTerm->evaluateCompassBin<Ty_>(bin);
+	}
+
 private:
 	typedef bool(orPredicate::* eFunc)(pItemItr);
+	typedef bool(orPredicate::* enFunc)(pMmtNode);
+	typedef bool(orPredicate::* ebFunc)(pCompassBlockIndex);
 	eFunc findEvaluateFunc(eleType type);
+	enFunc findEvaluateNodeFunc(eleType type);
+	ebFunc findEvaluateBinFunc(eleType type);
 	bool (orPredicate::* evaluateFunc)(pItemItr);
+	bool (orPredicate::* evaluateNodeFunc)(pMmtNode);
+	bool (orPredicate::* evaluateBinFunc)(pCompassBlockIndex);
 };
 }		// core
 }		// msdb

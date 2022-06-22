@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/array.h>
 #include <util/math.h>
 #include <util/logger.h>
@@ -7,35 +7,67 @@ namespace msdb
 {
 namespace core
 {
-arrayBase::arrayBase(pArrayDesc desc)
-	: chunkBitmap_()
+array::array(pArrayDesc desc)
+	: overallChunkBitmap_()
 {
 	this->desc_ = desc;
-	this->chunkBitmap_ = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
+	this->overallChunkBitmap_ = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
+	for (auto attr : *desc_->attrDescs_)
+	{
+		this->attrChunkBitmaps_[attr->id_] = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
+		this->chunks_[attr->id_] = chunkContainer();
+	}
+	//initChunkFactories();
 }
-arrayBase::~arrayBase()
+array::~array()
 {
-	//BOOST_LOG_TRIVIAL(debug) << "~arrayBase(): " << this->desc_->name_;
+	//BOOST_LOG_TRIVIAL(debug) << "~array(): " << this->desc_->name_;
+	this->flush();
 	this->chunks_.clear();
-	this->chunkBitmap_ = nullptr;
+	this->overallChunkBitmap_ = nullptr;
+	for (auto b : this->attrChunkBitmaps_)
+	{
+		b.second = nullptr;
+	}
 	this->desc_ = nullptr;
+	this->cFactories_.clear();
 }
-pArrayDesc arrayBase::getDesc()
+pArrayDesc array::getDesc()
 {
 	return this->desc_;
 }
-// TODO::required an attirubteId as an input parameter
-pChunkIterator arrayBase::getChunkIterator(const iterateMode itMode)
+
+pChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMode itMode)
 {
-	return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
-										   &this->chunks_, this->chunkBitmap_,
-										   itMode);
+	if (this->chunks_.find(attrId) != this->chunks_.end())
+	{
+		return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+											   &(this->chunks_[attrId]), this->overallChunkBitmap_,
+											   itMode);
+	}
+	_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "Fail to get chunkIterator (attrId: " + std::to_string(attrId) + ")"));
+
+
+	//return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+	//									   nullptr, this->overallChunkBitmap_,
+	//									   itMode);
+	
+	//return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+	//									   nullptr, std::make_shared<bitmap>(this->overallChunkBitmap_->getCapacity(), false),
+	//									   itMode);
+
 }
-arrayBase::size_type arrayBase::getNumChunks()
+pChunkFactory array::getChunkFactory(const attributeId& attrId)
 {
-	return this->chunks_.size();
+	assert(attrId < this->cFactories_.size());
+
+	return this->cFactories_[attrId];
 }
-coor arrayBase::itemCoorToChunkCoor(const coor& itemCoor)
+//array::size_type array::getNumChunks(const attributeId attrId)
+//{
+//	return this->chunks_[attrId].size();
+//}
+coor array::itemCoorToChunkCoor(const coor& itemCoor)
 {
 	coor chunkCoor(this->desc_->dimDescs_->size());
 	for (dimensionId d = 0; d < this->desc_->dimDescs_->size(); d++)
@@ -44,42 +76,85 @@ coor arrayBase::itemCoorToChunkCoor(const coor& itemCoor)
 	}
 	return chunkCoor;
 }
-pChunk arrayBase::insertChunk(const attributeId attrId, pChunk inputChunk)
+pChunk array::insertChunk(pChunk inputChunk)
 {
+	const auto attrId = inputChunk->getDesc()->attrDesc_->id_;
 	assert(attrId < this->desc_->attrDescs_->size());
-	this->chunks_.insert(chunkPair(inputChunk->getId(), inputChunk));
-	this->chunkBitmap_->setExist(inputChunk->getId());
+	
+	this->chunks_[attrId].insert(chunkPair(inputChunk->getId(), inputChunk));
+	this->setChunkExist(attrId, inputChunk->getId());
 	return inputChunk;
 }
 
-void arrayBase::flush()
+void array::flush()
 {
-
+	try
+	{
+		for (auto attr : *this->getDesc()->attrDescs_)
+		{
+			auto cit = this->getChunkIterator(attr->id_);
+			while (!cit->isEnd())
+			{
+				if (cit->isExist())
+				{
+					this->freeChunk(attr->id_, cit->seqPos());
+				}
+				++(*cit);
+			}
+			this->chunks_[attr->id_].clear();
+		}
+	}
+	catch (msdb_exception e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Fail array::flush()";
+		BOOST_LOG_TRIVIAL(error) << e.what();
+	}
+	catch (std::exception e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Fail array::flush()";
+		BOOST_LOG_TRIVIAL(error) << e.what();
+	}
+	catch (...)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Fail array::flush()";
+	}
+	
+	this->chunks_.clear();
 }
 
-pChunk arrayBase::makeChunk(const chunkDesc& desc)
+pChunk array::makeChunk(const attributeId attrId, const chunkId cId)
 {
-	return this->makeChunk(desc.attrDesc_->id_, desc.id_);
+	return this->makeChunk(this->getChunkDesc(attrId, cId));
+	// TODO:: this->insertChunk(chunkObj);
 }
 
-void arrayBase::makeChunks(const attributeId attrId, const bitmap& input)
+pChunk array::makeChunk(pChunkDesc desc)
 {
-	chunkId capacity = this->getChunkIterator()->getCapacity();
+	auto chunkObj = this->getChunkFactory(desc->attrDesc_->id_)->requestNewChunk(desc);
+	this->insertChunk(chunkObj);
+
+	return chunkObj;
+}
+
+void array::makeChunks(const attributeId attrId, const bitmap& input)
+{
+	chunkId capacity = this->getChunkIterator(attrId)->getCapacity();
 	for(chunkId cid = 0; cid < capacity; ++cid)
 	{
-		if(input.isExist(cid) && !this->chunkBitmap_->isExist(cid))
+		if(input.isExist(cid) && !this->attrChunkBitmaps_[attrId]->isExist(cid))
 		{
-			this->makeChunk(attrId, cid);
+			auto chunkObj = this->makeChunk(attrId, cid);
+			this->insertChunk(chunkObj);
 		}
 	}
 }
 
-pChunkDesc arrayBase::getChunkDesc(const attributeId attrId, const chunkId cId)
+pChunkDesc array::getChunkDesc(const attributeId attrId, const chunkId cId)
 {
 	dimension chunkDims = this->desc_->getDimDescs()->getChunkDims();
 	dimension blockDims = this->desc_->getDimDescs()->getBlockDims();
 	pAttributeDesc attrDesc = (*this->desc_->getAttrDescs())[attrId];
-	auto cItr = this->getChunkIterator();
+	auto cItr = this->getChunkIterator(attrId);
 	coor chunkCoor = cItr->seqToCoor(cId);
 	dimension sp = chunkDims * chunkCoor;
 	dimension ep = sp + chunkDims;
@@ -91,37 +166,38 @@ pChunkDesc arrayBase::getChunkDesc(const attributeId attrId, const chunkId cId)
 									   chunkDims.area() * attrDesc->typeSize_);
 }
 
-pChunk arrayBase::getChunk(const chunkId cId)
+pChunk array::getChunk(const attributeId attrId, const chunkId cId)
 {
-	return this->chunks_[cId];
+	assert(this->chunks_.find(attrId) != this->chunks_.end());
+	return this->chunks_[attrId][cId];
 }
 
-arrayId arrayBase::getId()
+arrayId array::getId()
 {
 	return this->desc_->id_;
 }
 
-void arrayBase::setId(const arrayId id)
+void array::setId(const arrayId id)
 {
 	this->desc_->id_ = id;
 }
 
-chunkId arrayBase::getChunkId(pChunkDesc cDesc)
+chunkId array::getChunkId(pChunkDesc cDesc)
 {
-	return this->getChunkIdFromItemCoor(cDesc->sp_);
+	return this->itemCoorToChunkId(cDesc->sp_);
 }
 
-chunkId arrayBase::getChunkIdFromItemCoor(const coor& itemCoor)
+chunkId array::itemCoorToChunkId(const coor& itemCoor)
 {
 	coor chunkCoor = itemCoor;
 	for (dimensionId d = this->desc_->dimDescs_->size() - 1; d != -1; --d)
 	{
 		chunkCoor[d] /= this->desc_->dimDescs_->at(d)->chunkSize_;
 	}
-	return this->getChunkIdFromChunkCoor(chunkCoor);
+	return this->chunkCoorToChunkId(chunkCoor);
 }
 
-chunkId arrayBase::getChunkIdFromChunkCoor(const coor& chunkCoor)
+chunkId array::chunkCoorToChunkId(const coor& chunkCoor)
 {
 	chunkId id = 0;
 	chunkId offset = 1;
@@ -132,42 +208,65 @@ chunkId arrayBase::getChunkIdFromChunkCoor(const coor& chunkCoor)
 	}
 	return id;
 }
-cpBitmap arrayBase::getChunkBitmap() const
+void array::freeChunk(const attributeId attrId, const chunkId cId)
 {
-	return this->chunkBitmap_;
-}
-void arrayBase::copyChunkBitmap(cpBitmap chunkBitmap)
-{
-	this->chunkBitmap_ = std::make_shared<bitmap>(*chunkBitmap);
-}
-void arrayBase::replaceChunkBitmap(pBitmap chunkBitmap)
-{
-	this->chunkBitmap_ = chunkBitmap;
-}
-void arrayBase::mergeChunkBitmap(pBitmap chunkBitmap)
-{
-	this->chunkBitmap_->andMerge(*chunkBitmap);
-}
-void arrayBase::print()
-{
-	auto cit = this->getChunkIterator();
-
-	while (!cit->isEnd())
+	assert(this->chunks_.find(attrId) != this->chunks_.end());
+	_MSDB_TRY_BEGIN
 	{
-		if(cit->isExist())
+		if (this->chunks_[attrId][cId] != nullptr)
 		{
-			BOOST_LOG_TRIVIAL(debug) << "==============================\n";
-			BOOST_LOG_TRIVIAL(trace) << "Chunk (" << cit->seqPos() << ") exist\n";
-			(**cit)->print();
-			BOOST_LOG_TRIVIAL(debug) << "==============================\n";
-		}else
-		{
-			//BOOST_LOG_TRIVIAL(trace) << "==============================\n";
-			//BOOST_LOG_TRIVIAL(trace) << "Chunk (" << cit->seqPos() << ") is not exist\n";
-			//BOOST_LOG_TRIVIAL(trace) << "==============================\n";
+			this->chunks_[attrId][cId]->flush();
+			this->chunks_[attrId][cId] = nullptr;
 		}
-		
-		++(*cit);
+		this->setChunkNull(attrId, cId);
+	}_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "freeChunk(" << attrId << ", " << cId << ") error";
+	}
+
+	//this->chunks_[cId] = nullptr;dkddkd
+	//this->overallChunkBitmap_->setNull(cId);
+}
+cpBitmap array::getChunkBitmap() const
+{
+	return this->overallChunkBitmap_;
+}
+void array::copyChunkBitmap(cpBitmap chunkBitmap)
+{
+	this->overallChunkBitmap_ = std::make_shared<bitmap>(*chunkBitmap);
+}
+void array::replaceChunkBitmap(pBitmap chunkBitmap)
+{
+	this->overallChunkBitmap_ = chunkBitmap;
+}
+void array::mergeChunkBitmap(pBitmap chunkBitmap)
+{
+	this->overallChunkBitmap_->andMerge(*chunkBitmap);
+}
+void array::print()
+{
+	for (auto attr : *this->getDesc()->attrDescs_)
+	{
+		auto cit = this->getChunkIterator(attr->id_);
+
+		while (!cit->isEnd())
+		{
+			if (cit->isExist())
+			{
+				BOOST_LOG_TRIVIAL(debug) << "==============================\n";
+				BOOST_LOG_TRIVIAL(trace) << "Chunk (" << cit->seqPos() << ") exist\n";
+				(**cit)->print();
+				BOOST_LOG_TRIVIAL(debug) << "==============================\n";
+			}
+			else
+			{
+				//BOOST_LOG_TRIVIAL(trace) << "==============================\n";
+				//BOOST_LOG_TRIVIAL(trace) << "Chunk (" << cit->seqPos() << ") is not exist\n";
+				//BOOST_LOG_TRIVIAL(trace) << "==============================\n";
+			}
+
+			++(*cit);
+		}
 	}
 }
 }		// core

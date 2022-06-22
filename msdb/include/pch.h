@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _MSDB_PCH_H_
 #define _MSDB_PCH_H_
@@ -33,6 +33,9 @@
 #include <chrono>
 #include <mutex>
 
+// C++17
+#include <variant>
+
 ////////////////////////////////////////
 // BOOST LIBRARY
 //
@@ -55,6 +58,10 @@
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/lexical_cast.hpp>
+
+// For error handler
+#include <boost/exception/diagnostic_information.hpp> 
+#include <boost/exception_ptr.hpp> 
 
 // For zip compression
 #include <boost/iostreams/filtering_stream.hpp>

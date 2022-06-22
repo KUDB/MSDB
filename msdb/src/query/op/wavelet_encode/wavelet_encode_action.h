@@ -1,14 +1,15 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_WAVELET_ENCODE_ACTION_H_
 #define _MSDB_OP_WAVELET_ENCODE_ACTION_H_
 
 #include <pch.h>
 #include <compression/wavelet.h>
-#include <compression/wtChunk.h>
+#include <op/wavelet_encode/wtChunk.h>
 #include <query/opAction.h>
 #include <util/math.h>
 #include <vector>
 #include <list>
+#include <util/dataType.h>
 
 namespace msdb
 {
@@ -24,30 +25,50 @@ public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery q);
 
 private:
+	// pWavelet w, const size_t maxLevel
 	template <class Ty_>
-	void attributeEncode(pArray outArr, pArray inArr, pAttributeDesc attrDesc,
-						 pWavelet w, size_t maxLevel, pQuery q)
+	void attributeEncode(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc,
+						 pQuery q)
 	{
-		auto cItr = inArr->getChunkIterator();
+		pWavelet w = std::make_shared<wavelet>(this->waveletName_.c_str());
+		size_t maxLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
+
+		auto cItr = inArr->getChunkIterator(attrDesc->id_);
 		auto dSize = cItr->dSize();
 		auto cSize = cItr->getSeqEnd();
 
 		while(!cItr->isEnd())
 		{
-			// --------------------
-			// TODO::PARALLEL
-			auto convertedChunkList = this->chunkEncode<Ty_>((**cItr), w, maxLevel, q);
-			// --------------------
-			for(auto chk : convertedChunkList)
+			if (cItr->isExist())
 			{
-				auto cid = outArr->getChunkIdFromChunkCoor(chk->getDesc()->chunkCoor_);
-				chk->setId(cid);
+				// --------------------
+				// TODO::PARALLEL
+				auto convertedChunkList = this->chunkEncode<Ty_>((**cItr), w, maxLevel, q);
+				// --------------------
+				for (auto chk : convertedChunkList)
+				{
+					auto cid = outArr->chunkCoorToChunkId(chk->getDesc()->chunkCoor_);
+					chk->setId(cid);
+				}
+
+				outArr->insertChunk(attrDesc->id_, convertedChunkList.begin(), convertedChunkList.end());
 			}
 
-			outArr->insertChunk(attrDesc->id_, convertedChunkList.begin(), convertedChunkList.end());
 			++(*cItr);
 		}
 	}
+
+	template <>
+	void attributeEncode(const concreteTy<float>& type, 
+						 pArray outArr, pArray inArr, 
+						 pAttributeDesc attrDesc, pQuery q)
+	{}
+
+	template <>
+	void attributeEncode(const concreteTy<double>& type,
+						 pArray outArr, pArray inArr,
+						 pAttributeDesc attrDesc, pQuery q)
+	{}
 
 	template <class Ty_>
 	std::list<pChunk> chunkEncode(pChunk inChunk,
@@ -82,14 +103,14 @@ private:
 		outChunkDesc->ep_ = inChunkDesc->sp_ + inBlockDesc->getEp();		// csp + bep
 		outChunkDesc->mSize_ = inBlockDesc->mSize_;
 
-		pWtChunk outChunk = std::make_shared<wtChunk>(outChunkDesc);
+		auto outChunk = std::make_shared<wtChunk<Ty_>>(outChunkDesc);
 		outChunk->makeAllBlocks();
 		outChunk->setLevel(maxLevel);
 		outChunk->bufferCopy(inBlock);
 
 		for (size_t level = 0; level <= maxLevel; ++level)
 		{
-			coorRange arrRange = outChunkDesc->blockDims_ / pow(2, level);
+			range arrRange = outChunkDesc->blockDims_ / pow(2, level);
 			this->levelEncode<Ty_>(outChunk, arrRange, w, level, q);
 #ifndef NDEBUG
 			//BOOST_LOG_TRIVIAL(trace) << "wtEncode level: " << level;
@@ -100,7 +121,7 @@ private:
 	}
 
 	template <class Ty_>
-	void levelEncode(pChunk outChunk, coorRange& arrRange, 
+	void levelEncode(pChunk outChunk, range& arrRange, 
 					 pWavelet w, size_t level, pQuery q)
 	{
 		dimensionId dSize = outChunk->getDSize();
@@ -116,9 +137,11 @@ private:
 
 	template <class Ty_>
 	void dimensionEncode(pChunk outChunk, 
-						 coorRange& arrRange, dimensionId basisDim,
+						 range& arrRange, dimensionId basisDim,
 						 pWavelet w, pQuery q)
 	{
+		Ty_ signMask = 0x1 << (sizeof(Ty_) * CHAR_BIT - 1);
+
 		size_t length = arrRange.getEp()[basisDim];
 		size_t halfLength = length / 2;
 		bool oddLength = (length % 2) != 0;
@@ -157,8 +180,25 @@ private:
 				Ty_ x1 = (**iit).get<Ty_>();
 				++(*iit);
 
+				///// >> 220526 SIGNED MOD << /////
 				row[di] = x1 - x0;
-				row[ai] = x0 + std::floor(row[di] / 2.0);
+				if (row[di] & signMask)
+				{
+					row[ai] = x0 - std::floor((Ty_)(~row[di] + 1) / 2.0);
+				}
+				else
+				{
+					row[ai] = x0 + std::floor(row[di] / 2.0);
+				}
+				//if (row[ai] == 127 || row[di] == 127)
+				//{
+				//	std::cout << "";
+				//}
+				///// >> 220526 SIGNED ORI << /////
+				//row[di] = x1 - x0;
+				//row[ai] = x0 + std::floor(row[di] / 2.0);
+				///// -- 220526 SIGNED END -- /////
+
 			}
 
 			for(size_t ai = 0, di = halfLength; ai < halfLength; ++ai, ++di)

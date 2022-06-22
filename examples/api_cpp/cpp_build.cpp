@@ -1,7 +1,7 @@
 #include <iostream>
 #include <api_cpp/cpp_context.h>
 #include <api_cpp/msdb.h>
-#include <dummy/dummy.h>
+#include <dummy.h>
 
 int main()
 {

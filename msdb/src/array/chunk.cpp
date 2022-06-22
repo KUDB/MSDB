@@ -1,6 +1,6 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/chunk.h>
-#include <array/memChunkBuffer.h>
+#include <array/monoChunkBuffer.h>
 #include <util/logger.h>
 
 namespace msdb
@@ -19,6 +19,9 @@ chunk::chunk(pChunkDesc desc)
 chunk::~chunk()
 {
 	this->freeBuffer();
+	this->blockBitmap_ = nullptr;
+	this->blockCapacity_ = 0;
+	this->desc_ = nullptr;
 }
 
 void chunk::referenceAllBufferToBlock()
@@ -163,27 +166,29 @@ coor chunk::getChunkCoor()
 	return this->desc_->chunkCoor_;
 }
 
-coorRange chunk::getChunkRange()
+range chunk::getChunkRange()
 {
-	return coorRange(this->desc_->sp_, this->desc_->ep_);
+	return range(this->desc_->sp_, this->desc_->ep_);
 }
 
 void chunk::flush()
 {
-	this->freeBuffer();
+	_MSDB_TRY_BEGIN
+	{
+		this->freeBuffer();
+	}_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "chunk::flush() error";
+	}
 }
 
 void chunk::freeBuffer()
 {
-	if (this->isMaterialized())
+	if (this->isMaterialized() && this->cached_ != nullptr)
 	{
-		if(this->cached_ != nullptr)
-		{
-			this->cached_->free();
-		}
-
-		this->cached_ = nullptr;
+		this->cached_->free();
 	}
+	this->cached_ = nullptr;
 }
 
 void chunk::makeBlocks(const bitmap& blockBitmap)
@@ -231,7 +236,7 @@ pBlockDesc chunk::getBlockDesc(const blockId bId)
 {
 	pAttributeDesc attrDesc = this->desc_->attrDesc_;
 	dimension blockDims = this->desc_->getBlockDims();
-	coor blockCoor = this->getBlockCoor(bId);
+	coor blockCoor = this->blockId2blockCoor(bId);
 	coor sp = blockCoor * blockDims;
 	coor ep = sp + blockDims;
 
@@ -256,9 +261,17 @@ void chunk::updateFromHeader()
 {
 	auto curHeader = std::static_pointer_cast<chunkHeader>(this->getHeader());
 	this->setSerializedSize(curHeader->bodySize_);
-	this->bufferAlloc();
+	// 220518 Changed, allocate new buffer if there is no buffer assigned
+	auto buf = this->getBuffer();
+	if (buf == nullptr || buf->size() < this->serializedSize_)
+	{
+		assert(buf == nullptr || buf->isOwned() == true);
+		this->bufferAlloc();
+	}
+
+
 }
-coor chunk::getBlockCoor(const blockId bId)
+coor chunk::blockId2blockCoor(const blockId bId)
 {
 	return this->getBlockIterator()->seqToCoor(bId);
 }
@@ -277,6 +290,10 @@ void chunk::mergeBlockBitmap(pBitmap blockBitmap)
 pBitmap chunk::getBlockBitmap()
 {
 	return this->blockBitmap_;
+}
+pChunkBuffer chunkTester::getBuffer(pChunk source)
+{
+	return source->getBuffer();
 }
 //cpBitmap chunk::getBlockBitmap() const
 //{

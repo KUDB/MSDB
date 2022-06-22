@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/zip_save/zip_save_plan.h>
 #include <op/zip_save/zip_save_action.h>
 
@@ -11,7 +11,7 @@ zip_save_plan::zip_save_plan()
 }
 const char* zip_save_plan::name()
 {
-	return "zip_save_plan";
+	return "zip_save";
 }
 pAction zip_save_plan::makeAction()
 {
@@ -19,12 +19,16 @@ pAction zip_save_plan::makeAction()
 }
 
 //////////////////////////////
-// pset
+// ParamSets
 zip_save_array_pset::zip_save_array_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
 {
 	assert(this->params_.size() == 1);
-	assert(this->params_[0]->type() == opParamType::ARRAY);			// Source array
+}
+zip_save_plan_pset::zip_save_plan_pset(parameters& pSet)
+	: opPlanParamSet(pSet)
+{
+	assert(this->params_.size() == 1);
 }
 }		// core
 }		// msdb

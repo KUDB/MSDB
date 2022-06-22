@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/arrayMgr.h>
 #include <query/query.h>
 #include <api_cpp/cpp_array.h>
@@ -40,10 +40,10 @@ void printResultArray(ResultArray& ra)
 
 	for (int i = 0; i < dimBuffer->size(); ++i)
 	{
-		std::cout << dimBuffer->at(i).toString() << ": " << static_cast<int>(attr_01_buffer->at(i)) << std::endl;
+		BOOST_LOG_TRIVIAL(info) << dimBuffer->at(i).toString() << ": " << static_cast<int>(attr_01_buffer->at(i)) << std::endl;
 	}
 	ra.close();
-	std::cout << std::endl;
+	BOOST_LOG_TRIVIAL(info) << std::endl;
 }
 
 DefDimension::DefDimension(std::string name, uint64_t start, uint64_t end, uint64_t chunkSize, uint64_t blockSize)
@@ -55,10 +55,26 @@ std::shared_ptr<core::dimensionDesc> DefDimension::getDesc()
 {
 	return this->dimDesc_;
 }
-DefAttribute::DefAttribute(std::string name, core::eleType type)
-	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type))
-{
-}
+
+// attribute id will be specified in 'build' operator of cpp_api
+DefAttribute::DefAttribute(const std::string name, const core::dataType type,
+						   const core::materializedType matType,
+						   const std::map<std::string, std::string> optionalParams)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, core::compressionType::NONE, optionalParams))
+{}
+
+DefAttribute::DefAttribute(const std::string name, const core::dataType type,
+						   const core::compressionType compType,
+						   const std::map<std::string, std::string> optionalParams)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, core::materializedType::FLATTEN, compType, optionalParams))
+{}
+
+DefAttribute::DefAttribute(const std::string name, const core::dataType type,
+						   const core::materializedType matType, const core::compressionType compType,
+						   const std::map<std::string, std::string> optionalParams)
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, compType, optionalParams))
+{}
+
 std::shared_ptr<core::attributeDesc> DefAttribute::getDesc()
 {
 	return this->attrDesc_;

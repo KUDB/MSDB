@@ -1,9 +1,9 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <query/opPlan.h>
 #include <util/logger.h>
 #include <query/query.h>
 #include <array/arrayMgr.h>
-#include <array/memBlockArray.h>
+#include <array/flattenArray.h>
 
 namespace msdb
 {
@@ -85,12 +85,36 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 	}
 	else
 	{
-		inArr.push_back(arrayMgr::instance()->makeArray<memBlockArray>(this->inferSchema()));
+		inArr.push_back(arrayMgr::instance()->makeArray<flattenArray>(this->inferSchema()));
 	}
 
-	auto outArr = this->getAction()->execute(inArr, qry);
-	qry->setArrayDesc(outArr->getDesc());
-	return outArr;
+	try
+	{
+		auto outArr = this->getAction()->execute(inArr, qry);
+
+		// TODO::Remove //
+		if (qry->isVerbose())
+		{
+			auto cit = outArr->getChunkIterator(0);
+			for (int i = 0; i < 0; ++i)
+			{
+				cit->next();
+			}
+			(**cit)->print();
+			//outArr->print();
+		}
+		// TODO::Remove //
+
+		qry->setArrayDesc(outArr->getDesc());
+		return outArr;
+	}
+	catch (...)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n";
+		throw;
+	}
+
+	return nullptr;
 }
 void opPlan::setParentPlan(pPlan parentPlan)
 {

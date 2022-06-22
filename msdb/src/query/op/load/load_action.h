@@ -1,4 +1,4 @@
- #pragma once
+#pragma once
 #ifndef _MSDB_OP_LOAD_ACTION_H_
 #define _MSDB_OP_LOAD_ACTION_H_
 

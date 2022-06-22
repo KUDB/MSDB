@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CHUNKBUFFER_H_
 #define _MSDB_CHUNKBUFFER_H_
 

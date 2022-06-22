@@ -10,8 +10,8 @@ namespace msdb
 {
 namespace core
 {
-	template <typename Dty_, typename Ty_>
-	class waveletIterator : public coorIterator<Dty_, Ty_>
+	template <typename Ty_>
+	class waveletIterator : public coorIterator<Ty_>
 	{
 	public:
 		using self_type = waveletIterator<Dty_, Ty_>;
@@ -131,7 +131,7 @@ namespace core
 			}
 		}
 
-		virtual void moveTo(const coordinate<Dty_>& coor)
+		virtual void moveTo(const coordinates& coor)
 		{
 			if (this->dSize_ != coor.size())
 			{
@@ -194,11 +194,11 @@ namespace core
 
 			if (adjustCoor && !isInside(this->coor(), this->bsP_, this->beP_))
 			{
-				this->moveTo(coordinate<Dty_>(this->dSize_, this->bsP_));
+				this->moveTo(coordinates(this->dSize_, this->bsP_));
 			}
 		}
 
-		void setCurCoor(const coordinate<Dty_>& coor)
+		void setCurCoor(const coordinates& coor)
 		{
 			for (dim_type d = 0; d < this->dSize_; d++)
 			{
@@ -216,7 +216,7 @@ namespace core
 			return this->curLevel_;
 		}
 
-		bool isInside(const coordinate<Dty_>& coor, dim_type* sP, dim_type* eP)
+		bool isInside(const coordinates& coor, dim_type* sP, dim_type* eP)
 		{
 			for (size_type d = 0; d < coor.size(); d++)
 			{
@@ -235,7 +235,7 @@ namespace core
 			assert(this->curLevel_ > 0);
 			assert(this->curBand_ != 0 || (this->curBand_ == 0 && this->curLevel_ == this->maxLevel_));
 
-			coordinate<Dty_> newCoor(this);
+			coordinates newCoor(this);
 			if (this->curBand_ == 0)
 			{
 				size_type odd = 0;
@@ -274,7 +274,7 @@ namespace core
 			size_type next = cur + 1;
 			assert(next != pow(2, this->dSize_));
 
-			coordinate<Dty_> newCoor(this);
+			coordinates newCoor(this);
 			for (size_type d = this->dSize_ - 1; d + 1 > 0; d--)
 			{
 				newCoor[d] = ((next % 2) - (cur % 2));
@@ -324,7 +324,7 @@ namespace core
 				this->setCurBand(this->curBand_ + 1, false);
 			}
 
-			this->moveTo(coordinate<Dty_>(this->dSize_, this->bsP_));
+			this->moveTo(coordinates(this->dSize_, this->bsP_));
 		}
 
 		void moveToPrevBand()
@@ -346,7 +346,7 @@ namespace core
 				this->curBand_--;
 			}
 
-			this->moveTo(coordinate<Dty_>(this->dSize_, this->beP_));
+			this->moveTo(coordinates(this->dSize_, this->beP_));
 		}
 
 		inline void moveDimCoor(const size_type dim, const Dty_ coor, const Dty_ offset)
@@ -464,7 +464,7 @@ namespace core
 			return seq;
 		}
 
-		virtual size_type posToSeq(const coordinate<Dty_>& coor)
+		virtual size_type posToSeq(const coordinates& coor)
 		{
 			size_type seq = 0;
 			size_type offset = 1;
@@ -486,7 +486,7 @@ namespace core
 			return seq;
 		}
 
-		virtual size_type findLevel(const coordinate<Dty_>& coor)
+		virtual size_type findLevel(const coordinates& coor)
 		{
 			size_type level = 0;
 			dim_type* levelBoundary;
@@ -511,7 +511,7 @@ namespace core
 			return level;
 		}
 
-		virtual size_type findBand(const coordinate<Dty_>& coor, size_type level)
+		virtual size_type findBand(const coordinates& coor, size_type level)
 		{
 			size_type band = 0;
 			dim_type* curBandDim = this->getBandDims(level);
