@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_SINGLETON_H_
 #define _MSDB_SINGLETON_H_
 

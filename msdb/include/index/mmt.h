@@ -211,7 +211,24 @@ public:
 
 	nodeItr getNodeIterator(size_type level)
 	{
-		return nodeItr(this->nodes_[level].data(), this->dSize_, this->nodeSpace_[level].data());
+		try
+		{
+			return nodeItr(this->nodes_.at(level).data(), this->dSize_, this->nodeSpace_.at(level).data());
+		}
+		catch (const std::out_of_range& e)
+		{
+			BOOST_LOG_TRIVIAL(error) << "No HMMT Level MMT::getNodeIterator(level: " << level << ")::" << e.what();
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_TREE_INDEX_OUT_OF_RANGE,
+				std::string("No HMMT Level MMT::getNodeIterator(level: ") + std::to_string(level) + std::string(")") + std::string(e.what())));
+		}
+		catch (...)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Unknown Error from MMT::getNode(level: " << level << ")";
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_UNKNOWN_ERROR,
+				std::string("Unknown Error from MMT::getNodeIterator(level: ") + std::to_string(level) + std::string(")")));
+		}
 	}
 
 	//////////////////////////////
@@ -1128,24 +1145,69 @@ public:
 
 	pMmtNode getNode(blockId nodeId, size_type level = 0)
 	{
-		return this->nodes_[level][nodeId];
+		try
+		{
+			return this->nodes_.at(level).at(nodeId);
+		}
+		catch (const std::out_of_range& e)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_TREE_INDEX_OUT_OF_RANGE, 
+				std::string("No HMMT Node MMT::getNode(level: ") + std::to_string(level) + std::string(", nodeId: ") + std::to_string(nodeId) + std::string(")") + std::string(e.what())));
+		}
+		catch (...)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_UNKNOWN_ERROR,
+				std::string("Unknown Error from MMT::getNode(level: ") + std::to_string(level) + std::string(", nodeId: ") + std::to_string(nodeId) + std::string(")")));
+		}
 	}
 
 	pMmtNode getNode(coor& nodeCoor, size_type level = 0)
 	{
-		auto nit = this->getNodeIterator(level);
-		return this->nodes_[level][nit.coorToSeq(nodeCoor)];
+		try
+		{
+			auto nit = this->getNodeIterator(level);
+			return this->nodes_.at(level).at(nit.coorToSeq(nodeCoor));
+		}
+		catch (const std::out_of_range& e)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_TREE_INDEX_OUT_OF_RANGE,
+				std::string("No HMMT Node MMT::getNode(level: ") + std::to_string(level) + std::string(", nodeCoor: ") + nodeCoor.toString() + std::string(")") + std::string(e.what())));
+		}
+		catch (...)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_UNKNOWN_ERROR,
+				std::string("Unknown Error from MMT::getNode(level: ") + std::to_string(level) + std::string(", nodeCoor: ") + nodeCoor.toString() + std::string(")")));
+		}
 	};
 
 	pMmtNode getNode(coor& chunkCoor, coor& inner, size_type level = 0)
 	{
-		auto nit = this->getNodeIterator(level);
-		coor nodeCoor(inner);
-		for (dimensionId d = 0; d < this->dSize_; ++d)
+		try
 		{
-			nodeCoor[d] += chunkCoor[d] * this->blockSpace_[d];
+			auto nit = this->getNodeIterator(level);
+			coor nodeCoor(inner);
+			for (dimensionId d = 0; d < this->dSize_; ++d)
+			{
+				nodeCoor[d] += chunkCoor[d] * this->blockSpace_[d];
+			}
+			return this->nodes_.at(level).at(nit.coorToSeq(nodeCoor));
 		}
-		return this->nodes_[level][nit.coorToSeq(nodeCoor)];
+		catch (const std::out_of_range& e)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_TREE_INDEX_OUT_OF_RANGE,
+				std::string("No HMMT Node MMT::getNode(level: ") + std::to_string(level) + std::string(", chunkCoor: ") + chunkCoor.toString() + std::string(", innerCoor: ") + inner.toString() + std::string(")") + std::string(e.what())));
+		}
+		catch (...)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_UNKNOWN_ERROR,
+				std::string("Unknown Error from MMT::getNode(level: ") + std::to_string(level) + std::string(", chunkCoor: ") + chunkCoor.toString() + std::string(", innerCoor: ") + inner.toString() + std::string(")")));
+		}
 	}
 
 	// qRange: query range
@@ -1154,19 +1216,34 @@ public:
 		auto rangeDim = qRange.width();
 		coor blockDim(this->blockDims_);
 
-		for (size_type level = 0; level <= this->maxLevel_; ++level)
+		try
 		{
-			if (rangeDim > blockDim)
+			for (size_type level = 0; level <= this->maxLevel_; ++level)
 			{
-				blockDim /= 2;
-				continue;
+				if (rangeDim > blockDim)
+				{
+					blockDim /= 2;
+					continue;
+				}
+
+				auto nodeCoor = qRange.getSp();
+				nodeCoor /= blockDim;
+
+				auto nit = this->getNodeIterator(level);
+				return this->nodes_.at(level)(nit.coorToSeq(nodeCoor));
 			}
-
-			auto nodeCoor = qRange.getSp();
-			nodeCoor /= blockDim;
-
-			auto nit = this->getNodeIterator(level);
-			return this->nodes_[level][nit.coorToSeq(nodeCoor)];
+		}
+		catch (const std::out_of_range& e)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_TREE_INDEX_OUT_OF_RANGE,
+				std::string("No HMMT Node MMT::getNode(range: ") + qRange.toString() + std::string(")") + std::string(e.what())));
+		}
+		catch (...)
+		{
+			_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+				MSDB_EC_QUERY_ERROR, MSDB_ER_UNKNOWN_ERROR,
+				std::string("Unknown Error from MMT::getNode(range: ") + qRange.toString() + std::string(")")));
 		}
 
 		return nullptr;

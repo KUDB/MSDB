@@ -8,6 +8,84 @@ namespace msdb
 {
 namespace dummy
 {
+//////////////////////////////
+// Parameters
+//////////////////////////////
+namespace data_star1024x1024
+{
+//const core::dimension dims({ 16, 16 });
+//const core::dimension chunkDims({ 16, 16 });
+//const core::dimension blockDims({ 16, 16 });
+
+const core::dimension dims({ 1024, 1024 });
+const core::dimension chunkDims({ 64, 64 });
+const core::dimension blockDims({ 64, 64 });
+
+const int wtLevel = 3;
+const int mmtLevel = 3;
+const int compassBins = 128;
+}
+
+namespace data_saturn1024x1024
+{
+const core::dimension dims({ 1024, 1024 });
+const core::dimension chunkDims({ 64, 64 });
+const core::dimension blockDims({ 64, 64 });
+
+const int wtLevel = 3;
+const int mmtLevel = 3;
+const int compassBins = 128;
+}
+
+namespace data_solar1024x1024
+{
+const core::dimension dims({ 4096, 4096 });
+const core::dimension chunkDims({ 64, 64 });
+const core::dimension blockDims({ 64, 64 });
+
+const int wtLevel = 3;
+const int mmtLevel = 3;
+const int compassBins = 128;
+}
+
+namespace data_mars4096x2048
+{
+const core::dimension dims({ 2048, 4096 });
+const core::dimension chunkDims({ 128, 128 });
+const core::dimension blockDims({ 128, 128 });
+
+const int wtLevel = 3;
+const int mmtLevel = 3;
+const int compassBins = 128;
+}
+
+namespace data_mercury20480x10240
+{
+//const core::dimension dims({ 10240, 20480 });
+const core::dimension dims({ 8192, 16384 });
+const core::dimension chunkDims({ 128, 128 });
+const core::dimension blockDims({ 128, 128 });
+
+const int wtLevel = 3;
+const int mmtLevel = 3;
+const int compassBins = 128;
+}
+
+namespace data_lunar102400x40960
+{
+const core::dimension dims({ 32768, 98304 });
+const core::dimension chunkDims({ 512, 512 });	// 64x192
+const core::dimension blockDims({ 512, 512 });
+
+const int wtLevel = 1;
+const int mmtLevel = 1;
+const int compassBins = 256;
+}
+
+//////////////////////////////
+// Functions
+//////////////////////////////
+
 namespace data_star1024x1024
 {
 std::pair<int, int> getParam(compressionType compType)
