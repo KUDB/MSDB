@@ -31,17 +31,19 @@ pArray load_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 	//pArray outArr = arrayMgr::instance()->makeArray<flattenArray>(this->getArrayDesc());
 	pArray outArr = std::make_shared<flattenArray>(this->getArrayDesc());
-	outArr->copyChunkBitmap(planChunkBitmap);
 	arrayId arrId = outArr->getId();
 
 	for (auto attr : *outArr->getDesc()->attrDescs_)
 	{
+		outArr->copyAttrChunkBitmap(attr->getId(), planChunkBitmap);
 		this->loadAttribute(outArr, attr, qry);
 	}
 
 	//----------------------------------------//
 	qry->getTimer()->pause(0);
 	//========================================//
+
+	this->getArrayStatus(outArr);
 
 	return outArr;
 }
@@ -53,51 +55,46 @@ void load_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery q
 	//========================================//
 	qry->getTimer()->nextWork(0, workType::PARALLEL);
 	//----------------------------------------//
+	
 	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
-	if (cit == nullptr)
-	{
-		// TODO::make empty chunk
-		// set all bitmap null
-	}
-	else
-	{
-		this->threadCreate();
+	auto cBitmap = cit->getChunkBitmap();
 
-		while (!cit->isEnd())
+	this->threadCreate();
+
+	while (!cit->isEnd())
+	{
+		chunkId cid = cit->seqPos();
+		if (cBitmap->isExist(cid))
 		{
-			if (cit->isExist())
+			chunkId cId = cit->seqPos();
+			auto outChunk = outArr->makeChunk(attrDesc->id_, cId);
+
+			auto blockBitmap = this->getPlanBlockBitmap(cId);
+			if (blockBitmap)
 			{
-				chunkId cId = cit->seqPos();
-				auto outChunk = outArr->makeChunk(attrDesc->id_, cId);
-
-				auto blockBitmap = this->getPlanBlockBitmap(cId);
-				if (blockBitmap)
-				{
-					outChunk->copyBlockBitmap(blockBitmap);
-				}
-				else
-				{
-					// If there were no bitmap, set all blocks as true.
-					outChunk->replaceBlockBitmap(std::make_shared<bitmap>(outChunk->getBlockCapacity(), true));
-				}
-				outChunk->makeBlocks();
-
-				io_service_->post(boost::bind(&load_action::loadChunk, this,
-											  outArr, outChunk, attrDesc->id_, qry, currentThreadId));
+				outChunk->copyBlockBitmap(blockBitmap);
 			}
+			else
+			{
+				// If there were no bitmap, set all blocks as true.
+				outChunk->replaceBlockBitmap(std::make_shared<bitmap>(outChunk->getBlockCapacity(), true));
+			}
+			outChunk->makeBlocks();
 
-			++(*cit);
+			this->loadChunk(outArr, outChunk, attrDesc->id_, qry, currentThreadId);
+			//io_service_->post(boost::bind(&load_action::loadChunk, this,
+			//								outArr, outChunk, attrDesc->id_, qry, currentThreadId));
 		}
 
-		this->threadStop();
-		this->threadJoin();
+		++(*cit);
 	}
+
+	this->threadStop();
+	this->threadJoin();
 
 	//----------------------------------------//
 	qry->getTimer()->nextWork(0, workType::COMPUTING);
 	//========================================//
-
-	this->getArrayStatus(outArr);
 }
 
 void load_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId)

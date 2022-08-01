@@ -81,7 +81,7 @@ public:
 	}
 	inline void setChunkExist(const attributeId attrId, const chunkId cId)
 	{
-		this->overallChunkBitmap_->setExist(cId);
+		this->globalChunkBitmap_->setExist(cId);
 		this->attrChunkBitmaps_[attrId]->setExist(cId);
 
 	}
@@ -95,14 +95,18 @@ public:
 				return;
 			}
 		}
-		this->overallChunkBitmap_->setNull(cId);
+		this->globalChunkBitmap_->setNull(cId);
 	}
 	virtual void freeChunk(const attributeId attrId, const chunkId cId);
 
 	cpBitmap getChunkBitmap() const;
 	void copyChunkBitmap(cpBitmap chunkBitmap);
 	void replaceChunkBitmap(pBitmap chunkBitmap);
-	void mergeChunkBitmap(pBitmap chunkBitmap);		// TODO::pullout the method from array -> bitmap, andMerge, orMerge.... or operators
+	void mergeChunkBitmap(cpBitmap chunkBitmap);		// TODO::pullout the method from array -> bitmap, andMerge, orMerge.... or operators
+
+	void copyAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap);
+	void replaceAttrChunkBitmap(const attributeId attrId, pBitmap chunkBitmap);
+	void mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap);
 
 	void print();
 
@@ -114,7 +118,7 @@ protected:
 private:
 	//std::vector<chunkFactory> attrChunkFactories_;
 	bitmapContainer attrChunkBitmaps_;
-	pBitmap overallChunkBitmap_;		// Be initialized to false by default
+	pBitmap globalChunkBitmap_;		// Be initialized to false by default
 };
 }	// core
 }	// msdb

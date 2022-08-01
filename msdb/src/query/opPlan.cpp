@@ -91,20 +91,26 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 	try
 	{
 		auto outArr = this->getAction()->execute(inArr, qry);
-
-		// TODO::Remove //
+		
 		if (qry->isVerbose())
 		{
-			auto cit = outArr->getChunkIterator(0);
-			for (int i = 0; i < 0; ++i)
+			// TODO::Remove //
+			for (auto attr : *outArr->getDesc()->attrDescs_)
 			{
-				cit->next();
+				BOOST_LOG_TRIVIAL(trace) << "ATTR: " << attr->getName() << "(" << attr->getId() << ")";
+				auto cit = outArr->getChunkIterator(attr->id_);
+				if (cit->isExist())
+				{
+					for (int i = 0; i < 0; ++i)
+					{
+						cit->next();
+					}
+					(**cit)->print();
+				}
 			}
-			(**cit)->print();
-			//outArr->print();
+			// TODO::Remove //
 		}
-		// TODO::Remove //
-
+		
 		qry->setArrayDesc(outArr->getDesc());
 		return outArr;
 	}

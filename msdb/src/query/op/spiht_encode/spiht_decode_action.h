@@ -35,7 +35,9 @@ public:
 						 pArray outArr, pArray inArr,
 						 pAttributeDesc attrDesc, pQuery qry)
 	{
-		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+		auto cBitmap = cit->getChunkBitmap();
+
 		auto attrId = attrDesc->id_;
 		size_t wtLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
 
@@ -48,7 +50,8 @@ public:
 
 		while (!cit->isEnd())
 		{
-			if (cit->isExist())
+			chunkId cid = cit->seqPos();
+			if (cBitmap->isExist(cid))
 			{
 				chunkId cid = cit->seqPos();
 

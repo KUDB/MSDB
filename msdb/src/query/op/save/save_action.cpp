@@ -52,6 +52,7 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 		while (!cit->isEnd())
 		{
+			// iterateMode::Exist, no need to check isExist()
 			pSerializable serialChunk
 				= std::static_pointer_cast<serializable>(**cit);
 			storageMgr::instance()->saveChunk(arrId, attr->id_, (**cit)->getId(),

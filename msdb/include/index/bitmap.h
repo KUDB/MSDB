@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BITMAP_H_
 #define _MSDB_BITMAP_H_
 
@@ -50,7 +50,7 @@ public:
 
 	virtual bool isTree() const;
 	
-	inline bool isEmpty()
+	inline bool isEmpty() const
 	{
 		for(int i = 0 ; i < this->data_.size(); ++i)
 		{
@@ -63,8 +63,8 @@ public:
 		return true;
 	}
 
-	void andMerge(bitmap& mit);
-	void orMerge(bitmap& mit);
+	void andMerge(const bitmap& mit);
+	void orMerge(const bitmap& mit);
 
 	void print() const;
 public:

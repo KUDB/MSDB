@@ -21,7 +21,7 @@ bool initBoostLogger()
 	);
 #else
 	core->set_filter(
-		logging::trivial::severity >= logging::trivial::debug
+		logging::trivial::severity >= logging::trivial::trace
 	);
 #endif
 	

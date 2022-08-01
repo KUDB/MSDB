@@ -155,7 +155,6 @@ void chunk::print()
 			BOOST_LOG_TRIVIAL(trace) << "Block (" << bit->seqPos() << ") is not exist;";
 			BOOST_LOG_TRIVIAL(trace) << "------------------------------\n";
 		}
-		
 
 		++(*bit);
 	}

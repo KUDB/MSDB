@@ -8,10 +8,10 @@ namespace msdb
 namespace core
 {
 array::array(pArrayDesc desc)
-	: overallChunkBitmap_()
+	: globalChunkBitmap_()
 {
 	this->desc_ = desc;
-	this->overallChunkBitmap_ = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
+	this->globalChunkBitmap_ = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
 	for (auto attr : *desc_->attrDescs_)
 	{
 		this->attrChunkBitmaps_[attr->id_] = std::make_shared<bitmap>(desc_->dimDescs_->getChunkSpace().area(), false);
@@ -24,7 +24,7 @@ array::~array()
 	//BOOST_LOG_TRIVIAL(debug) << "~array(): " << this->desc_->name_;
 	this->flush();
 	this->chunks_.clear();
-	this->overallChunkBitmap_ = nullptr;
+	this->globalChunkBitmap_ = nullptr;
 	for (auto b : this->attrChunkBitmaps_)
 	{
 		b.second = nullptr;
@@ -42,19 +42,19 @@ pChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMo
 	if (this->chunks_.find(attrId) != this->chunks_.end())
 	{
 		return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
-											   &(this->chunks_[attrId]), this->overallChunkBitmap_,
+											   &(this->chunks_[attrId]), this->attrChunkBitmaps_[attrId],
 											   itMode);
 	}
-	_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "Fail to get chunkIterator (attrId: " + std::to_string(attrId) + ")"));
+	//_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "Fail to get chunkIterator (attrId: " + std::to_string(attrId) + ")"));
 
 
 	//return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
-	//									   nullptr, this->overallChunkBitmap_,
+	//									   nullptr, this->globalChunkBitmap_,
 	//									   itMode);
 	
-	//return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
-	//									   nullptr, std::make_shared<bitmap>(this->overallChunkBitmap_->getCapacity(), false),
-	//									   itMode);
+	return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+										   nullptr, std::make_shared<bitmap>(this->globalChunkBitmap_->getCapacity(), false),
+										   itMode);
 
 }
 pChunkFactory array::getChunkFactory(const attributeId& attrId)
@@ -225,24 +225,43 @@ void array::freeChunk(const attributeId attrId, const chunkId cId)
 	}
 
 	//this->chunks_[cId] = nullptr;dkddkd
-	//this->overallChunkBitmap_->setNull(cId);
+	//this->globalChunkBitmap_->setNull(cId);
 }
 cpBitmap array::getChunkBitmap() const
 {
-	return this->overallChunkBitmap_;
+	return this->globalChunkBitmap_;
 }
 void array::copyChunkBitmap(cpBitmap chunkBitmap)
 {
-	this->overallChunkBitmap_ = std::make_shared<bitmap>(*chunkBitmap);
+	this->globalChunkBitmap_ = std::make_shared<bitmap>(*chunkBitmap);
 }
 void array::replaceChunkBitmap(pBitmap chunkBitmap)
 {
-	this->overallChunkBitmap_ = chunkBitmap;
+	this->globalChunkBitmap_ = chunkBitmap;
 }
-void array::mergeChunkBitmap(pBitmap chunkBitmap)
+void array::mergeChunkBitmap(cpBitmap chunkBitmap)
 {
-	this->overallChunkBitmap_->andMerge(*chunkBitmap);
+	this->globalChunkBitmap_->andMerge(*chunkBitmap);
 }
+
+void array::copyAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap)
+{
+	this->attrChunkBitmaps_[attrId] = nullptr;
+	this->attrChunkBitmaps_[attrId] = std::make_shared<bitmap>(*chunkBitmap);
+	this->mergeChunkBitmap(chunkBitmap);
+}
+void array::replaceAttrChunkBitmap(const attributeId attrId, pBitmap chunkBitmap)
+{
+	this->attrChunkBitmaps_[attrId] = nullptr;
+	this->attrChunkBitmaps_[attrId] = chunkBitmap;
+	this->mergeChunkBitmap(chunkBitmap);
+}
+void array::mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap)
+{
+	this->attrChunkBitmaps_[attrId]->andMerge(*chunkBitmap);
+	this->mergeChunkBitmap(chunkBitmap);
+}
+
 void array::print()
 {
 	for (auto attr : *this->getDesc()->attrDescs_)

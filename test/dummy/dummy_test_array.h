@@ -12,6 +12,7 @@ namespace msdb
 namespace test
 {
 core::pArrayDesc getDummyArrayDesc_SIMPLE_2D();
+core::pArrayDesc getDummyArrayDesc_MultiAttr_2D();
 core::pArrayDesc getDummyArrayDesc_MultiAttr_3D();
 
 template<typename Ty_>

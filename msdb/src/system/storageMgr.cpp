@@ -162,13 +162,13 @@ void storageMgr::saveChunk(const arrayId arrId, const attributeId attrId, const 
 						  strChunkFilExtension);
 		serialObj->serialize(fs);
 #ifndef NDEBUG
-		BOOST_LOG_TRIVIAL(trace) << "Save Chunk[" << chkId << "] : " << serialObj->getSerializedSize() << " Bytes";
+		BOOST_LOG_TRIVIAL(trace) << "Save Chunk[" << attrId << ":" << chkId << "] : " << serialObj->getSerializedSize() << " Bytes";
 #endif
 		fs.close();
 	}
 	_MSDB_CATCH_ALL
 	{
-		BOOST_LOG_TRIVIAL(error) << "Save Chunk[" << chkId << "] : EXCEPTION";
+		BOOST_LOG_TRIVIAL(error) << "Save Chunk[" << attrId << ":" << chkId << "] : EXCEPTION";
 
 		return;
 	}

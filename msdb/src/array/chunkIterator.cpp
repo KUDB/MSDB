@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/chunkIterator.h>
 
 namespace msdb
@@ -35,20 +35,28 @@ chunkIterator::size_type chunkIterator::getSeqEnd()
 	return this->chunks_->size();
 }
 
+bool chunkIterator::isExist() const
+{
+	return this->isExist(this->seqPos_);
+}
 bool chunkIterator::isExist()
 {
 	return this->isExist(this->seqPos_);
 }
 
-bool chunkIterator::isExist(chunkId cid)
+bool chunkIterator::isExist(const chunkId cid) const
 {
-	return (*this->chunkBitmap_)[cid];
+	return (*this->chunkBitmap_)[cid] && this->chunks_ != nullptr && (this->chunks_->find(cid) != this->chunks_->end());
 	//&& this->chunks_->find(cid) != this->chunks_->end();
 }
 
-iterateMode chunkIterator::getIterateMode()
+iterateMode chunkIterator::getIterateMode() const
 {
 	return this->itMode_;
+}
+const pBitmap chunkIterator::getChunkBitmap() const
+{
+	return this->chunkBitmap_;
 }
 }		// core
 }		// msdb

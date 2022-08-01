@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <index/bitmap.h>
 
 namespace msdb
@@ -19,7 +19,7 @@ bool bitmap::isTree() const
 	return false;
 }
 
-void bitmap::andMerge(bitmap& mit)
+void bitmap::andMerge(const bitmap& mit)
 {
 	assert(mit.getCapacity() >= this->getCapacity());
 	size_t capacity = this->getCapacity();
@@ -29,7 +29,7 @@ void bitmap::andMerge(bitmap& mit)
 	}
 }
 
-void bitmap::orMerge(bitmap& mit)
+void bitmap::orMerge(const bitmap& mit)
 {
 	assert(mit.getCapacity() >= this->getCapacity());
 	size_t capacity = this->getCapacity();

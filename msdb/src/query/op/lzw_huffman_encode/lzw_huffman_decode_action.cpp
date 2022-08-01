@@ -55,12 +55,12 @@ void lzw_huffman_decode_action::loadAttribute(pArray outArr, pAttributeDesc attr
 	this->threadCreate();
 
 	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+	auto cBitmap = cit->getChunkBitmap();
 	while (!cit->isEnd())
 	{
-		if (cit->isExist())
+		chunkId cid = cit->seqPos();
+		if (cBitmap->isExist(cid))
 		{
-			chunkId cid = cit->seqPos();
-			//auto inChunk = this->makeInChunk(outArr, attrDesc, cid);
 			auto outChunk = outArr->makeChunk(attrDesc->id_, cid);
 			outChunk->makeAllBlocks();
 

@@ -66,11 +66,12 @@ void compass_decode_action::decodeAttribute(pArray outArr, pAttributeDesc attrDe
 	this->threadCreate();
 
 	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+	auto cBitmap = cit->getChunkBitmap();
 	while (!cit->isEnd())
 	{
-		if (cit->isExist())
+		chunkId cid = cit->seqPos();
+		if(cBitmap->isExist(cid))
 		{
-			chunkId cid = cit->seqPos();
 			//auto inChunk = this->makeInChunk(outArr, attrDesc, cid, numBins);
 			auto outChunk = outArr->makeChunk(attrDesc->id_, cid);
 			outChunk->makeAllBlocks();

@@ -55,7 +55,7 @@ private:
 		outAttrDesc->setParam(_STR_PARAM_SE_LEVEL_, std::to_string(maxLevel));
 
 		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr, maxLevel);		// To fast access band in serialized memory
-		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 
 		//----------------------------------------//
 		qry->getTimer()->nextWork(0, workType::PARALLEL);

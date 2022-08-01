@@ -36,6 +36,7 @@ void ResultArray::close()
 void printResultArray(ResultArray& ra)
 {
 	auto dimBuffer = ra.getDimBuffer();
+	// TODO:: Attribute Id, type
 	auto attr_01_buffer = ra.getAttrBuffer<uint8_t>(0);
 
 	for (int i = 0; i < dimBuffer->size(); ++i)

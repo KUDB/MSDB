@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CHUNKITERATOR_H_
 #define _MSDB_CHUNKITERATOR_H_
 
@@ -34,9 +34,11 @@ public:
 
 public:
 	size_type getSeqEnd();
+	bool isExist() const;
 	bool isExist();
-	bool isExist(chunkId cid);
-	iterateMode getIterateMode();
+	bool isExist(const chunkId cid) const;
+	iterateMode getIterateMode() const;
+	const pBitmap getChunkBitmap() const;
 
 	//////////////////////////////
 	// Iterating

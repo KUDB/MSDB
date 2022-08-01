@@ -49,38 +49,35 @@ void opAction::getArrayStatus(pArray arr)
 	size_t numChunks = 0, numBlocks = 0, serialSize = 0;
 	std::stringstream ss;
 
+	BOOST_LOG_TRIVIAL(info) << "==============================";
 	for (auto attr : *arr->getDesc()->attrDescs_)
 	{
-		auto cit = arr->getChunkIterator(attr->id_);
+		auto cit = arr->getChunkIterator(attr->id_, iterateMode::EXIST);
 		while (!cit->isEnd())
 		{
-			if (cit->isExist())
+			++numChunks;
+			serialSize += (*cit)->getSerializedSize();
+			ss << cit->seqPos() << "/" << (*cit)->getSerializedSize() << ", ";
+			auto bit = (*cit)->getBlockIterator();
+			while (!bit->isEnd())
 			{
-				++numChunks;
-				serialSize += (*cit)->getSerializedSize();
-				ss << cit->seqPos() << "/" << (*cit)->getSerializedSize() << ", ";
-				auto bit = (*cit)->getBlockIterator();
-				while (!bit->isEnd())
+
+				if (bit->isExist())
 				{
-
-					if (bit->isExist())
-					{
-						++numBlocks;
-					}
-
-					++(*bit);
+					++numBlocks;
 				}
+
+				++(*bit);
 			}
 
 			++(*cit);
 		}
 
-		//BOOST_LOG_TRIVIAL(info) << "- Chunks: " << ss.str();
-		BOOST_LOG_TRIVIAL(info) << "Attribute: " << attr->id_;
-		BOOST_LOG_TRIVIAL(info) << "- Num chunks: " << numChunks;
-		BOOST_LOG_TRIVIAL(info) << "- Num blocks: " << numBlocks;
-		BOOST_LOG_TRIVIAL(info) << "- Serialized size: " << serialSize;
+		BOOST_LOG_TRIVIAL(info) << "------------------------------" << std::endl <<
+			"Attribute: " << attr->id_ << std::endl << "- Num chunks: " << numChunks << std::endl << "- Num blocks: " << numBlocks << std::endl << "- Serialized size: " << serialSize << std::endl;
+		BOOST_LOG_TRIVIAL(info) << "------------------------------";
 	}
+	BOOST_LOG_TRIVIAL(info) << "==============================";
 }
 
 cpBitmap opAction::getPlanBlockBitmap(chunkId cid) const
