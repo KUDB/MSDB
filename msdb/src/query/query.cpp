@@ -27,38 +27,36 @@ status query::process()
 	_MSDB_CATCH(const msdb_exception& e)
 	{
 		std::stringstream ss;
-		ss << "Error in query processing:\n" << e._what << std::endl;;
+		ss << "* Error (MSDB Exception) in query processing *\n" << e.what() << std::endl;;
 		ss << e._error_category_msg << "(" << std::to_string(e._error_category) << ")" << std::endl;;
 		ss << e._error_msg << "(" << std::to_string(e._error_code) << ")" << std::endl;;
 		ss << "File: " << e._file << " /Line: " << std::to_string(e._line) << "/Func: " << e._function << std::endl;;
 
 		BOOST_LOG_TRIVIAL(error) << ss.str();
 		this->errorMsg_ = ss.str();
-
-		std::cout << "MSDB error" << std::endl;
 		std::cout << ss.str() << std::endl;
 
 		return status(statusSectionCode::ERR, (statusSubCodeType)e._error_code);
 	}
 	_MSDB_CATCH(const boost::exception& ex)
 	{
-		BOOST_LOG_TRIVIAL(error) << boost::diagnostic_information(ex);
-		this->errorMsg_ = boost::diagnostic_information(ex);
+		std::stringstream ss;
+		ss << "* Error (Boost Exception) in query processing *\n" << std::endl;;
+		ss << boost::diagnostic_information(ex) << std::endl;
 
-		std::cout << "Boost error" << std::endl;
-		std::cout << boost::diagnostic_information(ex) << std::endl;
+		BOOST_LOG_TRIVIAL(error) << ss.str();
+		this->errorMsg_ = ss.str();
+		std::cout << ss.str() << std::endl;
 
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}
 	_MSDB_CATCH_EXCEPTION(e)
 	{
 		std::stringstream ss;
-		ss << "Error in query processing:\n" << e.what();
+		ss << "* Error (STD Exception) in query processing *\n" << e.what() << std::endl;;
 		
 		BOOST_LOG_TRIVIAL(error) << ss.str();
 		this->errorMsg_ = ss.str();
-
-		std::cout << "Boost error" << std::endl;
 		std::cout << ss.str() << std::endl;
 
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
@@ -66,12 +64,11 @@ status query::process()
 	_MSDB_CATCH_ALL
 	{
 		std::stringstream ss;
-		ss << "Unknwon error in query processing:\n";
+		ss << "* Error (Unknown Exception) in query processing *\n" << std::endl;;
 		
 		BOOST_LOG_TRIVIAL(error) << ss.str();
 		this->errorMsg_ = ss.str();
-
-		std::cout << "Unknwon error" << std::endl;
+		std::cout << ss.str() << std::endl;
 		
 		return status(statusSectionCode::ERR, (statusSubCodeType)statusErrCode::UNKNOWN);
 	}

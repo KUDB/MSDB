@@ -14,7 +14,7 @@ namespace dummy
 namespace data_star64x64x64
 {
 static const std::string arrName = "star64x64x64";
-static const core::arrayId aid = 3000;
+static const core::arrayId aid = 30000;
 static const std::string filePath = DUMMY_PATH(Binary_Star_STSCI_H_p1942a_f_1024x1024.data);
 
 static const core::dimension dims({ 64, 64, 64});
@@ -52,7 +52,7 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(
 namespace data_nexrad_16x1024x2048
 {
 static const std::string arrName = "nexrad_16x1024x2048";
-static const core::arrayId aid = 3300;
+static const core::arrayId aid = 31000;
 //static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20151101T060000Z.data);
 static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20171201T000000Z.data);
 
@@ -90,10 +90,11 @@ std::shared_ptr<AFLOperator> getSaveIndexAFL(
 std::shared_ptr<AFLOperator> getLoadIndexAFL(
 	compressionType compType, attrIndexType idxType);
 }		// data_nexrad_16x1024x2048
+
 namespace data_solar_sdo_1024x1024x512
 {
 static const std::string arrName = "solar_sdo_1024x1024x512";
-static const core::arrayId aid = 3200;
+static const core::arrayId aid = 32000;
 static const std::string filePath = DUMMY_PATH(Binary_SOLAR_SDO_AIA171_2200101_05_latest_1024x1024x512.data);
 
 static const core::dimension dims({ 512, 1024, 1024 });
@@ -131,7 +132,7 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(
 namespace data_nexrad_201711_64x24x1024x2048
 {
 static const std::string arrName = "nexrad_201711_64x24x1024x2048";
-static const core::arrayId aid = 3100;
+static const core::arrayId aid = 33000;
 //static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_20151101T060000Z.data);
 static const std::string filePath = DUMMY_PATH(Binary_nexrad_3d_v3_1_201711.data);
 
