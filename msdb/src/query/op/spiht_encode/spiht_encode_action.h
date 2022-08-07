@@ -81,11 +81,8 @@ public:
 		auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 		while (!ocit->isEnd())
 		{
-			if (ocit->isExist())
-			{
-				auto outChunk = (**ocit);
-				mSizeTotal += outChunk->getSerializedSize();
-			}
+			auto outChunk = (**ocit);
+			mSizeTotal += outChunk->getSerializedSize();
 			++(*ocit);
 		}
 

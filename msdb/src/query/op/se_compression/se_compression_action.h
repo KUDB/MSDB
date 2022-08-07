@@ -33,10 +33,17 @@ public:
 private:
 	//Visitor
 	template<typename Ty_>
-	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
 		size_t mSizeTotal = 0;
 		size_t synopsisSizeTotal = 0;
+
+		//========================================//
+		qry->getTimer()->nextWork(0, workType::PARALLEL);
+		//----------------------------------------//
+		size_t currentThreadId = 0;
+		this->threadCreate();
+
 		auto arrId = inArr->getId();
 		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 		bool hasNegative = false;
@@ -62,22 +69,30 @@ private:
 				auto cDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
 				auto outChunk = std::static_pointer_cast<seChunk<Ty_>>(outArr->makeChunk(cDesc));
 
-				outChunk->setLevel(inChunk->getLevel());
-				//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
-				outChunk->bufferRef(inChunk);
-				outChunk->makeAllBlocks();
+				io_service_->post(boost::bind(&se_compression_action::compressChunk<Ty_>, this,
+											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, currentThreadId));
 
-				this->compressChunk<Ty_>(outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
-
-				auto attr = outChunk->getDesc()->attrDesc_;
-				storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-												  std::static_pointer_cast<serializable>(outChunk));
-				mSizeTotal += outChunk->getSerializedSize();
-				synopsisSizeTotal += std::static_pointer_cast<seChunk<Ty_>>(outChunk)->getSynopsisSize();
-				//BOOST_LOG_TRIVIAL(info) << "Chunk[" << outChunk->getId() << "]: " << outChunk->getSerializedSize();
+				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
 			}
 
 			++(*cit);
+		}
+
+		this->threadStop();
+		this->threadJoin();
+
+		//----------------------------------------//
+		qry->getTimer()->nextWork(0, workType::COMPUTING);
+		//========================================//
+
+		auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+		while (!ocit->isEnd())
+		{
+			auto outChunk = (**ocit);
+			mSizeTotal += outChunk->getSerializedSize();
+			synopsisSizeTotal += std::static_pointer_cast<seChunk<Ty_>>(outChunk)->getSynopsisSize();
+
+			++(*ocit);
 		}
 
 		BOOST_LOG_TRIVIAL(info) << "Total Synopsis Size: " << synopsisSizeTotal << " Bytes";
@@ -85,29 +100,36 @@ private:
 	}
 
 	template<>
-	void compressAttribute(const concreteTy<float>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<float>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_compress not support data compression for float"));
 	}
 
 	template<>
-	void compressAttribute(const concreteTy<double>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<double>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_compress not support data compression for double"));
 	}
 
 	template<typename Ty_>
-	void compressChunk(std::shared_ptr<seChunk<Ty_>> outChunk,
+	void compressChunk(arrayId arrId,
+					   std::shared_ptr<seChunk<Ty_>> outChunk,
 					   std::shared_ptr<wtChunk<Ty_>> inChunk,
 					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
-					   dimension& sourceChunkDim, bool hasNegative)
+					   dimension& sourceChunkDim, bool hasNegative,
+					   const size_t parentThreadId)
 	{
-		size_t dSize = inChunk->getDSize();
-
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "Chunkcoor: " << chunkCoor.toString() << " / MMT NODE: " << mNode->toString<Ty_>();
 		//assert(outChunk->rBitFromMMT <= sizeof(Ty_) * CHAR_BIT);
-#endif
+	#endif
+
+		size_t dSize = inChunk->getDSize();
+
+		outChunk->setLevel(inChunk->getLevel());
+		//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
+		outChunk->bufferRef(inChunk);
+		outChunk->makeAllBlocks();
 
 		pBlock outBlock = outChunk->getBlock(0);
 		size_t numBandsInLevel = std::pow(2, dSize) - 1;
@@ -125,6 +147,10 @@ private:
 											mmtIndex,
 											bandDims, inChunk->getLevel(),
 											numBandsInLevel, hasNegative);
+
+		auto attr = outChunk->getDesc()->attrDesc_;
+		storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+										  std::static_pointer_cast<serializable>(outChunk));
 	}
 
 	template <class Ty_>

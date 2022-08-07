@@ -62,7 +62,7 @@ public:
 	virtual void bufferRef(pChunk source);
 	bool isMaterialized() const;
 
-protected:
+public:
 	pChunkBuffer getBuffer();
 
 	friend class chunkTester;
