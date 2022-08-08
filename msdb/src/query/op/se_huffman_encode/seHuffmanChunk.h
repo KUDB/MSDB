@@ -53,7 +53,7 @@ public:
 
 		this->serializedSize_ = bs.capacity();
 		this->getOutHeader()->serialize(os);
-		os.write(bs.data(), bs.capacity());
+		os.write((char*)bs.data(), bs.capacity());
 	}
 	virtual void deserialize(std::istream& is) override
 	{
@@ -62,7 +62,7 @@ public:
 
 		bstream bs;
 		bs.resize(this->serializedSize_);
-		is.read(bs.data(), this->serializedSize_);
+		is.read((char*)bs.data(), this->serializedSize_);
 
 		this->seHuffmanDecode(bs);
 	}

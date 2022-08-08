@@ -54,7 +54,7 @@ public:
 	// A block buffer only references a part of a chunk buffer memory.
 	virtual void unlinkFromChunkBuffer();
 	virtual void refChunkBufferWithoutOwnership(void* data, const bufferSize size) = 0;	// used in chunk
-protected:
+public:
 	pBlockBuffer getBuffer();
 
 	friend class chunk;

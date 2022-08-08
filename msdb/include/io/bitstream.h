@@ -23,12 +23,12 @@ namespace core
 
 		////////////////////////////////////////
 		// Set options
-		void width(size_type w)
+		inline void width(const size_type& w)
 		{
 			this->bitWidth = w;
 		}
 
-		void initWidth()
+		inline void initWidth()
 		{
 			this->bitWidth = 0;
 		}
@@ -552,9 +552,16 @@ namespace core
 			return this->_concreateContainer.data();
 		}
 
-		void resize(size_t bytes)
+		void resize(const size_t bytes)
 		{
-			this->_concreateContainer.resize(bytes);
+			if (bytes)
+			{
+				this->_concreateContainer.resize(bytes / _BlockBytes);
+			}
+			else
+			{
+				this->_concreateContainer.resize(0);
+			}
 		}
 
 		virtual void flush()

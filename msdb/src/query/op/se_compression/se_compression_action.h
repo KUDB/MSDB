@@ -69,10 +69,19 @@ private:
 				auto cDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
 				auto outChunk = std::static_pointer_cast<seChunk<Ty_>>(outArr->makeChunk(cDesc));
 
+				////////////////////////////////////////
+				// 1. Serialize::decompressChunk
+				////////////////////////////////////////
+				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
+				////////////////////////////////////////
+
+				////////////////////////////////////////
+				// 2. Parallel::decompressChunk
+				////////////////////////////////////////
 				io_service_->post(boost::bind(&se_compression_action::compressChunk<Ty_>, this,
 											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, currentThreadId));
+				////////////////////////////////////////
 
-				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
 			}
 
 			++(*cit);
@@ -95,8 +104,8 @@ private:
 			++(*ocit);
 		}
 
-		BOOST_LOG_TRIVIAL(info) << "Total Synopsis Size: " << synopsisSizeTotal << " Bytes";
-		BOOST_LOG_TRIVIAL(info) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+		BOOST_LOG_TRIVIAL(info) << "Total Synopsis Size: " << synopsisSizeTotal << " Bytes" << std::endl
+			<< "Total Save Chunk: " << mSizeTotal << " Bytes";
 	}
 
 	template<>

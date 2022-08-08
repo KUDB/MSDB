@@ -83,9 +83,18 @@ private:
 				//outChunk->bufferAlloc();
 				//inChunk->bufferRef(outChunk);		// outChunk should hold the buffer -> used latter
 				
+				////////////////////////////////////////
+				// 1. Serialize::decompressChunk
+				////////////////////////////////////////
 				//this->decompressChunk<Ty_>(inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId);
+				////////////////////////////////////////
+
+				////////////////////////////////////////
+				// 2. Parallel::decompressChunk
+				////////////////////////////////////////
 				io_service_->post(boost::bind(&se_decompression_action::decompressChunk<Ty_>, this, 
 											  inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
+				////////////////////////////////////////
 			}
 
 			++(*cit);
@@ -143,7 +152,7 @@ private:
 						 const size_t maxLevel,
 						 std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex, const size_t parentThreadId)
 	{
-		auto threadId = getThreadId();
+		auto threadId = getThreadId() + 1;
 
 		//========================================//
 		qry->getTimer()->nextJob(threadId, this->name(), workType::COMPUTING);
