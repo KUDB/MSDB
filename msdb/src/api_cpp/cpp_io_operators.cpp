@@ -13,14 +13,16 @@
 #include <op/lzw_huffman_encode/lzw_huffman_decode_plan.h>
 #include <op/se_compression/se_compression_plan.h>
 #include <op/se_compression/se_decompression_plan.h>
-#include <op/se_huffman_encode/se_huffman_encode_plan.h>
-#include <op/se_huffman_encode/se_huffman_decode_plan.h>
+//#include <op/se_huffman_encode/se_huffman_encode_plan.h>
+//#include <op/se_huffman_encode/se_huffman_decode_plan.h>
 #include <op/spiht_encode/spiht_encode_plan.h>
 #include <op/spiht_encode/spiht_decode_plan.h>
 #include <op/zip_save/zip_load_plan.h>
 #include <op/zip_save/zip_save_plan.h>
 #include <op/wavelet_encode/wavelet_encode_plan.h>
 #include <op/wavelet_encode/wavelet_decode_plan.h>
+#include <op/wavelet_encode/fast_wavelet_encode_plan.h>
+#include <op/wavelet_encode/fast_wavelet_decode_plan.h>
 #include <op/zfp_encode/zfp_encode_plan.h>
 #include <op/zfp_encode/zfp_decode_plan.h>
 #include <op/tthresh_encode/tthresh_encode_plan.h>
@@ -224,6 +226,14 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 			wtQryPlan->setParamSet(
 				std::make_shared<core::wavelet_encode_plan_pset>(params));
 		}
+		//auto wtQryPlan = std::make_shared<core::fast_wavelet_encode_plan>();
+		//{
+		//	core::parameters params = {
+		//			std::make_shared<core::opParamPlan>(childQry_->getPlan())
+		//	};
+		//	wtQryPlan->setParamSet(
+		//		std::make_shared<core::fast_wavelet_encode_plan_pset>(params));
+		//}
 
 		auto seQryPlan = std::make_shared<core::se_compression_plan>();
 		{
@@ -235,28 +245,28 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		}
 		return seQryPlan;
 	}
-	case compressionType::SEACOW_HUFFMAN:
-	{
-		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
-		{
-			core::parameters params = {
-					std::make_shared<core::opParamPlan>(childQry_->getPlan())
-			};
-			wtQryPlan->setParamSet(
-				std::make_shared<core::wavelet_encode_plan_pset>(params));
-		}
+	//case compressionType::SEACOW_HUFFMAN:
+	//{
+	//	auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
+	//	{
+	//		core::parameters params = {
+	//				std::make_shared<core::opParamPlan>(childQry_->getPlan())
+	//		};
+	//		wtQryPlan->setParamSet(
+	//			std::make_shared<core::wavelet_encode_plan_pset>(params));
+	//	}
 
-		auto seQryPlan = std::make_shared<core::se_huffman_encode_plan>();
-		{
-			core::parameters params = {
-					std::make_shared<core::opParamPlan>(wtQryPlan)
-			};
-			seQryPlan->setParamSet(
-				std::make_shared<core::se_huffman_encode_plan_pset>(params));
-		}
-		return seQryPlan;
-		break;
-	}
+	//	auto seQryPlan = std::make_shared<core::se_huffman_encode_plan>();
+	//	{
+	//		core::parameters params = {
+	//				std::make_shared<core::opParamPlan>(wtQryPlan)
+	//		};
+	//		seQryPlan->setParamSet(
+	//			std::make_shared<core::se_huffman_encode_plan_pset>(params));
+	//	}
+	//	return seQryPlan;
+	//	break;
+	//}
 	//////////////////////////////
 
 	//////////////////////////////
@@ -476,6 +486,15 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 			wtQryPlan->setParamSet(
 				std::make_shared<core::wavelet_encode_plan_pset>(params));
 		}
+		//auto wtQryPlan = std::make_shared<core::fast_wavelet_encode_plan>();
+		//{
+		//	core::parameters params = {
+		//			std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+		//			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+		//	};
+		//	wtQryPlan->setParamSet(
+		//		std::make_shared<core::fast_wavelet_encode_plan_pset>(params));
+		//}
 
 		auto seQryPlan = std::make_shared<core::se_compression_plan>();
 		{
@@ -487,29 +506,29 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 		}
 		return seQryPlan;
 	}
-	case compressionType::SEACOW_HUFFMAN:
-	{
-		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
-		{
-			core::parameters params = {
-					std::make_shared<core::opParamPlan>(childQry_->getPlan()),
-					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
-			};
-			wtQryPlan->setParamSet(
-				std::make_shared<core::wavelet_encode_plan_pset>(params));
-		}
+	//case compressionType::SEACOW_HUFFMAN:
+	//{
+	//	auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
+	//	{
+	//		core::parameters params = {
+	//				std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+	//				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+	//		};
+	//		wtQryPlan->setParamSet(
+	//			std::make_shared<core::wavelet_encode_plan_pset>(params));
+	//	}
 
-		auto seQryPlan = std::make_shared<core::se_huffman_encode_plan>();
-		{
-			core::parameters params = {
-					std::make_shared<core::opParamPlan>(wtQryPlan)
-			};
-			seQryPlan->setParamSet(
-				std::make_shared<core::se_huffman_encode_plan_pset>(params));
-		}
-		return seQryPlan;
-		break;
-	}
+	//	auto seQryPlan = std::make_shared<core::se_huffman_encode_plan>();
+	//	{
+	//		core::parameters params = {
+	//				std::make_shared<core::opParamPlan>(wtQryPlan)
+	//		};
+	//		seQryPlan->setParamSet(
+	//			std::make_shared<core::se_huffman_encode_plan_pset>(params));
+	//	}
+	//	return seQryPlan;
+	//	break;
+	//}
 	default:
 		return nullptr;
 	};
@@ -740,35 +759,42 @@ std::shared_ptr<core::opPlan> DecompTwoParamOpr::getPlan()
 			wtQryPlan->setParamSet(
 				std::make_shared<core::wavelet_decode_plan_pset>(params));
 		}
+		//auto wtQryPlan = std::make_shared<core::fast_wavelet_decode_plan>();
+		//{
+		//	core::parameters params = {
+		//			std::make_shared<core::opParamPlan>(seQryPlan),
+		//			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+		//	};
+		//	wtQryPlan->setParamSet(
+		//		std::make_shared<core::wavelet_decode_plan_pset>(params));
+		//}
 
 		return wtQryPlan;
 		break;
 	}
-	case compressionType::SEACOW_HUFFMAN:
-	{
-		auto seQryPlan = std::make_shared<core::se_huffman_decode_plan>();
-		{
-			core::parameters params = {
-					std::make_shared<core::opParamArray>(this->getArrayDesc()),
-					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramTwo_, _ELE_DEFAULT_TYPE))
-			};
-			seQryPlan->setParamSet(
-				std::make_shared<core::se_huffman_decode_array_pset>(params));
-		}
-
-		auto wtQryPlan = std::make_shared<core::wavelet_decode_plan>();
-		{
-			core::parameters params = {
-					std::make_shared<core::opParamPlan>(seQryPlan),
-					std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
-			};
-			wtQryPlan->setParamSet(
-				std::make_shared<core::wavelet_decode_plan_pset>(params));
-		}
-
-		return wtQryPlan;
-		break;
-	}
+	//case compressionType::SEACOW_HUFFMAN:
+	//{
+	//	auto seQryPlan = std::make_shared<core::se_huffman_decode_plan>();
+	//	{
+	//		core::parameters params = {
+	//				std::make_shared<core::opParamArray>(this->getArrayDesc()),
+	//				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramTwo_, _ELE_DEFAULT_TYPE))
+	//		};
+	//		seQryPlan->setParamSet(
+	//			std::make_shared<core::se_huffman_decode_array_pset>(params));
+	//	}
+	//	auto wtQryPlan = std::make_shared<core::wavelet_decode_plan>();
+	//	{
+	//		core::parameters params = {
+	//				std::make_shared<core::opParamPlan>(seQryPlan),
+	//				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+	//		};
+	//		wtQryPlan->setParamSet(
+	//			std::make_shared<core::wavelet_decode_plan_pset>(params));
+	//	}
+	//	return wtQryPlan;
+	//	break;
+	//}
 	default:
 		return nullptr;
 	};
