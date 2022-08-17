@@ -40,6 +40,7 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	case compressionType::ZIP:
 	case compressionType::TTHRESH:
 	case compressionType::ZFP:
+	case compressionType::SZ:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Comp(
@@ -94,6 +95,7 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 	case compressionType::ZIP:
 	case compressionType::TTHRESH:
 	case compressionType::ZFP:
+	case compressionType::SZ:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Decomp(
@@ -299,6 +301,10 @@ std::pair<core::arrayId, std::string> getArrayIdName(compressionType compType, c
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_zfp,
 			baseName + "_" + compressionTypeToString(compressionType::ZFP));
+	case compressionType::SZ:
+		return std::make_pair<core::arrayId, std::string>(
+			baseId + msdb::dummy::arr_id_sz,
+			baseName + "_" + compressionTypeToString(compressionType::SZ));
 	}
 
 	return std::make_pair(baseId, baseName);

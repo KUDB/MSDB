@@ -24,6 +24,7 @@ static const int arr_id_lzw_huffman = 40;
 static const int arr_id_zip = 45;
 static const int arr_id_tthresh = 50;
 static const int arr_id_zfp = 55;
+static const int arr_id_sz = 60;
 
 msdb::Array getArrayAFL(
 	std::string arrName, compressionType compType = compressionType::RAW);
