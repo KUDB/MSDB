@@ -45,23 +45,28 @@ pArray sz3_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
         auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
         while (!cit->isEnd())
         {
-            auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
-            auto outChunk = outArr->makeChunk(cDesc);
-            outChunk->bufferRef(**cit);
-            outChunk->makeAllBlocks();
+            if (cit->isExist())
+            {
+                chunkId cid = cit->seqPos();
 
-            ////////////////////////////////////////
-            // 1. Serialize::decompressChunk
-            ////////////////////////////////////////
-            //this->compressChunk(arrId, attr, outChunk, currentThreadId);
-            ////////////////////////////////////////
+                auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
+                auto outChunk = outArr->makeChunk(cDesc);
+                outChunk->bufferRef(**cit);
+                outChunk->makeAllBlocks();
 
-            ////////////////////////////////////////
-            // 2. Parallel::decompressChunk
-            ////////////////////////////////////////
-            io_service_->post(boost::bind(&sz3_encode_action::compressChunk, this,
-                                          arrId, attr, outChunk, currentThreadId));
-            ////////////////////////////////////////
+                ////////////////////////////////////////
+                // 1. Serialize::decompressChunk
+                ////////////////////////////////////////
+                this->compressChunk(arrId, attr, outChunk, currentThreadId);
+                ////////////////////////////////////////
+
+                ////////////////////////////////////////
+                // 2. Parallel::decompressChunk
+                ////////////////////////////////////////
+                //io_service_->post(boost::bind(&sz3_encode_action::compressChunk, this,
+                //                              arrId, attr, outChunk, currentThreadId));
+                ////////////////////////////////////////
+            }
 
             ++(*cit);
         }

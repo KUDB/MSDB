@@ -111,22 +111,18 @@ void decompress(const char *inPath, const char *cmpPath, const char *decPath,
 template <class T>
 void decompress(char* in, char** out, size_t bytes, SZ::Config conf)
 {
-    printf("decompress <T>\n");
     SZ::Timer timer(true);
     *out = (char*)(SZ_decompress<T>(conf, in, bytes));
-    T* tOut = nullptr;
-    SZ_decompress<T>(conf, in, bytes, tOut);
-    *out = (char*)tOut;
     double compress_time = timer.stop();
  
     //printf("compression ratio = %f\n", conf.num * sizeof(T) * 1.0 / bytes);
     //printf("decompression time = %f seconds.\n", compress_time);
 }
 
-// extern "C" int szmain(int argc, const char *argv[]) ;
-// extern "C" int sz3lib(int argc, const char *argv[], char* inData, char** outData, size_t inDataBytes);
-extern "C" SZ3_DECLSPEC int szmain(int argc, const char *argv[]) ;
-extern "C" SZ3_DECLSPEC int sz3lib(int argc, const char *argv[], char* inData, char** outData, size_t inDataBytes);
+extern "C" int szmain(int argc, const char *argv[]) ;
+extern "C" int sz3lib(int argc, const char *argv[], char* inData, char** outData, size_t inDataBytes);
+// extern "C" SZ3_DECLSPEC int szmain(int argc, const char *argv[]) ;
+// extern "C" SZ3_DECLSPEC int sz3lib(int argc, const char *argv[], char* inData, char** outData, size_t inDataBytes);
 }
 
 #endif  //_SZ3_LIB_H_

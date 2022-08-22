@@ -126,10 +126,14 @@ void sz3Block<Ty_>::serialize(std::ostream& os)
 	}
 
 	char* out = nullptr;
-	size_t outBytes = sz3::sz3lib(argc, argv, (char*)this->getBuffer()->getData(), &out, this->getBuffer()->size());
+	int64_t outBytes = 0;
+	outBytes = sz3::sz3lib(argc, argv, (char*)this->getBuffer()->getData(), &out, this->getBuffer()->size());
 
-	os << outBytes;
+	os.write((char*)&outBytes, sizeof(int64_t));
 	os.write(out, outBytes);
+	//std::cout << "outBytes: " << outBytes << std::endl;
+
+	//if(out)	delete[] out;
 }
 
 template<typename Ty_>
@@ -158,17 +162,23 @@ void sz3Block<Ty_>::deserialize(std::istream& is)
 	const char* argv[] = {"", "-I", strTypeSize.c_str(), "-z", "IN_PATH", "-o", "OUT_PATH" };
 	size_t argc = 7;
 
-	size_t inBytes = 0;
-	is >> inBytes;
-	this->getDesc()->mSize_ = inBytes;
+	int64_t inBytes = 0;
+	is.read((char*)&inBytes, sizeof(int64_t));
 
+	
+	//std::shared_ptr<char[]> decodeOut(new char[this->getDesc()->mSize_]);
+	//std::shared_ptr<char[]> in(new char[inBytes]);
+	char* decodeOut = new char[this->getDesc()->mSize_];
+	char* in = new char[inBytes];
 
-	char* decodeOut = nullptr;
-	std::shared_ptr<char[]> in(new char[inBytes]);
-
-	size_t decodeBytes = sz3::sz3lib(argc, argv, in.get(), &decodeOut, inBytes);
-
+	is.read(in, inBytes);
+	size_t decodeBytes = sz3::sz3lib(argc, argv, in, &decodeOut, inBytes);
 	memcpy(this->getBuffer()->getData(), decodeOut, decodeBytes);
+
+	// TODO::Try-Catch to prevent memory leak
+
+	delete[] in;
+	delete[] decodeOut;
 }
 // ===========================
 

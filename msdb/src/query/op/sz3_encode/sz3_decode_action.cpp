@@ -57,19 +57,30 @@ void sz3_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 
 	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 	while (!cit->isEnd())
 	{
-		if (cit->isExist())
+		if (cit->needToMake())
 		{
 			chunkId cid = cit->seqPos();
+
 			//auto inChunk = this->makeInChunk(outArr, attrDesc, cid);
 			auto outChunk = outArr->makeChunk(attrDesc->id_, cid);
 			outChunk->bufferAlloc();
 			outChunk->makeAllBlocks();
 
+			////////////////////////////////////////
+			// 1. Serialize::decompressChunk
+			////////////////////////////////////////
+			//this->loadChunk(qry, currentThreadId, outArr, attrDesc->id_, outChunk);
+			////////////////////////////////////////
+
+			////////////////////////////////////////
+			// 2. Parallel::decompressChunk
+			////////////////////////////////////////
 			io_service_->post(boost::bind(&sz3_decode_action::loadChunk, this,
 										  qry, currentThreadId, outArr, attrDesc->id_, outChunk));
+			////////////////////////////////////////
 		}
 
 		++(*cit);
@@ -87,10 +98,10 @@ void sz3_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 
 void sz3_decode_action::loadChunk(pQuery qry, const size_t parentThreadId, pArray outArr, attributeId attrId, pChunk outChunk)
 {
-	auto threadId = getThreadId();
+	auto threadId = getThreadId() + 1;
 
 	//========================================//
-	qry->getTimer()->nextJob(threadId, this->name(), workType::IO);
+	qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
 	//----------------------------------------//
 
 	pSerializable serialChunk
