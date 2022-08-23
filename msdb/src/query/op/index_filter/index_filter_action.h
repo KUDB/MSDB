@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_INDEX_FILTER_ACTION_H_
 #define _MSDB_INDEX_FILTER_ACTION_H_
 
@@ -30,7 +30,7 @@ private:
 		int64_t readBlocks = 0;
 
 		inPredicate->setEvaluateFunc(attrDesc->type_);
-		auto inChunkItr = inArr->getChunkIterator(attrDesc->id_);
+		auto inChunkItr = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 
 		std::stringstream ss;
 		while (!inChunkItr->isEnd())

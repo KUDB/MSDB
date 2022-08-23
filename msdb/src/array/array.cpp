@@ -234,32 +234,59 @@ cpBitmap array::getChunkBitmap() const
 void array::copyChunkBitmap(cpBitmap chunkBitmap)
 {
 	this->globalChunkBitmap_ = std::make_shared<bitmap>(*chunkBitmap);
+
+	auto attrDesc = this->getDesc()->getAttrDescs();
+	for (auto attr : *attrDesc)
+	{
+		this->copyAttrChunkBitmap(attr->getId(), chunkBitmap, true);
+	}
 }
 void array::replaceChunkBitmap(pBitmap chunkBitmap)
 {
 	this->globalChunkBitmap_ = chunkBitmap;
+	// Copy for attr chunkBitmap
+	auto attrDesc = this->getDesc()->getAttrDescs();
+	for (auto attr : *attrDesc)
+	{
+		this->copyAttrChunkBitmap(attr->getId(), chunkBitmap, true);
+	}
 }
 void array::mergeChunkBitmap(cpBitmap chunkBitmap)
 {
 	this->globalChunkBitmap_->andMerge(*chunkBitmap);
+
+	auto attrDesc = this->getDesc()->getAttrDescs();
+	for (auto attr : *attrDesc)
+	{
+		this->mergeAttrChunkBitmap(attr->getId(), chunkBitmap, true);
+	}
 }
 
-void array::copyAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap)
+void array::copyAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap, bool globalUpdated)
 {
 	this->attrChunkBitmaps_[attrId] = nullptr;
 	this->attrChunkBitmaps_[attrId] = std::make_shared<bitmap>(*chunkBitmap);
-	this->mergeChunkBitmap(chunkBitmap);
+	if (!globalUpdated)
+	{
+		this->mergeChunkBitmap(chunkBitmap);
+	}
 }
-void array::replaceAttrChunkBitmap(const attributeId attrId, pBitmap chunkBitmap)
+void array::replaceAttrChunkBitmap(const attributeId attrId, pBitmap chunkBitmap, bool globalUpdated)
 {
 	this->attrChunkBitmaps_[attrId] = nullptr;
 	this->attrChunkBitmaps_[attrId] = chunkBitmap;
-	this->mergeChunkBitmap(chunkBitmap);
+	if (!globalUpdated)
+	{
+		this->mergeChunkBitmap(chunkBitmap);
+	}
 }
-void array::mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap)
+void array::mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap, bool globalUpdated)
 {
 	this->attrChunkBitmaps_[attrId]->andMerge(*chunkBitmap);
-	this->mergeChunkBitmap(chunkBitmap);
+	if (!globalUpdated)
+	{
+		this->mergeChunkBitmap(chunkBitmap);
+	}
 }
 
 void array::print()

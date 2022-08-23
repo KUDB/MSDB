@@ -60,7 +60,7 @@ void decode_raw_action::decode_rawAttribute(pArray outArr, pAttributeDesc attrDe
 
 	while (!cit->isEnd())
 	{
-		if (cit->isExist())
+		if (cit->needToMake())
 		{
 			chunkId cId = cit->seqPos();
 			auto outChunk = outArr->makeChunk(attrDesc->id_, cId);

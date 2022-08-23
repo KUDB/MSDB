@@ -37,6 +37,8 @@ public:
 	bool isExist() const;
 	bool isExist();
 	bool isExist(const chunkId cid) const;
+	// Bitmap is set, but chunk is not materialized
+	bool needToMake() const;
 	iterateMode getIterateMode() const;
 	const pBitmap getChunkBitmap() const;
 

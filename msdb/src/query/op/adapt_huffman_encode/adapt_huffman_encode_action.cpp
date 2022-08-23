@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/adapt_huffman_encode/adapt_huffman_encode_action.h>
 #include <system/storageMgr.h>
 #include <compression/adaptHuffmanChunk.h>
@@ -52,7 +52,7 @@ pArray adapt_huffman_encode_action::execute(std::vector<pArray>& inputArrays, pQ
 		}
 	}
 
-	BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+	BOOST_LOG_TRIVIAL(info) << "Total Save Chunk: " << mSizeTotal << " Bytes";
 	qry->getTimer()->pause(0);
 	//========================================//
 

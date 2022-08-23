@@ -11,6 +11,9 @@ namespace msdb
 {
 namespace dummy
 {
+static const int saveExpId = 4;
+static const int loadExpId = 5;
+
 msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string& filePath,
 								   const core::compressionType& compType = core::compressionType::NONE);
 

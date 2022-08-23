@@ -104,9 +104,9 @@ public:
 	void replaceChunkBitmap(pBitmap chunkBitmap);
 	void mergeChunkBitmap(cpBitmap chunkBitmap);		// TODO::pullout the method from array -> bitmap, andMerge, orMerge.... or operators
 
-	void copyAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap);
-	void replaceAttrChunkBitmap(const attributeId attrId, pBitmap chunkBitmap);
-	void mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap);
+	void copyAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap, bool globalUpdated = false);
+	void replaceAttrChunkBitmap(const attributeId attrId, pBitmap chunkBitmap, bool globalUpdated = false);
+	void mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap, bool globalUpdated = false);
 
 	void print();
 

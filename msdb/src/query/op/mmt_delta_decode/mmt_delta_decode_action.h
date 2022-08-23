@@ -43,7 +43,7 @@ public:
 		}
 		//auto arrMMTIndex = std::static_pointer_cast<mmt>(attrIndex);
 		auto mmtIndex = std::static_pointer_cast<MinMaxTreeImpl<Ty_>>(attrIndex);
-		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 		size_t wtLevel = inArr->getMaxLevel();
 		dimension chunkDim = inArr->getDesc()->getDimDescs()->getChunkDims();
 		dimension synopsisDim = chunkDim / pow(2, wtLevel + 1);
@@ -57,7 +57,7 @@ public:
 
 		while (!cit->isEnd())
 		{
-			if (cit->isExist())
+			if (cit->needToMake())
 			{
 				// Make new chunk
 				//auto cDesc = (**cit)->getDesc();

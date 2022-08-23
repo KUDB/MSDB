@@ -65,7 +65,7 @@ void compass_decode_action::decodeAttribute(pArray outArr, pAttributeDesc attrDe
 
 	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 	auto cBitmap = cit->getChunkBitmap();
 	while (!cit->isEnd())
 	{

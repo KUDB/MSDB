@@ -16,6 +16,7 @@
 #include <util/logger.h>
 #include <util/dataType.h>
 
+
 namespace msdb
 {
 namespace core
@@ -72,7 +73,7 @@ private:
 				////////////////////////////////////////
 				// 1. Serialize::decompressChunk
 				////////////////////////////////////////
-				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
+				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, currentThreadId);
 				////////////////////////////////////////
 
 				////////////////////////////////////////

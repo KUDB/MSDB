@@ -49,7 +49,7 @@ private:
 
 		while (!ocItr->isEnd())
 		{
-			if(ocItr->isExist())
+			if(ocItr->needToMake())
 			{
 				pChunk outChunk = outArr->makeChunk(attrDesc->id_, ocItr->seqPos());
 				outChunk->bufferAlloc();

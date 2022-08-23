@@ -57,10 +57,10 @@ void tthresh_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc
 
 	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 	while (!cit->isEnd())
 	{
-		if (cit->isExist())
+		if (cit->needToMake())
 		{
 			chunkId cid = cit->seqPos();
 			//auto inChunk = this->makeInChunk(outArr, attrDesc, cid);

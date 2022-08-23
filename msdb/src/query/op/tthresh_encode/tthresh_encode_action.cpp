@@ -42,23 +42,26 @@ pArray tthresh_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
         auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);
         while (!cit->isEnd())
         {
-            auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
-            auto outChunk = outArr->makeChunk(cDesc);
-            outChunk->bufferRef(**cit);
-            outChunk->makeAllBlocks();
+            if (cit->isExist())
+            {
+                auto cDesc = std::make_shared<chunkDesc>(*(*cit)->getDesc());
+                auto outChunk = outArr->makeChunk(cDesc);
+                outChunk->bufferRef(**cit);
+                outChunk->makeAllBlocks();
 
-            //========================================//
-            qry->getTimer()->nextWork(0, workType::IO);
-            //----------------------------------------//
-            pSerializable serialChunk
-                = std::static_pointer_cast<serializable>(outChunk);
-            storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-                                              serialChunk);
+                //========================================//
+                qry->getTimer()->nextWork(0, workType::IO);
+                //----------------------------------------//
+                pSerializable serialChunk
+                    = std::static_pointer_cast<serializable>(outChunk);
+                storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+                                                  serialChunk);
 
-            //========================================//
-            qry->getTimer()->nextWork(0, workType::COMPUTING);
-            //----------------------------------------//
-            mSizeTotal += serialChunk->getSerializedSize();
+                //========================================//
+                qry->getTimer()->nextWork(0, workType::COMPUTING);
+                //----------------------------------------//
+                mSizeTotal += serialChunk->getSerializedSize();
+            }
             ++(*cit);
         }
     }

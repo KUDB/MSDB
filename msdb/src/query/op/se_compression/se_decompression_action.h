@@ -55,7 +55,7 @@ private:
 		outAttrDesc->setParam(_STR_PARAM_SE_LEVEL_, std::to_string(maxLevel));
 
 		std::vector<uint64_t> offsets = this->getSeqOffInBand<Ty_>(outArr, maxLevel);		// To fast access band in serialized memory
-		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 
 		//----------------------------------------//
 		qry->getTimer()->nextWork(0, workType::PARALLEL);
@@ -65,11 +65,11 @@ private:
 
 		while (!cit->isEnd())
 		{
-			if(cit->isExist())
+			if(cit->needToMake())
 			{
 				chunkId cid = cit->seqPos();
 				coor chunkCoor = cit->coor();
-				auto inChunk = std::static_pointer_cast<seChunk<Ty_>>(**cit);
+				auto inChunk = std::static_pointer_cast<seChunk<Ty_>>(inArr->makeChunk(attrId, cid));
 				
 				// TODO::Check block coordinate, size, position, id etc...
 				// Flatten -> (shuffled) -> wavelet -> seacow
@@ -155,7 +155,7 @@ private:
 		auto threadId = getThreadId() + 1;
 
 		//========================================//
-		qry->getTimer()->nextJob(threadId, this->name(), workType::COMPUTING);
+		qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::COMPUTING, std::string("chunk::") + std::to_string(outChunk->getId()));
 		//----------------------------------------//
 		//auto maxLevel = outArr->getMaxLevel();
 		arrayId arrId = outArr->getId();
@@ -177,17 +177,13 @@ private:
 		this->requiredBitsFindingForChunk<Ty_>(inChunk, mmtIndex, maxLevel, hasNegative);
 
 		//----------------------------------------//
-		qry->getTimer()->nextWork(threadId, workType::IO);
+		qry->getTimer()->nextWork(threadId, workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
 		//----------------------------------------//
 
 		pSerializable serialChunk
 			= std::static_pointer_cast<serializable>(inChunk);
 		storageMgr::instance()->loadChunk(arrId, attrId, inChunk->getId(),
 											serialChunk);
-
-		//----------------------------------------//
-		qry->getTimer()->nextWork(threadId, workType::COMPUTING);
-		//----------------------------------------//
 
 		//outChunk->setLevel(inChunk->getLevel());
 		//outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());

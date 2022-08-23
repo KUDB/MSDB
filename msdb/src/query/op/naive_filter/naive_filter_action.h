@@ -30,7 +30,7 @@ private:
 
 
 		pChunkIterator inChunkItr = nullptr;
-		inChunkItr = inArr->getChunkIterator(attrDesc->id_);
+		inChunkItr = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 
 		//auto outChunkItr = outArr->getChunkIterator(attrDesc->id_);
 

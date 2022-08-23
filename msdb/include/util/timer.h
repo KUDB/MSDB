@@ -33,7 +33,6 @@ public:
 	std::map<std::string, float> job;
 	std::map<std::string, float> mainThreadJob;
 	std::map<std::string, float> workType;
-
 	std::map<std::string, float> jobWork;
 };
 
@@ -43,10 +42,10 @@ public:
 	timer();
 
 public:
-	void start(size_t threadId, const std::string& nextJobName, workType nextWorkType);
-	void nextWork(size_t threadId, workType nextWorkType);
-	void nextWork(size_t threadId, size_t parentThreadId, workType nextWorkType);
-	void nextJob(size_t threadId, const std::string& nextJobName, workType nextWorkType);
+	void start(size_t threadId, const std::string& nextJobName, workType nextWorkType, const std::string& memo = "");
+	void nextWork(size_t threadId, workType nextWorkType, const std::string& memo = "");
+	void nextWork(size_t threadId, size_t parentThreadId, workType nextWorkType, const std::string& memo = "");
+	void nextJob(size_t threadId, const std::string& nextJobName, workType nextWorkType, const std::string& memo = "");
 
 	void pause(size_t threadId);
 	void resume(size_t threadId, const std::string& nextJobName, workType nextWorkType);
@@ -64,8 +63,8 @@ public:
 
 
 protected:
-	void _start_NoLock_(size_t threadId, const std::string& nextJobName, workType nextWorkType);
-	void _nextWork_NoLock_(size_t threadId, workType nextWorkType);
+	void _start_NoLock_(size_t threadId, const std::string& nextJobName, workType nextWorkType, const std::string& memo = "");
+	void _nextWork_NoLock_(size_t threadId, workType nextWorkType, const std::string& nextMemo = "");
 
 private:
 	typedef struct checkPoint
@@ -74,6 +73,7 @@ private:
 		std::chrono::duration<double> time_;
 		size_t jobId;
 		workType stype_;
+		std::string memo_;
 	}checkPoint;
 
 private:
@@ -86,6 +86,8 @@ private:
 	std::map<size_t, size_t> curJobIds_;
 	std::map<size_t, std::chrono::system_clock::time_point> curJobTimes_;
 	std::map<size_t, std::string> jobName_;
+	std::map<size_t, std::string> curMemo_;
+	
 };
 }		// core
 }		// msdb

@@ -67,12 +67,12 @@ TEST(spiht_05_load, data_solar_sdo_1024x1024x512)
 	dummy::executeLoadArray(msdb::dummy::data_solar_sdo_1024x1024x512::arrName,
 							core::compressionType::SPIHT);
 }
-TEST(spiht_05_load, data_nexrad_16x1024x2048)
+TEST(spiht_05_load, data_nexrad_201711_64x24x1024x2048)
 {
-	dummy::data_nexrad_16x1024x2048::executeBuildArray(
+	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildArray(
 		core::materializedType::FLATTEN, core::compressionType::SPIHT);
 
-	dummy::executeLoadArray(msdb::dummy::data_nexrad_16x1024x2048::arrName,
+	dummy::executeLoadArray(msdb::dummy::data_nexrad_201711_64x24x1024x2048::arrName,
 							core::compressionType::SPIHT);
 }
 }		// experiments

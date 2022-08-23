@@ -16,27 +16,27 @@ timer::timer()
 {
 }
 
-void timer::start(size_t threadId, const std::string& nextJobName, workType nextWorkType)
+void timer::start(size_t threadId, const std::string& nextJobName, workType nextWorkType, const std::string& memo)
 {
 	//////////////////////////////
 	// LOCK
 	std::lock_guard<std::mutex> guard(this->mutexJobUpdate_);
 
-	this->_start_NoLock_(threadId, nextJobName, nextWorkType);
+	this->_start_NoLock_(threadId, nextJobName, nextWorkType, memo);
 	//////////////////////////////
 }
 
-void timer::nextWork(size_t threadId, workType nextWorkType)
+void timer::nextWork(size_t threadId, workType nextWorkType, const std::string& memo)
 {
 	//////////////////////////////
 	// LOCK
 	std::lock_guard<std::mutex> guard(this->mutexJobUpdate_);
 
-	this->_nextWork_NoLock_(threadId, nextWorkType);
+	this->_nextWork_NoLock_(threadId, nextWorkType, memo);
 	//////////////////////////////
 }
 
-void timer::nextWork(size_t threadId, size_t parentThreadId, workType nextWorkType)
+void timer::nextWork(size_t threadId, size_t parentThreadId, workType nextWorkType, const std::string& memo)
 {
 	//////////////////////////////
 	// LOCK
@@ -50,32 +50,35 @@ void timer::nextWork(size_t threadId, size_t parentThreadId, workType nextWorkTy
 		this->curJobType_[threadId] = nextWorkType;
 		this->jobName_[curJobId] = this->jobName_[parentThreadId];
 		this->curJobTimes_[threadId] = std::chrono::system_clock::now();
+		this->curMemo_[threadId] = memo;
 	}else
 	{
-		this->_nextWork_NoLock_(threadId, nextWorkType);
+		this->_nextWork_NoLock_(threadId, nextWorkType, memo);
 	}
 
 	//////////////////////////////
 }
 
-void timer::_start_NoLock_(size_t threadId, const std::string& nextJobName, workType nextWorkType)
+void timer::_start_NoLock_(size_t threadId, const std::string& nextJobName, workType nextWorkType, const std::string& memo)
 {
 	auto curJobId = this->getNextJobId();
 	this->curJobIds_[threadId] = curJobId;
 	this->curJobType_[threadId] = nextWorkType;
 	this->jobName_[curJobId] = nextJobName;
 	this->curJobTimes_[threadId] = std::chrono::system_clock::now();
+	this->curMemo_[threadId] = memo;
 }
 
-void timer::_nextWork_NoLock_(size_t threadId, workType nextWorkType)
+void timer::_nextWork_NoLock_(size_t threadId, workType nextWorkType, const std::string& nextMemo)
 {
 	std::chrono::duration<double> record = std::chrono::system_clock::now() - this->curJobTimes_[threadId];
-	this->records_.push_back({ threadId, record, this->curJobIds_[threadId], this->curJobType_[threadId] });
+	this->records_.push_back({ threadId, record, this->curJobIds_[threadId], this->curJobType_[threadId], this->curMemo_[threadId] });
 	this->curJobTimes_[threadId] = std::chrono::system_clock::now();
 	this->curJobType_[threadId] = nextWorkType;
+	this->curMemo_[threadId] = nextMemo;
 }
 
-void timer::nextJob(size_t threadId, const std::string& nextJobName, workType nextWorkType)
+void timer::nextJob(size_t threadId, const std::string& nextJobName, workType nextWorkType, const std::string& memo)
 {
 	//////////////////////////////
 	// LOCK
@@ -115,8 +118,8 @@ void timer::printTime(bool printDetail)
 	std::map<std::string, float> job;
 	std::map<std::string, float> mainThreadJob;
 	std::map<std::string, float> workType;
-
 	std::map<std::string, float> jobWork;
+	std::vector<std::tuple<std::string, float>> ioWorks;
 
 	for (int i = 0; i < this->records_.size(); i++)
 	{
@@ -163,6 +166,12 @@ void timer::printTime(bool printDetail)
 		} else
 		{
 			workType.insert(std::make_pair(strTimerWorkType[static_cast<int>(this->records_[i].stype_)], this->records_[i].time_.count()));
+		}
+
+		// To analysis IO works
+		if (this->records_[i].stype_ == workType::IO)
+		{
+			ioWorks.push_back({ this->records_[i].memo_, this->records_[i].time_.count() });
 		}
 
 		if (jobWork.find(jobName_[this->records_[i].jobId] + " / " + strTimerWorkType[static_cast<int>(this->records_[i].stype_)]) != jobWork.end())
@@ -213,6 +222,38 @@ void timer::printTime(bool printDetail)
 		BOOST_LOG_TRIVIAL(info) <<
 			boost::format("%1$.5f") % it->second << " [" <<
 			it->first << "]";
+	}
+	//////////////////////////////
+
+	//////////////////////////////
+	// IO Works Results
+	if (ioWorks.size())
+	{
+		double max = -1, min = 1, sum = 0;
+		int iMax = 0, iMin = 0;
+		for (int i = 0; i < ioWorks.size(); ++i)
+		{
+			auto t = ioWorks[i];
+			double value = std::get<1>(t);
+			if (value > max)
+			{
+				max = value;
+				iMax = i;
+			}
+			if (value < min)
+			{
+				min = value;
+				iMin = i;
+			}
+
+			sum += value;
+		}
+		double avg = sum * 1.0 / ioWorks.size();
+
+		BOOST_LOG_TRIVIAL(info) << "=====IO Works=====" << std::endl;
+		BOOST_LOG_TRIVIAL(info) << "Max (" << iMax << "): " << max << "/" << std::get<0>(ioWorks[iMax]) << std::endl;
+		BOOST_LOG_TRIVIAL(info) << "Min (" << iMin << "): " << min << "/" << std::get<0>(ioWorks[iMin]) << std::endl;
+		BOOST_LOG_TRIVIAL(info) << "Avg: " << avg << "(size: " << ioWorks.size() << ")" << std::endl;
 	}
 	//////////////////////////////
 }
@@ -311,8 +352,8 @@ std::string timer::getDetailResult()
 	std::map<std::string, float> job;
 	std::map<std::string, float> mainThreadJob;
 	std::map<std::string, float> workType;
-
 	std::map<std::string, float> jobWork;
+	std::vector<std::tuple<std::string, float>> ioWorks;
 
 	bool printDetail = false;
 
@@ -373,6 +414,12 @@ std::string timer::getDetailResult()
 			workType.insert(std::make_pair(strTimerWorkType[static_cast<int>(this->records_[i].stype_)], this->records_[i].time_.count()));
 		}
 
+		// To analysis IO works
+		if (this->records_[i].stype_ == workType::IO)
+		{
+			ioWorks.push_back({ this->records_[i].memo_, this->records_[i].time_.count() });
+		}
+
 		if (jobWork.find(jobName_[this->records_[i].jobId] + " / " + strTimerWorkType[static_cast<int>(this->records_[i].stype_)]) != jobWork.end())
 		{
 			jobWork.find(jobName_[this->records_[i].jobId] + " / " + strTimerWorkType[static_cast<int>(this->records_[i].stype_)])->second += this->records_[i].time_.count();
@@ -427,6 +474,38 @@ std::string timer::getDetailResult()
 		ss <<
 			boost::format("%1$.5f") % it->second << " [" <<
 			it->first << "]" << std::endl;
+	}
+	//////////////////////////////
+
+	//////////////////////////////
+	// IO Works Results
+	if (ioWorks.size())
+	{
+		double max = -1, min = 1, sum = 0;
+		int iMax = 0, iMin = 0;
+		for (int i = 0; i < ioWorks.size(); ++i)
+		{
+			auto t = ioWorks[i];
+			double value = std::get<1>(t);
+			if (value > max)
+			{
+				max = value;
+				iMax = i;
+			}
+			if (value < min)
+			{
+				min = value;
+				iMin = i;
+			}
+
+			sum += value;
+		}
+		double avg = sum * 1.0 / ioWorks.size();
+
+		ss << "=====IO Works=====" << std::endl;
+		ss << "Max (" << iMax << "): " << max << "/" << std::get<0>(ioWorks[iMax]) << std::endl;
+		ss << "Min (" << iMin << "): " << min << "/" << std::get<0>(ioWorks[iMin]) << std::endl;
+		ss << "Avg: " << avg << "(size: " << ioWorks.size() << ")" << std::endl;
 	}
 	//////////////////////////////
 

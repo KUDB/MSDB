@@ -55,20 +55,23 @@ void opAction::getArrayStatus(pArray arr)
 		auto cit = arr->getChunkIterator(attr->id_, iterateMode::EXIST);
 		while (!cit->isEnd())
 		{
-			++numChunks;
-			serialSize += (*cit)->getSerializedSize();
-			ss << cit->seqPos() << "/" << (*cit)->getSerializedSize() << ", ";
-			auto bit = (*cit)->getBlockIterator();
-			while (!bit->isEnd())
+			if (cit->isExist())
 			{
-
-				if (bit->isExist())
+				++numChunks;
+				serialSize += (*cit)->getSerializedSize();
+				ss << cit->seqPos() << "/" << (*cit)->getSerializedSize() << ", ";
+				auto bit = (*cit)->getBlockIterator();
+				while (!bit->isEnd())
 				{
-					++numBlocks;
-				}
+					if (bit->isExist())
+					{
+						++numBlocks;
+					}
 
-				++(*bit);
+					++(*bit);
+				}
 			}
+
 
 			++(*cit);
 		}
@@ -111,10 +114,18 @@ void opAction::threadCreate()
 }
 void opAction::threadStop()
 {
+	/*
+	 * This will stop the io_service_ processing loop.
+	 * Any tasks you add behind this point will not execute
+	 */
 	this->io_service_->stop();
 }
 void opAction::threadJoin()
 {
+	/*
+	 * Will wait till all the threads in the thread pool are finished 
+	 * with their assigned tasks and 'join' them.
+	 */
 	this->threadpool_.join_all();
 }
 const int opAction::getDefaultThreadNum()
