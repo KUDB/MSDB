@@ -35,7 +35,7 @@ public:
 						 pArray outArr, pArray inArr,
 						 pAttributeDesc attrDesc, pQuery qry)
 	{
-		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 		auto cBitmap = cit->getChunkBitmap();
 
 		auto attrId = attrDesc->id_;

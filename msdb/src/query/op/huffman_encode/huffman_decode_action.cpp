@@ -54,7 +54,7 @@ void huffman_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc
 
 	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 	auto cBitmap = cit->getChunkBitmap();
 	while (!cit->isEnd())
 	{

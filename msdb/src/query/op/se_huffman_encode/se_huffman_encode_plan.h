@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_SE_HUFFMAN_ENCODE_PLAN_H_
 #define _MSDB_OP_SE_HUFFMAN_ENCODE_PLAN_H_
 

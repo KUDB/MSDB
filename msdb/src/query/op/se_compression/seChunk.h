@@ -1021,6 +1021,14 @@ bit_cnt_type getRBitFromMMT(mmtNode node, bool hasNegative = true)
 	return std::max((bit_cnt_type)abs_(node->bMax_), (bit_cnt_type)abs_(node->bMin_)) + static_cast<char>(hasNegative);
 }
 
+template <typename Ty_, typename mmtNode>
+bit_cnt_type getRBitFromMMTForDetailBlock(mmtNode node, bool hasNegative = true)
+{
+	Ty_ min = boost::any_cast<Ty_>(node->min_);
+	Ty_ max = boost::any_cast<Ty_>(node->max_);
+	return msb<Ty_>(max - min);
+}
+
 template <typename Ty_>
 bit_cnt_type getRBitFromMMT(Ty_ max, Ty_ min, bit_cnt_type order, bool hasNegative = true)
 {

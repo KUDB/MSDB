@@ -23,6 +23,17 @@ msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string
 	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
 	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
 
+	_MSDB_TRY_BEGIN
+	{
+		int expTrial = 0;
+		int method = 0;
+		dummy::tearDownQuery(qry.getQueryObj(), saveExpId, expTrial, qry.getQueryObj()->getArrayDesc()->id_, method);
+	}
+	_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "experimentIndexFilterQry::Query recording error";
+	}
+
 	return qry;
 }
 msdb::Query executeLoadArray(const std::string& arrName, const core::compressionType& compType)
@@ -46,6 +57,17 @@ msdb::Query executeLoadArray(const std::string& arrName, const core::compression
 	}
 	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
 	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
+
+	_MSDB_TRY_BEGIN
+	{
+		int expTrial = 0;
+		int method = 0;
+		dummy::tearDownQuery(qry.getQueryObj(), loadExpId, expTrial, qry.getQueryObj()->getArrayDesc()->id_, method);
+	}
+	_MSDB_CATCH_ALL
+	{
+		BOOST_LOG_TRIVIAL(error) << "experimentIndexFilterQry::Query recording error";
+	}
 
 	return qry;
 }

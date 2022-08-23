@@ -116,7 +116,7 @@ void storageMgr::loadChunk(const arrayId arrId, const attributeId attrId, const 
 						  strChunkFilExtension);
 		serialObj->deserialize(fs);
 #ifndef NDEBUG
-		BOOST_LOG_TRIVIAL(trace) << "Load Chunk[" << chkId << "] : " << serialObj->getSerializedSize() << " Bytes" << std::endl;
+		BOOST_LOG_TRIVIAL(debug) << "Load Chunk[" << chkId << "] : " << serialObj->getSerializedSize() << " Bytes" << std::endl;
 #endif
 
 		fs.close();
@@ -162,7 +162,7 @@ void storageMgr::saveChunk(const arrayId arrId, const attributeId attrId, const 
 						  strChunkFilExtension);
 		serialObj->serialize(fs);
 #ifndef NDEBUG
-		BOOST_LOG_TRIVIAL(trace) << "Save Chunk[" << attrId << ":" << chkId << "] : " << serialObj->getSerializedSize() << " Bytes";
+		BOOST_LOG_TRIVIAL(debug) << "Save Chunk[" << attrId << ":" << chkId << "] : " << serialObj->getSerializedSize() << " Bytes";
 #endif
 		fs.close();
 	}

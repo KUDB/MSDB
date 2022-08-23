@@ -65,7 +65,7 @@ private:
 
 		while (!cit->isEnd())
 		{
-			if (cit->isExist())
+			if (cit->needToMake())
 			{
 				// make chunk
 				//chunkId cid = cit->seqPos();

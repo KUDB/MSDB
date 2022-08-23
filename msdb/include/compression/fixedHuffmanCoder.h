@@ -86,7 +86,7 @@ private:
 			//BOOST_LOG_TRIVIAL(trace) << "[" << x << "]: " << boost::math::pdf(ndNarrow, (double)x) << "+" << boost::math::pdf(ndWide, (double)x) << "=" << freq[x];
 		}
 
-		this->printFreq(freq);
+		//this->printFreq(freq);
 	}
 
 	void printFreq(std::vector<size_t>& freq)

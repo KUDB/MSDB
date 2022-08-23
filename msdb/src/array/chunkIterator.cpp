@@ -47,7 +47,10 @@ bool chunkIterator::isExist()
 bool chunkIterator::isExist(const chunkId cid) const
 {
 	return (*this->chunkBitmap_)[cid] && this->chunks_ != nullptr && (this->chunks_->find(cid) != this->chunks_->end());
-	//&& this->chunks_->find(cid) != this->chunks_->end();
+}
+bool chunkIterator::needToMake() const
+{
+	return (*this->chunkBitmap_)[this->seqPos_] && (this->chunks_->find(this->seqPos_) == this->chunks_->end());
 }
 
 iterateMode chunkIterator::getIterateMode() const

@@ -12,7 +12,7 @@ namespace experiments
 static const int rangeFilterValueSeed = 21020;
 static const int rangeFilterExpId = 15;
 static const int numTests = 3;
-static const std::vector<float> rangeSelectivity({10, 20, 30, 40});
+static const std::vector<float> rangeSelectivity({0.1, 10, 20, 30, 40});
 
 Domain getRandomRange(const core::coordinates& dims, const float selectivity);
 
