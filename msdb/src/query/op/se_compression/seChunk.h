@@ -148,24 +148,6 @@ public:
 		{
 			assert(bandDims[d] > 0);	// Level is too high for block dim
 		}
-		
-		////////////////////////////////////////
-		// TODO::Remove 53
-		//if (this->getId() == 53)
-		//{
-		//	BOOST_LOG_TRIVIAL(debug) << "BlockDims: " << inBlockDims.toString();
-		//	BOOST_LOG_TRIVIAL(debug) << "BandDims: " << bandDims.toString();
-		//	BOOST_LOG_TRIVIAL(debug) << "NumBandInLevel: " << numBandsInLevel;
-
-		//	auto size = this->rBitFromDelta.size();
-		//	for (int i = 0; i < size; ++i)
-		//	{
-		//		BOOST_LOG_TRIVIAL(debug) << "[" << i << "]: " << static_cast<int64_t>(this->rBitFromMMT[i])
-		//			<< "<-(" << static_cast<int64_t>(this->rBitFromMMT[i]- this->rBitFromDelta[i]) << ")->"
-		//			<< static_cast<int64_t>(this->rBitFromDelta[i]);
-		//	}
-		//}
-		////////////////////////////////////////
 	#endif
 
 		size_t seqId = 0;
@@ -188,7 +170,6 @@ public:
 				{
 					this->serializeBand(bs, myBlock, seqId, band, bandDims);
 				}
-				//this->serializeBand(bs, myBlock, seqId, band, bandDims);
 			}
 
 		#ifndef NDEBUG
@@ -197,11 +178,9 @@ public:
 		#endif
 		}
 
-		//this->serializeChildLevelBand<Ty_>(bs, myBlock, seqId, bandDims, numBandsInLevel);
 		this->serializeChildLevelBand(bs, myBlock, seqId, bandDims, numBandsInLevel);
 	}
 
-	//template<typename Ty_>
 	void serializeBand(bstream& bs, pBlock myBlock,
 					   size_t seqId, size_t bandId, dimension& bandDims)
 	{
@@ -222,14 +201,10 @@ public:
 		}
 
 		this->serializeGap(bs, rbFromMMT - rbFromDelta);
-		///// >> 220526 SIGNED MOD << /////
 		if (rbFromDelta == 0)
 		{
 			return;
 		}
-		///// >> 220526 SIGNED ORI << /////
-		// None
-		///// -- 220526 SIGNED END -- /////
 
 		bs << setw(rbFromDelta);							// TODO::rbFromDelta=0일 경우 8bit 모두 사용해서 값이 입력됨
 		Ty_ signMask = 0x1 << rbFromDelta - 1;
@@ -237,33 +212,19 @@ public:
 		auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
 		while (!bItemItr->isEnd())
 		{
-			//Ty_ value = (**bItemItr).get<Ty_>();
-			//bs << (**bItemItr).get<Ty_>();
-			//++(*bItemItr);
-
 			Ty_ value = (**bItemItr).get<Ty_>();
-			//value -= this->min_;
 
-			///// >> 220526 SIGNED MOD << /////
 			if (value & signMask)
 			{
 				value = (Ty_)(~value) + 1;
 				value |= signMask;
 			}
-			///// >> 220526 SIGNED ORI << /////
-			//if (value < 0)
-			//{
-			//	value = abs_(value);
-			//	value |= signMask;
-			//}
-			///// -- 220526 SIGNED END -- /////
 
 			bs << value;
 			++(*bItemItr);
 		}
 	}
 
-	//template <typename Ty_>
 	void serializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
 	{
 		auto dSize = this->getDSize();
@@ -315,158 +276,17 @@ public:
 							bs << setw(rbFromDelta);
 							Ty_ signMask = 0x1 << rbFromDelta - 1;
 
-							std::list<Ty_> valueList;
 							while (!bItemItr->isEnd())
 							{
 								Ty_ value = (**bItemItr).get<Ty_>();
-
-								if (this->encodeValueRepeatLevel_ > 0)
+								if (value & signMask)
 								{
-									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
-									if (value == this->encodePrevValue_)
-									{
-										valueList.push_back(value);
-										if (valueList.size() == pow(2, this->encodeValueRepeatLevel_))
-										{
-											//BOOST_LOG_TRIVIAL(debug) << static_cast<int64_t>(value) << "=equal=" << static_cast<int64_t>(this->encodePrevValue_);
-											//BOOST_LOG_TRIVIAL(debug) << "Size: " << pow(2, this->encodeValueRepeatLevel_);
-											bs << setw(1);
-											bs << 0x1;		// set True
-											valueList.clear();
-											++(this->encodeValueRepeatLevel_);
-										}
-									}
-									else
-									{
-										//BOOST_LOG_TRIVIAL(debug) << static_cast<int64_t>(value) << "<diff>" << static_cast<int64_t>(this->encodePrevValue_);
-										bs << setw(1);
-										bs << 0x0;		// set False
-
-										// out the values in List
-										bs << setw(rbFromDelta);
-										for (Ty_ v : valueList)
-										{
-											//BOOST_LOG_TRIVIAL(debug) << "bs << v: " << static_cast<int64_t>(v);
-											if (v & signMask)
-											{
-												v = (Ty_)(~v) + 1;
-												v |= signMask;
-											}
-											bs << v;
-										}
-										valueList.clear();
-
-										//BOOST_LOG_TRIVIAL(debug) << "bs << v: " << static_cast<int64_t>(value);
-										// out the current value
-										this->encodePrevValue_ = value;
-										if (value & signMask)
-										{
-											value = (Ty_)(~value) + 1;
-											value |= signMask;
-										}
-										bs << value;
-										--(this->encodeValueRepeatLevel_);
-									}
+									value = (Ty_)(~value) + 1;
+									value |= signMask;
 								}
-								else
-								{
-									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
-									//BOOST_LOG_TRIVIAL(debug) << "bs<<value: " << static_cast<int64_t>(value);
-
-									if (value == this->encodePrevValue_)
-									{
-										//BOOST_LOG_TRIVIAL(debug) << "Equal";
-										++(this->encodeValueRepeatLevel_);
-									}
-									else
-									{
-										//BOOST_LOG_TRIVIAL(debug) << "Diff";
-										--(this->encodeValueRepeatLevel_);
-									}
-									this->encodePrevValue_ = value;
-
-									// out the current value
-									bs << setw(rbFromDelta);
-									if (value & signMask)
-									{
-										value = (Ty_)(~value) + 1;
-										value |= signMask;
-									}
-									bs << value;
-								}
-
-								////////////////////////////////////////
-								//if (value == this->encodePrevValue_)
-								//{
-								//	valueList.push_back(value);
-
-								//	if (this->encodeValueRepeatLevel_ > 0)
-								//	{
-								//		if (valueList.size() == pow(2, this->encodeValueRepeatLevel_))
-								//		{
-								//			bs << setw(1);
-								//			bs << 0x1;		// set True
-								//			valueList.clear();
-								//			++(this->encodeValueRepeatLevel_);
-								//		}
-								//	}
-								//	else
-								//	{
-								//		assert(valueList.size() == 1);
-
-								//		// out the current value
-								//		bs << setw(rbFromDelta);
-								//		if (value & signMask)
-								//		{
-								//			value = (Ty_)(~value) + 1;
-								//			value |= signMask;
-								//		}
-								//		bs << value;
-								//		++(this->encodeValueRepeatLevel_);
-								//	}
-								//}
-								//else
-								//{
-								//	if (this->encodeValueRepeatLevel_ > 0)
-								//	{
-								//		bs << setw(1);
-								//		bs << 0x0;		// set False
-								//	}
-
-								//	this->encodePrevValue_ = value;
-								//	--(this->encodeValueRepeatLevel_);
-
-								//	// out the values in List
-								//	bs << setw(rbFromDelta);
-								//	for (Ty_ v : valueList)
-								//	{
-								//		if (v & signMask)
-								//		{
-								//			v = (Ty_)(~v) + 1;
-								//			v |= signMask;
-								//		}
-								//		bs << v;
-								//	}
-								//	valueList.clear();
-
-								//	// out the current value
-								//	if (value & signMask)
-								//	{
-								//		value = (Ty_)(~value) + 1;
-								//		value |= signMask;
-								//	}
-								//	bs << value;
-								//}
+								bs << value;
 
 								++(*bItemItr);
-							}
-
-							if (valueList.size())
-							{
-								bs << setw(1);
-								bs << 0x1;		// set True
-								valueList.clear();
-								++(this->encodeValueRepeatLevel_);
 							}
 						}
 					}
@@ -589,103 +409,12 @@ public:
 				*pValue = (Ty_)(~*pValue) + 1;
 				*pValue |= signMask;
 			}
-			//*pValue += this->min_;
-
-			//Ty_ value = 0;
-			//bs >> value;
-			//if (value & signMask)
-			//{
-			//	value &= negativeMask;
-			//	value *= -1;
-			//	value |= signBit;	// for 128 (1000 0000)
-			//}
-
-			//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
 		}
-
-		///// >> 220526 SIGNED ORI << /////
-		//bs >> setw(rbFromDelta);
-		//Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
-		//Ty_ negativeMask = (Ty_)-1 ^ signMask;
-		//Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
-
-		//auto bItemItr = myBlock->getItemRangeIterator(getBandRange(bandId, bandDims));
-
-		////////////////////////////////
-		//// 01
-		//auto spOffset = bItemItr->seqPos() * sizeof(Ty_);
-		//auto itemCapa = bandDims.area();
-		//char* spData = (char*)this->getBuffer()->getData() + spOffset;
-
-		//if ((Ty_)-1 < 0)
-		//{
-		//	// Ty_ has negative values
-		//	for (int i = 0; i < itemCapa; ++i)
-		//	{
-		//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-		//		*pValue = 0;
-		//		bs >> *pValue;
-		//		if (*pValue & signMask)
-		//		{
-		//			*pValue &= negativeMask;
-		//			*pValue *= -1;
-		//			*pValue |= signBit;
-		//		}
-		//		//*pValue += this->min_;
-
-		//		//Ty_ value = 0;
-		//		//bs >> value;
-		//		//if (value & signMask)
-		//		//{
-		//		//	value &= negativeMask;
-		//		//	value *= -1;
-		//		//	value |= signBit;	// for 128 (1000 0000)
-		//		//}
-
-		//		//memcpy(spData + this->tileOffset_[i], &value, sizeof(Ty_));
-		//	}
-		//}
-		//else
-		//{
-		//	// Ty_ only has positive values
-		//	for (int i = 0; i < itemCapa; ++i)
-		//	{
-		//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-		//		*pValue = 0;
-		//		bs >> *pValue;
-		//	}
-		//}
-		//////////////////////////////
-		///// -- 220526 SIGNED END -- /////
-
-
-		//////////////////////////////
-		// 02
-		//while (!bItemItr->isEnd())
-		//{
-		//	Ty_ value = 0;
-		//	bs >> value;
-		//	if (value & signMask)
-		//	{
-		//		value &= negativeMask;
-		//		value *= -1;
-		//		value |= signBit;	// for 128 (1000 0000)
-		//	}
-
-		//	(**bItemItr).set<Ty_>(value);
-		//	++(*bItemItr);
-		//}
-		//////////////////////////////
 	}
 
 	//template <typename Ty_>
 	void deserializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
 	{
-		this->encodePrevValue_ = 0;
-		this->encodeValueRepeatLevel_ = 1;
-
 		auto dSize = this->getDSize();
 		for (size_t level = 1; level <= this->level_; ++level)
 		{
@@ -748,148 +477,25 @@ public:
 							Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
 							char repeatFlag = 0;
 
-							//////////////////////////////
-							// 01
 							for (size_t i = 0; i < itemCapa; ++i)
 							{
-								if (this->encodeValueRepeatLevel_ > 0)
+								Ty_ value = 0;
+								auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
+
+								*pValue = 0;
+								bs >> *pValue;
+								if (*pValue & signMask)
 								{
-									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
-
-									bs >> setw(1);
-									bs >> repeatFlag;
-
-									if (repeatFlag)
-									{
-										for (int j = 0; j < pow(2, this->encodeValueRepeatLevel_) && i < itemCapa; ++j, ++i)
-										{
-											auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-											*pValue = this->encodePrevValue_;
-										}
-
-										//BOOST_LOG_TRIVIAL(debug) << "=equal=" << static_cast<int64_t>(this->encodePrevValue_);
-										//BOOST_LOG_TRIVIAL(debug) << "Size: " << pow(2, this->encodeValueRepeatLevel_);
-
-										++(this->encodeValueRepeatLevel_);
-										--i;
-									}
-									else
-									{
-										bs >> setw(rbFromDelta);
-
-										Ty_ value = 0;
-										do
-										{
-											auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-											*pValue = 0;
-											bs >> *pValue;
-											if (*pValue & signMask)
-											{
-												*pValue = (Ty_)(~*pValue) + 1;
-												*pValue |= signMask;
-											}
-											value = *pValue;
-											++i;
-											//if (value == this->encodePrevValue_)
-											//{
-											//	BOOST_LOG_TRIVIAL(debug) << "Equal";
-											//}
-											//BOOST_LOG_TRIVIAL(debug) << "bs >> v: " << static_cast<int64_t>(value);
-										} while (value == this->encodePrevValue_ && i < itemCapa);
-										--i;
-
-										//BOOST_LOG_TRIVIAL(debug) << static_cast<int64_t>(value) << "<diff>" << static_cast<int64_t>(this->encodePrevValue_);
-
-										this->encodePrevValue_ = value;
-										--(this->encodeValueRepeatLevel_);
-									}
+									*pValue = (Ty_)(~*pValue) + 1;
+									*pValue |= signMask;
 								}
-								else
-								{
-									//BOOST_LOG_TRIVIAL(debug) << "Level: " << this->encodeValueRepeatLevel_;
-									
-									bs >> setw(rbFromDelta);
-
-									auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-									*pValue = 0;
-									bs >> *pValue;
-									if (*pValue & signMask)
-									{
-										*pValue = (Ty_)(~*pValue) + 1;
-										*pValue |= signMask;
-									}
-
-									//BOOST_LOG_TRIVIAL(debug) << "bs>>value: " << static_cast<int64_t>(*pValue);
-									
-									if (*pValue == this->encodePrevValue_)
-									{
-										//BOOST_LOG_TRIVIAL(debug) << "Equal";
-										++(this->encodeValueRepeatLevel_);
-									}
-									else
-									{
-										//BOOST_LOG_TRIVIAL(debug) << "Diff";
-										--(this->encodeValueRepeatLevel_);
-									}
-									this->encodePrevValue_ = (Ty_)*pValue;
-								}
+								value = *pValue;
+								//if (value == this->encodePrevValue_)
+								//{
+								//	BOOST_LOG_TRIVIAL(debug) << "Equal";
+								//}
+								//BOOST_LOG_TRIVIAL(debug) << "bs >> v: " << static_cast<int64_t>(value);
 							}
-
-							//////////////////////////////
-							///// >> 220526 SIGNED ORI << /////
-							//bs >> setw(rbFromDelta);
-							//Ty_ signMask = (Ty_)(0x1 << (rbFromDelta - 1));
-							//Ty_ negativeMask = (Ty_)-1 ^ signMask;
-							//Ty_ signBit = (Ty_)(0x1 << (sizeof(Ty_) * CHAR_BIT - 1));
-
-							////////////////////////////////
-							//// 01
-							//if ((Ty_)-1 < 0)
-							//{
-							//	for (size_t i = 0; i < itemCapa; ++i)
-							//	{
-							//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-							//		*pValue = 0;
-							//		bs >> *pValue;
-							//		if (*pValue & signMask)
-							//		{
-							//			*pValue &= negativeMask;
-							//			*pValue *= -1;
-							//			*pValue |= signBit;
-							//		}
-							//	}
-							//} else
-							//{
-							//	for (size_t i = 0; i < itemCapa; ++i)
-							//	{
-							//		auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-
-							//		*pValue = 0;
-							//		bs >> *pValue;
-							//	}
-							//}
-							////////////////////////////////
-							///// -- 220526 SIGNED END -- /////
-
-							//////////////////////////////
-							// 02
-							//while (!bItemItr->isEnd())
-							//{
-							//	Ty_ value = 0;
-							//	bs >> value;
-							//	if (value & signMask)
-							//	{
-							//		value &= negativeMask;
-							//		value *= -1;
-							//		value |= signBit;	// for 128 (1000 0000)
-							//	}
-							//
-							//	(**bItemItr).set<Ty_>(value);
-							//	++(*bItemItr);
-							//}
-							//////////////////////////////
 						}
 						else
 						{

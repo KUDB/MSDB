@@ -51,18 +51,18 @@ void lzw_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 	size_t currentThreadId = 0;
 
 	//========================================//
-	qry->getTimer()->nextWork(0, workType::PARALLEL);
+	qry->getTimer()->nextWork(currentThreadId, workType::PARALLEL);
 	//----------------------------------------//
 
 	this->threadCreate();
 
-	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+	auto cit = outArr->getChunkIterator(attrDesc->id_, iterateMode::ALL);
 	auto cBitmap = cit->getChunkBitmap();
 	while (!cit->isEnd())
 	{
-		chunkId cid = cit->seqPos();
-		if (cBitmap->isExist(cid))
+		if(cit->needToMake())
 		{
+			chunkId cid = cit->seqPos();
 			auto outChunk = outArr->makeChunk(attrDesc->id_, cid);
 			outChunk->makeAllBlocks();
 
@@ -77,7 +77,7 @@ void lzw_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 	this->threadJoin();
 
 	//----------------------------------------//
-	qry->getTimer()->nextWork(0, workType::COMPUTING);
+	qry->getTimer()->nextWork(currentThreadId, workType::COMPUTING);
 	//========================================//
 
 	this->getArrayStatus(outArr);
@@ -85,10 +85,10 @@ void lzw_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQ
 
 void lzw_decode_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId)
 {
-	auto threadId = getThreadId();
+	auto threadId = getThreadId() + 1;
 
 	//========================================//
-	qry->getTimer()->nextJob(threadId, this->name(), workType::IO);
+	qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
 	//----------------------------------------//
 
 	pSerializable serialChunk
@@ -97,35 +97,8 @@ void lzw_decode_action::loadChunk(pArray outArr, pChunk outChunk, attributeId at
 									  serialChunk);
 
 	//----------------------------------------//
-	qry->getTimer()->nextWork(threadId, workType::COMPUTING);
-	//----------------------------------------//
-
-	//outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
-	//outChunk->makeBlocks();
-	//outChunk->bufferCopy(inChunk);
-	//outChunk->setSerializedSize(inChunk->getSerializedSize());
-
-	//----------------------------------------//
 	qry->getTimer()->pause(threadId);
 	//========================================//
 }
-
-//pLzwChunk lzw_decode_action::makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid)
-//{
-//	auto inChunkDesc = std::make_shared<chunkDesc>(*inArr->getChunkDesc(attrDesc->id_, cid));
-//	auto inChunk = std::make_shared<lzwChunk>(inChunkDesc);
-//	auto blockBitmap = this->getPlanBlockBitmap(cid);
-//	if (blockBitmap)
-//	{
-//		inChunk->copyBlockBitmap(blockBitmap);
-//	} else
-//	{
-//		// If there were no bitmap, set all blocks as true.
-//		inChunk->replaceBlockBitmap(std::make_shared<bitmap>(inChunk->getBlockCapacity(), true));
-//	}
-//	inChunk->makeBlocks();
-//
-//	return inChunk;
-//}
 }		// core
 }		// msdb

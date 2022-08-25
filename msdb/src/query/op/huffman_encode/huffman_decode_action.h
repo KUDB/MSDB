@@ -23,7 +23,6 @@ public:
 private:
 	void loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry);
 	void loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t paraentThreadId);
-	//pHuffmanChunk makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid);
 };
 }		// core
 }		// msdb

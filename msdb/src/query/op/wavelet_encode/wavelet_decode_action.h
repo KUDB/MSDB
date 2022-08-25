@@ -99,10 +99,10 @@ private:
 							 const coor outChunkCoor,
 							 pWavelet w, const size_t maxLevel, pQuery qry, const size_t parentThreadId)
 	{
-		auto threadId = getThreadId();
+		auto threadId = getThreadId() + 1;
 
 		//========================================//
-		qry->getTimer()->nextJob(threadId, this->name(), workType::COMPUTING);
+		qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::COMPUTING);
 		//----------------------------------------//
 		
 		auto chunkDims = outArr->getDesc()->getDimDescs()->getChunkDims();

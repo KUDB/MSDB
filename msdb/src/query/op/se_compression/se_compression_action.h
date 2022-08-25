@@ -15,7 +15,7 @@
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <util/logger.h>
 #include <util/dataType.h>
-
+#include <util/threadUtil.h>
 
 namespace msdb
 {
@@ -73,14 +73,14 @@ private:
 				////////////////////////////////////////
 				// 1. Serialize::decompressChunk
 				////////////////////////////////////////
-				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, currentThreadId);
+				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId);
 				////////////////////////////////////////
 
 				////////////////////////////////////////
 				// 2. Parallel::decompressChunk
 				////////////////////////////////////////
 				io_service_->post(boost::bind(&se_compression_action::compressChunk<Ty_>, this,
-											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, currentThreadId));
+											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId));
 				////////////////////////////////////////
 
 			}
@@ -127,12 +127,19 @@ private:
 					   std::shared_ptr<wtChunk<Ty_>> inChunk,
 					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 					   dimension& sourceChunkDim, bool hasNegative,
+					   pQuery qry,
 					   const size_t parentThreadId)
 	{
 	#ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "Chunkcoor: " << chunkCoor.toString() << " / MMT NODE: " << mNode->toString<Ty_>();
 		//assert(outChunk->rBitFromMMT <= sizeof(Ty_) * CHAR_BIT);
 	#endif
+
+		auto threadId = getThreadId() + 1;
+
+		//========================================//
+		qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::COMPUTING, std::string("chunk::") + std::to_string(outChunk->getId()));
+		//----------------------------------------//
 
 		size_t dSize = inChunk->getDSize();
 
@@ -158,9 +165,18 @@ private:
 											bandDims, inChunk->getLevel(),
 											numBandsInLevel, hasNegative);
 
+
+		//----------------------------------------//
+		qry->getTimer()->nextWork(threadId, workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
+		//----------------------------------------//
+
 		auto attr = outChunk->getDesc()->attrDesc_;
 		storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
 										  std::static_pointer_cast<serializable>(outChunk));
+
+		//----------------------------------------//
+		qry->getTimer()->pause(threadId);
+		//========================================//
 	}
 
 	template <class Ty_>

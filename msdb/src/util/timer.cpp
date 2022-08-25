@@ -86,10 +86,11 @@ void timer::nextJob(size_t threadId, const std::string& nextJobName, workType ne
 
 	if (curJobIds_.find(threadId) == curJobIds_.end())
 	{
-		this->_start_NoLock_(threadId, nextJobName, nextWorkType);
+		this->_start_NoLock_(threadId, nextJobName, nextWorkType, memo);
 	}else
 	{
-		this->_nextWork_NoLock_(threadId, nextWorkType);
+		this->_nextWork_NoLock_(threadId, nextWorkType, memo);
+
 	}
 
 	auto curJobId = this->getNextJobId();

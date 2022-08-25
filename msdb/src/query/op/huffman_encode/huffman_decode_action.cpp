@@ -49,7 +49,7 @@ void huffman_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc
 	size_t currentThreadId = 0;
 
 	//========================================//
-	qry->getTimer()->nextWork(0, workType::PARALLEL);
+	qry->getTimer()->nextWork(currentThreadId, workType::PARALLEL);
 	//----------------------------------------//
 
 	this->threadCreate();
@@ -58,9 +58,9 @@ void huffman_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc
 	auto cBitmap = cit->getChunkBitmap();
 	while (!cit->isEnd())
 	{
-		chunkId cid = cit->seqPos();
-		if (cBitmap->isExist(cid))
+		if (cit->needToMake())
 		{
+			chunkId cid = cit->seqPos();
 			auto outChunk = outArr->makeChunk(attrDesc->id_, cid);
 			outChunk->makeAllBlocks();
 
@@ -75,17 +75,17 @@ void huffman_decode_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc
 	this->threadJoin();
 
 	//----------------------------------------//
-	qry->getTimer()->nextWork(0, workType::COMPUTING);
+	qry->getTimer()->nextWork(currentThreadId, workType::COMPUTING);
 	//========================================//
 
 	this->getArrayStatus(outArr);
 }
 void huffman_decode_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t paraentThreadId)
 {
-	auto threadId = getThreadId();
+	auto threadId = getThreadId() + 1;
 
 	//========================================//
-	qry->getTimer()->nextJob(threadId, this->name(), workType::IO);
+	qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
 	//----------------------------------------//
 
 	pSerializable serialChunk
@@ -97,22 +97,5 @@ void huffman_decode_action::loadChunk(pArray outArr, pChunk outChunk, attributeI
 	qry->getTimer()->pause(threadId);
 	//========================================//
 }
-//pHuffmanChunk huffman_decode_action::makeInChunk(pArray inArr, pAttributeDesc attrDesc, chunkId cid)
-//{
-//	auto inChunkDesc = std::make_shared<chunkDesc>(*inArr->getChunkDesc(attrDesc->id_, cid));
-//	auto inChunk = std::make_shared<huffmanChunk>(inChunkDesc);
-//	auto blockBitmap = this->getPlanBlockBitmap(cid);
-//	if (blockBitmap)
-//	{
-//		inChunk->copyBlockBitmap(blockBitmap);
-//	} else
-//	{
-//		// If there were no bitmap, set all blocks as true.
-//		inChunk->replaceBlockBitmap(std::make_shared<bitmap>(inChunk->getBlockCapacity(), true));
-//	}
-//	inChunk->makeBlocks();
-//
-//	return inChunk;
-//}
 }		// core
 }		// msdb
