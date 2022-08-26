@@ -40,9 +40,9 @@ pArray se_huffman_encode_action::execute(std::vector<pArray>& inputArrays, pQuer
 		std::visit(
 			visitHelper
 			{
-				[this, &outArr, &inArr, &attr](const auto& vType)
+				[this, &outArr, &inArr, &attr, &qry](const auto& vType)
 				{
-					compressAttribute(vType, outArr, inArr, attr);
+					compressAttribute(vType, outArr, inArr, attr, qry);
 				}
 			},
 			attr->getDataType());

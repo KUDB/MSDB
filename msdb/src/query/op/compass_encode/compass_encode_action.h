@@ -7,6 +7,7 @@
 #include <util/math.h>
 #include <system/storageMgr.h>
 #include "compassChunk.h"
+#include <util/threadUtil.h>
 
 namespace msdb
 {
@@ -21,10 +22,17 @@ public:
 
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
+	void encodeChunk(arrayId arrId, attributeId attrId, pChunk outChunk, pQuery qry, const size_t parentThreadId);
 
 	template <typename Ty_>
 	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry, size_t numBins)
 	{
+		size_t currentThreadId = 0;
+		//========================================//
+		qry->getTimer()->nextJob(currentThreadId, this->name(), workType::PARALLEL);
+		//----------------------------------------//
+		this->threadCreate();
+
 		size_t mSizeTotal = 0;
 		arrayId arrId = inArr->getId();
 
@@ -49,24 +57,51 @@ public:
 				//outChunk->makeAllBlocks();
 				//outChunk->bufferRef(inChunk);
 
-				//========================================//
-				qry->getTimer()->nextWork(0, workType::IO);
-				//----------------------------------------//
-				pSerializable serialChunk
-					= std::static_pointer_cast<serializable>(outChunk);
-				storageMgr::instance()->saveChunk(arrId, attrDesc->id_, (outChunk)->getId(),
-												  serialChunk);
+				////////////////////////////////////////
+				// 1. Serialize::encodeChunk
+				////////////////////////////////////////
+				//pSerializable serialChunk
+				//	= std::static_pointer_cast<serializable>(outChunk);
+				//storageMgr::instance()->saveChunk(arrId, attrDesc->id_, (outChunk)->getId(),
+				//								  serialChunk);
+				////////////////////////////////////////
 
-				//========================================//
-				qry->getTimer()->nextWork(0, workType::COMPUTING);
-				//----------------------------------------//
-				mSizeTotal += serialChunk->getSerializedSize();
+				////////////////////////////////////////
+				// 2. Parallel::encodeChunk
+				////////////////////////////////////////
+				 io_service_->post(boost::bind(&compass_encode_action::encodeChunk, this,
+					arrId, attrDesc->id_, outChunk, qry, currentThreadId));
+				////////////////////////////////////////
+
+				//mSizeTotal += serialChunk->getSerializedSize();
 			}
 
 			++(*cit);
 		}
 
+		this->threadStop();
+		this->threadJoin();
+
+		//----------------------------------------//
+		qry->getTimer()->nextWork(currentThreadId, workType::COMPUTING);
+		//----------------------------------------//
+
+		for (auto attrDesc : *outArr->getDesc()->attrDescs_)
+		{
+			auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+			while (!ocit->isEnd())
+			{
+				auto outChunk = (**ocit);
+				mSizeTotal += outChunk->getSerializedSize();
+
+				++(*ocit);
+			}
+		}
+
 		BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+		//----------------------------------------//
+		qry->getTimer()->pause(0);
+		//========================================//
 	}
 };
 }		// core

@@ -10,6 +10,7 @@
 #include <op/wavelet_encode/wavelet_encode_array.h>
 #include <op/wavelet_encode/wtChunk.h>
 #include <op/se_huffman_encode/seHuffmanChunk.h>
+#include <util/threadUtil.h>
 
 namespace msdb
 {
@@ -30,9 +31,14 @@ private:
 
 	//void compressAttribute(std::shared_ptr<wavelet_encode_array>inArr, pAttributeDesc attrDesc)
 	template<typename Ty_>
-	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
-		size_t mSizeTotal = 0;
+		size_t currentThreadId = 0;
+		//========================================//
+		qry->getTimer()->nextJob(currentThreadId, this->name(), workType::PARALLEL);
+		//----------------------------------------//
+		this->threadCreate();
+
 		auto arrId = inArr->getId();
 		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 		bool hasNegative = false;
@@ -63,38 +69,78 @@ private:
 				outChunk->bufferRef(inChunk);
 				outChunk->makeAllBlocks();
 
-				this->compressChunk<Ty_>(outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
+				////////////////////////////////////////
+				// 1. Serialize::encodeChunk
+				////////////////////////////////////////
+				//this->compressChunk<Ty_>(outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
 
-				auto attr = outChunk->getDesc()->attrDesc_;
-				storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-												  std::static_pointer_cast<serializable>(outChunk));
+				//auto attr = outChunk->getDesc()->attrDesc_;
+				//storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+				//								  std::static_pointer_cast<serializable>(outChunk));
+				////////////////////////////////////////
 
-				mSizeTotal += outChunk->getSerializedSize();
+				////////////////////////////////////////
+				// 2. Parallel::encodeChunk
+				////////////////////////////////////////
+				io_service_->post(boost::bind(&se_huffman_encode_action::compressChunk<Ty_>, this,
+											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId));
+				////////////////////////////////////////
 			}
 
 			++(*cit);
 		}
 
+		this->threadStop();
+		this->threadJoin();
+
+		//----------------------------------------//
+		qry->getTimer()->nextWork(currentThreadId, workType::COMPUTING);
+		//----------------------------------------//
+		size_t mSizeTotal = 0;
+		for (auto attrDesc : *outArr->getDesc()->attrDescs_)
+		{
+			auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+			while (!ocit->isEnd())
+			{
+				auto outChunk = (**ocit);
+				mSizeTotal += outChunk->getSerializedSize();
+
+				++(*ocit);
+			}
+		}
+
+		BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+		//----------------------------------------//
+		qry->getTimer()->pause(0);
+		//========================================//
+
 		BOOST_LOG_TRIVIAL(info) << "Total Save Chunk: " << mSizeTotal << " Bytes";
 	}
 
 	template<>
-	void compressAttribute(const concreteTy<float>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<float>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_huffman_compress not support data compression for float"));
 	}
 	template<>
-	void compressAttribute(const concreteTy<double>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc)
+	void compressAttribute(const concreteTy<double>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
 		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NOT_IMPLEMENTED, "se_huffman_compress not support data compression for float"));
 	}
 
 	template<typename Ty_>
-	void compressChunk(std::shared_ptr<seHuffmanChunk<Ty_>> outChunk,
+	void compressChunk(arrayId arrId, 
+					   std::shared_ptr<seHuffmanChunk<Ty_>> outChunk,
 					   std::shared_ptr<wtChunk<Ty_>> inChunk,
 					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
-					   dimension& sourceChunkDim, bool hasNegative)
+					   dimension& sourceChunkDim, bool hasNegative,
+					   pQuery qry, const size_t parentThreadId)
 	{
+		auto threadId = getThreadId() + 1;
+		//========================================//
+		qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::COMPUTING, std::string("chunk::") + std::to_string(outChunk->getId()));
+		//----------------------------------------//
+
 		size_t dSize = inChunk->getDSize();
 
 		pBlock outBlock = outChunk->getBlock(0);
@@ -113,6 +159,18 @@ private:
 												 mmtIndex,
 												 bandDims, inChunk->getLevel(),
 												 numBandsInLevel, hasNegative);
+
+		//----------------------------------------//
+		qry->getTimer()->nextWork(threadId, workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
+		//----------------------------------------//
+
+		auto attr = outChunk->getDesc()->attrDesc_;
+		storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+										  std::static_pointer_cast<serializable>(outChunk));
+
+		//----------------------------------------//
+		qry->getTimer()->pause(threadId);
+		//========================================//
 	}
 
 	//template <class Ty_>

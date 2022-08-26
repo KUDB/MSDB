@@ -39,10 +39,10 @@ private:
 		size_t mSizeTotal = 0;
 		size_t synopsisSizeTotal = 0;
 
-		//========================================//
-		qry->getTimer()->nextWork(0, workType::PARALLEL);
-		//----------------------------------------//
 		size_t currentThreadId = 0;
+		//========================================//
+		qry->getTimer()->nextWork(currentThreadId, workType::PARALLEL);
+		//----------------------------------------//
 		this->threadCreate();
 
 		auto arrId = inArr->getId();
@@ -92,7 +92,7 @@ private:
 		this->threadJoin();
 
 		//----------------------------------------//
-		qry->getTimer()->nextWork(0, workType::COMPUTING);
+		qry->getTimer()->nextWork(currentThreadId, workType::COMPUTING);
 		//========================================//
 
 		auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);

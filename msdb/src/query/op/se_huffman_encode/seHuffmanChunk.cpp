@@ -7,6 +7,7 @@ namespace msdb
 {
 namespace core
 {
+
 //////////////////////////////
 // seHuffmanChunkType
 //

@@ -63,5 +63,17 @@ pArray compass_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 
 	return inArr;
 }
+
+void compass_encode_action::encodeChunk(arrayId arrId, attributeId attrId, pChunk outChunk, pQuery qry, const size_t parentThreadId)
+{
+	auto threadId = getThreadId() + 1;
+	//========================================//
+	qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
+	//----------------------------------------//
+	storageMgr::instance()->saveChunk(arrId, attrId, outChunk->getId(), outChunk);
+	//----------------------------------------//
+	qry->getTimer()->pause(threadId);
+	//========================================//
+}
 }		// core
 }		// msdb

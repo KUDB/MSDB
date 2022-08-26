@@ -20,9 +20,7 @@ public:
 
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
-
-//private:
-	//pLzwChunk makeOutChunk(pChunk inChunk);
+	void encodeChunk(arrayId arrId, attributeId attrId, pChunk outChunk, pQuery qry, const size_t parentThreadId);
 };
 }		// core
 }		// msdb

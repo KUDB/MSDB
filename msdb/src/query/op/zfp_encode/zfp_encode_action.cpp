@@ -4,6 +4,7 @@
 #include <system/exceptions.h>
 #include <system/storageMgr.h>
 #include <util/logger.h>
+#include <util/threadUtil.h>
 
 namespace msdb
 {
@@ -24,9 +25,11 @@ pArray zfp_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
     assert(inputArrays.size() == 1);
 
+    size_t currentThreadId = 0;
     //========================================//
-    qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
+    qry->getTimer()->nextJob(currentThreadId, this->name(), workType::PARALLEL);
     //----------------------------------------//
+    this->threadCreate();
 
     size_t mSizeTotal = 0;
     pArray sourceArr = inputArrays[0];
@@ -51,29 +54,68 @@ pArray zfp_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
                 outChunk->bufferCopy(**cit);
                 outChunk->makeAllBlocks();
 
-                //========================================//
-                qry->getTimer()->nextWork(0, workType::IO);
-                //----------------------------------------//
-                pSerializable serialChunk
-                    = std::static_pointer_cast<serializable>(outChunk);
-                storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
-                                                  serialChunk);
+                ////////////////////////////////////////
+                // 1. Serialize::encodeChunk
+                ////////////////////////////////////////
+                //pSerializable serialChunk
+                //    = std::static_pointer_cast<serializable>(outChunk);
+                //storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
+                //                                  serialChunk);
+                ////////////////////////////////////////
 
-                //========================================//
-                qry->getTimer()->nextWork(0, workType::COMPUTING);
-                //----------------------------------------//
-                mSizeTotal += serialChunk->getSerializedSize();
+                ////////////////////////////////////////
+                // 2. Parallel::encodeChunk
+                ////////////////////////////////////////
+                io_service_->post(boost::bind(&zfp_encode_action::encodeChunk, this,
+                                              arrId, attr->id_, outChunk, qry, currentThreadId));
+                ////////////////////////////////////////
             }
 
             ++(*cit);
         }
     }
 
+    this->threadStop();
+    this->threadJoin();
+
+    //----------------------------------------//
+    qry->getTimer()->nextWork(currentThreadId, workType::COMPUTING);
+    //----------------------------------------//
+    for (auto attrDesc : *outArr->getDesc()->attrDescs_)
+    {
+        auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+        while (!ocit->isEnd())
+        {
+            if (ocit->isExist())
+            {
+                auto outChunk = (**ocit);
+                mSizeTotal += outChunk->getSerializedSize();
+            }
+            ++(*ocit);
+        }
+    }
+
     BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
-    qry->getTimer()->pause(0);
+    //========================================//
+    qry->getTimer()->pause(currentThreadId);
     //========================================//
 
     return sourceArr;
+}
+
+void zfp_encode_action::encodeChunk(arrayId arrId, attributeId attrId, pChunk outChunk, pQuery qry, const size_t parentThreadId)
+{
+    auto threadId = getThreadId() + 1;
+    //========================================//
+    qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
+    //----------------------------------------//
+    pSerializable serialChunk
+        = std::static_pointer_cast<serializable>(outChunk);
+    storageMgr::instance()->saveChunk(arrId, attrId, (outChunk)->getId(),
+                                      serialChunk);
+    //----------------------------------------//
+    qry->getTimer()->pause(threadId);
+    //========================================//
 }
 }		// core
 }		// msdb

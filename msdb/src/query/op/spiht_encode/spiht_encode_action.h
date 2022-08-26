@@ -31,11 +31,10 @@ public:
 		arrayId arrId = inArr->getId();
 		attributeId attrId = attrDesc->getId();
 
-		//========================================//
-		qry->getTimer()->nextWork(0, workType::PARALLEL);
-		//----------------------------------------//
-
 		size_t currentThreadId = 0;
+		//========================================//
+		qry->getTimer()->nextWork(currentThreadId, workType::PARALLEL);
+		//----------------------------------------//
 		this->threadCreate();
 
 		auto cit = inArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
@@ -52,20 +51,21 @@ public:
 				auto sChunk = std::static_pointer_cast<spihtChunk<Ty_>>(outChunk);
 				sChunk->setLevel(level);
 
-				//========================================//
-				//qry->getTimer()->nextWork(0, workType::IO);
-				//----------------------------------------//
+				////////////////////////////////////////
+				// 1. Serialize::encodeChunk
+				////////////////////////////////////////
 				//pSerializable serialChunk
 				//    = std::static_pointer_cast<serializable>(outChunk);
 				//storageMgr::instance()->saveChunk(arrId, attrId, (outChunk)->getId(),
 				//                                  serialChunk);
+				////////////////////////////////////////
 
+				////////////////////////////////////////
+				// 2. Parallel::encodeChunk
+				////////////////////////////////////////
 				io_service_->post(boost::bind(&spiht_encode_action::compressChunk<Ty_>, this,
-											  arrId, attrId, outChunk, currentThreadId));
-
-				//========================================//
-				//qry->getTimer()->nextWork(0, workType::COMPUTING);
-				//----------------------------------------//
+											  arrId, attrId, outChunk, qry, currentThreadId));
+				////////////////////////////////////////
 			}
 
 			++(*cit);
@@ -75,9 +75,8 @@ public:
 		this->threadJoin();
 
 		//----------------------------------------//
-		qry->getTimer()->nextWork(0, workType::COMPUTING);
-		//========================================//
-
+		qry->getTimer()->nextWork(currentThreadId, workType::COMPUTING);
+		//----------------------------------------//
 		auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
 		while (!ocit->isEnd())
 		{
@@ -90,12 +89,19 @@ public:
 	}
 
 	template <typename Ty_>
-	void compressChunk(arrayId arrId, attributeId attrId, pChunk outChunk, const size_t parentThreadId)
+	void compressChunk(arrayId arrId, attributeId attrId, pChunk outChunk, pQuery qry, const size_t parentThreadId)
 	{
+		auto threadId = getThreadId() + 1;
+		//========================================//
+		qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::IO, std::string("chunk::") + std::to_string(outChunk->getId()));
+		//----------------------------------------//
 		pSerializable serialChunk
 			= std::static_pointer_cast<serializable>(outChunk);
 		storageMgr::instance()->saveChunk(arrId, attrId, (outChunk)->getId(),
 										  serialChunk);
+		//----------------------------------------//
+		qry->getTimer()->pause(threadId);
+		//========================================//
 	}
 };
 }		// core
