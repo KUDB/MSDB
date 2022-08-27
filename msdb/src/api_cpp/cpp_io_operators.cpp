@@ -3,8 +3,8 @@
 #include <api_cpp/cpp_operators.h>
 #include <op/adapt_huffman_encode/adapt_huffman_encode_plan.h>
 #include <op/adapt_huffman_decode/adapt_huffman_decode_plan.h>
-#include <op/compass_encode/compass_encode_plan.h>
-#include <op/compass_encode/compass_decode_plan.h>
+//#include <op/compass_encode/compass_encode_plan.h>
+//#include <op/compass_encode/compass_decode_plan.h>
 #include <op/huffman_encode/huffman_encode_plan.h>
 #include <op/huffman_encode/huffman_decode_plan.h>
 #include <op/lzw_encode/lzw_encode_plan.h>
@@ -17,15 +17,14 @@
 #include <op/se_huffman_encode/se_huffman_decode_plan.h>
 #include <op/spiht_encode/spiht_encode_plan.h>
 #include <op/spiht_encode/spiht_decode_plan.h>
-#include <op/zip_save/zip_load_plan.h>
-#include <op/zip_save/zip_save_plan.h>
+//#include <op/zip_save/zip_load_plan.h>
+//#include <op/zip_save/zip_save_plan.h>
 #include <op/wavelet_encode/wavelet_encode_plan.h>
 #include <op/wavelet_encode/wavelet_decode_plan.h>
 #include <op/zfp_encode/zfp_encode_plan.h>
 #include <op/zfp_encode/zfp_decode_plan.h>
-#include <op/tthresh_encode/tthresh_encode_plan.h>
-#include <op/tthresh_encode/tthresh_decode_plan.h>
-
+//#include <op/tthresh_encode/tthresh_encode_plan.h>
+//#include <op/tthresh_encode/tthresh_decode_plan.h>
 #include <op/mmt_build/mmt_build_plan.h>
 #include <op/mmt_save/mmt_save_plan.h>
 #include <op/mmt_load/mmt_load_plan.h>
@@ -235,6 +234,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		}
 		return seQryPlan;
 	}
+#ifdef _MSDB_OP_SE_HUFFMAN_ENCODE_PLAN_H_
 	case compressionType::SEACOW_HUFFMAN:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
@@ -257,22 +257,23 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		return seQryPlan;
 		break;
 	}
+#endif	//_MSDB_OP_SE_HUFFMAN_ENCODE_PLAN_H_
 	//////////////////////////////
 
 	//////////////////////////////
 	// Param One
 	//
-	case compressionType::COMPASS:
-	{
-		auto qryPlan = std::make_shared<core::compass_encode_plan>();
-		core::parameters params = {
-				std::make_shared<core::opParamPlan>(childQry_->getPlan())
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::compass_encode_plan_pset>(params));
-		return qryPlan;
-		break;
-	}
+	//case compressionType::COMPASS:
+	//{
+	//	auto qryPlan = std::make_shared<core::compass_encode_plan>();
+	//	core::parameters params = {
+	//			std::make_shared<core::opParamPlan>(childQry_->getPlan())
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::compass_encode_plan_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
 	case compressionType::SPIHT:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
@@ -345,17 +346,17 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	case compressionType::ZIP:
-	{
-		auto qryPlan = std::make_shared<core::zip_save_plan>();
-		core::parameters params = {
-			std::make_shared<core::opParamPlan>(childQry_->getPlan())
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::zip_save_plan_pset>(params));
-		return qryPlan;
-		break;
-	}
+	//case compressionType::ZIP:
+	//{
+	//	auto qryPlan = std::make_shared<core::zip_save_plan>();
+	//	core::parameters params = {
+	//		std::make_shared<core::opParamPlan>(childQry_->getPlan())
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::zip_save_plan_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
 	case compressionType::ZFP:
 	{
 		auto qryPlan = std::make_shared<core::zfp_encode_plan>();
@@ -367,17 +368,17 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	case compressionType::TTHRESH:
-	{
-		auto qryPlan = std::make_shared<core::tthresh_encode_plan>();
-		core::parameters params = {
-			std::make_shared<core::opParamPlan>(childQry_->getPlan())
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::tthresh_encode_plan_pset>(params));
-		return qryPlan;
-		break;
-	}
+	//case compressionType::TTHRESH:
+	//{
+	//	auto qryPlan = std::make_shared<core::tthresh_encode_plan>();
+	//	core::parameters params = {
+	//		std::make_shared<core::opParamPlan>(childQry_->getPlan())
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::tthresh_encode_plan_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
 	//////////////////////////////
 	default:
 		return nullptr;
@@ -403,18 +404,18 @@ std::shared_ptr<core::opPlan> CompOneParamOpr::getPlan()
 {
 	switch (this->compType_)
 	{
-	case compressionType::COMPASS:
-	{
-		auto qryPlan = std::make_shared<core::compass_encode_plan>();
-		core::parameters params = {
-				std::make_shared<core::opParamPlan>(childQry_->getPlan()),
-				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::compass_encode_plan_pset>(params));
-		return qryPlan;
-		break;
-	}
+	//case compressionType::COMPASS:
+	//{
+	//	auto qryPlan = std::make_shared<core::compass_encode_plan>();
+	//	core::parameters params = {
+	//			std::make_shared<core::opParamPlan>(childQry_->getPlan()),
+	//			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::compass_encode_plan_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
 	case compressionType::SPIHT:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
@@ -487,6 +488,7 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 		}
 		return seQryPlan;
 	}
+#ifdef _MSDB_OP_SE_HUFFMAN_ENCODE_PLAN_H_
 	case compressionType::SEACOW_HUFFMAN:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
@@ -510,6 +512,7 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 		return seQryPlan;
 		break;
 	}
+#endif
 	default:
 		return nullptr;
 	};
@@ -599,17 +602,17 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	case compressionType::ZIP:
-	{
-		auto qryPlan = std::make_shared<core::zip_load_plan>();
-		core::parameters params = {
-			std::make_shared<core::opParamArray>(this->getArrayDesc())
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::zip_load_array_pset>(params));
-		return qryPlan;
-		break;
-	}
+	//case compressionType::ZIP:
+	//{
+	//	auto qryPlan = std::make_shared<core::zip_load_plan>();
+	//	core::parameters params = {
+	//		std::make_shared<core::opParamArray>(this->getArrayDesc())
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::zip_load_array_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
 	case compressionType::ZFP:
 	{
 		auto qryPlan = std::make_shared<core::zfp_decode_plan>();
@@ -621,17 +624,17 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	case compressionType::TTHRESH:
-	{
-		auto qryPlan = std::make_shared<core::tthresh_decode_plan>();
-		core::parameters params = {
-			std::make_shared<core::opParamArray>(this->getArrayDesc())
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::tthresh_decode_array_pset>(params));
-		return qryPlan;
-		break;
-	}
+	//case compressionType::TTHRESH:
+	//{
+	//	auto qryPlan = std::make_shared<core::tthresh_decode_plan>();
+	//	core::parameters params = {
+	//		std::make_shared<core::opParamArray>(this->getArrayDesc())
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::tthresh_decode_array_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
 	default:
 		return nullptr;
 	};
@@ -656,18 +659,18 @@ std::shared_ptr<core::opPlan> DecompOneParamOpr::getPlan()
 {
 	switch (this->compType_)
 	{
-	case compressionType::COMPASS:
-	{
-		auto qryPlan = std::make_shared<core::compass_decode_plan>();
-		core::parameters params = {
-				std::make_shared<core::opParamArray>(this->getArrayDesc()),
-				std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
-		};
-		qryPlan->setParamSet(
-			std::make_shared<core::compass_decode_array_pset>(params));
-		return qryPlan;
-		break;
-	}
+	//case compressionType::COMPASS:
+	//{
+	//	auto qryPlan = std::make_shared<core::compass_decode_plan>();
+	//	core::parameters params = {
+	//			std::make_shared<core::opParamArray>(this->getArrayDesc()),
+	//			std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&this->paramOne_, _ELE_DEFAULT_TYPE))
+	//	};
+	//	qryPlan->setParamSet(
+	//		std::make_shared<core::compass_decode_array_pset>(params));
+	//	return qryPlan;
+	//	break;
+	//}
 	case compressionType::SPIHT:
 	{
 		auto spQryPlan = std::make_shared<core::spiht_decode_plan>();
@@ -744,6 +747,7 @@ std::shared_ptr<core::opPlan> DecompTwoParamOpr::getPlan()
 		return wtQryPlan;
 		break;
 	}
+#ifdef _MSDB_SE_HUFFMAN_DECODE_PLAN_H_
 	case compressionType::SEACOW_HUFFMAN:
 	{
 		auto seQryPlan = std::make_shared<core::se_huffman_decode_plan>();
@@ -769,6 +773,7 @@ std::shared_ptr<core::opPlan> DecompTwoParamOpr::getPlan()
 		return wtQryPlan;
 		break;
 	}
+#endif	// _MSDB_SE_HUFFMAN_DECODE_PLAN_H_
 	default:
 		return nullptr;
 	};

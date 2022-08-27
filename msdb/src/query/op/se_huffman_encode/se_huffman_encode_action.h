@@ -72,8 +72,10 @@ private:
 				////////////////////////////////////////
 				// 1. Serialize::encodeChunk
 				////////////////////////////////////////
-				//this->compressChunk<Ty_>(outChunk, inChunk, mmtIndex, chunkDim, hasNegative);
 
+			#ifndef NDEBUG
+				this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId);
+			#endif
 				//auto attr = outChunk->getDesc()->attrDesc_;
 				//storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
 				//								  std::static_pointer_cast<serializable>(outChunk));
@@ -82,8 +84,10 @@ private:
 				////////////////////////////////////////
 				// 2. Parallel::encodeChunk
 				////////////////////////////////////////
+			#ifdef NDEBUG
 				io_service_->post(boost::bind(&se_huffman_encode_action::compressChunk<Ty_>, this,
 											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId));
+			#endif
 				////////////////////////////////////////
 			}
 

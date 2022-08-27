@@ -74,39 +74,5 @@ pArray se_huffman_decode_action::execute(std::vector<pArray>& inputArrays, pQuer
 
 	return std::static_pointer_cast<array>(outArr);;
 }
-
-//pSeHuffmanChunk se_huffman_decode_action::makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
-//													  chunkId cid, coor chunkCoor)
-//{
-//	dimension chunkDims = arr->getDesc()->getDimDescs()->getChunkDims();
-//	dimension blockDims = arr->getDesc()->getDimDescs()->getBlockDims();
-//
-//	coor sp = chunkDims * chunkCoor;
-//	coor ep = sp + chunkDims;
-//
-//	chunkSize mSize = chunkDims.area() * attrDesc->typeSize_;
-//
-//	dimension originalSourceDims = arr->getOrigianlChunkDims();
-//
-//	auto outDesc = std::make_shared<chunkDesc>(cid, std::make_shared<attributeDesc>(*attrDesc),
-//											   chunkDims, blockDims,
-//											   sp, ep, mSize);
-//	pSeHuffmanChunk inChunk = std::make_shared<seHuffmanChunk>(outDesc);
-//	auto blockBitmap = this->getPlanBlockBitmap(cid);
-//	if (blockBitmap)
-//	{
-//		inChunk->copyBlockBitmap(blockBitmap);
-//	}
-//	else
-//	{
-//		// If there were no bitmap, set all blocks as true.
-//		inChunk->replaceBlockBitmap(std::make_shared<bitmap>(inChunk->getBlockCapacity(), true));
-//	}
-//
-//	inChunk->setLevel(arr->getMaxLevel());
-//	inChunk->makeBlocks();
-//
-//	return inChunk;
-//}
 }		// core
 }		// msdb

@@ -29,7 +29,7 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 	size_t currentThreadId = 0;
 	//========================================//
-	qry->getTimer()->nextWork(currentThreadId, workType::PARALLEL);
+	qry->getTimer()->nextJob(currentThreadId, this->name(), workType::PARALLEL);
 	//----------------------------------------//
 	this->threadCreate();
 

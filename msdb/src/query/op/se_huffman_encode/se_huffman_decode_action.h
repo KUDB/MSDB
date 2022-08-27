@@ -36,8 +36,10 @@ private:
 							 pArray outArr, pArray inArr,
 							 pAttributeDesc attrDesc, pQuery qry)
 	{
-		//========================================//
-		qry->getTimer()->nextWork(0, workType::COMPUTING);
+		_MSDB_TRY_BEGIN
+		{
+			//========================================//
+			qry->getTimer()->nextWork(0, workType::COMPUTING);
 		//----------------------------------------//
 
 		auto outArrId = outArr->getId();
@@ -76,14 +78,28 @@ private:
 
 				chunkId cid = cit->seqPos();
 				coor chunkCoor = cit->coor();
-				auto inChunk = std::static_pointer_cast<seHuffmanChunk<Ty_>>(**cit);
+				auto inChunk = std::static_pointer_cast<seHuffmanChunk<Ty_>>(inArr->makeChunk(attrId, cid));
 
 				inChunk->setTileOffset(offsets);
 				auto cDesc = inChunk->getDesc();
 				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(std::make_shared<chunkDesc>(*cDesc)));
 
+				////////////////////////////////////////
+				// 1. Serialize::encodeChunk
+				////////////////////////////////////////
+			#ifndef NDEBUG
+				this->decompressChunk<Ty_>(inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId);
+			#endif
+				////////////////////////////////////////
+
+				////////////////////////////////////////
+				// 2. Parallel::encodeChunk
+				////////////////////////////////////////
+			#ifdef NDEBUG
 				io_service_->post(boost::bind(&se_huffman_decode_action::decompressChunk<Ty_>, this,
 												inChunk, outChunk, qry, outArr, attrId, maxLevel, mmtIndex, currentThreadId));
+			#endif
+				////////////////////////////////////////
 			}
 
 			++(*cit);
@@ -97,6 +113,12 @@ private:
 		//========================================//
 
 		this->getArrayStatus(outArr);
+		}
+		_MSDB_CATCH_EXCEPTION(e)
+		{
+			BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk : STD::EXCEPTION";
+			BOOST_LOG_TRIVIAL(error) << e.what();
+		}
 	}
 
 	template <>
@@ -148,6 +170,7 @@ private:
 		//----------------------------------------//
 		//auto maxLevel = outArr->getMaxLevel();
 		arrayId arrId = outArr->getId();
+		chunkId cid = inChunk->getId();
 
 		inChunk->makeAllBlocks();
 		outChunk->makeAllBlocks();
@@ -169,10 +192,18 @@ private:
 		qry->getTimer()->nextWork(threadId, workType::IO);
 		//----------------------------------------//
 
-		pSerializable serialChunk
-			= std::static_pointer_cast<serializable>(inChunk);
-		storageMgr::instance()->loadChunk(arrId, attrId, inChunk->getId(),
-										  serialChunk);
+		_MSDB_TRY_BEGIN
+		{
+			pSerializable serialChunk
+				= std::static_pointer_cast<serializable>(inChunk);
+			storageMgr::instance()->loadChunk(arrId, attrId, inChunk->getId(),
+											  serialChunk);
+		}
+		_MSDB_CATCH_EXCEPTION(e)
+		{
+			BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk : STD::EXCEPTION";
+			BOOST_LOG_TRIVIAL(error) << e.what();
+		}
 
 		//----------------------------------------//
 		qry->getTimer()->nextWork(threadId, workType::COMPUTING);

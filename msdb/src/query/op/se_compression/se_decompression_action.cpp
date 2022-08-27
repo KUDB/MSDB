@@ -56,7 +56,7 @@ pArray se_decompression_action::execute(std::vector<pArray>& inputArrays, pQuery
 			continue;
 		}
 
-		inArr->makeChunks(attr->getId(), *planBitmap);
+		//inArr->makeChunks(attr->getId(), *planBitmap);
 
 		std::visit(
 			visitHelper
