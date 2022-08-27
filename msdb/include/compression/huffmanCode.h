@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_HUFFMAN_CODE_H_
 #define _MSDB_HUFFMAN_CODE_H_
 

@@ -17,6 +17,8 @@ public:
 	virtual void encode(bstream& out, const void* in, size_t len) = 0;
 	virtual size_t decode(void* outData, size_t lenOut, bstream& in) = 0;
 	virtual size_t getCodeBitWidth() const = 0;
+
+	void initFreq(std::vector<size_t>& freq, size_t bits);
 };
 
 template <typename codeType, typename symbolType>
@@ -51,11 +53,13 @@ protected:
 	void initHuffmanCode()
 	{
 		std::vector<size_t> freq(pow(2, this->bits_), 0);
+		BOOST_LOG_TRIVIAL(info) << "Start initHuff: <" << this->bits_ << "> is initialized.";
 		this->initFrequencies(freq);
+		BOOST_LOG_TRIVIAL(info) << "Freq Init: <" << this->bits_ << "> is initialized.";
 		this->buildTree(freq);
+		BOOST_LOG_TRIVIAL(info) << "Tree build: <" << this->bits_ << "> is initialized.";
 		buildEncodeDecodeTable();
-
-		BOOST_LOG_TRIVIAL(trace) << "Fixed Huffman Coder<" << this->bits_ << "> is initialized.";
+		BOOST_LOG_TRIVIAL(info) << "Fixed Huffman Coder<" << this->bits_ << "> is initialized.";
 	}
 
 private:
@@ -86,6 +90,29 @@ private:
 			//BOOST_LOG_TRIVIAL(trace) << "[" << x << "]: " << boost::math::pdf(ndNarrow, (double)x) << "+" << boost::math::pdf(ndWide, (double)x) << "=" << freq[x];
 		}
 
+		//size_t range = pow(2, this->bits_ - 1);
+		//size_t precision = 10000;
+		//double mean = 0;
+		//double sdExp = (double)pow(2.0, std::max({ (double)(this->bits_ - 3), (double)0 }));
+
+		//boost::math::normal_distribution<double, boost::math::policies::policy<>> ndNarrow(mean, sdExp);
+
+		//freq[0] = (boost::math::pdf(ndNarrow, 0.0)) * precision;
+		//freq[range] = 1;
+		//BOOST_LOG_TRIVIAL(trace) << "Freq==>sdExp: " << sdExp << ", range: " << range << ", precision: " << precision;
+		//std::cout << "Freq==>sdExp: " << sdExp << ", range: " << range << ", precision: " << precision;
+		//for (size_t x = 1; x < range; ++x)
+		//{
+		//	freq[x] = (boost::math::pdf(ndNarrow, (double)x)) * precision;
+		//	if (freq[x] == 0)
+		//	{
+		//		freq[x] = 1;
+		//	}
+		//	freq[x + range] = freq[x];
+		//	//BOOST_LOG_TRIVIAL(trace) << "[" << x << "]: " << boost::math::pdf(ndNarrow, (double)x) << "+" << boost::math::pdf(ndWide, (double)x) << "=" << freq[x];
+		//}
+
+		//this->initFreq(freq, this->bits_);
 		//this->printFreq(freq);
 	}
 
@@ -205,7 +232,7 @@ public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(_BITS), singleton<fixedHuffmanCoder<_BITS, symbolType>>()
 	{
-
+		BOOST_LOG_TRIVIAL(trace) << "fixedHuffmanCoder";
 	}
 
 	~fixedHuffmanCoder()
@@ -255,15 +282,15 @@ public:
 };
 
 template <typename symbolType>
-class fixedHuffmanCoder<3, symbolType> : public fixedHuffmanCoder1ByteSymbolBase<uint8_t, symbolType>, public singleton<fixedHuffmanCoder<3, symbolType>>
+class fixedHuffmanCoder<3, symbolType> : public fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>, public singleton<fixedHuffmanCoder<3, symbolType>>
 {
 public:
-	using codeType_ = uint8_t;
+	using codeType_ = uint16_t;
 	using symbolType_ = symbolType;
 
 public:
 	fixedHuffmanCoder()
-		: fixedHuffmanCoder1ByteSymbolBase<uint8_t, symbolType>(3), singleton<fixedHuffmanCoder<3, symbolType>>()
+		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(3), singleton<fixedHuffmanCoder<3, symbolType>>()
 	{
 
 	}
@@ -275,15 +302,15 @@ public:
 };
 
 template <typename symbolType>
-class fixedHuffmanCoder<4, symbolType> : public fixedHuffmanCoder1ByteSymbolBase<uint8_t, symbolType>, public singleton<fixedHuffmanCoder<4, symbolType>>
+class fixedHuffmanCoder<4, symbolType> : public fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>, public singleton<fixedHuffmanCoder<4, symbolType>>
 {
 public:
-	using codeType_ = uint8_t;
+	using codeType_ = uint16_t;
 	using symbolType_ = symbolType;
 
 public:
 	fixedHuffmanCoder()
-		: fixedHuffmanCoder1ByteSymbolBase<uint8_t, symbolType>(4), singleton<fixedHuffmanCoder<4, symbolType>>()
+		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(4), singleton<fixedHuffmanCoder<4, symbolType>>()
 	{
 
 	}
