@@ -803,7 +803,12 @@ protected:
 			// Works for not finished nodes
 			curNode->outDelta(bs);
 
-			if (isChildOrderChanged(curNode))
+			//////////////////////////////
+			// Update jump bit
+			//////////////////////////////
+			// 
+			// Leaf node has no child node to update.
+			if (level && isChildOrderChanged(curNode))
 			{
 				// non-root node record both 'order changed' and 'jumped bits'
 				curNode->outChildOrderChanged(bs);
@@ -981,8 +986,14 @@ protected:
 		curNode->min_ = getMinBoundary<Ty_>(prevNode->getMin<Ty_>(), curNode->order_, curNode->bMin_);
 		curNode->max_ = getMaxBoundary<Ty_>(prevNode->getMax<Ty_>(), curNode->order_, curNode->bMax_);
 
-		if (isChildOrderChanged(curNode))
+		//////////////////////////////
+		// Deserialize jump bit for child node
+		//////////////////////////////
+		// 
+		// Leaf node has no child node to update.
+		if (level && isChildOrderChanged(curNode))
 		{
+			// DO NOT UPDATE CHILD ORDER IN LEAF LEVEL
 			curNode->inChildOrderChanged(bs);
 
 			// Get jump value and bits

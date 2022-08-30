@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_MMTNODE_H_
 #define _MSDB_MMTNODE_H_
 
@@ -149,13 +149,19 @@ public:
 			}
 
 			bs >> setw(1) >> inBit;
-			this->jumpBits_ = jumpBits;
-
 			if (inBit != 1)
 			{
-				BOOST_LOG_TRIVIAL(error) << "NOT IN BIT 1: " << static_cast<int>(abs_(this->bMax_)) << " / jumpBits: " << static_cast<int>(jumpBits) << " / jumpValue: " << static_cast<int>(jumpValue);
+				// Check flag bit
+				std::stringstream errorMsg;
+				errorMsg << "mmtNode.h::inJumpedBits(bstream& bs, bit_cnt_type& jumpBits, Ty_& jumpValue)" << std::endl;
+				eroorMsg << "HMMT: fail to decode jump bit, inBit should be set" << std::endl;
+				errorMsg << "[bMax: " << static_cast<int>(abs_(this->bMax_)) << " / jumpBits: " << static_cast<int>(jumpBits) << " / jumpValue: " << static_cast<int>(jumpValue);
+				BOOST_LOG_TRIVIAL(error) << errorMsg.str();
+				_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
+					MSDB_EC_QUERY_ERROR, MSDB_ER_ATTR_INDEX_BUILD_FAIL, errorMsg.str()));
 			}
-			assert(inBit == 1);
+
+			this->jumpBits_ = jumpBits;
 		}
 	}
 
@@ -172,24 +178,9 @@ public:
 
 			assert(abs_(this->bMax_) - jumpBits - 1 >= 0);
 		}
+
+		// Set flag bit
 		bs << setw(1) << 0x1;
-
-		//// make mask
-		//Ty_ mask = (Ty_)-1;
-		//mask >>= sizeof(Ty_) * CHAR_BIT - this->bMax_;
-
-		//if(posJumpEnd)
-		//{
-		//	// next order
-		//	Ty_ jumpValue = (this->getRealMax<Ty_>() >> (posJumpEnd - 1)) & mask;
-		//	bs << setw(this->bMax_ - posJumpEnd + 1) << jumpValue;
-		//}else
-		//{
-		//	// cur node is last, end
-		//	Ty_ jumpValue = this->getRealMax<Ty_>() & mask;
-		//	bs << setw(this->bMax_ - posJumpEnd + 1) << jumpValue;
-		//	bs << setw(1) << 0x1;
-		//}
 	}
 
 	template <typename Ty_>
