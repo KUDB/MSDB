@@ -154,7 +154,7 @@ public:
 				// Check flag bit
 				std::stringstream errorMsg;
 				errorMsg << "mmtNode.h::inJumpedBits(bstream& bs, bit_cnt_type& jumpBits, Ty_& jumpValue)" << std::endl;
-				eroorMsg << "HMMT: fail to decode jump bit, inBit should be set" << std::endl;
+				errorMsg << "HMMT: fail to decode jump bit, inBit should be set" << std::endl;
 				errorMsg << "[bMax: " << static_cast<int>(abs_(this->bMax_)) << " / jumpBits: " << static_cast<int>(jumpBits) << " / jumpValue: " << static_cast<int>(jumpValue);
 				BOOST_LOG_TRIVIAL(error) << errorMsg.str();
 				_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(

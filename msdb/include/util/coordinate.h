@@ -119,7 +119,7 @@ public:
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
 			// TODO:: >=
-			if (this->coor_[d] > rhs[d])
+			if (this->coor_[d] >= rhs[d])
 			{
 				return false;
 			}
@@ -134,7 +134,7 @@ public:
 		for (dimensionId d = 0; d < this->dSize_; ++d)
 		{
 			// TODO:: <=
-			if (this->coor_[d] < rhs[d])
+			if (this->coor_[d] <= rhs[d])
 			{
 				return false;
 			}

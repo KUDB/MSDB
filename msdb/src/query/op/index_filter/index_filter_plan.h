@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_INDEX_FILTER_PLAN_H_
 #define _MSDB_INDEX_FILTER_PLNA_H_
 
@@ -169,6 +169,8 @@ protected:
 		auto cit = pMmtIndex->getNodeIterator(curLevel);
 		nodes[curLevel] = std::vector<bool>(cit.getCapacity(), false);
 
+		auto curNodeSpace = pMmtIndex->getNodeSpace(curLevel);
+
 		while (!pcit.isEnd())
 		{
 			// nextWork parent
@@ -192,14 +194,21 @@ protected:
 							cur[d] += 1;
 						}
 					}
-					cit.moveTo(cur);
 
-					if (inPredicate->evaluateNode((*cit)))
+					if (cur < curNodeSpace)
 					{
-						nodes[curLevel][cit.seqPos()] = true;
-					} else
-					{
-						nodes[curLevel][cit.seqPos()] = false;
+						// Check current coordinate is in curNodeSpace.
+						// Node space with odd number can cause error in here.
+						cit.moveTo(cur);
+
+						if (inPredicate->evaluateNode((*cit)))
+						{
+							nodes[curLevel][cit.seqPos()] = true;
+						}
+						else
+						{
+							nodes[curLevel][cit.seqPos()] = false;
+						}
 					}
 				}
 			}
