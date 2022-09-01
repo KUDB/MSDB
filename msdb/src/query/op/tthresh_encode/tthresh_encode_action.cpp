@@ -36,7 +36,7 @@ pArray tthresh_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 
     for (auto attr : *sourceArr->getDesc()->attrDescs_)
     {
-        // TODO::check compressionType
+        // TODO::check encodingType
         // IF(compType != tthresh)
         //  ignore or exception
         auto cit = sourceArr->getChunkIterator(attr->id_, iterateMode::EXIST);

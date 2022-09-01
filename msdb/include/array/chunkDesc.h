@@ -6,7 +6,7 @@
 #include <array/chunkId.h>
 #include <array/attributeDesc.h>
 #include <array/dimensionDesc.h>
-#include <compression/compressionType.h>
+#include <encoding/encodingType.h>
 #include <util/coordinate.h>
 #include <array/buffer.h>
 
@@ -82,7 +82,7 @@ public:
 	chunkSize cSize_;			// compressed size,
 								// if not: cSize == mSize or INVALID_CHUNK_SIZE
 	bool useCompression_;		// can be compressed
-	compressionType cType_;		// compressed method type
+	encodingType cType_;		// compressed method type
 								// if not: CompressionMethod::NONE
 
 	dimension dims_;			// dimensions

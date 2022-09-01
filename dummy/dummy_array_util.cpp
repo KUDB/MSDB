@@ -7,7 +7,7 @@ namespace dummy
 {
 using namespace msdb::core;
 
-msdb::Array getArrayAFL(std::string arrName, compressionType compType)
+msdb::Array getArrayAFL(std::string arrName, encodingType compType)
 {
 	auto idName = getArrayIdName(compType, 0, arrName);
 	core::arrayId aid = idName.first;
@@ -19,12 +19,12 @@ msdb::Array getArrayAFL(std::string arrName, compressionType compType)
 
 std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	std::string arrName, std::string filePath,
-	compressionType compType, int paramOne, int paramTwo)
+	encodingType compType, int paramOne, int paramTwo)
 {
 	switch (compType)
 	{
-	case compressionType::NONE:
-	case compressionType::RAW:
+	case encodingType::NONE:
+	case encodingType::RAW:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Save(
@@ -33,13 +33,13 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 		);
 		return afl;
 	}
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
-	case compressionType::TTHRESH:
-	case compressionType::ZFP:
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
+	case encodingType::TTHRESH:
+	case encodingType::ZFP:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Comp(
@@ -49,8 +49,8 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 		);
 		return afl;
 	}
-	case compressionType::SPIHT:
-	case compressionType::COMPASS:
+	case encodingType::SPIHT:
+	case encodingType::COMPASS:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Comp(
@@ -60,8 +60,8 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 		);
 		return afl;
 	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Comp(
@@ -75,25 +75,25 @@ std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	}
 }
 
-std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType compType, int paramOne, int paramTwo)
+std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, encodingType compType, int paramOne, int paramTwo)
 {
 	switch (compType)
 	{
-	case compressionType::NONE:
-	case compressionType::RAW:
+	case encodingType::NONE:
+	case encodingType::RAW:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Load(
 			getArrayAFL(arrName));
 		return afl;
 	}
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
-	case compressionType::TTHRESH:
-	case compressionType::ZFP:
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
+	case encodingType::TTHRESH:
+	case encodingType::ZFP:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Decomp(
@@ -102,8 +102,8 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 		);
 		return afl;
 	}
-	case compressionType::SPIHT:
-	case compressionType::COMPASS:
+	case encodingType::SPIHT:
+	case encodingType::COMPASS:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Decomp(
@@ -112,8 +112,8 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 		);
 		return afl;
 	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		msdb::Context ctx;
 		auto afl = msdb::Decomp(
@@ -127,7 +127,7 @@ std::shared_ptr<AFLOperator> getLoadAFL(std::string arrName, compressionType com
 	}
 }
 
-std::shared_ptr<AFLOperator> getBuildIndexAFL(std::string arrName, std::string filePath, compressionType compType, attrIndexType idxType, int paramOne, int paramTwo)
+std::shared_ptr<AFLOperator> getBuildIndexAFL(std::string arrName, std::string filePath, encodingType compType, attrIndexType idxType, int paramOne, int paramTwo)
 {
 	switch (idxType)
 	{
@@ -156,7 +156,7 @@ std::shared_ptr<AFLOperator> getBuildIndexAFL(std::string arrName, std::string f
 	}
 }
 
-std::shared_ptr<AFLOperator> getSaveIndexAFL(std::string arrName, compressionType compType, attrIndexType idxType, int paramOne, int paramTwo)
+std::shared_ptr<AFLOperator> getSaveIndexAFL(std::string arrName, encodingType compType, attrIndexType idxType, int paramOne, int paramTwo)
 {
 	switch (idxType)
 	{
@@ -177,7 +177,7 @@ std::shared_ptr<AFLOperator> getSaveIndexAFL(std::string arrName, compressionTyp
 	}
 }
 
-std::shared_ptr<AFLOperator> getLoadIndexAFL(std::string arrName, compressionType compType, attrIndexType idxType, int paramOne, int paramTwo)
+std::shared_ptr<AFLOperator> getLoadIndexAFL(std::string arrName, encodingType compType, attrIndexType idxType, int paramOne, int paramTwo)
 {
 	switch (idxType)
 	{
@@ -233,7 +233,7 @@ core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrN
 core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
 										   const std::vector<core::dataType>& attrTypes,
 										   const std::vector<core::materializedType>& matTypes,
-										   const std::vector<core::compressionType>& compTypes,
+										   const std::vector<core::encodingType>& compTypes,
 										   const std::vector<core::attributeDesc::paramType>& optionalParams)
 {
 	if (attrNames.size() != attrTypes.size())
@@ -251,54 +251,54 @@ core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrN
 	return attrDescs;
 }
 
-std::pair<core::arrayId, std::string> getArrayIdName(compressionType compType, core::arrayId baseId, std::string baseName)
+std::pair<core::arrayId, std::string> getArrayIdName(encodingType compType, core::arrayId baseId, std::string baseName)
 {
 	switch (compType)
 	{
-	case compressionType::SEACOW:
+	case encodingType::SEACOW:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_seacow,
-			baseName + "_" + compressionTypeToString(compressionType::SEACOW));
-	case compressionType::SEACOW_HUFFMAN:
+			baseName + "_" + encodingTypeToString(encodingType::SEACOW));
+	case encodingType::SEACOW_HUFFMAN:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_seacow_huffman,
-			baseName + "_" + compressionTypeToString(compressionType::SEACOW_HUFFMAN));
-	case compressionType::SPIHT:
+			baseName + "_" + encodingTypeToString(encodingType::SEACOW_HUFFMAN));
+	case encodingType::SPIHT:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_spiht,
-			baseName + "_" + compressionTypeToString(compressionType::SPIHT));
-	case compressionType::COMPASS:
+			baseName + "_" + encodingTypeToString(encodingType::SPIHT));
+	case encodingType::COMPASS:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_compass,
-			baseName + "_" + compressionTypeToString(compressionType::COMPASS));
-	case compressionType::LZW:
+			baseName + "_" + encodingTypeToString(encodingType::COMPASS));
+	case encodingType::LZW:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_lzw,
-			baseName + "_" + compressionTypeToString(compressionType::LZW));
-	case compressionType::HUFFMAN:
+			baseName + "_" + encodingTypeToString(encodingType::LZW));
+	case encodingType::HUFFMAN:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_huffman,
-			baseName + "_" + compressionTypeToString(compressionType::HUFFMAN));
-	case compressionType::ADAPTHUFFMAN:
+			baseName + "_" + encodingTypeToString(encodingType::HUFFMAN));
+	case encodingType::ADAPTHUFFMAN:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_adapt_huffman,
-			baseName + "_" + compressionTypeToString(compressionType::ADAPTHUFFMAN));
-	case compressionType::LZW_HUFFMAN:
+			baseName + "_" + encodingTypeToString(encodingType::ADAPTHUFFMAN));
+	case encodingType::LZW_HUFFMAN:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_lzw_huffman,
-			baseName + "_" + compressionTypeToString(compressionType::LZW_HUFFMAN));
-	case compressionType::ZIP:
+			baseName + "_" + encodingTypeToString(encodingType::LZW_HUFFMAN));
+	case encodingType::ZIP:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_zip,
-			baseName + "_" + compressionTypeToString(compressionType::ZIP));
-	case compressionType::TTHRESH:
+			baseName + "_" + encodingTypeToString(encodingType::ZIP));
+	case encodingType::TTHRESH:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_tthresh,
-			baseName + "_" + compressionTypeToString(compressionType::TTHRESH));
-	case compressionType::ZFP:
+			baseName + "_" + encodingTypeToString(encodingType::TTHRESH));
+	case encodingType::ZFP:
 		return std::make_pair<core::arrayId, std::string>(
 			baseId + msdb::dummy::arr_id_zfp,
-			baseName + "_" + compressionTypeToString(compressionType::ZFP));
+			baseName + "_" + encodingTypeToString(encodingType::ZFP));
 	}
 
 	return std::make_pair(baseId, baseName);

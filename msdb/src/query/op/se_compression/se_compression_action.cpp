@@ -32,7 +32,7 @@ pArray se_compression_action::execute(std::vector<pArray>& inputArrays, pQuery q
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
-		if (attr->getCompType() != compressionType::SEACOW)
+		if (attr->getCompType() != encodingType::SEACOW)
 		{
 			continue;
 		}

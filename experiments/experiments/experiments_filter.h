@@ -15,7 +15,7 @@ static const int numTests = 3;
 static const int filterExpId = 10;
 
 template <typename value_type>
-void experimentFilterQry(const std::string& arrName, const core::compressionType& compType, 
+void experimentFilterQry(const std::string& arrName, const core::encodingType& compType, 
 						 const value_type min = std::numeric_limits<value_type>::min(), 
 						 const value_type max = std::numeric_limits<value_type>::max())
 {
@@ -42,7 +42,7 @@ void experimentFilterQry(const std::string& arrName, const core::compressionType
 	}
 }
 template <typename value_type>
-void experimentIndexFilterQry(const std::string& arrName, const core::compressionType& compType,
+void experimentIndexFilterQry(const std::string& arrName, const core::encodingType& compType,
 							  const value_type min = std::numeric_limits<value_type>::min(),
 							  const value_type max = std::numeric_limits<value_type>::max())
 {

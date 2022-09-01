@@ -8,7 +8,7 @@ namespace core
 extern const chunkSize INVALID_CHUNK_SIZE = static_cast<chunkSize>(~0);
 
 chunkDesc::chunkDesc()
-	: id_(0), attrDesc_(nullptr), mSize_(0), cSize_(0), useCompression_(false), cType_(compressionType::NONE),
+	: id_(0), attrDesc_(nullptr), mSize_(0), cSize_(0), useCompression_(false), cType_(encodingType::NONE),
 	dims_(1), blockDims_(1), sp_(1), ep_(1), chunkCoor_(1)
 {
 }
@@ -17,7 +17,7 @@ chunkDesc::chunkDesc(const chunkId id,
 					 pAttributeDesc attrDesc, const dimension& dims, const dimension& blockDims,
 					 const coor& sp, const coor& ep, const chunkSize mSize)
 	: id_(id), attrDesc_(attrDesc), dims_(dims), blockDims_(blockDims), sp_(sp), ep_(ep), mSize_(mSize), cSize_(mSize),
-	chunkCoor_(dims.size()), cType_(compressionType::NONE), useCompression_(false)
+	chunkCoor_(dims.size()), cType_(encodingType::NONE), useCompression_(false)
 {
 	this->initChunkCoor();
 	if (this->mSize_ == INVALID_CHUNK_SIZE)

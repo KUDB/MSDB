@@ -61,14 +61,14 @@ bool operator!=(const attributeDescs& lhs_, const attributeDescs& rhs_)
 //
 attributeDesc::attributeDesc()
 	: id_(0), name_(""), type_(eleType::EMPTY),
-	matType_(materializedType::FLATTEN), compType_(compressionType::NONE)
+	matType_(materializedType::FLATTEN), compType_(encodingType::NONE)
 {
 	this->typeSize_ = 0;
 	this->dataType_ = concreteTy<bool>();
 }
 
 attributeDesc::attributeDesc(const attributeId id, const std::string name, 
-							 const dataType type, const materializedType matType, const compressionType compType, 
+							 const dataType type, const materializedType matType, const encodingType compType, 
 							 const paramType& optionalParams)
 	: id_(id), name_(name), dataType_(type), matType_(matType), compType_(compType), optionalParams_(optionalParams)
 {
@@ -97,7 +97,7 @@ tinyxml2::XMLElement* attributeDesc::convertToXMLDoc(tinyxml2::XMLElement* node)
 	node->SetAttribute(_MSDB_STR_ATTR_NAME_, this->name_.c_str());
 	node->SetAttribute(_MSDB_STR_ATTR_TYPE_, reinterpret_cast<iTy*>(&this->dataType_)->toString().c_str());
 	node->SetAttribute(_MSDB_STR_ATTR_MAT_TYPE_, materializedTypeToString(this->matType_));
-	node->SetAttribute(_MSDB_STR_ATTR_COMP_TYPE_, compressionTypeToString(this->compType_));
+	node->SetAttribute(_MSDB_STR_ATTR_COMP_TYPE_, encodingTypeToString(this->compType_));
 	
 	tinyxml2::XMLElement* paramNode = node->GetDocument()->NewElement(_MSDB_STR_ATTR_OPTIONAL_PARAMS_);
 	for (auto it = this->optionalParams_.begin(); it != this->optionalParams_.end(); ++it)
@@ -120,7 +120,7 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 	auto strCompType = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_COMP_TYPE_));
 	auto strMatType = xmlErrorHandler(node->Attribute(_MSDB_STR_ATTR_MAT_TYPE_));
 	auto matType = materializedType::FLATTEN;		// Set default
-	auto compType = compressionType::NONE;			// Set default
+	auto compType = encodingType::NONE;			// Set default
 	for (int i = 0; i < sizeof(materializedTypeStrings) / sizeof(const char*); ++i)
 	{
 		if (strcmp(strMatType, materializedTypeStrings[i]) == 0)
@@ -129,11 +129,11 @@ pAttributeDesc attributeDesc::buildDescFromXML(tinyxml2::XMLElement* node)
 			break;
 		}
 	}
-	for (int i = 0; i < sizeof(compressionTypeStrings) / sizeof(const char*); ++i)
+	for (int i = 0; i < sizeof(encodingTypeStrings) / sizeof(const char*); ++i)
 	{
-		if (strcmp(strCompType, compressionTypeStrings[i]) == 0)
+		if (strcmp(strCompType, encodingTypeStrings[i]) == 0)
 		{
-			compType = (compressionType)i;
+			compType = (encodingType)i;
 			break;
 		}
 	}
@@ -158,7 +158,7 @@ std::string attributeDesc::toString() const
 {
 	std::stringstream ss;
 	ss << "id: " << this->id_ << ", name: " << this->name_ << ", type: " << eleTypeToString.at(this->type_);
-	ss << ", comp type: " << compressionTypeToString(this->compType_);
+	ss << ", comp type: " << encodingTypeToString(this->compType_);
 	return ss.str();
 }
 

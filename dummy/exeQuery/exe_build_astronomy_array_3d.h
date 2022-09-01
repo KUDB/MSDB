@@ -13,31 +13,31 @@ namespace dummy
 {
 namespace data_star64x64x64
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType);
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType);
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType);
 }		// data_star64x64x64
 namespace data_nexrad_16x1024x2048
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType);
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType);
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType);
 }		// data_nexrad_16x1024x2048
 namespace data_solar_sdo_1024x1024x512
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType);
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType);
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType);
 }		// data_solar_sdo_1024x1024x512
 namespace data_nexrad_201711_64x24x1024x2048
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType);
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType);
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType);
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType);
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType);
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType);
 }		// data_nexrad_201711_64x24x1024x2048
 }		// dummy
 }		// msdb

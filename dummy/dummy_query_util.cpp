@@ -49,7 +49,7 @@ msdb::Query exeQuery_print_Result_Timer(std::shared_ptr<AFLOperator> afl)
 ////////////////////////////////////////
 // Range
 ////////////////////////////////////////
-msdb::Query exeRangeQry(const std::string& arrName, const core::compressionType& compType, 
+msdb::Query exeRangeQry(const std::string& arrName, const core::encodingType& compType, 
 						const msdb::Domain& range)
 {
 	auto afl = msdb::Consume(
@@ -59,7 +59,7 @@ msdb::Query exeRangeQry(const std::string& arrName, const core::compressionType&
 
 	return exeQuery(afl);
 }
-msdb::Query exeRangeQryPrintResult(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeRangeQryPrintResult(const std::string& arrName, const core::encodingType& compType,
 								   const msdb::Domain& range)
 {
 	auto afl = msdb::Between(
@@ -73,7 +73,7 @@ msdb::Query exeRangeQryPrintResult(const std::string& arrName, const core::compr
 // Filter
 ////////////////////////////////////////
 /* Naive Filter */
-msdb::Query exeFilterQry(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeFilterQry(const std::string& arrName, const core::encodingType& compType,
 						 const int64_t value)
 {
 	auto afl = msdb::Consume(
@@ -83,7 +83,7 @@ msdb::Query exeFilterQry(const std::string& arrName, const core::compressionType
 
 	return exeQuery(afl);
 }
-msdb::Query exeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, 
+msdb::Query exeFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType, 
 									const int64_t value)
 {
 	auto afl = msdb::Filter(
@@ -93,7 +93,7 @@ msdb::Query exeFilterQryPrintResult(const std::string& arrName, const core::comp
 	return exeQuery_print_Result_Timer(afl);
 }
 /* Index Filter */
-msdb::Query exeIndexFilterQry(const std::string& arrName, const core::compressionType& compType, 
+msdb::Query exeIndexFilterQry(const std::string& arrName, const core::encodingType& compType, 
 							  const int64_t value)
 {
 	auto afl = msdb::Consume(
@@ -103,7 +103,7 @@ msdb::Query exeIndexFilterQry(const std::string& arrName, const core::compressio
 
 	return exeQuery(afl);
 }
-msdb::Query exeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, 
+msdb::Query exeIndexFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType, 
 										 const int64_t value)
 {
 	auto afl = msdb::IndexFilter(
@@ -115,7 +115,7 @@ msdb::Query exeIndexFilterQryPrintResult(const std::string& arrName, const core:
 ////////////////////////////////////////
 // Range-Filter
 ////////////////////////////////////////
-msdb::Query exeRangeFilterQry(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeRangeFilterQry(const std::string& arrName, const core::encodingType& compType,
 							  const msdb::Domain& range, const int64_t value)
 {
 	auto afl = msdb::Consume(
@@ -127,7 +127,7 @@ msdb::Query exeRangeFilterQry(const std::string& arrName, const core::compressio
 
 	return exeQuery(afl);
 }
-msdb::Query exeRangeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, 
+msdb::Query exeRangeFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType, 
 										 const msdb::Domain& range, const int64_t value)
 {
 	auto afl = msdb::Between(
@@ -139,7 +139,7 @@ msdb::Query exeRangeFilterQryPrintResult(const std::string& arrName, const core:
 	return exeQuery_print_Result_Timer(afl);
 }
 /* Index Filter */
-msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::compressionType& compType, 
+msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::encodingType& compType, 
 								   const msdb::Domain& range, const int64_t value)
 {
 	auto afl = msdb::Consume(
@@ -151,7 +151,7 @@ msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::compr
 
 	return exeQuery(afl);
 }
-msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType,
 											  const msdb::Domain& range, const int64_t value)
 {
 	auto afl = msdb::Between(

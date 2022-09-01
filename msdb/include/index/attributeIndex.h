@@ -9,7 +9,7 @@ namespace msdb
 {
 namespace core
 {
-ENUM_MACRO(attrIndexType,
+ENUM_CLASS_MACRO(attrIndexType,
 		   NONE, MMT, COMPASS);
 
 class attributeIndex

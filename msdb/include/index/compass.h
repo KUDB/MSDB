@@ -3,7 +3,7 @@
 #define _MSDB_COMPASS_H_
 
 #include <pch.h>
-#include <compression/compressionParam.h>
+#include <encoding/encodingParam.h>
 #include <index/attributeIndex.h>
 #include <util/element.h>
 #include <array/chunkIterator.h>

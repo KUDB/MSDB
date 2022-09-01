@@ -3,7 +3,7 @@
 #define _MSDB_SE_CHUNK_H_
 
 #include <pch.h>
-#include <compression/compressionParam.h>
+#include <encoding/encodingParam.h>
 #include <array/flattenChunk.h>
 #include <array/block.h>
 #include <compression/waveletUtil.h>

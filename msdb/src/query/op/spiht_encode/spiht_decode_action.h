@@ -11,7 +11,7 @@
 #include <array/attributeId.h>
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
-#include <compression/compressionParam.h>
+#include <encoding/encodingParam.h>
 
 namespace msdb
 {

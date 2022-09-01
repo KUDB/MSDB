@@ -10,30 +10,30 @@ namespace dummy
 {
 namespace data_star64x64x64
 {
-std::pair<int, int> getParam(compressionType compType)
+std::pair<int, int> getParam(encodingType compType)
 {
 	switch (compType)
 	{
-	case compressionType::NONE:
-	case compressionType::RAW:
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
+	case encodingType::NONE:
+	case encodingType::RAW:
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
 	{
 		return std::make_pair(0, 0);
 	}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		return std::make_pair(wtLevel, 0);
 	}
-	case compressionType::COMPASS:
+	case encodingType::COMPASS:
 	{
 		return std::make_pair(compassBins, compassBins);
 	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return std::make_pair(mmtLevel, wtLevel);
 	}
@@ -49,7 +49,7 @@ core::pArrayDesc getDummyArrayDesc() {
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encodingType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -75,27 +75,27 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getLoadAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadAFL(arrName, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getBuildIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getBuildIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getBuildIndexAFL(arrName, filePath, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getSaveIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getSaveIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getSaveIndexAFL(arrName, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getLoadIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadIndexAFL(arrName, compType, idxType, param.first, param.second);
@@ -104,30 +104,30 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(compressionType compType, attrIndex
 
 namespace data_nexrad_16x1024x2048
 {
-std::pair<int, int> getParam(compressionType compType)
+std::pair<int, int> getParam(encodingType compType)
 {
 	switch (compType)
 	{
-	case compressionType::NONE:
-	case compressionType::RAW:
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
+	case encodingType::NONE:
+	case encodingType::RAW:
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
 	{
 		return std::make_pair(0, 0);
 	}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		return std::make_pair(wtLevel, 0);
 	}
-	case compressionType::COMPASS:
+	case encodingType::COMPASS:
 	{
 		return std::make_pair(compassBins, compassBins);
 	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return std::make_pair(mmtLevel, wtLevel);
 	}
@@ -143,7 +143,7 @@ core::pArrayDesc getDummyArrayDesc() {
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encodingType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -169,27 +169,27 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getLoadAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadAFL(arrName, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getBuildIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getBuildIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getBuildIndexAFL(arrName, filePath, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getSaveIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getSaveIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getSaveIndexAFL(arrName, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getLoadIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadIndexAFL(arrName, compType, idxType, param.first, param.second);
@@ -198,30 +198,30 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(compressionType compType, attrIndex
 
 namespace data_solar_sdo_1024x1024x512
 {
-std::pair<int, int> getParam(compressionType compType)
+std::pair<int, int> getParam(encodingType compType)
 {
 	switch (compType)
 	{
-	case compressionType::NONE:
-	case compressionType::RAW:
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
+	case encodingType::NONE:
+	case encodingType::RAW:
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
 	{
 		return std::make_pair(0, 0);
 	}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		return std::make_pair(wtLevel, 0);
 	}
-	case compressionType::COMPASS:
+	case encodingType::COMPASS:
 	{
 		return std::make_pair(compassBins, compassBins);
 	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return std::make_pair(mmtLevel, wtLevel);
 	}
@@ -237,7 +237,7 @@ core::pArrayDesc getDummyArrayDesc() {
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encodingType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -263,27 +263,27 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getLoadAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadAFL(arrName, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getBuildIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getBuildIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getBuildIndexAFL(arrName, filePath, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getSaveIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getSaveIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getSaveIndexAFL(arrName, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getLoadIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadIndexAFL(arrName, compType, idxType, param.first, param.second);
@@ -292,30 +292,30 @@ std::shared_ptr<AFLOperator> getLoadIndexAFL(compressionType compType, attrIndex
 
 namespace data_nexrad_201711_64x24x1024x2048
 {
-std::pair<int, int> getParam(compressionType compType)
+std::pair<int, int> getParam(encodingType compType)
 {
 	switch (compType)
 	{
-	case compressionType::NONE:
-	case compressionType::RAW:
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
+	case encodingType::NONE:
+	case encodingType::RAW:
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
 	{
 		return std::make_pair(0, 0);
 	}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		return std::make_pair(wtLevel, 0);
 	}
-	case compressionType::COMPASS:
+	case encodingType::COMPASS:
 	{
 		return std::make_pair(compassBins, compassBins);
 	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return std::make_pair(mmtLevel, wtLevel);
 	}
@@ -331,7 +331,7 @@ core::pArrayDesc getDummyArrayDesc() {
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encodingType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -358,27 +358,27 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 		});
 	return afl;
 }
-std::shared_ptr<AFLOperator> getInsertSaveAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getInsertSaveAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getInsertSaveAFL(arrName, filePath, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadAFL(compressionType compType)
+std::shared_ptr<AFLOperator> getLoadAFL(encodingType compType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadAFL(arrName, compType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getBuildIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getBuildIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getBuildIndexAFL(arrName, filePath, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getSaveIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getSaveIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getSaveIndexAFL(arrName, compType, idxType, param.first, param.second);
 }
-std::shared_ptr<AFLOperator> getLoadIndexAFL(compressionType compType, attrIndexType idxType)
+std::shared_ptr<AFLOperator> getLoadIndexAFL(encodingType compType, attrIndexType idxType)
 {
 	auto param = getParam(compType);
 	return dummy::getLoadIndexAFL(arrName, compType, idxType, param.first, param.second);

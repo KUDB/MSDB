@@ -201,7 +201,7 @@ std::shared_ptr<LoadIndexOpr> LoadIndex(Array arr, attrIndexType indexType)
 /* ************************ */
 /* CompOpr					*/
 /* ************************ */
-CompOpr::CompOpr(std::shared_ptr<AFLOperator> qry, compressionType compType)
+CompOpr::CompOpr(std::shared_ptr<AFLOperator> qry, encodingType compType)
 	: childQry_(qry), compType_(compType), AFLOperator(qry->getArrayDesc())
 {
 }
@@ -213,7 +213,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//////////////////////////////
 	// Param Two
 	//
-	case compressionType::SEACOW:
+	case encodingType::SEACOW:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
@@ -235,7 +235,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		return seQryPlan;
 	}
 #ifdef _MSDB_OP_SE_HUFFMAN_ENCODE_PLAN_H_
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
@@ -263,7 +263,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//////////////////////////////
 	// Param One
 	//
-	//case compressionType::COMPASS:
+	//case encodingType::COMPASS:
 	//{
 	//	auto qryPlan = std::make_shared<core::compass_encode_plan>();
 	//	core::parameters params = {
@@ -274,7 +274,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
@@ -302,7 +302,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//////////////////////////////
 	// No Param
 	//
-	case compressionType::LZW:
+	case encodingType::LZW:
 	{
 		auto qryPlan = std::make_shared<core::lzw_encode_plan>();
 		core::parameters params = {
@@ -313,7 +313,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	case compressionType::LZW_HUFFMAN:
+	case encodingType::LZW_HUFFMAN:
 	{
 		auto qryPlan = std::make_shared<core::lzw_huffman_encode_plan>();
 		core::parameters params = {
@@ -324,7 +324,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	case compressionType::HUFFMAN:
+	case encodingType::HUFFMAN:
 	{
 		auto qryPlan = std::make_shared<core::huffman_encode_plan>();
 		core::parameters params = {
@@ -335,7 +335,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	//case compressionType::ADAPTHUFFMAN:
+	//case encodingType::ADAPTHUFFMAN:
 	//{
 	//	auto qryPlan = std::make_shared<core::adapt_huffman_encode_plan>();
 	//	core::parameters params = {
@@ -346,7 +346,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	//case compressionType::ZIP:
+	//case encodingType::ZIP:
 	//{
 	//	auto qryPlan = std::make_shared<core::zip_save_plan>();
 	//	core::parameters params = {
@@ -357,7 +357,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	case compressionType::ZFP:
+	case encodingType::ZFP:
 	{
 		auto qryPlan = std::make_shared<core::zfp_encode_plan>();
 		core::parameters params = {
@@ -368,7 +368,7 @@ std::shared_ptr<core::opPlan> CompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	//case compressionType::TTHRESH:
+	//case encodingType::TTHRESH:
 	//{
 	//	auto qryPlan = std::make_shared<core::tthresh_encode_plan>();
 	//	core::parameters params = {
@@ -394,7 +394,7 @@ std::string CompOpr::toString(int depth)
 
 	return ss.str();
 }
-CompOneParamOpr::CompOneParamOpr(std::shared_ptr<AFLOperator> qry, compressionType compType,
+CompOneParamOpr::CompOneParamOpr(std::shared_ptr<AFLOperator> qry, encodingType compType,
 								 core::eleDefault paramOne)
 	: childQry_(qry), compType_(compType), paramOne_(paramOne), AFLOperator(qry->getArrayDesc())
 {
@@ -404,7 +404,7 @@ std::shared_ptr<core::opPlan> CompOneParamOpr::getPlan()
 {
 	switch (this->compType_)
 	{
-	//case compressionType::COMPASS:
+	//case encodingType::COMPASS:
 	//{
 	//	auto qryPlan = std::make_shared<core::compass_encode_plan>();
 	//	core::parameters params = {
@@ -416,7 +416,7 @@ std::shared_ptr<core::opPlan> CompOneParamOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
@@ -454,7 +454,7 @@ std::string CompOneParamOpr::toString(int depth)
 
 	return ss.str();
 }
-CompTwoParamOpr::CompTwoParamOpr(std::shared_ptr<AFLOperator> qry, compressionType compType,
+CompTwoParamOpr::CompTwoParamOpr(std::shared_ptr<AFLOperator> qry, encodingType compType,
 								 core::eleDefault paramOne, core::eleDefault paramTwo)
 	: childQry_(qry), compType_(compType), 
 	paramOne_(paramOne), paramTwo_(paramTwo), 
@@ -466,7 +466,7 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 {
 	switch (this->compType_)
 	{
-	case compressionType::SEACOW:
+	case encodingType::SEACOW:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
@@ -489,7 +489,7 @@ std::shared_ptr<core::opPlan> CompTwoParamOpr::getPlan()
 		return seQryPlan;
 	}
 #ifdef _MSDB_OP_SE_HUFFMAN_ENCODE_PLAN_H_
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		auto wtQryPlan = std::make_shared<core::wavelet_encode_plan>();
 		{
@@ -529,18 +529,18 @@ std::string CompTwoParamOpr::toString(int depth)
 }
 
 std::shared_ptr<CompOpr> Comp(
-	std::shared_ptr<AFLOperator> qry, compressionType compType)
+	std::shared_ptr<AFLOperator> qry, encodingType compType)
 {
 	return std::make_shared<CompOpr>(qry, compType);
 }
 std::shared_ptr<CompOneParamOpr> Comp(
-	std::shared_ptr<AFLOperator> qry, compressionType compType,
+	std::shared_ptr<AFLOperator> qry, encodingType compType,
 	core::eleDefault paramOne)
 {
 	return std::make_shared<CompOneParamOpr>(qry, compType, paramOne);
 }
 std::shared_ptr<CompTwoParamOpr> Comp(
-	std::shared_ptr<AFLOperator> qry, compressionType compType,
+	std::shared_ptr<AFLOperator> qry, encodingType compType,
 	core::eleDefault paramOne, core::eleDefault paramTwo)
 {
 	return std::make_shared<CompTwoParamOpr>(qry, compType, paramOne, paramTwo);
@@ -549,7 +549,7 @@ std::shared_ptr<CompTwoParamOpr> Comp(
 /* ************************ */
 /* DecompOpr				*/
 /* ************************ */
-DecompOpr::DecompOpr(Array arr, compressionType compType)
+DecompOpr::DecompOpr(Array arr, encodingType compType)
 	: compType_(compType), AFLOperator(arr.getDesc())
 {
 }
@@ -558,7 +558,7 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 {
 	switch (this->compType_)
 	{
-	case compressionType::LZW:
+	case encodingType::LZW:
 	{
 		auto qryPlan = std::make_shared<core::lzw_decode_plan>();
 		core::parameters params = {
@@ -569,7 +569,7 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	case compressionType::LZW_HUFFMAN:
+	case encodingType::LZW_HUFFMAN:
 	{
 		auto qryPlan = std::make_shared<core::lzw_huffman_decode_plan>();
 		core::parameters params = {
@@ -580,7 +580,7 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	case compressionType::HUFFMAN:
+	case encodingType::HUFFMAN:
 	{
 		auto qryPlan = std::make_shared<core::huffman_decode_plan>();
 		core::parameters params = {
@@ -591,7 +591,7 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	//case compressionType::ADAPTHUFFMAN:
+	//case encodingType::ADAPTHUFFMAN:
 	//{
 	//	auto qryPlan = std::make_shared<core::adapt_huffman_decode_plan>();
 	//	core::parameters params = {
@@ -602,7 +602,7 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	//case compressionType::ZIP:
+	//case encodingType::ZIP:
 	//{
 	//	auto qryPlan = std::make_shared<core::zip_load_plan>();
 	//	core::parameters params = {
@@ -613,7 +613,7 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	case compressionType::ZFP:
+	case encodingType::ZFP:
 	{
 		auto qryPlan = std::make_shared<core::zfp_decode_plan>();
 		core::parameters params = {
@@ -624,7 +624,7 @@ std::shared_ptr<core::opPlan> DecompOpr::getPlan()
 		return qryPlan;
 		break;
 	}
-	//case compressionType::TTHRESH:
+	//case encodingType::TTHRESH:
 	//{
 	//	auto qryPlan = std::make_shared<core::tthresh_decode_plan>();
 	//	core::parameters params = {
@@ -649,7 +649,7 @@ std::string DecompOpr::toString(int depth)
 
 	return ss.str();
 }
-DecompOneParamOpr::DecompOneParamOpr(Array arr, compressionType compType,
+DecompOneParamOpr::DecompOneParamOpr(Array arr, encodingType compType,
 									 core::eleDefault paramOne)
 	: compType_(compType), paramOne_(paramOne), AFLOperator(arr.getDesc())
 {
@@ -659,7 +659,7 @@ std::shared_ptr<core::opPlan> DecompOneParamOpr::getPlan()
 {
 	switch (this->compType_)
 	{
-	//case compressionType::COMPASS:
+	//case encodingType::COMPASS:
 	//{
 	//	auto qryPlan = std::make_shared<core::compass_decode_plan>();
 	//	core::parameters params = {
@@ -671,7 +671,7 @@ std::shared_ptr<core::opPlan> DecompOneParamOpr::getPlan()
 	//	return qryPlan;
 	//	break;
 	//}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		auto spQryPlan = std::make_shared<core::spiht_decode_plan>();
 		{
@@ -710,7 +710,7 @@ std::string DecompOneParamOpr::toString(int depth)
 
 	return ss.str();
 }
-DecompTwoParamOpr::DecompTwoParamOpr(Array arr, compressionType compType,
+DecompTwoParamOpr::DecompTwoParamOpr(Array arr, encodingType compType,
 									 core::eleDefault paramOne, core::eleDefault paramTwo)
 	: compType_(compType),
 	paramOne_(paramOne), paramTwo_(paramTwo), 
@@ -722,7 +722,7 @@ std::shared_ptr<core::opPlan> DecompTwoParamOpr::getPlan()
 {
 	switch (this->compType_)
 	{
-	case compressionType::SEACOW:
+	case encodingType::SEACOW:
 	{
 		auto seQryPlan = std::make_shared<core::se_decompression_plan>();
 		{
@@ -748,7 +748,7 @@ std::shared_ptr<core::opPlan> DecompTwoParamOpr::getPlan()
 		break;
 	}
 #ifdef _MSDB_SE_HUFFMAN_DECODE_PLAN_H_
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		auto seQryPlan = std::make_shared<core::se_huffman_decode_plan>();
 		{
@@ -791,18 +791,18 @@ std::string DecompTwoParamOpr::toString(int depth)
 	return ss.str();
 }
 std::shared_ptr<DecompOpr> Decomp(
-	Array arr, compressionType compType)
+	Array arr, encodingType compType)
 {
 	return std::make_shared<DecompOpr>(arr, compType);
 }
 std::shared_ptr<DecompOneParamOpr> Decomp(
-	Array arr, compressionType compType,
+	Array arr, encodingType compType,
 	core::eleDefault paramOne)
 {
 	return std::make_shared<DecompOneParamOpr>(arr, compType, paramOne);
 }
 std::shared_ptr<DecompTwoParamOpr> Decomp(
-	Array arr, compressionType compType,
+	Array arr, encodingType compType,
 	core::eleDefault paramOne, core::eleDefault paramTwo)
 {
 	return std::make_shared<DecompTwoParamOpr>(arr, compType, paramOne, paramTwo);

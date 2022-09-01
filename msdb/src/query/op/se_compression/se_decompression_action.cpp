@@ -51,7 +51,7 @@ pArray se_decompression_action::execute(std::vector<pArray>& inputArrays, pQuery
 	auto attrDescs = inArr->getDesc()->getAttrDescs();
 	for (auto attr : *attrDescs)
 	{
-		if (attr->getCompType() != compressionType::SEACOW)
+		if (attr->getCompType() != encodingType::SEACOW)
 		{
 			continue;
 		}

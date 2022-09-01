@@ -17,17 +17,17 @@ namespace test
 TEST(seacow_huffman_encode, seacow_data_star1024x1024)
 {
 	dummy::data_star1024x1024::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW_HUFFMAN);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW_HUFFMAN);
 
 	dummy::data_star1024x1024::executeBuildIndex(
-		core::compressionType::SEACOW_HUFFMAN, core::attrIndexType::MMT);
+		core::encodingType::SEACOW_HUFFMAN, core::attrIndexType::MMT);
 
 	dummy::executeInsertSaveArray(msdb::dummy::data_star1024x1024::arrName,
 								  msdb::dummy::data_star1024x1024::filePath,
-								  msdb::core::compressionType::SEACOW_HUFFMAN);
+								  msdb::core::encodingType::SEACOW_HUFFMAN);
 
 	dummy::executeLoadArray(msdb::dummy::data_star1024x1024::arrName,
-							msdb::core::compressionType::SEACOW_HUFFMAN);
+							msdb::core::encodingType::SEACOW_HUFFMAN);
 }
 }		// test
 }		// msdb

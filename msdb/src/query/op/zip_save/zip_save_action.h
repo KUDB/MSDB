@@ -3,26 +3,28 @@
 #define _MSDB_OP_ZIP_ENCODE_ACTION_H_
 
 #include <pch.h>
-#include <query/opAction.h>
-#include <util/math.h>
-#include "zipChunk.h"
+#include <query/opIOAction.h>
 
 namespace msdb
 {
 namespace core
 {
-class zip_save_action : public opAction
+class zip_save_action : public opIOAction
 {
 public:
 	zip_save_action();
 	virtual ~zip_save_action();
-	virtual const char* name() override;
+	virtual const char* name() override
+	{
+		return "zip_save";
+	}
+	virtual inline int encodingType() override
+	{
+		return encodingType::ZIP;
+	}
 
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
-
-private:
-	//pZipChunk makeOutChunk(pChunk inChunk);
 };
 }		// core
 }		// msdb

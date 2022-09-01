@@ -4,7 +4,7 @@
 #include <op/compass_encode/compassChunk.h>
 #include <util/logger.h>
 #include "compassArray.h"
-#include <compression/compressionParam.h>
+#include <encoding/encodingParam.h>
 
 namespace msdb
 {
@@ -39,7 +39,7 @@ pArray compass_encode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
-		if (attr->getCompType() != compressionType::COMPASS)
+		if (attr->getCompType() != encodingType::COMPASS)
 		{
 			continue;
 		}

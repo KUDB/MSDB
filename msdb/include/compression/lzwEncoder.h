@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_LZWENCODER_H_
 #define _MSDB_LZWENCODER_H_
 
@@ -157,7 +157,7 @@ public:
 					dictionary.push_back({ i, s.front() });
 			}
 
-			for (int j = 0; j < s.size(); ++j, ++outSeq)
+			for (int j = 0; j < s.size() && outSeq < len; ++j, ++outSeq)
 			{
 				out[outSeq] = s[j];
 			}

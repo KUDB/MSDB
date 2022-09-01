@@ -61,17 +61,17 @@ std::shared_ptr<core::dimensionDesc> DefDimension::getDesc()
 DefAttribute::DefAttribute(const std::string name, const core::dataType type,
 						   const core::materializedType matType,
 						   const std::map<std::string, std::string> optionalParams)
-	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, core::compressionType::NONE, optionalParams))
+	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, core::encodingType::NONE, optionalParams))
 {}
 
 DefAttribute::DefAttribute(const std::string name, const core::dataType type,
-						   const core::compressionType compType,
+						   const core::encodingType compType,
 						   const std::map<std::string, std::string> optionalParams)
 	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, core::materializedType::FLATTEN, compType, optionalParams))
 {}
 
 DefAttribute::DefAttribute(const std::string name, const core::dataType type,
-						   const core::materializedType matType, const core::compressionType compType,
+						   const core::materializedType matType, const core::encodingType compType,
 						   const std::map<std::string, std::string> optionalParams)
 	: attrDesc_(std::make_shared<core::attributeDesc>(0, name, type, matType, compType, optionalParams))
 {}

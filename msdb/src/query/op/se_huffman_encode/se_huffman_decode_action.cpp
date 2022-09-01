@@ -50,7 +50,7 @@ pArray se_huffman_decode_action::execute(std::vector<pArray>& inputArrays, pQuer
 	auto attrDescs = inArr->getDesc()->getAttrDescs();
 	for (auto attr : *attrDescs)
 	{
-		if (attr->getCompType() != compressionType::SEACOW_HUFFMAN)
+		if (attr->getCompType() != encodingType::SEACOW_HUFFMAN)
 		{
 			continue;
 		}

@@ -53,7 +53,7 @@ pArray spiht_decode_action::execute(std::vector<pArray>& inputArrays, pQuery qry
 	auto attrDescs = inArr->getDesc()->getAttrDescs();
 	for (auto attr : *attrDescs)
 	{
-		if (attr->getCompType() != compressionType::SPIHT)
+		if (attr->getCompType() != encodingType::SPIHT)
 		{
 			continue;
 		}

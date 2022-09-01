@@ -9,7 +9,7 @@ namespace msdb
 {
 namespace core
 {
-ENUM_MACRO(materializedType,
+ENUM_CLASS_MACRO(materializedType,
 		   FLATTEN, NESTED);
 }		// core
 }		// msdb

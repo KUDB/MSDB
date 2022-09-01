@@ -3,7 +3,7 @@
 #define _MSDB_CPP_ARRAY_H_
 
 #include <pch.h>
-#include <compression/compressionType.h>
+#include <encoding/encodingType.h>
 #include <compression/materializedType.h>
 #include <array/array.h>
 #include <query/query.h>
@@ -14,7 +14,7 @@
 namespace msdb
 {
 using typename core::eleType;
-using typename core::compressionType;
+using typename core::encodingType;
 using typename core::materializedType;
 using typename core::attrIndexType;
 
@@ -89,11 +89,11 @@ public:
 				 const std::map<std::string, std::string> optionalParams = {});
 
 	DefAttribute(const std::string name, const core::dataType type,
-				 const core::compressionType compType,
+				 const core::encodingType compType,
 				 const std::map<std::string, std::string> optionalParams = {});
 
 	DefAttribute(const std::string name, const core::dataType type,
-				 const core::materializedType matType, const core::compressionType compType,
+				 const core::materializedType matType, const core::encodingType compType,
 				 const std::map<std::string, std::string> optionalParams = {});
 
 public:

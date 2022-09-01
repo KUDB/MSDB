@@ -11,7 +11,7 @@ namespace dummy
 {
 namespace data_star64x64x64
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType)
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType)
 {
 	msdb::Context ctx;
 	auto afl = msdb::dummy::data_star64x64x64::getArrayBuildAFL(matType, compType);
@@ -26,21 +26,21 @@ msdb::Query executeBuildArray(core::materializedType matType, core::compressionT
 
 	return qry;
 }
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_star64x64x64::getBuildIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_star64x64x64::getSaveIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_star64x64x64::getLoadIndexAFL(compType, indexType));
@@ -50,7 +50,7 @@ msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType
 }		// data_star64x64x64
 namespace data_nexrad_16x1024x2048
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType)
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType)
 {
 	msdb::Context ctx;
 	auto afl = msdb::dummy::data_nexrad_16x1024x2048::getArrayBuildAFL(matType, compType);
@@ -65,21 +65,21 @@ msdb::Query executeBuildArray(core::materializedType matType, core::compressionT
 
 	return qry;
 }
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_nexrad_16x1024x2048::getBuildIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_nexrad_16x1024x2048::getSaveIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_nexrad_16x1024x2048::getLoadIndexAFL(compType, indexType));
@@ -89,7 +89,7 @@ msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType
 }		// data_nexrad_16x1024x2048
 namespace data_solar_sdo_1024x1024x512
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType)
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType)
 {
 	msdb::Context ctx;
 	auto afl = msdb::dummy::data_solar_sdo_1024x1024x512::getArrayBuildAFL(matType, compType);
@@ -104,21 +104,21 @@ msdb::Query executeBuildArray(core::materializedType matType, core::compressionT
 
 	return qry;
 }
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_solar_sdo_1024x1024x512::getBuildIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_solar_sdo_1024x1024x512::getSaveIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_solar_sdo_1024x1024x512::getLoadIndexAFL(compType, indexType));
@@ -128,7 +128,7 @@ msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType
 }		// data_solar_sdo_1024x1024x512
 namespace data_nexrad_201711_64x24x1024x2048
 {
-msdb::Query executeBuildArray(core::materializedType matType, core::compressionType compType)
+msdb::Query executeBuildArray(core::materializedType matType, core::encodingType compType)
 {
 	msdb::Context ctx;
 	auto afl = msdb::dummy::data_nexrad_201711_64x24x1024x2048::getArrayBuildAFL(matType, compType);
@@ -143,21 +143,21 @@ msdb::Query executeBuildArray(core::materializedType matType, core::compressionT
 
 	return qry;
 }
-msdb::Query executeBuildIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeBuildIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_nexrad_201711_64x24x1024x2048::getBuildIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeSaveIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeSaveIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_nexrad_201711_64x24x1024x2048::getSaveIndexAFL(compType, indexType));
 
 	return exeQuery_print_Timer(afl);
 }
-msdb::Query executeLoadIndex(core::compressionType compType, core::attrIndexType indexType)
+msdb::Query executeLoadIndex(core::encodingType compType, core::attrIndexType indexType)
 {
 	auto afl = msdb::Consume(
 		msdb::dummy::data_nexrad_201711_64x24x1024x2048::getLoadIndexAFL(compType, indexType));

@@ -4,7 +4,7 @@ namespace msdb
 {
 namespace dummy
 {
-msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string& filePath, const core::compressionType& compType)
+msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string& filePath, const core::encodingType& compType)
 {
 	msdb::Context ctx;
 	auto afl = msdb::Consume(msdb::dummy::getInsertSaveAFL(
@@ -36,7 +36,7 @@ msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string
 
 	return qry;
 }
-msdb::Query executeLoadArray(const std::string& arrName, const core::compressionType& compType)
+msdb::Query executeLoadArray(const std::string& arrName, const core::encodingType& compType)
 {
 	msdb::Context ctx;
 	auto afl = msdb::Consume(msdb::dummy::getLoadAFL(arrName, compType));

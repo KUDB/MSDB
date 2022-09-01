@@ -6,7 +6,7 @@
 #include <array/attributeId.h>
 #include <util/element.h>
 #include <util/dataType.h>
-#include <compression/compressionType.h>
+#include <encoding/encodingType.h>
 #include <compression/materializedType.h>
 #include <system/exceptions.h>
 #include <xml/tinyxml2.h>
@@ -65,7 +65,7 @@ public:
 	// TODO::replace eleType->dataType
 	attributeDesc();
 	attributeDesc(const attributeId id, const std::string name, const dataType type, 
-				  const materializedType matType = materializedType::FLATTEN, const compressionType compType = compressionType::NONE,
+				  const materializedType matType = materializedType::FLATTEN, const encodingType compType = encodingType::NONE,
 				  const paramType& optionalParams = paramType());
 	attributeDesc(const attributeDesc& src);
 	attributeDesc(attributeDesc&& src) noexcept;
@@ -106,7 +106,7 @@ public:
 	{
 		return this->dataType_;
 	}
-	inline const compressionType& getCompType() const
+	inline const int getCompType() const
 	{
 		return this->compType_;
 	}
@@ -118,7 +118,7 @@ public:
 	/**
 	 * Setter
 	 */
-	inline void setCompType(compressionType compType)
+	inline void setCompType(int compType)
 	{
 		this->compType_ = compType;
 	}
@@ -147,7 +147,7 @@ public:
 	//std::list<chunkType> chunkTypeLineage_;		// dependency problem, chunkType->chunkFactory->chunk->attributeDesc
 	paramType optionalParams_;
 	size_t typeSize_;
-	compressionType compType_;	// compression chunk type, default:NONE
+	int compType_;				// compression chunk type, default:NONE
 	materializedType matType_;	// materialized chunk type, default:flatten
 };
 

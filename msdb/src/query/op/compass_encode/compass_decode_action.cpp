@@ -4,7 +4,7 @@
 #include <system/storageMgr.h>
 #include <util/threadUtil.h>
 #include "compassArray.h"
-#include <compression/compressionParam.h>
+#include <encoding/encodingParam.h>
 
 namespace msdb
 {

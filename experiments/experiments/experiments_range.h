@@ -17,7 +17,7 @@ static const std::vector<float> rangeSelectivity({0.1, 10, 20, 30, 40});
 Domain getRandomRange(const core::coordinates& dims, const float selectivity);
 
 template <typename value_type>
-void experimentRangeFilterQry(const std::string& arrName, const core::compressionType& compType,
+void experimentRangeFilterQry(const std::string& arrName, const core::encodingType& compType,
 							  const core::coordinates& dims,
 							  const value_type min = std::numeric_limits<value_type>::min(),
 							  const value_type max = std::numeric_limits<value_type>::max())
@@ -52,7 +52,7 @@ void experimentRangeFilterQry(const std::string& arrName, const core::compressio
 
 }
 template <typename value_type>
-void experimentRangeIndexFilterQry(const std::string& arrName, const core::compressionType& compType, 
+void experimentRangeIndexFilterQry(const std::string& arrName, const core::encodingType& compType, 
 								   const core::coordinates& dims,
 								   const value_type min = std::numeric_limits<value_type>::min(),
 								   const value_type max = std::numeric_limits<value_type>::max())

@@ -4,7 +4,6 @@
 
 #include <pch.h>
 #include <array/buffer.h>
-#include <compression/compression.h>
 
 namespace msdb
 {

@@ -3,7 +3,7 @@
 #define _MSDB_WT_CHUNK_H_
 
 #include <pch.h>
-#include <compression/compressionParam.h>
+#include <encoding/encodingParam.h>
 #include <array/monoChunk.h>
 
 namespace msdb

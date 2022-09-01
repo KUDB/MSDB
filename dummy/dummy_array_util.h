@@ -26,26 +26,26 @@ static const int arr_id_tthresh = 50;
 static const int arr_id_zfp = 55;
 
 msdb::Array getArrayAFL(
-	std::string arrName, compressionType compType = compressionType::RAW);
+	std::string arrName, encodingType compType = encodingType::RAW);
 std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	std::string arrName, std::string filePath,
-	compressionType compType = compressionType::RAW,
+	encodingType compType = encodingType::RAW,
 	int paramOne = 0, int paramTwo = 0);
 std::shared_ptr<AFLOperator> getLoadAFL(
 	std::string arrName,
-	compressionType compType = compressionType::RAW,
+	encodingType compType = encodingType::RAW,
 	int paramOne = 0, int paramTwo = 0);
 std::shared_ptr<AFLOperator> getBuildIndexAFL(
 	std::string arrName, std::string filePath,
-	compressionType compType, attrIndexType idxType,
+	encodingType compType, attrIndexType idxType,
 	int paramOne = 0, int paramTwo = 0);
 std::shared_ptr<AFLOperator> getSaveIndexAFL(
 	std::string arrName,
-	compressionType compType, attrIndexType idxType,
+	encodingType compType, attrIndexType idxType,
 	int paramOne = 0, int paramTwo = 0);
 std::shared_ptr<AFLOperator> getLoadIndexAFL(
 	std::string arrName,
-	compressionType compType, attrIndexType idxType,
+	encodingType compType, attrIndexType idxType,
 	int paramOne = 0, int paramTwo = 0);
 
 core::pDimensionDescs dimensionDescBuilder(
@@ -58,10 +58,10 @@ core::pAttributeDescs attributeDescBuilder(
 core::pAttributeDescs attributeDescBuilder(const std::vector<std::string>& attrNames,
 										   const std::vector<core::dataType>& attrTypes,
 										   const std::vector<core::materializedType>& matTypes,
-										   const std::vector<core::compressionType>& compTypes,
+										   const std::vector<core::encodingType>& compTypes,
 										   const std::vector<core::attributeDesc::paramType>& optionalParams = {});
 std::pair<core::arrayId, std::string> getArrayIdName(
-	core::compressionType compType, 
+	core::encodingType compType, 
 	core::arrayId baseId, 
 	std::string baseName
 );

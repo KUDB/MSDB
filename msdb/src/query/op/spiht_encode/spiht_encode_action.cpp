@@ -6,7 +6,7 @@
 #include <op/spiht_encode/spihtChunk.h>
 #include <util/logger.h>
 #include "spihtArray.h"
-#include <compression/compressionParam.h>
+#include <encoding/encodingParam.h>
 
 namespace msdb
 {
@@ -42,7 +42,7 @@ pArray spiht_encode_action::execute(std::vector<pArray>& inputArrays, pQuery qry
 
     for (auto attr : *inArr->getDesc()->attrDescs_)
     {
-        if (attr->getCompType() != compressionType::SPIHT)
+        if (attr->getCompType() != encodingType::SPIHT)
         {
             continue;
         }

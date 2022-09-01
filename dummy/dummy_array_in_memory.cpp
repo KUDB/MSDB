@@ -15,7 +15,7 @@ core::pArrayDesc getDummyArrayDesc()
 
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
-std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encodingType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;
@@ -37,30 +37,30 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compress
 }	// array_mem_twoattr_2d
 namespace array_mem_char_4x4
 {
-std::pair<int, int> getParam(compressionType compType)
+std::pair<int, int> getParam(encodingType compType)
 {
 	switch (compType)
 	{
-	case compressionType::NONE:
-	case compressionType::RAW:
-	case compressionType::HUFFMAN:
-	case compressionType::ADAPTHUFFMAN:
-	case compressionType::LZW_HUFFMAN:
-	case compressionType::LZW:
-	case compressionType::ZIP:
+	case encodingType::NONE:
+	case encodingType::RAW:
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
 	{
 		return std::make_pair(0, 0);
 	}
-	case compressionType::SPIHT:
+	case encodingType::SPIHT:
 	{
 		return std::make_pair(wtLevel, 0);
 	}
-	case compressionType::COMPASS:
+	case encodingType::COMPASS:
 	{
 		return std::make_pair(compassBins, compassBins);
 	}
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return std::make_pair(mmtLevel, wtLevel);
 	}
@@ -78,7 +78,7 @@ core::pArrayDesc getDummyArrayDesc() {
 	return std::make_shared<core::arrayDesc>(aid, arrName.c_str(), dimDescs, attrDescs);
 }
 
-std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, compressionType compType)
+std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encodingType compType)
 {
 	auto idName = getArrayIdName(compType, aid, arrName);
 	core::arrayId aid = idName.first;

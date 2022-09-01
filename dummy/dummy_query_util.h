@@ -17,27 +17,27 @@ msdb::Query exeQuery_print_Result_Timer(std::shared_ptr<AFLOperator> afl);
 ////////////////////////////////////////
 // Range
 ////////////////////////////////////////
-msdb::Query exeRangeQry(const std::string& arrName, const core::compressionType& compType, const msdb::Domain& range);
-msdb::Query exeRangeQryPrintResult(const std::string& arrName, const core::compressionType& compType, const msdb::Domain& range);
+msdb::Query exeRangeQry(const std::string& arrName, const core::encodingType& compType, const msdb::Domain& range);
+msdb::Query exeRangeQryPrintResult(const std::string& arrName, const core::encodingType& compType, const msdb::Domain& range);
 
 ////////////////////////////////////////
 // Filter
 ////////////////////////////////////////
-msdb::Query exeFilterQry(const std::string& arrName, const core::compressionType& compType, const int64_t value);
-msdb::Query exeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, const int64_t value);
-msdb::Query exeIndexFilterQry(const std::string& arrName, const core::compressionType& compType, const int64_t value);
-msdb::Query exeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType, const int64_t value);
+msdb::Query exeFilterQry(const std::string& arrName, const core::encodingType& compType, const int64_t value);
+msdb::Query exeFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType, const int64_t value);
+msdb::Query exeIndexFilterQry(const std::string& arrName, const core::encodingType& compType, const int64_t value);
+msdb::Query exeIndexFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType, const int64_t value);
 
 ////////////////////////////////////////
 // Range-Filter
 ////////////////////////////////////////
-msdb::Query exeRangeFilterQry(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeRangeFilterQry(const std::string& arrName, const core::encodingType& compType,
 							  const msdb::Domain& range, const int64_t value);
-msdb::Query exeRangeFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeRangeFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType,
 										 const msdb::Domain& range, const int64_t value);
-msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::encodingType& compType,
 								   const msdb::Domain& range, const int64_t value);
-msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const core::compressionType& compType,
+msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType,
 											  const msdb::Domain& range, const int64_t value);
 }
 }

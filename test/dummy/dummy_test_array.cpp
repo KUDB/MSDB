@@ -59,7 +59,7 @@ core::pArrayDesc getDummyArrayDesc_MultiAttr_3D()
 		{ "ATTR_1", "ATTR_2", "ATTR_3" },
 		{ core::concreteTy<char>(), core::concreteTy<int8_t>(), core::concreteTy<float>() },
 		{ core::materializedType::FLATTEN, core::materializedType::NESTED , core::materializedType::FLATTEN },
-		{ core::compressionType::NONE, core::compressionType::SEACOW, core::compressionType::RAW },
+		{ core::encodingType::NONE, core::encodingType::SEACOW, core::encodingType::RAW },
 		{
 			core::attributeDesc::paramType({}),
 			core::attributeDesc::paramType(

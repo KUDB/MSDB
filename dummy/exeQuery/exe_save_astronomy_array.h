@@ -15,9 +15,9 @@ static const int saveExpId = 4;
 static const int loadExpId = 5;
 
 msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string& filePath,
-								   const core::compressionType& compType = core::compressionType::NONE);
+								   const core::encodingType& compType = core::encodingType::NONE);
 
-msdb::Query executeLoadArray(const std::string& arrName, const core::compressionType& compType);
+msdb::Query executeLoadArray(const std::string& arrName, const core::encodingType& compType);
 }
 }
 

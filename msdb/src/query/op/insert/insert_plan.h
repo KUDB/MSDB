@@ -10,7 +10,7 @@ namespace msdb
 {
 namespace core
 {
-ENUM_MACRO(opInsertType,
+ENUM_CLASS_MACRO(opInsertType,
 		   FILE, MEMORY);
 
 class insert_plan : public opPlan

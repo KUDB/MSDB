@@ -13,100 +13,100 @@ namespace test
 TEST(mmt_save_load, data_star1024x1024)
 {
 	dummy::data_star1024x1024::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_star1024x1024::executeBuildIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_star1024x1024::executeSaveIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_star1024x1024::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 }
 
 TEST(mmt_load, data_star1024x1024)
 {
 	dummy::data_star1024x1024::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_star1024x1024::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 }
 
 TEST(mmt_save_load, data_saturn1024x1024)
 {
 	dummy::data_saturn1024x1024::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_saturn1024x1024::executeBuildIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_saturn1024x1024::executeSaveIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_saturn1024x1024::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 }
 
 TEST(mmt_load, data_saturn1024x1024)
 {
 	dummy::data_saturn1024x1024::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_saturn1024x1024::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 }
 
 TEST(mmt_save_load, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_solar_sdo_1024x1024x512::executeBuildIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_solar_sdo_1024x1024x512::executeSaveIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_solar_sdo_1024x1024x512::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 }
 
 TEST(mmt_load, data_solar_sdo_1024x1024x512)
 {
 	dummy::data_solar_sdo_1024x1024x512::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_solar_sdo_1024x1024x512::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 }
 
 TEST(mmt_save_load, data_nexrad_201711_64x24x1024x2048)
 {
 	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_nexrad_201711_64x24x1024x2048::executeSaveIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 	dummy::data_nexrad_201711_64x24x1024x2048::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 }
 
 TEST(mmt_load, data_nexrad_201711_64x24x1024x2048)
 {
 	dummy::data_nexrad_201711_64x24x1024x2048::executeBuildArray(
-		core::materializedType::FLATTEN, core::compressionType::SEACOW);
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
 
 	dummy::data_nexrad_201711_64x24x1024x2048::executeLoadIndex(
-		core::compressionType::SEACOW, core::attrIndexType::MMT);
+		core::encodingType::SEACOW, core::attrIndexType::MMT);
 
 }
 }		// test

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_API_CPP_IO_OPERATORS_H_
 #define _MSDB_API_CPP_IO_OPERATORS_H_
 
@@ -69,7 +69,7 @@ std::shared_ptr<LoadIndexOpr> LoadIndex(Array arr, attrIndexType compType);
 class CompOpr : public AFLOperator
 {
 public:
-	CompOpr(std::shared_ptr<AFLOperator> qry, compressionType compType);
+	CompOpr(std::shared_ptr<AFLOperator> qry, encodingType compType);
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
@@ -77,13 +77,13 @@ public:
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
-	compressionType compType_;
+	encodingType compType_;
 };
 
 class CompOneParamOpr : public AFLOperator
 {
 public:
-	CompOneParamOpr(std::shared_ptr<AFLOperator> qry, compressionType compType,
+	CompOneParamOpr(std::shared_ptr<AFLOperator> qry, encodingType compType,
 					core::eleDefault paramOne);
 
 public:
@@ -92,14 +92,14 @@ public:
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
-	compressionType compType_;
+	encodingType compType_;
 	core::eleDefault paramOne_;
 };
 
 class CompTwoParamOpr : public AFLOperator
 {
 public:
-	CompTwoParamOpr(std::shared_ptr<AFLOperator> qry, compressionType compType,
+	CompTwoParamOpr(std::shared_ptr<AFLOperator> qry, encodingType compType,
 					core::eleDefault paramOne, core::eleDefault paramTwo);
 
 public:
@@ -108,20 +108,20 @@ public:
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
-	compressionType compType_;
+	encodingType compType_;
 	core::eleDefault paramOne_;
 	core::eleDefault paramTwo_;
 };
 
 std::shared_ptr<CompOpr> Comp(
-	std::shared_ptr<AFLOperator> qry, compressionType compType);
+	std::shared_ptr<AFLOperator> qry, encodingType compType);
 
 std::shared_ptr<CompOneParamOpr> Comp(
-	std::shared_ptr<AFLOperator> qry, compressionType compType,
+	std::shared_ptr<AFLOperator> qry, encodingType compType,
 	core::eleDefault paramOne);
 
 std::shared_ptr<CompTwoParamOpr> Comp(
-	std::shared_ptr<AFLOperator> qry, compressionType compType, 
+	std::shared_ptr<AFLOperator> qry, encodingType compType, 
 	core::eleDefault paramOne, core::eleDefault paramTwo);
 
 /* ************************ */
@@ -130,7 +130,7 @@ std::shared_ptr<CompTwoParamOpr> Comp(
 class DecompOpr : public AFLOperator
 {
 public:
-	DecompOpr(Array arr, compressionType compType);
+	DecompOpr(Array arr, encodingType compType);
 
 public:
 	virtual std::shared_ptr<core::opPlan> getPlan();
@@ -138,13 +138,13 @@ public:
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
-	compressionType compType_;
+	encodingType compType_;
 };
 
 class DecompOneParamOpr : public AFLOperator
 {
 public:
-	DecompOneParamOpr(Array arr, compressionType compType,
+	DecompOneParamOpr(Array arr, encodingType compType,
 					  core::eleDefault paramOne);
 
 public:
@@ -153,14 +153,14 @@ public:
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
-	compressionType compType_;
+	encodingType compType_;
 	core::eleDefault paramOne_;
 };
 
 class DecompTwoParamOpr : public AFLOperator
 {
 public:
-	DecompTwoParamOpr(Array arr, compressionType compType,
+	DecompTwoParamOpr(Array arr, encodingType compType,
 					  core::eleDefault paramOne, core::eleDefault paramTwo);
 
 public:
@@ -169,20 +169,20 @@ public:
 
 private:
 	std::shared_ptr<AFLOperator> childQry_;
-	compressionType compType_;
+	encodingType compType_;
 	core::eleDefault paramOne_;
 	core::eleDefault paramTwo_;
 };
 
 std::shared_ptr<DecompOpr> Decomp(
-	Array arr, compressionType compType);
+	Array arr, encodingType compType);
 
 std::shared_ptr<DecompOneParamOpr> Decomp(
-	Array arr, compressionType compType,
+	Array arr, encodingType compType,
 	core::eleDefault paramOne);
 
 std::shared_ptr<DecompTwoParamOpr> Decomp(
-	Array arr, compressionType compType,
+	Array arr, encodingType compType,
 	core::eleDefault paramOne, core::eleDefault paramTwo);
 }		// msdb
 #endif	// _MSDB_API_CPP_IO_OPERATORS_H_

@@ -3,23 +3,28 @@
 #define _MSDB_OP_HUFFMAN_ENCODE_ACTION_H_
 
 #include <pch.h>
-#include <query/opAction.h>
-#include <op/huffman_encode/huffmanChunk.h>
+#include <query/opIOAction.h>
 
 namespace msdb
 {
 namespace core
 {
-class huffman_encode_action : public opAction
+class huffman_encode_action : public opIOAction
 {
 public:
 	huffman_encode_action();
 	virtual ~huffman_encode_action();
-	virtual const char* name() override;
+	virtual const char* name() override
+	{
+		return "huffman_encode";
+	}
+	virtual inline int encodingType() override
+	{
+		return encodingType::HUFFMAN;
+	}
 
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
-	void encodeChunk(arrayId arrId, attributeId attrId, pChunk outChunk, pQuery qry, const size_t parentThreadId);
 };
 }		// msdb
 }		// core

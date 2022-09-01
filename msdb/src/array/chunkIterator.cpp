@@ -12,6 +12,13 @@ chunkIterator::chunkIterator(const dimension dims,
 	chunks_(chunks), chunkBitmap_(chunkBitmap),
 	itMode_(itMode)
 {
+	if (itMode == iterateMode::EXIST)
+	{
+		if (!this->isExist(this->seqPos_))
+		{
+			++(*this);
+		}
+	}
 }
 
 //chunkIterator::chunkIterator(const dimension dims,

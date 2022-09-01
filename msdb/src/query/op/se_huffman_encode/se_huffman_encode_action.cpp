@@ -32,7 +32,7 @@ pArray se_huffman_encode_action::execute(std::vector<pArray>& inputArrays, pQuer
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
-		if (attr->getCompType() != compressionType::SEACOW_HUFFMAN)
+		if (attr->getCompType() != encodingType::SEACOW_HUFFMAN)
 		{
 			continue;
 		}
