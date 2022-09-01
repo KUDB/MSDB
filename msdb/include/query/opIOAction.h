@@ -27,9 +27,10 @@ public:
 
 	virtual const char* name() = 0;
 	virtual int encodingType() = 0;
+	virtual pArray getOutArray(pArrayDesc desc) = 0;
 
 protected:
-	pArray executeIO(pArray inArray, pArray outArray, pQuery qry, const IO_TYPE type);
+	pArray executeIO(std::vector<pArray>& inputArrays, pQuery qry, const IO_TYPE type);
 
 	void saveAttribute(pArray inArr, pArray outArr, pAttributeDesc attrDesc, pQuery qry, const size_t curThreadId);
 	void loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry, const size_t curThreadId);
@@ -38,7 +39,7 @@ protected:
 	void loadChunk(const arrayId arrId, const attributeId attrId, pChunk outChunk, pQuery qry, const size_t parentThreadId);
 	size_t getSerializedChunkSize(attributeId attrId, pArray arr);
 
-protected:
+private:
 	void throwExceptionWrongInputArray(const size_t actual, const size_t expect = 1);
 };
 }

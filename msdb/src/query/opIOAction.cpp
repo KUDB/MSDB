@@ -15,15 +15,22 @@ opIOAction::~opIOAction()
 {
 }
 
-pArray opIOAction::executeIO(pArray inArray, pArray outArray, pQuery qry, const IO_TYPE type)
+pArray opIOAction::executeIO(std::vector<pArray>& inputArrays, pQuery qry, const IO_TYPE type)
 {
+	if (inputArrays.size() != 1)
+	{
+		this->throwExceptionWrongInputArray(inputArrays.size());
+	}
+
 	size_t curThreadId = 0;
 	//========================================//
 	qry->getTimer()->nextJob(curThreadId, this->name(), workType::COMPUTING);
 	//----------------------------------------//
 
+	pArray inArray = inputArrays[0];
 	arrayId arrId = inArray->getId();
 	pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*inArray->getDesc());
+	pArray outArray = this->getOutArray(outArrDesc);
 
 	switch (type)
 	{
@@ -65,24 +72,6 @@ pArray opIOAction::executeIO(pArray inArray, pArray outArray, pQuery qry, const 
 	//----------------------------------------//
 	qry->getTimer()->pause(curThreadId);
 	//========================================//
-
-	////////////////////////////////////////
-	// Calculate overall I/O chunk size
-	auto attrDescs = outArray->getDesc()->attrDescs_;
-	size_t cSizeTotal = 0;
-	for (auto attr : *attrDescs)
-	{
-			auto ocit = outArray->getChunkIterator(attr->id_, iterateMode::EXIST);
-		while (!ocit->isEnd())
-		{
-			auto outChunk = (**ocit);
-			cSizeTotal += outChunk->getSerializedSize();
-
-			++(*ocit);
-		}
-	}
-	BOOST_LOG_TRIVIAL(info) << "I/O Chunk Size: " << cSizeTotal << " Bytes";
-	////////////////////////////////////////
 
 	this->getArrayStatus(outArray);
 	return outArray;

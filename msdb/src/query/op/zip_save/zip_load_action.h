@@ -22,6 +22,7 @@ public:
 	{
 		return encodingType::ZIP;
 	}
+	virtual pArray getOutArray(pArrayDesc desc) override;
 
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);

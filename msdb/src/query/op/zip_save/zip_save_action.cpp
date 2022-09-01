@@ -13,21 +13,16 @@ zip_save_action::zip_save_action()
 zip_save_action::~zip_save_action()
 {
 }
+pArray zip_save_action::getOutArray(pArrayDesc desc)
+{
+	return std::make_shared<zipArray>(desc);
+}
 
 pArray zip_save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 {
-	if (inputArrays.size() != 1)
-	{
-		this->throwExceptionWrongInputArray(inputArrays.size());
-	}
+	pArray outArray = this->executeIO(inputArrays, qry, IO_TYPE::SAVE);
 
-	pArray inArray = inputArrays[0];
-	pArrayDesc outArrDesc = std::make_shared<arrayDesc>(*inArray->getDesc());
-	pArray outArray = std::make_shared<zipArray>(outArrDesc);
-
-	this->executeIO(inArray, outArray, qry, IO_TYPE::SAVE);
-
-	return inArray;
+	return inputArrays[0];
 }
 }		// core
 }		// msdb
