@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <query/opParam.h>
 #include <system/exceptions.h>
 
@@ -201,7 +201,7 @@ opParamType opParamString::type()
 
 //////////////////////////////
 // opParamPlan
-opParamPlan::opParamPlan(pPlan plan)
+opParamPlan::opParamPlan(std::shared_ptr<opPlan> plan)
 	: plan_(plan)
 {
 }

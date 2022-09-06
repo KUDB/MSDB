@@ -1,10 +1,9 @@
-#include <pch.h>
-#include "project_plan.h"
+﻿#include "project_plan.h"
 #include "project_action.h"
 
 namespace msdb
 {
-namespace core
+namespace op
 {
 project_plan::project_plan()
 {
@@ -29,5 +28,5 @@ project_pset::project_pset(parameters& pSet)
 
 	assert(this->params_[1]->type() == opParamType::STRING_LIST);
 }
-}		// core
+}		// op
 }		// msdb

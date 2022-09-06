@@ -1,9 +1,8 @@
-#include <pch.h>
-#include "project_action.h"
+﻿#include "project_action.h"
 
 namespace msdb
 {
-namespace core
+namespace op
 {
 project_action::project_action()
 {
@@ -35,17 +34,17 @@ pArray project_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 
 		for (auto attrDesc : *attrDesc)
 		{
-			if(attrDesc->name_ == strAttr)
+			if (attrDesc->name_ == strAttr)
 			{
 
 				break;
 			}
 		}
 	}
-	
+
 	qry->getTimer()->pause(0);
 	//========================================//
 	return sourceArr;
 }
-}		// core
+}		// op
 }		// msdb

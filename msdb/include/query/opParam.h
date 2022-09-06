@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OPPARAM_H_
 #define _MSDB_OPPARAM_H_
 
@@ -21,23 +21,23 @@ using parameters = std::vector<pParameter>;
 using paramSetId = size_t;
 
 class opPlan;
-using pPlan = std::shared_ptr<opPlan>;
 
 enum class opParamType
 {
-	PLAN,
-	CONTAINER,
-	ARRAY,
-	ATTRIBUTE,
-	DIMENSION,
-	CONST_TYPE,
-	INTLIST,
-	STRING_LIST,
-	PREDICATE,
-	COOR,
-	STRING,
-	ENUM,
-	MEMORY
+	PLAN,			// msdb::core::opPlan (query plan)
+	CONTAINER,		// std::map<TyKey_, TyValue_>
+	ARRAY,			// msdb::core::arrayDesc (array)
+	ATTRIBUTE,		// msdb::core::attributeDesc (attribute)
+	DIMENSION,		// msdb::core::dimensionDesc (dimensions)
+	CONST_TYPE,		// msdb::core::pStableElement, - deprecated - 
+	INTLIST,		// std::vector<int64_t>
+	STRING_LIST,	// std::vector<std::string>
+	PREDICATE,		// msdb::core::predicate
+	COOR,			// msdb::core::coor
+	STRING,			// std::string
+	ENUM,			// - deprecated - 
+	MEMORY			// std::tuple<std::shared_ptr<void>, uint64_t>
+					// -> mem_, size_
 };
 
 class opParam : public std::enable_shared_from_this<opParam>
@@ -311,14 +311,14 @@ public:
 	using paramType = opPlan;
 
 public:
-	opParamPlan(pPlan plan);
+	opParamPlan(std::shared_ptr<opPlan> plan);
 
 public:
 	virtual opParam::void_pointer getParam();
 	virtual opParamType type();
 
 private:
-	pPlan plan_;
+	std::shared_ptr<opPlan> plan_;
 };
 
 class opParamPlanPlaceholder : public opParamPlaceholder, public opParamPlan

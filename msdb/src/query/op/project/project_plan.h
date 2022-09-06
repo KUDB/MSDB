@@ -1,16 +1,19 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OP_PROJECT_PLAN_H_
 #define _MSDB_OP_PROJECT_PLAN_H_
 
-#include <pch.h>
 #include <query/opPlan.h>
 #include <query/opParamSet.h>
+#include <query/userDefinedOp.h>
+#include <query/operatorLibrary.h>
 
 namespace msdb
 {
-namespace core
+namespace op
 {
-class project_plan : public opPlan
+using namespace msdb::core;
+
+class OP_DLL_API project_plan : public opPlan
 {
 public:
 	project_plan();
@@ -21,13 +24,15 @@ public:
 	virtual pAction makeAction() override;
 };
 
-class project_pset : public opPlanParamSet
+class OP_DLL_API project_pset : public opPlanParamSet
 {
 public:
 
 public:
 	project_pset(parameters& pSet);
 };
-}		// core
+
+REGISTER_USER_DEFINED_OPERATOR_FACTORY(project, project_plan);
+}		// op
 }		// msdb
 #endif	// _MSDB_OP_PROJECT_PLAN_H_

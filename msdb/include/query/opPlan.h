@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_OPPLAN_H_
 #define _MSDB_OPPLAN_H_
 
@@ -12,6 +12,8 @@ namespace msdb
 namespace core
 {
 class query;
+class opPlan;
+using pPlan = std::shared_ptr<opPlan>;
 
 class opPlan : public std::enable_shared_from_this<opPlan>
 {
