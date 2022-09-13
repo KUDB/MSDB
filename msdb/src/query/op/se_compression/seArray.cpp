@@ -17,6 +17,16 @@ seArray::~seArray()
 
 }
 
+pArray seArray::shallowClone(const bool takeOwnership)
+{
+	auto outDesc = std::make_shared<arrayDesc>(*this->getDesc());
+	pArray outArr = std::make_shared<seArray>(outDesc);
+
+	outArr->shallowChunkCopy(*this, takeOwnership);
+
+	return outArr;
+}
+
 void seArray::initChunkFactories()
 {
 	seChunkFactoryBuilder fb;

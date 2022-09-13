@@ -122,6 +122,10 @@ public:
 	{
 		this->compType_ = compType;
 	}
+	inline attributeId& setId(const attributeId attrId)
+	{
+		return this->id_ = attrId;
+	}
 
 	/**
 	 * Save/load in XML file

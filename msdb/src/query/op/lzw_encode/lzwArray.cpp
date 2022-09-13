@@ -17,6 +17,16 @@ lzwArray::~lzwArray()
 
 }
 
+pArray lzwArray::shallowClone(const bool takeOwnership)
+{
+	auto outDesc = std::make_shared<arrayDesc>(*this->getDesc());
+	pArray outArr = std::make_shared<lzwArray>(outDesc);
+
+	outArr->shallowChunkCopy(*this, takeOwnership);
+
+	return outArr;
+}
+
 void lzwArray::initChunkFactories()
 {
 	lzwChunkFactoryBuilder fb;

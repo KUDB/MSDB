@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_API_CPP_OPERATORS_H_
 #define _MSDB_API_CPP_OPERATORS_H_
 
@@ -9,7 +9,6 @@
 #include <api_cpp/cpp_domain.h>
 #include <api_cpp/cpp_predicate.h>
 #include <query/opPlan.h>
-#include <op/insert/insert_plan.h>
 #include <parse/predicate.h>
 
 namespace msdb
@@ -40,32 +39,6 @@ protected:
 private:
 	core::pArrayDesc arrDesc_;
 };
-
-/* ************************ */
-/* Insert					*/
-/* ************************ */
-enum InsertOprType {
-	single_from_file,
-	multi_from_file,
-	multi_from_memory
-};
-
-class InsertOpr : public AFLOperator
-{
-public:
-	InsertOpr(Array arr, core::parameters params, InsertOprType type);
-
-public:
-	virtual std::shared_ptr<core::opPlan> getPlan();
-	virtual std::string toString(int depth);
-
-private:
-	core::parameters params_;
-	InsertOprType type_;
-};
-std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath);
-std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_file_pset::containerType attrFiles);
-std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_memory_pset::containerType attrMem);
 
 /* ************************ */
 /* Save 					*/

@@ -32,7 +32,7 @@ bufferSize msdb::core::chunkBuffer::size() const
 	return this->bodySize_;
 }
 
-void chunkBuffer::bufferAlloc(bufferSize size)
+void chunkBuffer::bufferAlloc(const bufferSize size)
 {
 	assert(size > 0);
 
@@ -47,7 +47,7 @@ void chunkBuffer::bufferAlloc(bufferSize size)
 	this->bodySize_ = size;
 }
 
-void chunkBuffer::realloc(bufferSize size)
+void chunkBuffer::realloc(const bufferSize size)
 {
 	assert(size > 0);
 
@@ -61,7 +61,7 @@ void chunkBuffer::realloc(bufferSize size)
 	this->bodySize_ = size;
 }
 
-void chunkBuffer::copy(void* data, bufferSize size)
+void chunkBuffer::copy(void* data, const bufferSize size)
 {
 	assert(size <= this->bodySize_);
 	//this->free();
@@ -71,18 +71,18 @@ void chunkBuffer::copy(void* data, bufferSize size)
 	//this->bodySize_ = size;
 }
 
-void chunkBuffer::copy(void* data, bufferSize offset, bufferSize size)
+void chunkBuffer::copy(void* data, const bufferSize offset, const bufferSize size)
 {
 	assert(offset + size <= this->bodySize_);
 	memcpy((char*)this->data_ + offset, data, size);
 }
 
-void chunkBuffer::ref(pBuffer refBuffer, bufferSize size)
+void chunkBuffer::ref(pBuffer refBuffer, const bufferSize size, const bool takeOwnership)
 {
 	assert(size >= refBuffer->size());
 
 	auto refChunkBuffer = std::static_pointer_cast<chunkBuffer>(refBuffer);
-	this->isOwned_ = false;
+	this->isOwned_ = takeOwnership;
 	this->data_ = refBuffer->getData();
 	this->bodySize_ = size; 
 
@@ -93,6 +93,7 @@ void chunkBuffer::ref(pBuffer refBuffer, bufferSize size)
 	{
 		this->refBuffer_ = refChunkBuffer;
 	}
+	this->refBuffer_->isOwned_ = !takeOwnership;
 }
 
 void chunkBuffer::free()

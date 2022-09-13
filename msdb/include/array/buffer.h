@@ -27,11 +27,11 @@ public:
 
 	virtual bufferSize size() const = 0;						// buffer size
 
-	virtual void bufferAlloc(bufferSize size) = 0;
-	virtual void realloc(bufferSize size) = 0;
-	virtual void copy(void* data, bufferSize size) = 0;			// copy input data
-	virtual void copy(void* data, bufferSize offset, bufferSize size) = 0;
-	virtual void ref(pBuffer refBuffer, bufferSize size) = 0;
+	virtual void bufferAlloc(const bufferSize size) = 0;
+	virtual void realloc(const bufferSize size) = 0;
+	virtual void copy(void* data, const bufferSize size) = 0;			// copy input data
+	virtual void copy(void* data, const bufferSize offset, const bufferSize size) = 0;
+	virtual void ref(pBuffer refBuffer, const bufferSize size, const bool takeOwnership = false) = 0;
 	virtual void free();										// free binary data
 
 	inline bool isOwned()

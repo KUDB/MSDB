@@ -17,6 +17,16 @@ seHuffmanArray::~seHuffmanArray()
 
 }
 
+pArray seHuffmanArray::shallowClone(const bool takeOwnership)
+{
+	auto outDesc = std::make_shared<arrayDesc>(*this->getDesc());
+	pArray outArr = std::make_shared<seHuffmanArray>(outDesc);
+
+	outArr->shallowChunkCopy(*this, takeOwnership);
+
+	return outArr;
+}
+
 void seHuffmanArray::initChunkFactories()
 {
 	seHuffmanChunkFactoryBuilder fb;

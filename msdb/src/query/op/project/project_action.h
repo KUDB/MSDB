@@ -19,13 +19,6 @@ public:
 public:
 	virtual const char* name() override;
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery qry) override;
-
-	//private:
-	//	template <class Ty_>
-	//	void attributeEncode(pArray inArr, pAttributeDesc attrDesc, pQuery qry)
-	//	{
-	//		// TODO::Implement attribute Encode
-	//	}
 };
 }		// op
 }		// msdb

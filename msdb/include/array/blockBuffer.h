@@ -16,17 +16,17 @@ using pBlockBuffer = std::shared_ptr<blockBuffer>;
 class blockBuffer : public chunkBuffer
 {
 public:
-	blockBuffer(void* data, bufferSize size);
+	blockBuffer(void* data, const bufferSize size);
 	virtual ~blockBuffer();
 
 public:
-	void refChunkBufferWithoutOwnership(void* data, bufferSize size);
+	void refChunkBufferWithoutOwnership(void* data, const bufferSize size);
 };
 
 class flattenBlockBuffer : public blockBuffer
 {
 public:
-	flattenBlockBuffer(void* data, bufferSize size);
+	flattenBlockBuffer(void* data, const bufferSize size);
 	virtual ~flattenBlockBuffer();
 };
 }		// core

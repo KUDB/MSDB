@@ -315,5 +315,52 @@ void array::print()
 		}
 	}
 }
+
+void array::shallowChunkCopy(array& inArr, const bool takeOwnership)
+{
+	this->copyChunkBitmap(inArr.getChunkBitmap());
+
+	auto attrDescs = inArr.getDesc()->getAttrDescs();
+	for (auto attrDesc : *attrDescs)
+	{
+		auto chunkItr = inArr.getChunkIterator(attrDesc->getId(), iterateMode::EXIST);
+
+		while (!chunkItr->isEnd())
+		{
+			assert(chunkItr->isExist() == true);
+
+			auto inChunk = (**chunkItr);
+			auto outChunk = this->makeChunk(std::make_shared<chunkDesc>(*inChunk->getDesc()));
+			outChunk->copyBlockBitmap(inChunk->getBlockBitmap());
+			outChunk->makeBlocks();
+			outChunk->bufferRef(inChunk, takeOwnership);
+
+			++(*chunkItr);
+		}
+	}
+}
+
+void array::deleteAttribute(const attributeId attrId)
+{
+	auto attrDescs = this->getDesc()->getAttrDescs();
+	auto numAttributes = attrDescs->size();
+	assert(attrId < numAttributes);
+
+
+	for (attributeId id = attrId + 1; id < numAttributes; ++id)
+	{
+		this->chunks_[id - 1] = this->chunks_[id];
+		this->attrChunkBitmaps_[id - 1] = this->attrChunkBitmaps_[id];
+		this->cFactories_[id - 1] = this->cFactories_[id];
+
+		attrDescs->at(id - 1) = attrDescs->at(id);
+		attrDescs->at(id - 1)->setId(id - 1);
+	}
+
+	this->chunks_.erase(numAttributes - 1);
+	this->attrChunkBitmaps_.erase(numAttributes - 1);
+	this->cFactories_.pop_back();
+	attrDescs->pop_back();
+}
 }		// core
 }		// msdb

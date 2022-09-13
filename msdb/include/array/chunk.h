@@ -59,7 +59,7 @@ public:
 	virtual void bufferCopy(pChunk source);
 	virtual void bufferCopy(pBlock source);
 	//virtual void bufferRef(void* data, bufferSize size);
-	virtual void bufferRef(pChunk source);
+	virtual void bufferRef(pChunk source, const bool takeOwnership = false);
 	bool isMaterialized() const;
 
 public:

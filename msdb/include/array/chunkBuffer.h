@@ -24,11 +24,11 @@ public:
 
 	virtual bufferSize size() const;
 
-	virtual void bufferAlloc(bufferSize size);
-	virtual void realloc(bufferSize size);
-	virtual void copy(void* data, bufferSize size);
-	virtual void copy(void* data, bufferSize offset, bufferSize size);
-	virtual void ref(pBuffer refBuffer, bufferSize size);
+	virtual void bufferAlloc(const bufferSize size);
+	virtual void realloc(const bufferSize size);
+	virtual void copy(void* data, const bufferSize size);
+	virtual void copy(void* data, const bufferSize offset, const bufferSize size);
+	virtual void ref(pBuffer refBuffer, const bufferSize size, const bool takeOwnership = false);
 	virtual void free();
 
 protected:

@@ -17,6 +17,16 @@ zipArray::~zipArray()
 
 }
 
+pArray zipArray::shallowClone(const bool takeOwnership)
+{
+	auto outDesc = std::make_shared<arrayDesc>(*this->getDesc());
+	pArray outArr = std::make_shared<zipArray>(outDesc);
+
+	outArr->shallowChunkCopy(*this, takeOwnership);
+
+	return outArr;
+}
+
 void zipArray::initChunkFactories()
 {
 	zipChunkFactoryBuilder fb;

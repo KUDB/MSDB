@@ -15,6 +15,17 @@ nestedArray::~nestedArray()
 {
 	
 }
+
+pArray nestedArray::shallowClone(const bool takeOwnership)
+{
+	auto outDesc = std::make_shared<arrayDesc>(*this->getDesc());
+	pArray outArr = std::make_shared<nestedArray>(outDesc);
+
+	outArr->shallowChunkCopy(*this, takeOwnership);
+
+	return outArr;
+}
+
 void nestedArray::initChunkFactories()
 {
 	nestedChunkFactoryBuilder ncfc;

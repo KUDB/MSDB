@@ -17,6 +17,16 @@ spihtArray::~spihtArray()
 
 }
 
+pArray spihtArray::shallowClone(const bool takeOwnership)
+{
+	auto outDesc = std::make_shared<arrayDesc>(*this->getDesc());
+	pArray outArr = std::make_shared<spihtArray>(outDesc);
+
+	outArr->shallowChunkCopy(*this, takeOwnership);
+
+	return outArr;
+}
+
 void spihtArray::initChunkFactories()
 {
 	spihtChunkFactoryBuilder fb;

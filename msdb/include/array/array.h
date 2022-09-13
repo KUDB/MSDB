@@ -30,6 +30,11 @@ public:
 	virtual ~array();
 
 public:
+	// Deep clone for desc objects,
+	// Shallow clone for chunks and cached memories
+	virtual pArray shallowClone(const bool takeOwnership = false) = 0;
+
+public:
 	//////////////////////////////
 	// Getter
 	//////////////////////////////
@@ -83,7 +88,6 @@ public:
 	{
 		this->globalChunkBitmap_->setExist(cId);
 		this->attrChunkBitmaps_[attrId]->setExist(cId);
-
 	}
 	inline void setChunkNull(const attributeId attrId, const chunkId cId)
 	{
@@ -108,17 +112,22 @@ public:
 	void replaceAttrChunkBitmap(const attributeId attrId, pBitmap chunkBitmap, bool globalUpdated = false);
 	void mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap, bool globalUpdated = false);
 
+	void deleteAttribute(const attributeId attrId);
+
+public:
 	void print();
+
+public:
+	void shallowChunkCopy(array& inArr, const bool takeOwnership = false);
 
 protected:
 	pArrayDesc desc_;
-	multiAttrChunkContainer chunks_;
-	chunkFactories cFactories_;
+	multiAttrChunkContainer chunks_;		// std::map<attributeId, chunkContainer>;
+	chunkFactories cFactories_;				// std::vector<pChunkFactory>;
 
 private:
-	//std::vector<chunkFactory> attrChunkFactories_;
-	bitmapContainer attrChunkBitmaps_;
-	pBitmap globalChunkBitmap_;		// Be initialized to false by default
+	bitmapContainer attrChunkBitmaps_;		// std::map<attributeId, pBitmap>;
+	pBitmap globalChunkBitmap_;				// Be initialized to false by default
 };
 }	// core
 }	// msdb

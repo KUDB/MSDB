@@ -22,6 +22,9 @@ public:
 	virtual ~nestedArray();
 
 public:
+	pArray shallowClone(const bool takeOwnership = false) override;
+
+public:
 	virtual void initChunkFactories();
 	//virtual pChunk makeChunk(pChunkDesc desc) override;
 };

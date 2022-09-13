@@ -79,13 +79,13 @@ void chunk::bufferCopy(pBlock source)
 //	this->desc_->mSize_ = size;
 //}
 
-void chunk::bufferRef(pChunk source)
+void chunk::bufferRef(pChunk source, const bool takeOwnership)
 {
 	bufferSize size = source->getDesc()->mSize_;
 	//this->bufferRef(source->getBuffer()->getData(), size);
 	this->freeBuffer();
 	this->makeBuffer();
-	this->getBuffer()->ref(source->getBuffer(), size);
+	this->getBuffer()->ref(source->getBuffer(), size, takeOwnership);
 	this->referenceAllBufferToBlock();
 	this->desc_->mSize_ = size;
 }

@@ -19,6 +19,9 @@ public:
 	virtual ~zfpArray();
 
 public:
+	pArray shallowClone(const bool takeOwnership = false) override;
+
+public:
 	virtual void initChunkFactories();
 };
 }		// core

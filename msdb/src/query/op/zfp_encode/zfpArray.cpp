@@ -17,6 +17,16 @@ zfpArray::~zfpArray()
 
 }
 
+pArray zfpArray::shallowClone(const bool takeOwnership)
+{
+	auto outDesc = std::make_shared<arrayDesc>(*this->getDesc());
+	pArray outArr = std::make_shared<zfpArray>(outDesc);
+
+	outArr->shallowChunkCopy(*this, takeOwnership);
+
+	return outArr;
+}
+
 void zfpArray::initChunkFactories()
 {
 	zfpChunkFactoryBuilder fb;

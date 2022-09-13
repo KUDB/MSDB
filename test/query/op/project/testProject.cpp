@@ -88,5 +88,24 @@ TEST(query_op_project, project_two_attr)
 			EXPECT_TRUE(false);
 		}
 	}
+	//////////////////////////////////////////////////
+	{
+
+		auto projectAFL = msdb::op::Project(
+			msdb::Array(ctx, msdb::dummy::array_mem_twoattr_2d::arrName),
+			std::vector<std::string>({ msdb::dummy::array_mem_twoattr_2d::nameAttr_1 })
+		);
+
+		std::cout << "=====" << std::endl;
+		std::cout << projectAFL->toString(0) << std::endl;
+		std::cout << "=====" << std::endl;
+
+		auto qry = msdb::Query(projectAFL);
+		qry.setVerbose();
+		auto ra = qry.execute();
+		std::cout << qry.strStatus() << std::endl;
+
+		EXPECT_TRUE(qry.getStatus() == msdb::Query::Status::COMPLETE);
+	}
 }
 }		// msdb
