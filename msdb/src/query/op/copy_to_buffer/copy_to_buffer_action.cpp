@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/copy_to_buffer/copy_to_buffer_action.h>
 
 namespace msdb
@@ -22,9 +22,6 @@ pArray copy_to_buffer_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	qry->getTimer()->nextJob(0, this->name(), workType::COPY);
 
 	pArray sourceArr = inputArrays[0];
-	auto sourceArrDesc = sourceArr->getDesc();
-
-	qry->setArrayDesc(sourceArrDesc);
 	arrayId arrId = sourceArr->getId();
 
 	auto attrDesc = sourceArr->getDesc()->getAttrDescs();

@@ -30,8 +30,6 @@ pArray project_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	pArray sourceArr = inputArrays[0];
 	pArray outArr = sourceArr->shallowClone(true);
 
-	qry->setArrayDesc(outArr->getDesc());
-
 	// Set a flag for projected attributes
 	auto strAttrParam = std::static_pointer_cast<opParamStringList::paramType>(this->params_[1]->getParam());
 	auto outAttrDescs = outArr->getDesc()->getAttrDescs();

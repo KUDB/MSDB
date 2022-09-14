@@ -111,7 +111,6 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 			// TODO::Remove //
 		}
 		
-		qry->setArrayDesc(outArr->getDesc());
 		return outArr;
 	}
 	catch (...)

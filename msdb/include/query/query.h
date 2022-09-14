@@ -5,7 +5,7 @@
 #include <pch.h>
 #include <util/timer.h>
 #include <util/status.h>
-#include <array/arrayDesc.h>
+#include <array/array.h>
 
 namespace msdb
 {
@@ -60,7 +60,8 @@ public:
 
 protected:
 	pTimer timer_;
-	pArrayDesc arrDesc_;
+	pArrayDesc arrDesc_;		// infered array scheme
+	pArray outArr_;				// query result array
 	std::shared_ptr<std::vector<coor>> dimBuffer_;
 	std::map<attributeId, outBuffer> attrBuffers_;
 	std::shared_ptr<opPlan> qryPlan_;
