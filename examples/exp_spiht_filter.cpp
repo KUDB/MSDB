@@ -10,10 +10,10 @@
 //int main()
 //{
 //	//dummy::data_star1024x1024::executeBuildArray(
-//	//	core::materializedType::FLATTEN, core::compressionType::SPIHT);
+//	//	core::materializedType::FLATTEN, core::encodingType::SPIHT);
 //
 //	//experimentFilterQry<uint8_t>(msdb::dummy::data_star1024x1024::arrName,
-//	//							 msdb::core::compressionType::SPIHT);
+//	//							 msdb::core::encodingType::SPIHT);
 //
 //
 //	return 0;

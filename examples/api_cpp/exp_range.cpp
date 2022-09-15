@@ -64,14 +64,14 @@ std::vector<core::pTimer> exeRangeFilterTest(const int numTest, std::shared_ptr<
 
 namespace data_star1024x1024
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_star1024x1024::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeRangeFilterTest(
 			numTest, childQry, 
@@ -90,14 +90,14 @@ std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compTy
 }
 namespace data_solar1024x1024
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_solar1024x1024::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeRangeFilterTest(
 			numTest, childQry,
@@ -116,14 +116,14 @@ std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compTy
 }
 namespace data_saturn1024x1024
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_saturn1024x1024::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeRangeFilterTest(
 			numTest, childQry,
@@ -142,14 +142,14 @@ std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compTy
 }
 namespace data_mars4096x2048
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_mars4096x2048::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeRangeFilterTest(
 			numTest, childQry,
@@ -168,14 +168,14 @@ std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compTy
 }
 namespace data_mercury20480x10240
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_mercury20480x10240::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeRangeFilterTest(
 			numTest, childQry,
@@ -194,14 +194,14 @@ std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compTy
 }
 namespace data_lunar102400x40960
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_lunar102400x40960::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeRangeFilterTest(
 			numTest, childQry,

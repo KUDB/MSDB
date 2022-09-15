@@ -75,15 +75,15 @@ std::vector<core::pTimer> exeIndexFilterTest(
 
 namespace data_star1024x1024
 {
-std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeFilterTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_star1024x1024::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::COMPASS:
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::COMPASS:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeIndexFilterTest(numTest, childQry, dummy::data_star1024x1024::nameAttr_0);
 	}
@@ -97,15 +97,15 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 namespace data_solar1024x1024
 {
-std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeFilterTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_solar1024x1024::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::COMPASS:
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::COMPASS:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeIndexFilterTest(numTest, childQry, dummy::data_solar1024x1024::nameAttr_0);
 	}
@@ -119,15 +119,15 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 namespace data_saturn1024x1024
 {
-std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeFilterTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_saturn1024x1024::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::COMPASS:
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::COMPASS:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeIndexFilterTest(numTest, childQry, dummy::data_saturn1024x1024::nameAttr_0);
 	}
@@ -141,15 +141,15 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 namespace data_mars4096x2048
 {
-std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeFilterTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_mars4096x2048::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::COMPASS:
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::COMPASS:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeIndexFilterTest(numTest, childQry, dummy::data_mars4096x2048::nameAttr_0);
 	}
@@ -163,15 +163,15 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 namespace data_mercury20480x10240
 {
-std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeFilterTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_mercury20480x10240::getLoadAFL(compType);
 
 	switch (compType)
 	{
-	case compressionType::COMPASS:
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	case encodingType::COMPASS:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeIndexFilterTest(numTest, childQry, dummy::data_mercury20480x10240::nameAttr_0);
 	}
@@ -185,16 +185,16 @@ std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compT
 
 namespace data_lunar102400x40960
 {
-std::vector<core::pTimer> exeFilterTest(const int numTest, compressionType compType)
+std::vector<core::pTimer> exeFilterTest(const int numTest, encodingType compType)
 {
 	auto childQry = dummy::data_lunar102400x40960::getLoadAFL(compType);
 
 	switch (compType)
 	{
 	// TODO:: Erase comment in COMPASS
-	//case compressionType::COMPASS:
-	case compressionType::SEACOW:
-	case compressionType::SEACOW_HUFFMAN:
+	//case encodingType::COMPASS:
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
 	{
 		return experiments::exeIndexFilterTest(numTest, childQry, dummy::data_lunar102400x40960::nameAttr_0);
 	}

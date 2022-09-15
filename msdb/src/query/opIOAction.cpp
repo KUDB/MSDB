@@ -45,6 +45,7 @@ pArray opIOAction::executeIO(std::vector<pArray>& inputArrays, pQuery qry, const
 			}
 			this->saveAttribute(inArray, outArray, attr, qry, curThreadId);
 		}
+		qry->setIOOperator();
 		break;
 	}
 	case IO_TYPE::LOAD:
@@ -72,6 +73,23 @@ pArray opIOAction::executeIO(std::vector<pArray>& inputArrays, pQuery qry, const
 	//----------------------------------------//
 	qry->getTimer()->pause(curThreadId);
 	//========================================//
+
+	size_t mSizeTotal = 0;
+	for (auto attrDesc : *outArray->getDesc()->attrDescs_)
+	{
+		auto ocit = outArray->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+		while (!ocit->isEnd())
+		{
+			if (ocit->isExist())
+			{
+				auto outChunk = (**ocit);
+				mSizeTotal += outChunk->getSerializedSize();
+			}
+
+			++(*ocit);
+		}
+	}
+	qry->setIOBytes(mSizeTotal);
 
 	this->getArrayStatus(outArray);
 	return outArray;

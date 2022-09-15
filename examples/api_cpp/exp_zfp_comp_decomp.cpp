@@ -8,7 +8,7 @@
 int main()
 {
 	auto idName = msdb::dummy::getArrayIdName(
-		msdb::core::compressionType::ZFP,
+		msdb::core::encodingType::ZFP,
 		msdb::dummy::data_star1024x1024::aid,
 		msdb::dummy::data_star1024x1024::arrName);
 	msdb::core::arrayId aid = idName.first;
@@ -19,7 +19,7 @@ int main()
 	{
 		msdb::Context ctx;
 		auto afl = msdb::dummy::data_star1024x1024::getArrayBuildAFL(
-			msdb::core::materializedType::FLATTEN, msdb::core::compressionType::ZFP);
+			msdb::core::materializedType::FLATTEN, msdb::core::encodingType::ZFP);
 		//auto afl = msdb::Build(
 		//	msdb::dummy::data_star1024x1024::aid + msdb::dummy::arr_id_seacow,
 		//	msdb::dummy::data_star1024x1024::arrName + "_ZFP",
@@ -30,7 +30,7 @@ int main()
 		//	{
 		//		msdb::DefAttribute(
 		//			"ATTR_1", msdb::core::concreteTy<char>(),
-		//			msdb::materializedType::FLATTEN, msdb::compressionType::SEACOW,
+		//			msdb::materializedType::FLATTEN, msdb::encodingType::SEACOW,
 		//			{
 		//				std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(msdb::dummy::data_star1024x1024::wtLevel)),
 		//				std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(msdb::dummy::data_star1024x1024::wtLevel)),
@@ -55,7 +55,7 @@ int main()
 		auto afl = msdb::dummy::getInsertSaveAFL(
 			msdb::dummy::data_star1024x1024::arrName,
 			msdb::dummy::data_star1024x1024::filePath,
-			msdb::core::compressionType::ZFP);
+			msdb::core::encodingType::ZFP);
 
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;
@@ -74,7 +74,7 @@ int main()
 		auto afl = msdb::Between(
 			msdb::dummy::getLoadAFL(
 				msdb::dummy::data_star1024x1024::arrName,
-				msdb::core::compressionType::ZFP),
+				msdb::core::encodingType::ZFP),
 			msdb::Domain(msdb::Coordinates({ 500, 500 }), msdb::Coordinates({ 505, 505 }))
 		);
 

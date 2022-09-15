@@ -82,6 +82,9 @@ pArray save_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	//========================================//
 	qry->getTimer()->pause(0);
 	//========================================//
+	
+	qry->setIOOperator();
+	qry->setIOBytes(mSizeTotal);
 
 	return sourceArr;
 }

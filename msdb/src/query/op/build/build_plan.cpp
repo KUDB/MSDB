@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <op/build/build_plan.h>
 #include <array/arrayMgr.h>
 
@@ -48,6 +48,7 @@ pArray build_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	//========================================//
 	qry->getTimer()->pause(0);
 	//========================================//
+	qry->setIOOperator();
 	return arr;
 }
 }

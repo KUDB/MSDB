@@ -26,7 +26,7 @@ int main()
 			{
 				msdb::DefAttribute(
 					"ATTR_1", msdb::core::concreteTy<char>(),
-					msdb::materializedType::FLATTEN, msdb::compressionType::SEACOW,
+					msdb::materializedType::FLATTEN, msdb::encodingType::SEACOW,
 					{
 						std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(msdb::dummy::data_star1024x1024::wtLevel)),
 						std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(msdb::dummy::data_star1024x1024::wtLevel)),
@@ -57,7 +57,7 @@ int main()
 			{
 				msdb::DefAttribute(
 					"ATTR_1", msdb::core::concreteTy<char>(), 
-					msdb::materializedType::FLATTEN, msdb::compressionType::SEACOW,
+					msdb::materializedType::FLATTEN, msdb::encodingType::SEACOW,
 					{
 						std::make_pair<>(_STR_PARAM_WAVELET_LEVEL_, std::to_string(msdb::dummy::data_star1024x1024::wtLevel)),
 						std::make_pair<>(_STR_PARAM_SE_LEVEL_, std::to_string(msdb::dummy::data_star1024x1024::wtLevel)),
@@ -79,7 +79,7 @@ int main()
 	{
 		auto afl = msdb::Consume(
 			msdb::dummy::data_star1024x1024::getBuildIndexAFL(
-				msdb::compressionType::SEACOW, msdb::attrIndexType::MMT));
+				msdb::encodingType::SEACOW, msdb::attrIndexType::MMT));
 		std::cout << afl->toString(0) << std::endl;
 		auto qry = msdb::Query(afl);
 		auto ra = qry.execute();
@@ -93,7 +93,7 @@ int main()
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),
 				msdb::dummy::data_star1024x1024::filePath
 			),
-			msdb::compressionType::SEACOW,
+			msdb::encodingType::SEACOW,
 			msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
 		);
 
@@ -135,14 +135,14 @@ int main()
 		//auto afl = msdb::Consume(
 		//	msdb::Decomp(
 		//		msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),
-		//		msdb::compressionType::SEACOW,
+		//		msdb::encodingType::SEACOW,
 		//		msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
 		//	)
 		//);
 		auto afl = msdb::Between(
 			msdb::Decomp(
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),
-				msdb::compressionType::SEACOW,
+				msdb::encodingType::SEACOW,
 				msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
 			),
 			msdb::Domain(msdb::Coordinates({ 500, 500 }), msdb::Coordinates({ 505, 505 }))

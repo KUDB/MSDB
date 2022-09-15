@@ -61,7 +61,13 @@ std::string Query::strStatus()
 	default:
 		break;
 	};
-	ss << dimBuffer->size() << " cells (" << boost::format("%1$.5f") % this->qry_->getTimer()->getExecutionTime() << " sec)";
+
+	ss << boost::format("%1$.5f") % this->qry_->getTimer()->getExecutionTime() << " sec (";
+	if (!this->qry_->isIOOperator())
+	{
+		ss << dimBuffer->size() << " cells, ";
+	}
+	ss << this->qry_->getIOBytes() << " bytes)";
 	return ss.str();
 }
 void Query::setVerbose()

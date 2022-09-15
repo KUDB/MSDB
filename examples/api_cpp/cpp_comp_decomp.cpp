@@ -20,7 +20,7 @@ int main()
 				msdb::DefDimension("X", 0, 1024, 128, 32)
 			},
 			{
-				msdb::DefAttribute("ATTR_1", msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+				msdb::DefAttribute("ATTR_1", msdb::eleType::CHAR, msdb::encodingType::SEACOW)
 			});
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;
@@ -40,7 +40,7 @@ int main()
 				msdb::DefDimension("X", 0, 1024, 128, 32)
 			},
 			{
-				msdb::DefAttribute("ATTR_1", msdb::eleType::CHAR, msdb::compressionType::SEACOW)
+				msdb::DefAttribute("ATTR_1", msdb::eleType::CHAR, msdb::encodingType::SEACOW)
 			});
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;
@@ -60,7 +60,7 @@ int main()
 				msdb::DefDimension("X", 0, 1024, 128, 32)
 			},
 			{
-				msdb::DefAttribute("ATTR_1", msdb::eleType::CHAR, msdb::compressionType::COMPASS)
+				msdb::DefAttribute("ATTR_1", msdb::eleType::CHAR, msdb::encodingType::COMPASS)
 			});
 		std::cout << "=====" << std::endl;
 		std::cout << afl->toString(0) << std::endl;
@@ -168,7 +168,7 @@ int main()
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),
 				msdb::dummy::data_star1024x1024::filePath
 			), 
-			msdb::compressionType::SEACOW,
+			msdb::encodingType::SEACOW,
 			msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
 		));
 
@@ -190,7 +190,7 @@ int main()
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_COMPASS"),
 				msdb::dummy::data_star1024x1024::filePath
 			),
-			msdb::compressionType::COMPASS,
+			msdb::encodingType::COMPASS,
 			msdb::dummy::data_star1024x1024::compassBins
 		));
 
@@ -213,7 +213,7 @@ int main()
 		auto afl = msdb::Between(
 			msdb::Decomp(
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),
-				msdb::compressionType::SEACOW,
+				msdb::encodingType::SEACOW,
 				msdb::dummy::data_star1024x1024::wtLevel, msdb::dummy::data_star1024x1024::mmtLevel
 			),
 			msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))
@@ -235,7 +235,7 @@ int main()
 		auto afl = msdb::Between(
 			msdb::Decomp(
 				msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_COMPASS"),
-				msdb::compressionType::COMPASS,
+				msdb::encodingType::COMPASS,
 				msdb::dummy::data_star1024x1024::compassBins
 			),
 			msdb::Domain(msdb::Coordinates({ 0, 0 }), msdb::Coordinates({ 4, 4 }))

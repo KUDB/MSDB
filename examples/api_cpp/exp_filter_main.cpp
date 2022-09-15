@@ -11,7 +11,7 @@ using namespace msdb;
 using namespace msdb::dummy::data_star1024x1024;
 using namespace msdb::experiments::data_star1024x1024;
 
-void exeExperiment(int numTest, compressionType compType)
+void exeExperiment(int numTest, encodingType compType)
 {
 	{
 		auto afl = Consume(getArrayBuildAFL(materializedType::FLATTEN, compType));
@@ -39,7 +39,7 @@ void exeExperiment(int numTest, compressionType compType)
 	}
 }
 
-void exeExperiment(int numTest, compressionType compType, attrIndexType idxType)
+void exeExperiment(int numTest, encodingType compType, attrIndexType idxType)
 {
 	{
 		auto afl = Consume(getArrayBuildAFL(materializedType::FLATTEN, compType));
@@ -92,18 +92,18 @@ int main()
 {
 	int numTest = 3;
 
-	//exeExperiment(numTest, compressionType::RAW);
-	exeExperiment(numTest, compressionType::SEACOW, attrIndexType::MMT);
-	//exeExperiment(numTest, compressionType::SEACOW_HUFFMAN, attrIndexType::MMT);
-	//exeExperiment(numTest, compressionType::SPIHT);
-	//exeExperiment(numTest, compressionType::COMPASS);
-	//exeExperiment(numTest, compressionType::HUFFMAN);
-	//exeExperiment(numTest, compressionType::LZW_HUFFMAN);
-	//exeExperiment(numTest, compressionType::LZW);
+	//exeExperiment(numTest, encodingType::RAW);
+	exeExperiment(numTest, encodingType::SEACOW, attrIndexType::MMT);
+	//exeExperiment(numTest, encodingType::SEACOW_HUFFMAN, attrIndexType::MMT);
+	//exeExperiment(numTest, encodingType::SPIHT);
+	//exeExperiment(numTest, encodingType::COMPASS);
+	//exeExperiment(numTest, encodingType::HUFFMAN);
+	//exeExperiment(numTest, encodingType::LZW_HUFFMAN);
+	//exeExperiment(numTest, encodingType::LZW);
 
-	//exeExperiment(numTest, compressionType::COMPASS, attrIndexType::COMPASS);	
-	//exeExperiment(numTest, compressionType::ADAPTHUFFMAN);
-	//exeExperiment(numTest, compressionType::ZIP);
+	//exeExperiment(numTest, encodingType::COMPASS, attrIndexType::COMPASS);	
+	//exeExperiment(numTest, encodingType::ADAPTHUFFMAN);
+	//exeExperiment(numTest, encodingType::ZIP);
 
 	return 0;
 }

@@ -30,27 +30,27 @@ std::vector<core::pTimer> exeRangeFilterTest(
 
 namespace data_star1024x1024
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType);
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType);
 }
 namespace data_solar1024x1024
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType);
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType);
 }
 namespace data_saturn1024x1024
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType);
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType);
 }
 namespace data_mars4096x2048
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType);
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType);
 }
 namespace data_mercury20480x10240
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType);
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType);
 }
 namespace data_lunar102400x40960
 {
-std::vector<core::pTimer> exeRangeTest(const int numTest, compressionType compType);
+std::vector<core::pTimer> exeRangeTest(const int numTest, encodingType compType);
 }
 }		// experiments
 }		// msdb

@@ -43,6 +43,21 @@ pArray load_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	qry->getTimer()->pause(0);
 	//========================================//
 
+	size_t mSizeTotal = 0;
+	for (auto attrDesc : *outArr->getDesc()->attrDescs_)
+	{
+		auto ocit = outArr->getChunkIterator(attrDesc->id_, iterateMode::EXIST);
+		while (!ocit->isEnd())
+		{
+			auto outChunk = (**ocit);
+			mSizeTotal += outChunk->getSerializedSize();
+
+			++(*ocit);
+		}
+	}
+	qry->setIOBytes(mSizeTotal);
+
+	//========================================//
 	this->getArrayStatus(outArr);
 
 	return outArr;

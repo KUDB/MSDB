@@ -34,7 +34,6 @@ public:
 	status process();
 
 	pTimer getTimer();
-	void setArrayDesc(pArrayDesc arrDesc);
 	pArrayDesc getArrayDesc();
 	void setDimBuffer(std::shared_ptr<std::vector<coor>> buffer);
 	void setAttrBuffer(attributeId attrId, outBuffer buffer);
@@ -58,10 +57,29 @@ public:
 	inline void unsetVerbose() { this->verbose_ = false; }
 	inline bool isVerbose() { return this->verbose_; }
 
+	inline void setIOOperator() 
+	{ 
+		this->ioOperator_ = true; 
+	}
+	inline void setIOBytes(const size_t ioBytes)
+	{
+		this->ioBytes_ = ioBytes;
+	}
+	inline bool isIOOperator()
+	{
+		return this->ioOperator_;
+	}
+	inline size_t getIOBytes()
+	{
+		return this->ioBytes_;
+	}
+
 protected:
 	pTimer timer_;
 	pArrayDesc arrDesc_;		// infered array scheme
 	pArray outArr_;				// query result array
+	bool ioOperator_;
+	size_t ioBytes_;
 	std::shared_ptr<std::vector<coor>> dimBuffer_;
 	std::map<attributeId, outBuffer> attrBuffers_;
 	std::shared_ptr<opPlan> qryPlan_;
