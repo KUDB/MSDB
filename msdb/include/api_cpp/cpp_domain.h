@@ -1,4 +1,4 @@
-#ifndef _MSDB_CPP_DOMAIN_H_
+﻿#ifndef _MSDB_CPP_DOMAIN_H_
 #define _MSDB_CPP_DOMAIN_H_
 
 #include <pch.h>
@@ -32,6 +32,7 @@ public:
 
 public:
 	Domain(Coordinates start, Coordinates end);
+	Domain(std::vector<Coordinates::Dty_> start, std::vector<Coordinates::Dty_> end);
 
 public:
 	inline core::range getRange() const

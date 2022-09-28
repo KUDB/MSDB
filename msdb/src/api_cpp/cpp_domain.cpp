@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <api_cpp/cpp_domain.h>
 
 namespace msdb
@@ -20,6 +20,13 @@ Domain::Domain(Coordinates start, Coordinates end)
 {
 
 }
+
+Domain::Domain(std::vector<Coordinates::Dty_> start, std::vector<Coordinates::Dty_> end)
+	: range_(core::coordinates(start), core::coordinates(end))
+{
+
+}
+
 std::string Domain::toString()
 {
 	return this->range_.toString();
