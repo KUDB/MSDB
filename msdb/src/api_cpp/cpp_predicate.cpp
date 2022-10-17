@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <api_cpp/cpp_predicate.h>
 
 namespace msdb
@@ -45,6 +45,16 @@ std::shared_ptr<TermImpl> operator == (const int64_t a, const std::shared_ptr<Ex
 {
 	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), b->getExpression(), core::termType::EQUAL);
 }
+//std::shared_ptr<TermImpl> operator == (const std::string& attrName, const int64_t b)
+//{
+//	return std::make_shared<TermImpl>(Attribute(attrName)->getExpression(), std::make_shared<core::expressionInteger>(b), core::termType::EQUAL);
+//}
+//std::shared_ptr<TermImpl> operator == (const int64_t a, const std::string& attrName)
+//{
+//	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), Attribute(attrName)->getExpression(), core::termType::EQUAL);
+//}
+
+
 
 std::shared_ptr<TermImpl> operator<(const std::shared_ptr<ExpressionAttributeImpl>& a, const int64_t b)
 {
@@ -63,6 +73,24 @@ std::shared_ptr<TermImpl> operator<=(const int64_t a, const std::shared_ptr<Expr
 	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), b->getExpression(), core::termType::GREATER_EQUAL);
 }
 
+//std::shared_ptr<TermImpl> operator<(const std::string& attrName, const int64_t b)
+//{
+//	return std::make_shared<TermImpl>(Attribute(attrName)->getExpression(), std::make_shared<core::expressionInteger>(b), core::termType::GREATER);
+//}
+//std::shared_ptr<TermImpl> operator < (const int64_t a, const std::string& attrName)
+//{
+//	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), Attribute(attrName)->getExpression(), core::termType::GREATER);
+//}
+//std::shared_ptr<TermImpl> operator<=(const std::string& attrName, const int64_t b)
+//{
+//	return std::make_shared<TermImpl>(Attribute(attrName)->getExpression(), std::make_shared<core::expressionInteger>(b), core::termType::GREATER_EQUAL);
+//}
+//std::shared_ptr<TermImpl> operator<=(const int64_t a, const std::string& attrName)
+//{
+//	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), Attribute(attrName)->getExpression(), core::termType::GREATER_EQUAL);
+//}
+
+
 std::shared_ptr<TermImpl> operator > (const std::shared_ptr<ExpressionAttributeImpl> a, const int64_t b)
 {
 	return std::make_shared<TermImpl>(a->getExpression(), std::make_shared<core::expressionInteger>(b), core::termType::LESS);
@@ -79,6 +107,23 @@ std::shared_ptr<TermImpl> operator >= (const int64_t a, const std::shared_ptr<Ex
 {
 	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), b->getExpression(), core::termType::LESS_EQUAL);
 }
+
+//std::shared_ptr<TermImpl> operator > (const std::string& attrName, const int64_t b)
+//{
+//	return std::make_shared<TermImpl>(Attribute(attrName)->getExpression(), std::make_shared<core::expressionInteger>(b), core::termType::LESS);
+//}
+//std::shared_ptr<TermImpl> operator > (const int64_t a, const std::string& attrName)
+//{
+//	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), Attribute(attrName)->getExpression(), core::termType::LESS);
+//}
+//std::shared_ptr<TermImpl> operator >= (const std::string& attrName, const int64_t b)
+//{
+//	return std::make_shared<TermImpl>(Attribute(attrName)->getExpression(), std::make_shared<core::expressionInteger>(b), core::termType::LESS_EQUAL);
+//}
+//std::shared_ptr<TermImpl> operator >= (const int64_t a, const std::string& attrName)
+//{
+//	return std::make_shared<TermImpl>(std::make_shared<core::expressionInteger>(a), Attribute(attrName)->getExpression(), core::termType::LESS_EQUAL);
+//}
 
 /* ************************ */
 /* Predicate				*/

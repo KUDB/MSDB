@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_CPP_PREDICATE_H_
 #define _MSDB_CPP_PREDICATE_H_
 
@@ -45,16 +45,28 @@ private:
 
 std::shared_ptr<TermImpl> operator == (const std::shared_ptr<ExpressionAttributeImpl> a, const int64_t b);
 std::shared_ptr<TermImpl> operator == (const int64_t a, const std::shared_ptr<ExpressionAttributeImpl>& b);
+//std::shared_ptr<TermImpl> operator == (const std::string& attrName, const int64_t b);
+//std::shared_ptr<TermImpl> operator == (const int64_t a, const std::string& attrName);
 
 std::shared_ptr<TermImpl> operator < (const std::shared_ptr<ExpressionAttributeImpl>& a, const int64_t b);
 std::shared_ptr<TermImpl> operator < (const int64_t a, const std::shared_ptr<ExpressionAttributeImpl> b);
 std::shared_ptr<TermImpl> operator <= (const std::shared_ptr<ExpressionAttributeImpl>& a, const int64_t b);
 std::shared_ptr<TermImpl> operator <= (const int64_t a, const std::shared_ptr<ExpressionAttributeImpl>& b);
 
+//std::shared_ptr<TermImpl> operator < (const std::string& attrName, const int64_t b);
+//std::shared_ptr<TermImpl> operator < (const int64_t a, const std::string& attrName);
+//std::shared_ptr<TermImpl> operator <= (const std::string& attrName, const int64_t b);
+//std::shared_ptr<TermImpl> operator <= (const int64_t a, const std::string& attrName);
+
 std::shared_ptr<TermImpl> operator > (const std::shared_ptr<ExpressionAttributeImpl> a, const int64_t b);
 std::shared_ptr<TermImpl> operator > (const int64_t a, const std::shared_ptr<ExpressionAttributeImpl> b);
 std::shared_ptr<TermImpl> operator >= (const std::shared_ptr<ExpressionAttributeImpl> a, const int64_t b);
 std::shared_ptr<TermImpl> operator >= (const int64_t a, const std::shared_ptr<ExpressionAttributeImpl> b);
+
+//std::shared_ptr<TermImpl> operator > (const std::string& attrName, const int64_t b);
+//std::shared_ptr<TermImpl> operator > (const int64_t a, const std::string& attrName);
+//std::shared_ptr<TermImpl> operator >= (const std::string& attrName, const int64_t b);
+//std::shared_ptr<TermImpl> operator >= (const int64_t a, const std::string& attrName);
 
 /* ************************ */
 /* Predicate				*/

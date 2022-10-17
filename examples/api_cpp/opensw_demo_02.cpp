@@ -60,11 +60,18 @@ void demo()
 	// Range query
 	{
 		msdb::Context ctx;
+		//auto afl = msdb::Between(
+		//		msdb::Load(
+		//			msdb::Array(ctx, msdb::dummy::data_mercury20480x10240::arrName)
+		//		),
+		//		msdb::Domain(msdb::Coordinates({ 6500, 14500}), msdb::Coordinates({ 6600, 14600 }))
+		//);
+
 		auto afl = msdb::Between(
-				msdb::Load(
-					msdb::Array(ctx, msdb::dummy::data_mercury20480x10240::arrName)
-				),
-				msdb::Domain(msdb::Coordinates({ 6500, 14500}), msdb::Coordinates({ 6600, 14600 }))
+			msdb::Load(
+				msdb::Array(ctx, msdb::dummy::data_mercury20480x10240::arrName)
+			),
+			msdb::Domain({ 7500, 14500 }, { 7600, 14600 })
 		);
 
 		std::cout << "=====" << std::endl;
