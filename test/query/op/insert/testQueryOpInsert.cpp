@@ -51,6 +51,7 @@ TEST(query_op_insert, insert_from_memory_twoattr_2d)
 
 		EXPECT_TRUE(qry.getStatus() == msdb::Query::Status::COMPLETE);
 	}
+	//////////////////////////////////////////////////
 	{
 		auto loadAfl = msdb::Load(
 			msdb::Array(ctx, msdb::dummy::array_mem_twoattr_2d::arrName)
@@ -86,15 +87,22 @@ TEST(query_op_insert, insert_from_memory_4x4)
 	//////////////////////////////////////////////////
 	{
 		const uint64_t dataSize = 16;
-		auto pData = std::make_shared<std::array<char, dataSize>>();
-
+		auto pData_0 = std::make_shared<std::array<char, dataSize>>();
+		auto pData_1 = std::make_shared<std::array<char, dataSize>>();
+		auto pData_2 = std::make_shared<std::array<char, dataSize>>();
 		for (int i = 0; i < dataSize; ++i)
 		{
-			pData->at(i) = i;
+			pData_0->at(i) = i;
+			pData_1->at(i) = i * i;
+			pData_2->at(i) = i * (-1);
 		}
+
+
 		
 		std::map<attributeId, msdb::core::opParamMemory> attrs;
-		attrs[0] = msdb::core::opParamMemory(pData, dataSize * sizeof(char));
+		attrs[0] = msdb::core::opParamMemory(pData_0, dataSize * sizeof(char));
+		attrs[1] = msdb::core::opParamMemory(pData_1, dataSize * sizeof(char));
+		attrs[2] = msdb::core::opParamMemory(pData_2, dataSize * sizeof(char));
 
 		auto insertAfl = msdb::Save(
 			msdb::Insert(

@@ -30,7 +30,7 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encoding
 		},
 		{
 			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType),
-			msdb::DefAttribute(nameAttr_0, typeAttr_1, matType, compType)
+			msdb::DefAttribute(nameAttr_1, typeAttr_1, matType, compType)
 		});
 	return afl;
 }
@@ -93,8 +93,8 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encoding
 		},
 		{
 			msdb::DefAttribute(nameAttr_0, typeAttr_0, matType, compType),
-			msdb::DefAttribute(nameAttr_0, typeAttr_1, matType, compType),
-			msdb::DefAttribute(nameAttr_0, typeAttr_2, matType, compType)
+			msdb::DefAttribute(nameAttr_1, typeAttr_1, matType, compType),
+			msdb::DefAttribute(nameAttr_2, typeAttr_2, matType, compType)
 		});
 	return afl;
 }
