@@ -57,6 +57,10 @@ public:
 	inline void unsetVerbose() { this->verbose_ = false; }
 	inline bool isVerbose() { return this->verbose_; }
 
+	inline void setRawResultOut() { this->rawResultOut_ = true; }
+	inline void unsetRawResultOut() { this->rawResultOut_ = false; }
+	inline bool isRawResultOut() { return this->rawResultOut_; }
+
 	inline void setIOOperator() 
 	{ 
 		this->ioOperator_ = true; 
@@ -74,6 +78,11 @@ public:
 		return this->ioBytes_;
 	}
 
+	inline pArray getRawResult()
+	{
+		return this->outArr_;
+	}
+
 protected:
 	pTimer timer_;
 	pArrayDesc arrDesc_;		// infered array scheme
@@ -85,6 +94,7 @@ protected:
 	std::shared_ptr<opPlan> qryPlan_;
 	std::string errorMsg_;
 	bool verbose_;
+	bool rawResultOut_;
 };
 }		// core
 }		// msdb

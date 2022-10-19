@@ -11,7 +11,7 @@ query::query(std::shared_ptr<opPlan> qryPlan)
 	: qryPlan_(qryPlan), timer_(std::make_shared<timer>()), 
 	arrDesc_(nullptr), outArr_(nullptr), 
 	dimBuffer_(std::make_shared<std::vector<coor>>()), verbose_(false),
-	ioOperator_(false), ioBytes_(0)
+	ioOperator_(false), ioBytes_(0), rawResultOut_(false)
 {
 
 }

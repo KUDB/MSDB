@@ -40,8 +40,7 @@ void experimentRangeFilterQry(const std::string& arrName, const core::encodingTy
 				auto q = dummy::exeRangeFilterQry(arrName, compType, r, v);
 				BOOST_LOG_TRIVIAL(info) << "##################################################";
 
-				auto qry = q.getQueryObj();
-				dummy::tearDownQuery(qry, rangeFilterExpId, j * numTests + i, qry->getArrayDesc()->id_, 0);
+				dummy::tearDownQuery(q.getTimer(), rangeFilterExpId, j * numTests + i, q.getArrayDesc()->id_, 0);
 			}
 				_MSDB_CATCH_ALL
 			{
@@ -75,8 +74,7 @@ void experimentRangeIndexFilterQry(const std::string& arrName, const core::encod
 				auto q = dummy::exeRangeIndexFilterQry(arrName, compType, r, v);
 				BOOST_LOG_TRIVIAL(info) << "##################################################";
 
-				auto qry = q.getQueryObj();
-				dummy::tearDownQuery(qry, rangeFilterExpId, j * numTests + i, qry->getArrayDesc()->id_, 0);
+				dummy::tearDownQuery(q.getTimer(), rangeFilterExpId, j * numTests + i, q.getArrayDesc()->id_, 0);
 			}
 				_MSDB_CATCH_ALL
 			{

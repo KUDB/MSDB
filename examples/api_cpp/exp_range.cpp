@@ -56,7 +56,7 @@ std::vector<core::pTimer> exeRangeFilterTest(const int numTest, std::shared_ptr<
 		//std::cout << qry.getTimer()->getDetailResult() << std::endl;
 
 		//result.push_back(ra.getQuery()->getTimer());
-		dummy::tearDownQuery(ra.getQuery(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
+		dummy::tearDownQuery(qry.getTimer(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
 	}
 
 	return result;

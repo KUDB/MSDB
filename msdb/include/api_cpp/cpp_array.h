@@ -55,6 +55,9 @@ public:
 		return this->arrDesc_;
 	}
 
+	inline bool isRawResultOut() { return this->qry_->isRawResultOut(); }
+	inline core::pArray getRawResult() { return this->qry_->getRawResult(); }
+
 public:
 	void close();
 

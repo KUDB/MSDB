@@ -42,7 +42,7 @@ std::vector<core::pTimer> exeFilterTest(
 		//std::cout << qry.getTimer()->getDetailResult() << std::endl;
 
 		//result.push_back(ra.getQuery()->getTimer());
-		dummy::tearDownQuery(ra.getQuery(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
+		dummy::tearDownQuery(qry.getTimer(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
 	}
 	return result;
 }
@@ -68,7 +68,7 @@ std::vector<core::pTimer> exeIndexFilterTest(
 		//std::cout << qry.getTimer()->getDetailResult() << std::endl;
 
 		//result.push_back(ra.getQuery()->getTimer());
-		dummy::tearDownQuery(ra.getQuery(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
+		dummy::tearDownQuery(qry.getTimer(), filter::filterExpId, i, ra.getArrayDesc()->id_, 0);
 	}
 	return result;
 }

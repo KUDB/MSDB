@@ -38,7 +38,16 @@ public:
 	void setVerbose();
 	void unsetVerbose();
 	inline bool isVerbose() { return this->qry_->isVerbose(); }
-	inline core::pQuery getQueryObj() { return this->qry_; }
+
+	inline void setRawResultOut() { this->qry_->setRawResultOut(); }
+	inline void unsetRawResultOut() { this->qry_->unsetRawResultOut(); }
+	inline bool isRawResultOut() { return this->qry_->isRawResultOut(); }
+	inline core::pArray getRawResult() { return this->qry_->getRawResult(); }
+
+	inline core::pArrayDesc getArrayDesc()
+	{
+		return this->qry_->getArrayDesc();
+	}
 
 protected:
 	Status status_;		// Initial status: READY

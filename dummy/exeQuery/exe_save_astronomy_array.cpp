@@ -19,15 +19,15 @@ msdb::Query executeInsertSaveArray(const std::string& arrName, const std::string
 	//qry.setVerbose();
 	// TODO::Remove
 	auto ra = qry.execute();
-	ra.close();
 	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
 	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
+	ra.close();
 
 	_MSDB_TRY_BEGIN
 	{
 		int expTrial = 0;
 		int method = 0;
-		dummy::tearDownQuery(qry.getQueryObj(), saveExpId, expTrial, qry.getQueryObj()->getArrayDesc()->id_, method);
+		dummy::tearDownQuery(qry.getTimer(), saveExpId, expTrial, qry.getArrayDesc()->id_, method);
 	}
 	_MSDB_CATCH_ALL
 	{
@@ -50,19 +50,19 @@ msdb::Query executeLoadArray(const std::string& arrName, const core::encodingTyp
 	//qry.setVerbose();
 	// TODO::Remove
 	auto ra = qry.execute();
-	ra.close();
 	if (qry.getStatus() == msdb::Query::Status::FAIL)
 	{
 		BOOST_LOG_TRIVIAL(info) << ra.getQuery()->getErrorMsg() << std::endl;;
 	}
 	BOOST_LOG_TRIVIAL(info) << qry.strStatus() << std::endl;
 	BOOST_LOG_TRIVIAL(info) << qry.getTimer()->getDetailResult() << std::endl;
-
+	ra.close();
+	
 	_MSDB_TRY_BEGIN
 	{
 		int expTrial = 0;
 		int method = 0;
-		dummy::tearDownQuery(qry.getQueryObj(), loadExpId, expTrial, qry.getQueryObj()->getArrayDesc()->id_, method);
+		dummy::tearDownQuery(qry.getTimer(), loadExpId, expTrial, qry.getArrayDesc()->id_, method);
 	}
 	_MSDB_CATCH_ALL
 	{

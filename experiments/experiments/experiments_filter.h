@@ -32,8 +32,7 @@ void experimentFilterQry(const std::string& arrName, const core::encodingType& c
 		BOOST_LOG_TRIVIAL(info) << "##################################################";
 		_MSDB_TRY_BEGIN
 		{
-			auto qry = q.getQueryObj();
-			dummy::tearDownQuery(qry, filterExpId, i, qry->getArrayDesc()->id_, 0);
+			dummy::tearDownQuery(q.getTimer(), filterExpId, i, q.getArrayDesc()->id_, 0);
 		}
 			_MSDB_CATCH_ALL
 		{
@@ -59,8 +58,7 @@ void experimentIndexFilterQry(const std::string& arrName, const core::encodingTy
 		BOOST_LOG_TRIVIAL(info) << "##################################################";
 		_MSDB_TRY_BEGIN
 		{
-			auto qry = q.getQueryObj();
-			dummy::tearDownQuery(qry, filterExpId, i, qry->getArrayDesc()->id_, 0);
+			dummy::tearDownQuery(q.getTimer(), filterExpId, i, q.getArrayDesc()->id_, 0);
 		}
 			_MSDB_CATCH_ALL
 		{
