@@ -6,6 +6,16 @@ The MSDB software provides various compression options to make the array compact
 This library can be embedded any C++ projects.
 It adapts Array Functional Language (AFL), which is widely used in many array databases, instead of SQL.
 
+
+## Build
+MSDB has been developed on Windows 10 with Visual studio 2019
+
+### Build Requirements
+- [Boost C++ Library](https://www.boost.org/) (1.74.0)
+- [zlib](https://zlib.net/) (1.2.11)
+- [GoogleTest](https://github.com/google/googletest)
+
+---
 ## Query
 You can query an array with C++ API, which provides AFL like operators.
 
@@ -19,7 +29,7 @@ msdb::Build(
         msdb::DefDimension("X", 0, 1024, 128, 32)
     },
     {
-        msdb::DefAttribute("ATTR_1", msdb::core::eleType::CHAR)
+        msdb::DefAttribute("ATTR_1", msdb::core::concreteTy<uint8_t>())
     }
 );
 ```
