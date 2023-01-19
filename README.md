@@ -9,6 +9,8 @@ It adapts Array Functional Language (AFL), which is widely used in many array da
 
 ## Prototype version repository
 https://github.com/RonyK/SEACOW
+The code forked from the repository
+(372 commits, ~Sep 9, 2021)
 
 
 ## Build
