@@ -7,6 +7,10 @@ This library can be embedded any C++ projects.
 It adapts Array Functional Language (AFL), which is widely used in many array databases, instead of SQL.
 
 
+## Prototype version repository
+https://github.com/RonyK/SEACOW
+
+
 ## Build
 MSDB has been developed on Windows 10 with Visual studio 2019
 
