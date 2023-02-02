@@ -3,6 +3,7 @@
 #define _MSDB_EXAMPLE_EXP_RANGE_H_
 
 #include <api_cpp/msdb.h>
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {

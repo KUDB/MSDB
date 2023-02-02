@@ -1,4 +1,5 @@
 #include "exe_save_astronomy_array.h"
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {

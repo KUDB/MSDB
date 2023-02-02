@@ -1,5 +1,6 @@
 #include <dummy_query_util.h>
 #include <dummy_array_util.h>
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {

@@ -3,6 +3,7 @@
 #define _MSDB_EXAMPLE_EXP_FILTER_H_
 
 #include <api_cpp/msdb.h>
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {
@@ -18,6 +19,7 @@ static const int numTest = 3;
 
 std::shared_ptr<FilterOpr> makeFilterEqQry(
 	std::shared_ptr<AFLOperator> opt, std::string attrName, int64_t value);
+
 std::shared_ptr<IndexFilterOpr> makeIndexFilterEqQry(
 	std::shared_ptr<AFLOperator> opt, std::string attrName, int64_t value);
 

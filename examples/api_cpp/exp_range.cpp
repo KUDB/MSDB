@@ -3,6 +3,7 @@
 #include "exp_filter.h"
 #include <dummy.h>
 #include <dummy_astronomy_array.h>
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {

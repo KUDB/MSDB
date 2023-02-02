@@ -3,6 +3,7 @@
 #include <dummy_array_util.h>
 #include <op/wavelet_encode/wtChunk.h>
 #include <index/mmt.h>
+
 namespace msdb
 {
 namespace test

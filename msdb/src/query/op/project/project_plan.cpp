@@ -64,11 +64,11 @@ std::string projectOpr::toString(int depth)
 	ss << ")";
 	return ss.str();
 }
-std::shared_ptr<projectOpr>OP_DLL_API Project(Array arr, project_pset::containerType& attrList)
+std::shared_ptr<projectOpr> Project(Array arr, project_pset::containerType& attrList)
 {
 	return std::make_shared<projectOpr>(arr, attrList);
 }
-std::shared_ptr<projectOpr>OP_DLL_API Project(std::shared_ptr<AFLOperator> qry, project_pset::containerType& attrList)
+std::shared_ptr<projectOpr> Project(std::shared_ptr<AFLOperator> qry, project_pset::containerType& attrList)
 {
 	return std::make_shared<projectOpr>(qry, attrList);
 }

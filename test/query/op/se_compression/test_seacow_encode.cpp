@@ -5,13 +5,14 @@
 #include <exeQuery/exe_build_astronomy_array_3d.h>
 #include <exeQuery/exe_save_astronomy_array.h>
 
-
 #include <array/arrayMgr.h>
 
 #include <index/mmt.h>
 #include <index/compass.h>
 #include <op/wavelet_encode/wtChunk.h>
-#include <op/se_compression/seChunk.h>
+#include <op/seacow/seChunk.h>
+
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {

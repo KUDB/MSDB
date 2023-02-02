@@ -35,7 +35,7 @@ public:
 	project_pset(parameters& pSet);
 };
 
-class projectOpr : public msdb::AFLOperator
+class OP_DLL_API projectOpr : public msdb::AFLOperator
 {
 public:
 	projectOpr(Array arr, project_pset::containerType& params);

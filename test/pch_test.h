@@ -1,9 +1,10 @@
 //
 // pch.h
-// Header for standard system include files.
 //
 
 #pragma once
+
+#include "gtest/gtest.h"
 
 #include <iostream>
 #include <vector>
@@ -14,7 +15,6 @@
 #include <tuple>
 #include <string>
 #include <cstdlib>
-#include "gtest/gtest.h"
 
 //////////////////////////////
 // dummy project

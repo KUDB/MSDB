@@ -8,7 +8,7 @@
 #include <index/mmt.h>
 #include <index/compass.h>
 #include <op/wavelet_encode/wtChunk.h>
-#include <op/se_huffman_encode/seHuffmanChunk.h>
+#include <op/seacow/seHuffmanChunk.h>
 
 namespace msdb
 {

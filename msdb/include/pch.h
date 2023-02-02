@@ -80,6 +80,5 @@ namespace attrs = boost::log::attributes;
 ////////////////////////////////////////
 // MSDB
 //
-#include <io/bitstream.h>
 
 #endif	// _MSDB_PCH_H_

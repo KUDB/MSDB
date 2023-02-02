@@ -9,7 +9,7 @@
 #include <index/mmt.h>
 #include <index/compass.h>
 #include <op/wavelet_encode/wtChunk.h>
-#include <op/se_compression/seChunk.h>
+#include <op/seacow/seChunk.h>
 
 int main()
 {

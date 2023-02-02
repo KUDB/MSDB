@@ -4,6 +4,7 @@
 #include <dummy_astronomy_array_3d.h>
 #include <dummy_query_util.h>
 #include <api_cpp/msdb.h>
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {

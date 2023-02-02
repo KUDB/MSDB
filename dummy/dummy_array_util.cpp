@@ -1,5 +1,7 @@
 #include <dummy_array_util.h>
 #include <system/exceptions.h>
+#include <op/insert/insert_plan.h>
+#include <api_cpp_operator/cpp_io_operators.h>
 
 namespace msdb
 {

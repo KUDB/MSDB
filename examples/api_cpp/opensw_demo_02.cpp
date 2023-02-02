@@ -6,6 +6,8 @@
 #include <thread>
 #include <windows.h>
 
+#include <api_cpp_operator/cpp_io_operators.h>
+
 #include <exeQuery/exe_build_astronomy_array.h>
 #include <exeQuery/exe_build_astronomy_array_3d.h>
 #include <exeQuery/exe_save_astronomy_array.h>
