@@ -1,5 +1,5 @@
-﻿#pragma once
-#include <op/compass_encode/compassChunk.h>
+#pragma once
+#include "compassChunk.h"
 
 namespace msdb
 {

@@ -1,4 +1,4 @@
-#include <pch_test.h>
+#include "gtest/gtest.h"
 #include <dummy/dummy_test_array.h>
 #include <system/storageMgr.h>
 #include <array/arrayMgr.h>

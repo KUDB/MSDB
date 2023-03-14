@@ -1,4 +1,4 @@
-#include <pch_test.h>
+#include "gtest/gtest.h"
 #include <dummy_astronomy_array.h>
 #include <dummy_query_util.h>
 #include <exeQuery/exe_build_astronomy_array.h>

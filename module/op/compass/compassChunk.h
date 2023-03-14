@@ -1,12 +1,12 @@
-﻿#pragma once
+#pragma once
 #ifndef _MSDB_COMPASSCHUNK_H_
 #define _MSDB_COMPASSCHUNK_H_
 
 #include <pch.h>
 #include <array/flattenChunk.h>
 #include <array/chunkType.h>
-#include <op/compass_encode/compassBlock.h>
 #include <io/bitstream.h>
+#include "compassBlock.h"
 
 namespace msdb
 {

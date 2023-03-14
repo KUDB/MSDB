@@ -1,4 +1,4 @@
-#include <pch_test.h>
+#include "gtest/gtest.h"
 #include <dummy/dummy_test_array.h>
 #include <dummy_array_util.h>
 #include <op/wavelet_encode/wtChunk.h>

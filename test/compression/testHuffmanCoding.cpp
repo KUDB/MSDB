@@ -1,4 +1,4 @@
-#include <pch_test.h>
+#include "gtest/gtest.h"
 
 #include <compression/huffmanCode.h>
 #include <compression/fixedHuffmanCoder.h>

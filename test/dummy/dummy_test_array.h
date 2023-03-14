@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _MSDB_TEST_DUMMY_H_
 #define _MSDB_TEST_DUMMY_H_
-#include <pch_test.h>
+#include "gtest/gtest.h"
 #include <array/arrayDesc.h>
 #include <array/blockDesc.h>
 #include <array/chunkDesc.h>

@@ -1,8 +1,9 @@
-#include <pch_test.h>
+#include "gtest/gtest.h"
 
 #include <compression/huffmanCode.h>
 #include <compression/fixedHuffmanCoder.h>
 #include <io/bitstream.h>
+#include <util/math.h>
 
 using namespace msdb::core;
 
