@@ -21,6 +21,8 @@ public:
 	void initFreq(std::vector<size_t>& freq, size_t bits);
 };
 
+// ##############################
+// 
 template <typename codeType, typename symbolType>
 class fixedHuffmanCoder1ByteSymbolBase : public huffmanCoder<codeType, symbolType>, public iFixedHuffmanCoder
 {
@@ -235,10 +237,7 @@ public:
 		BOOST_LOG_TRIVIAL(trace) << "fixedHuffmanCoder";
 	}
 
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -251,14 +250,9 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint8_t, symbolType>(1), singleton<fixedHuffmanCoder<1, symbolType>>()
-	{
+	{ }
 
-	}
-
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -271,14 +265,9 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint8_t, symbolType>(2), singleton<fixedHuffmanCoder<2, symbolType>>()
-	{
+	{ }
 
-	}
-
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -291,14 +280,9 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(3), singleton<fixedHuffmanCoder<3, symbolType>>()
-	{
+	{ }
 
-	}
-
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -311,14 +295,9 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(4), singleton<fixedHuffmanCoder<4, symbolType>>()
-	{
+	{ }
 
-	}
-
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -331,14 +310,9 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(5), singleton<fixedHuffmanCoder<5, symbolType>>()
-	{
+	{ }
 
-	}
-
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -351,14 +325,9 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(6), singleton<fixedHuffmanCoder<6, symbolType>>()
-	{
+	{ }
 
-	}
-
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -371,14 +340,9 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(7), singleton<fixedHuffmanCoder<7, symbolType>>()
-	{
+	{ }
 
-	}
-
-	~fixedHuffmanCoder()
-	{
-
-	}
+	~fixedHuffmanCoder() {}
 };
 
 template <typename symbolType>
@@ -391,16 +355,191 @@ public:
 public:
 	fixedHuffmanCoder()
 		: fixedHuffmanCoder1ByteSymbolBase<uint16_t, symbolType>(8), singleton<fixedHuffmanCoder<8, symbolType>>()
+	{ }
+
+	~fixedHuffmanCoder() {}
+};
+
+
+// ##############################
+// 
+template <typename symbolType, typename codeType>
+class fixedHuffmanCoderLonger1ByteSymbolBase : public huffmanCoderLonger<symbolType, codeType>, public iFixedHuffmanCoder
+{
+public:
+	using parentType = huffmanCoderLonger<symbolType, codeType>;
+	using nodeType = huffmanCoderLonger<symbolType, codeType>::huffmanNode;
+
+	using symbolType_ = symbolType;
+	using codeType_ = codeType;
+
+public:
+	fixedHuffmanCoderLonger1ByteSymbolBase()
+		: huffmanCoderLonger<symbolType, codeType>()
+	{
+		this->initHuffmanCode();
+	}
+
+	fixedHuffmanCoderLonger1ByteSymbolBase(size_t bits)
+		: huffmanCoderLonger<symbolType, codeType>(bits)
+	{
+		this->initHuffmanCode();
+	}
+
+	~fixedHuffmanCoderLonger1ByteSymbolBase()
 	{
 
 	}
 
-	~fixedHuffmanCoder()
+protected:
+	void initHuffmanCode()
 	{
+		std::vector<size_t> freq(pow(2, this->symbolBits_), 0);
+		BOOST_LOG_TRIVIAL(info) << "Start initHuff: <" << this->symbolBits_ << "> is initialized.";
+		this->initFrequencies(freq);
+		BOOST_LOG_TRIVIAL(info) << "Freq Init: <" << this->symbolBits_ << "> is initialized.";
+		this->buildHuffmanTree(freq);
+		BOOST_LOG_TRIVIAL(info) << "Tree build: <" << this->symbolBits_ << "> is initialized.";
+		buildEncodeDecodeTable();
+		BOOST_LOG_TRIVIAL(info) << "Fixed Huffman Coder<" << this->symbolBits_ << "> is initialized.";
+	}
 
+private:
+	void initFrequencies(std::vector<size_t>& freq)
+	{
+		this->initFreq(freq, this->symbolBits_);
+		this->printFreq(freq);
+	}
+
+	void printFreq(std::vector<size_t>& freq)
+	{
+		BOOST_LOG_TRIVIAL(trace) << "Freq=====";
+		for (size_t i = 0; i < freq.size(); ++i)
+		{
+			BOOST_LOG_TRIVIAL(trace) << "[" << i << "]: " << freq[i];
+		}
+	}
+
+	void buildEncodeDecodeTable()
+	{
+		if (this->root_->isLeaf())
+		{
+			this->root_->codeLen_ = 1;
+			this->insertInEncodeTable(this->root_);
+			this->insertInDecodeTable(this->root_);
+		}
+		else
+		{
+			std::stack<nodeType*> dfsStack;
+			dfsStack.push(this->root_);
+			this->root_->code_ = 0;
+			this->root_->codeLen_ = 0;
+
+			while (!dfsStack.empty())
+			{
+				nodeType* node = dfsStack.top();
+				dfsStack.pop();
+
+				assert(node != nullptr);
+
+				if (node->isLeaf())
+				{
+					this->insertInEncodeTable(node);
+					this->insertInDecodeTable(node);
+				}
+				else
+				{
+					node->left_->code_ = node->code_ << 1;
+					node->right_->code_ = node->code_ << 1 | (codeType)0x1;
+					node->left_->codeLen_ = node->codeLen_ + (codeType)1;
+					node->right_->codeLen_ = node->codeLen_ + (codeType)1;
+
+					dfsStack.push(node->left_);
+					dfsStack.push(node->right_);
+				}
+			}
+		}
+
+		this->printEncodeTable();
+	}
+
+public:
+	void encode(bstream& out, const symbolType* in, size_t len)
+	{
+		for (size_t i = 0; i < len; ++i)
+		{
+			this->encodeSymbol(out, in[i]);
+		}
+	}
+
+	void decode(symbolType* outData, size_t lenOut, bstream& in)
+	{
+		codeType code = 0x0;
+		in >> setw(parentType::maxCodeLength) >> code;
+		for (size_t i = 0; i < lenOut; ++i)
+		{
+			auto result = this->decodeSymbol(code);
+			outData[i] = result.first;
+
+			codeType nextCode = 0x0;
+			in >> setw(result.second) >> nextCode;
+			code = (code << result.second) | nextCode;
+		}
+	}
+
+	virtual void encode(bstream& out, const void* in, size_t len)
+	{
+		for (size_t i = 0; i < len; ++i)
+		{
+			this->encodeSymbol(out, static_cast<const symbolType*>(in)[i]);
+		}
+	}
+
+	virtual size_t decode(void* outData, size_t lenOut, bstream& in)
+	{
+		size_t readBits = 0;
+		codeType code = 0x0;
+		in >> setw(parentType::maxCodeLength) >> code;
+		for (size_t i = 0; i < lenOut; ++i)
+		{
+			auto result = this->decodeSymbol(code);
+			static_cast<symbolType*>(outData)[i] = result.first;
+
+			codeType nextCode = 0x0;
+			in >> setw(result.second) >> nextCode;
+			code = (code << result.second) | nextCode;
+
+			readBits += result.second;
+			//BOOST_LOG_TRIVIAL(trace) << "S: " << static_cast<uint64_t>(result.first) << "/ L: " << static_cast<uint64_t>(result.second);
+		}
+
+		return readBits;
+	}
+
+	virtual size_t getCodeBitWidth() const
+	{
+		return parentType::maxCodeLength;
 	}
 };
 
+template <size_t _BITS, typename codeType>
+class fixedHuffmanCoderLonger : public fixedHuffmanCoderLonger1ByteSymbolBase<uint8_t, codeType>, public singleton<fixedHuffmanCoderLonger<_BITS, codeType>>
+{
+public:
+	using symbolType_ = uint8_t;
+	using codeType_ = codeType;
+
+public:
+	fixedHuffmanCoderLonger()
+		: fixedHuffmanCoderLonger1ByteSymbolBase<uint8_t, codeType>(_BITS)
+	{
+		BOOST_LOG_TRIVIAL(trace) << "fixedHuffmanCoderLonger";
+	}
+
+	~fixedHuffmanCoderLonger() {}
+};
+
+// ##############################
 template <size_t FIRST_BITS_, size_t SECOND_BITS_, typename symbolType>
 class fixedHuffmanCoder2ByteSymbolBase : public iFixedHuffmanCoder
 {

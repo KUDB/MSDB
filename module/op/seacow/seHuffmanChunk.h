@@ -477,7 +477,7 @@ public:
 										{
 											Ty_ v = 0;
 											auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-											v = this->getHuffmanDecode(bs, coder, rbFromDelta);
+											v = this->huffmanDecode(bs, coder, rbFromDelta);
 											*pValue = v;
 											//bs >> *pValue;
 											if (*pValue & signMask)
@@ -509,7 +509,7 @@ public:
 
 									Ty_ v = 0;
 									auto pValue = (Ty_*)(spData + this->tileOffset_[i]);
-									v = this->getHuffmanDecode(bs, coder, rbFromDelta);
+									v = this->huffmanDecode(bs, coder, rbFromDelta);
 									*pValue = v;
 									//bs >> *pValue;
 									if (*pValue & signMask)
@@ -581,7 +581,7 @@ public:
 		}
 	}
 
-	Ty_ getHuffmanDecode(bstream& bs, iFixedHuffmanCoder* coder, bit_cnt_type rbFromDelta)
+	Ty_ huffmanDecode(bstream& bs, iFixedHuffmanCoder* coder, bit_cnt_type rbFromDelta)
 	{
 		static size_t itemCapa = 1;
 
