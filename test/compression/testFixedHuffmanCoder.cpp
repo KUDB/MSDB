@@ -112,7 +112,7 @@ void huffmanEncode(bstream& bs, std::vector<Ty_>& vec, CoderTy_* coder)
 {
 	for (int i = 0; i < vec.size(); ++i)
 	{
-		coder->encode(bs, &vec[i], CHAR_BIT);
+		coder->encode(bs, &vec[i], 1);
 	}
 }
 
@@ -156,6 +156,7 @@ TEST(fixed_huffman_coder_longer, HuffmanCoderLong_7_EncodeDecode)
 	////////////////////
 
 	BOOST_LOG_TRIVIAL(info) << "SymbolBits: " << symbolBits;
+	size_t passed = 0;
 	for (int i = 0; i < size; ++i)
 	{
 		data_type v = huffmanDecode<data_type>(bs, coder, symbolBits);
@@ -167,9 +168,12 @@ TEST(fixed_huffman_coder_longer, HuffmanCoderLong_7_EncodeDecode)
 		else
 		{
 			BOOST_LOG_TRIVIAL(trace) << "Pass: " << static_cast<int64_t>(vec[i]);
+			++passed;
 		}
 		EXPECT_EQ(vec[i], v);
 	}
+
+	BOOST_LOG_TRIVIAL(info) << "Passed: " << passed;
 }
 
 TEST(fixed_huffman_coder_longer, HuffmanCoderLong_7_EncodeDecodeBulk)
@@ -188,11 +192,11 @@ TEST(fixed_huffman_coder_longer, HuffmanCoderLong_7_EncodeDecodeBulk)
 	bs.print();		// Print Encoded Code Stream
 	////////////////////
 
-	BOOST_LOG_TRIVIAL(info) << "SymbolBits: " << symbolBits;
 	data_type* out = new data_type[size];
-
 	huffmanDecode<data_type>(out, bs, coder, symbolBits, size);
 
+	BOOST_LOG_TRIVIAL(info) << "SymbolBits: " << symbolBits;
+	size_t passed = 0;
 	for (int i = 0; i < size; ++i)
 	{
 		if (vec[i] != out[i])
@@ -203,9 +207,12 @@ TEST(fixed_huffman_coder_longer, HuffmanCoderLong_7_EncodeDecodeBulk)
 		else
 		{
 			BOOST_LOG_TRIVIAL(trace) << "Pass: " << static_cast<int64_t>(vec[i]);
+			++passed;
 		}
 		EXPECT_EQ(vec[i], out[i]);
 	}
+
+	BOOST_LOG_TRIVIAL(info) << "Passed: " << passed;
 
 	delete[] out;
 }
@@ -227,6 +234,7 @@ TEST(fixed_huffman_coder_longer, HuffmanCoderLong_8_EncodeDecode)
 	////////////////////
 
 	BOOST_LOG_TRIVIAL(info) << "SymbolBits: " << symbolBits;
+	size_t passed = 0;
 	for (int i = 0; i < size; ++i)
 	{
 		data_type v = huffmanDecode<data_type>(bs, coder, symbolBits);
@@ -238,9 +246,12 @@ TEST(fixed_huffman_coder_longer, HuffmanCoderLong_8_EncodeDecode)
 		else
 		{
 			BOOST_LOG_TRIVIAL(trace) << "Pass: " << static_cast<int64_t>(vec[i]);
+			++passed;
 		}
 		EXPECT_EQ(vec[i], v);
 	}
+
+	BOOST_LOG_TRIVIAL(info) << "Passed: " << passed;
 }
 
 TEST(fixed_huffman_coder, encode_decode_test)
