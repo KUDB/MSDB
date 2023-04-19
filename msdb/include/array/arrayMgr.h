@@ -16,7 +16,6 @@ class arrayMgr : public singleton<arrayMgr>
 {
 private:
 	arrayMgr();
-
 	~arrayMgr();
 
 public:

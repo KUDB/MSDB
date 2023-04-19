@@ -20,8 +20,6 @@ const char* strIndexFilExtension = ".msdbindex";
 const char* strArrayConfigFile = "arrays.xml";
 const char* strChunkFilExtension = ".chunk";
 
-const std::string storageMgr::extArrayConfig = ".msdbarray";
-
 storageMgr::storageMgr()
 {
 	//std::cout << "current dir: " << std::filesystem::current_path() << std::endl;

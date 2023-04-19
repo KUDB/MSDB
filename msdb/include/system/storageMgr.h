@@ -81,7 +81,7 @@ protected:
 	filePath indexFolder_;
 
 private:
-	static const std::string extArrayConfig;
+	const std::string extArrayConfig = ".msdbarray";
 
 protected:
 	friend singleton<storageMgr>;
