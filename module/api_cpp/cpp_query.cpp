@@ -33,6 +33,8 @@ ResultArray Query::execute()
 	}
 
 	this->status_ = Status::FAIL;
+	BOOST_LOG_TRIVIAL(error) << "Query failed: " << this->qry_->getErrorMsg();
+
 	return ResultArray(Context(), this->qry_);
 }
 core::pTimer Query::getTimer()

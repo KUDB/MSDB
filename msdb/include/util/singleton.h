@@ -33,7 +33,7 @@ public:
 				BOOST_LOG_TRIVIAL(trace) << "Singleton::Regi Success: " << __FUNCTION__ << instance;
 			}
 		}
-		BOOST_LOG_TRIVIAL(trace) << "Singleton::" << __FUNCTION__ << ": " << instance;
+		//BOOST_LOG_TRIVIAL(trace) << "Singleton::" << __FUNCTION__ << ": " << instance;
 		return instance;
 	}
 

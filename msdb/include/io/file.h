@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_FILE_H_
 #define _MSDB_FILE_H_
 
@@ -38,6 +38,8 @@ private:
 	fileManager* fm_;		// pointer to filemanager
 };
 
+
+// TODO::Remove singleton, make all member functions to static function
 class fileManager : public singleton<fileManager>
 {
 public:

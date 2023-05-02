@@ -16,7 +16,7 @@ bool initBoostLogger()
 	if (isInit)
 	{
 		logInitLock.unlock();
-		BOOST_LOG_TRIVIAL(trace) << "LOG CORE INIT FAIL";
+		//BOOST_LOG_TRIVIAL(trace) << "LOG CORE INIT FAIL";
 		return false;
 	}
 
@@ -35,7 +35,7 @@ bool initBoostLogger()
 	);
 #else
 	core->set_filter(
-		logging::trivial::severity >= logging::trivial::debug
+		logging::trivial::severity >= logging::trivial::trace
 	);
 #endif
 	
@@ -45,7 +45,7 @@ bool initBoostLogger()
 	isInit = true;
 	logInitLock.unlock();
 
-	BOOST_LOG_TRIVIAL(trace) << "LOG CORE INIT";
+	//BOOST_LOG_TRIVIAL(trace) << "LOG CORE INIT";
 
 	return true;
 }
