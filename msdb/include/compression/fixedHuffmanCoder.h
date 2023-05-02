@@ -4,8 +4,10 @@
 
 #include <pch.h>
 #include <boost/math/distributions/normal.hpp>
+#include <boost/math/distributions/laplace.hpp>
 #include <compression/huffmanCode.h>
 #include <util/singleton.h>
+#include <util/logger.h>
 
 namespace msdb
 {

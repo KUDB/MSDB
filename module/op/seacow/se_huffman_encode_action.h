@@ -32,6 +32,14 @@ private:
 	template<typename Ty_>
 	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
 	{
+		std::string logFilePath = "seHuffmanEncode.log";
+		std::ofstream writeFile(logFilePath.data());
+
+		if (writeFile.is_open())
+		{
+			writeFile << "se_huffman_encode_action::compressAttribute";
+		}
+		BOOST_LOG_TRIVIAL(info) << "se_huffman_encode_action::compressAttribute";
 		size_t currentThreadId = 0;
 		//========================================//
 		qry->getTimer()->nextJob(currentThreadId, this->name(), workType::PARALLEL);
@@ -111,13 +119,16 @@ private:
 				++(*ocit);
 			}
 		}
-
-		BOOST_LOG_TRIVIAL(debug) << "Total Save Chunk: " << mSizeTotal << " Bytes";
 		//----------------------------------------//
 		qry->getTimer()->pause(0);
 		//========================================//
 
 		BOOST_LOG_TRIVIAL(info) << "Total Save Chunk: " << mSizeTotal << " Bytes";
+		if (writeFile.is_open())
+		{
+			writeFile << "Total Save Chunk: " << mSizeTotal << " Bytes";
+		}
+		writeFile.close();
 	}
 
 	template<>
