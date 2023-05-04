@@ -2,6 +2,7 @@
 #ifndef _MSDB_OP_SE_HUFFMAN_DECODE_ACTION_H_
 #define _MSDB_OP_SE_HUFFMAN_DECODE_ACTION_H_
 
+#include <pch_op.h>
 #include <array/arrayMgr.h>
 #include <system/storageMgr.h>
 #include <query/opAction.h>
@@ -26,10 +27,6 @@ public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 
 private:
-	//pSeHuffmanChunk makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
-	//							chunkId cid, coor chunkCoor);
-
-	//void decompressAttribute(std::shared_ptr<wavelet_encode_array>outArr, pAttributeDesc attrDesc, pQuery qry)
 	template <typename Ty_>
 	void decompressAttribute(const concreteTy<Ty_>& type,
 							 pArray outArr, pArray inArr,
@@ -68,13 +65,6 @@ private:
 		{
 			if (cit->needToMake())
 			{
-				// make chunk
-				//chunkId cid = cit->seqPos();
-				//coor chunkCoor = cit->coor();
-				//auto inChunk = this->makeInChunk(outArr, attrDesc, cid, chunkCoor);
-				//inChunk->setTileOffset(offsets);
-				//auto outChunk = outArr->makeChunk(*inChunk->getDesc());
-
 				chunkId cid = cit->seqPos();
 				coor chunkCoor = cit->coor();
 				auto inChunk = std::static_pointer_cast<seHuffmanChunk<Ty_>>(inArr->makeChunk(attrId, cid));
@@ -174,9 +164,6 @@ private:
 		inChunk->makeAllBlocks();
 		outChunk->makeAllBlocks();
 
-		inChunk->setLevel(maxLevel);
-		outChunk->setLevel(maxLevel);
-
 		bool hasNegative = false;
 		if ((Ty_)-1 < 0)
 		{
@@ -208,10 +195,6 @@ private:
 		qry->getTimer()->nextWork(threadId, workType::COMPUTING);
 		//----------------------------------------//
 
-		//outChunk->setLevel(inChunk->getLevel());
-		//outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
-		//outChunk->makeBlocks();
-		//outChunk->bufferCopy(inChunk);
 		outChunk->setSerializedSize(inChunk->getSerializedSize());
 		outChunk->bufferCopy(inChunk);
 

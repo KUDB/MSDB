@@ -25,11 +25,6 @@ pArray se_huffman_decode_action::execute(std::vector<pArray>& inputArrays, pQuer
 	//========================================//
 	qry->getTimer()->nextJob(0, this->name(), workType::ARRAY_CONSTRUCTING);
 	//----------------------------------------//
-
-	//pStableElement ele = std::static_pointer_cast<stableElement>(this->params_[1]->getParam());
-	//eleDefault maxLevel;
-	//ele->getData(&maxLevel);
-
 	auto planBitmap = this->getPlanInChunkBitmap();
 	auto arrDesc = this->getArrayDesc();
 	dimension originalChunkDims = arrDesc->getDimDescs()->getChunkDims();
@@ -41,10 +36,7 @@ pArray se_huffman_decode_action::execute(std::vector<pArray>& inputArrays, pQuer
 	pArray inArr = std::make_shared<seHuffmanArray>(std::make_shared<arrayDesc>(*arrDesc));
 	inArr->copyChunkBitmap(planBitmap);
 
-	//auto outArr = std::make_shared<wavelet_encode_array>(std::make_shared<arrayDesc>(*arrDesc));
 	auto outArr = std::make_shared<seHuffmanArray>(std::make_shared<arrayDesc>(*arrDesc));
-	//outArr->setLevel(maxLevel);
-	//outArr->setOrigianlChunkDims(originalChunkDims);
 	outArr->copyChunkBitmap(planBitmap);
 
 	auto attrDescs = inArr->getDesc()->getAttrDescs();

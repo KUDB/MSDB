@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef _MSDB_OP_SPIHT_DECODE_ACTION_H
 #define _MSDB_OP_SPIHT_DECODE_ACTION_H
 
@@ -57,12 +57,12 @@ public:
 
 				auto inChunk = std::static_pointer_cast<spihtChunk<Ty_>>(inArr->makeChunk(attrDesc->id_, cid));
 				inChunk->makeAllBlocks();
-				inChunk->setLevel(wtLevel);
+				//inChunk->setLevel(wtLevel);
 
 				auto cDesc = inChunk->getDesc();
 				auto outChunk = std::static_pointer_cast<wtChunk<Ty_>>(outArr->makeChunk(attrDesc->id_, cid));
 				//outChunk->makeAllBlocks();
-				outChunk->setLevel(wtLevel);
+				//outChunk->setLevel(wtLevel);
 				// make block in decompressChunk()
 
 				//auto inChunk = this->makeInChunk(outArr, attrDesc, cid);

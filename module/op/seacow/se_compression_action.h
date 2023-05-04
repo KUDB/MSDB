@@ -2,6 +2,7 @@
 #ifndef _MSDB_OP_SE_COMPRESSION_ACTION_H_
 #define _MSDB_OP_SE_COMPRESSION_ACTION_H_
 
+#include <pch_op.h>
 #include <array/arrayMgr.h>
 #include <array/block.h>
 #include <array/flattenChunk.h>
@@ -11,7 +12,6 @@
 #include <compression/waveletUtil.h>
 #include <query/opAction.h>
 #include <index/mmt.h>
-//#include <op/wavelet_encode/wavelet_encode_array.h>
 #include <util/logger.h>
 #include <util/dataType.h>
 #include <util/threadUtil.h>
@@ -31,6 +31,13 @@ public:
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery q) override;
 
 private:
+	struct compChunkParams
+	{
+		bool hasNegative;
+		size_t wtLevel;
+		size_t parentThreadId;
+	};
+
 	//Visitor
 	template<typename Ty_>
 	void compressAttribute(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc, pQuery qry)
@@ -61,6 +68,8 @@ private:
 			hasNegative = true;
 		}
 
+		const size_t wtLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
+
 		while (!cit->isEnd())
 		{
 			if (cit->isExist())
@@ -72,16 +81,16 @@ private:
 				////////////////////////////////////////
 				// 1. Serialize::decompressChunk
 				////////////////////////////////////////
-				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId);
+				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, qry, p);
 				////////////////////////////////////////
 
 				////////////////////////////////////////
 				// 2. Parallel::decompressChunk
 				////////////////////////////////////////
+				compChunkParams p = { hasNegative, wtLevel, currentThreadId };
 				io_service_->post(boost::bind(&se_compression_action::compressChunk<Ty_>, this,
-											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId));
+											  arrId, outChunk, inChunk, mmtIndex, chunkDim, qry, p));
 				////////////////////////////////////////
-
 			}
 
 			++(*cit);
@@ -122,19 +131,23 @@ private:
 
 	template<typename Ty_>
 	void compressChunk(arrayId arrId,
-					   std::shared_ptr<seChunk<Ty_>> outChunk,
-					   std::shared_ptr<wtChunk<Ty_>> inChunk,
-					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
-					   dimension& sourceChunkDim, bool hasNegative,
-					   pQuery qry,
-					   const size_t parentThreadId)
+		std::shared_ptr<seChunk<Ty_>> outChunk,
+		std::shared_ptr<wtChunk<Ty_>> inChunk,
+		std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
+		dimension& sourceChunkDim, 
+		pQuery qry, compChunkParams p)
 	{
 	#ifndef NDEBUG
 		//BOOST_LOG_TRIVIAL(trace) << "Chunkcoor: " << chunkCoor.toString() << " / MMT NODE: " << mNode->toString<Ty_>();
 		//assert(outChunk->rBitFromMMT <= sizeof(Ty_) * CHAR_BIT);
 	#endif
 
+		bool hasNegative = p.hasNegative;
+		const size_t wtLevel = p.wtLevel;
+		const size_t parentThreadId = p.parentThreadId;
+
 		auto threadId = getThreadId() + 1;
+		
 
 		//========================================//
 		qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::COMPUTING, std::string("chunk::") + std::to_string(outChunk->getId()));
@@ -142,15 +155,13 @@ private:
 
 		size_t dSize = inChunk->getDSize();
 
-		outChunk->setLevel(inChunk->getLevel());
-		//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
 		outChunk->bufferRef(inChunk);
 		outChunk->makeAllBlocks();
 
 		pBlock outBlock = outChunk->getBlock(0);
 		size_t numBandsInLevel = std::pow(2, dSize) - 1;
 		dimension inBlockDims = inChunk->getDesc()->getBlockDims();
-		dimension bandDims = inBlockDims / std::pow(2, inChunk->getLevel() + 1);
+		dimension bandDims = inBlockDims / std::pow(2, wtLevel + 1);
 
 		// For Level 0
 		this->findRequiredBitsForRootLevel<Ty_>(outChunk, outBlock, 
@@ -161,7 +172,7 @@ private:
 		// For child level
 		this->findRequiredBitsForChildLevel<Ty_>(outChunk, outBlock, 
 											mmtIndex,
-											bandDims, inChunk->getLevel(),
+											bandDims, wtLevel,
 											numBandsInLevel, hasNegative);
 
 

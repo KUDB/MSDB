@@ -2,6 +2,7 @@
 #ifndef _MSDB_OP_SE_COMPRESSION_PLAN_H_
 #define _MSDB_OP_SE_COMPRESSION_PLAN_H_
 
+#include <pch_op.h>
 #include <query/opPlan.h>
 #include <query/opParamSet.h>
 #include <query/userDefinedOp.h>
@@ -10,7 +11,7 @@ namespace msdb
 {
 namespace core
 {
-class OP_DLL_API se_compression_plan : public opPlan
+class OP_API se_compression_plan : public opPlan
 {
 public:
 	se_compression_plan();
@@ -23,13 +24,13 @@ public:
 
 //////////////////////////////
 // ParamSets
-class OP_DLL_API se_compression_array_pset : public opArrayParamSet
+class OP_API se_compression_array_pset : public opArrayParamSet
 {
 public:
 	se_compression_array_pset(parameters& pSet);
 };
 
-class OP_DLL_API se_compression_plan_pset : public opPlanParamSet
+class OP_API se_compression_plan_pset : public opPlanParamSet
 {
 public:
 	se_compression_plan_pset(parameters& pSet);

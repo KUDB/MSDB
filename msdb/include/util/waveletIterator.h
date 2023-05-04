@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_WAVELETITERATOR_H_
 #define _MSDB_WAVELETITERATOR_H_
 

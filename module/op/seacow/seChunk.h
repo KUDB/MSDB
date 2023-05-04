@@ -40,19 +40,6 @@ public:
 	}
 
 public:
-	// TODO::Use optional param
-	inline size_t getLevel()
-	{
-		return this->level_;
-	}
-	//chunkId getSourceChunkId();
-
-	// TODO::Use optional param
-	inline void setLevel(size_t level)
-	{
-		this->level_ = level;
-	}
-
 	inline void setSourceChunkId(chunkId cid)
 	{
 		this->getDesc()->getAttrDesc()->setParam(std::string(_STR_PARAM_SOURCE_CHUNKID_), std::to_string(cid));
@@ -127,11 +114,6 @@ public:
 		return gap - 1;
 	}
 
-	//template<typename Ty_>
-	//void serialize(bstream& bs)
-	//{
-	//	this->seEncode<Ty_>(bs);
-	//}
 public:
 	void seEncode(bstream& bs)
 	{
@@ -319,14 +301,6 @@ public:
 		//BOOST_LOG_TRIVIAL(debug) << "avg from Delta: " << static_cast<double>(std::accumulate(rBitFromDelta.begin(), rBitFromDelta.end(), 0.0) / rBitFromDelta.size());
 	#endif
 	}
-
-	//template<typename Ty_>
-	//void deserialize(bstream& bs)
-	//{
-	//	this->seDecode<Ty_>(bs);
-	//}
-
-	//template <typename Ty_>
 public:
 	void seDecode(bstream& bs)
 	{
@@ -411,7 +385,6 @@ public:
 		}
 	}
 
-	//template <typename Ty_>
 	void deserializeChildLevelBand(bstream& bs, pBlock inBlock, size_t seqId, dimension& bandDims, size_t numBandsInLevel)
 	{
 		auto dSize = this->getDSize();
@@ -561,15 +534,8 @@ public:
 	}
 
 public:
-	inline void setLevel(size_t level)
-	{
-	}
 	inline void setSourceChunkId(chunkId cid)
 	{
-	}
-	inline size_t getLevel()
-	{
-		return 0;
 	}
 	inline const chunkId& getSourceChunkId() const
 	{
@@ -588,15 +554,8 @@ public:
 	}
 
 public:
-	inline void setLevel(size_t level)
-	{
-	}
 	inline void setSourceChunkId(chunkId cid)
 	{
-	}
-	inline size_t getLevel()
-	{
-		return 0;
 	}
 	inline const chunkId& getSourceChunkId() const
 	{

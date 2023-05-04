@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef _MSDB_OP_WAVELET_ENCODE_ACTION_H_
 #define _MSDB_OP_WAVELET_ENCODE_ACTION_H_
 
@@ -25,7 +25,6 @@ public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery q);
 
 private:
-	// pWavelet w, const size_t maxLevel
 	template <class Ty_>
 	void attributeEncode(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attrDesc,
 						 pQuery q)
@@ -105,7 +104,6 @@ private:
 
 		auto outChunk = std::make_shared<wtChunk<Ty_>>(outChunkDesc);
 		outChunk->makeAllBlocks();
-		outChunk->setLevel(maxLevel);
 		outChunk->bufferCopy(inBlock);
 
 		for (size_t level = 0; level <= maxLevel; ++level)

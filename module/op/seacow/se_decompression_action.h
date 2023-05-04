@@ -2,6 +2,7 @@
 #ifndef _MSDB_OP_SE_DECOMPRESSION_ACTION_H_
 #define _MSDB_OP_SE_DECOMPRESSION_ACTION_H_
 
+#include <pch_op.h>
 #include <array/arrayMgr.h>
 #include <array/flattenChunk.h>
 #include <system/storageMgr.h>
@@ -28,9 +29,6 @@ public:
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery qry) override;
 
 private:
-	//pSeChunk makeInChunk(std::shared_ptr<wavelet_encode_array> arr, pAttributeDesc attrDesc,
-	//					  chunkId cid, coor chunkCoor);
-
 	template <typename Ty_>
 	void decompressAttribute(const concreteTy<Ty_>& type,
 							 pArray outArr, pArray inArr,
@@ -162,8 +160,8 @@ private:
 		inChunk->makeAllBlocks();
 		outChunk->makeAllBlocks();
 
-		inChunk->setLevel(maxLevel);
-		outChunk->setLevel(maxLevel);
+		//inChunk->setLevel(maxLevel);
+		//outChunk->setLevel(maxLevel);
 
 		bool hasNegative = false;
 		if ((Ty_)-1 < 0)
@@ -184,7 +182,6 @@ private:
 		storageMgr::instance()->loadChunk(arrId, attrId, inChunk->getId(),
 											serialChunk);
 
-		//outChunk->setLevel(inChunk->getLevel());
 		//outChunk->replaceBlockBitmap(inChunk->getBlockBitmap());
 		//outChunk->makeBlocks();
 		//outChunk->bufferCopy(inChunk);

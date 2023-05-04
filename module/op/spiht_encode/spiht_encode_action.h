@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef _MSDB_OP_SPIHT_ENCODE_ACTION_H_
 #define _MSDB_OP_SPIHT_ENCODE_ACTION_H_
 
@@ -49,7 +49,7 @@ public:
 
 				// Set Param
 				auto sChunk = std::static_pointer_cast<spihtChunk<Ty_>>(outChunk);
-				sChunk->setLevel(level);
+				//sChunk->setLevel(level);
 
 				////////////////////////////////////////
 				// 1. Serialize::encodeChunk

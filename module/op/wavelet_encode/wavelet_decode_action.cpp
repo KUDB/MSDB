@@ -1,4 +1,4 @@
-﻿#include <pch_op.h>
+#include <pch_op.h>
 #include <op/wavelet_encode/wavelet_decode_action.h>
 #include <op/wavelet_encode/wavelet_decode_array.h>
 #include <op/wavelet_encode/wavelet_encode_array.h>
@@ -23,29 +23,12 @@ pArray wavelet_decode_action::execute(std::vector<pArray>& inputArrays, pQuery q
 	//========================================//
 	qry->getTimer()->nextJob(0, this->name(), workType::COMPUTING);
 	//----------------------------------------//
-
 	auto planBitmap = this->getPlanInChunkBitmap();		
 	pArray inArr = inputArrays[0];
 
 	//////////////////////////////
-	// Get parameters
-	pStableElement ele = std::static_pointer_cast<stableElement>(this->params_[1]->getParam());
-	eleDefault maxLevel;
-	ele->getData(&maxLevel);
-	//pWavelet w = std::make_shared<wavelet>(this->waveletName_.c_str());
-
-	auto weArray = std::static_pointer_cast<wavelet_encode_array>(inArr);
-	auto originalChunkDims = weArray->getOrigianlChunkDims();
-
-	//////////////////////////////
 	// Build wavelet_decode_array
-	auto outArr = std::make_shared<wavelet_decode_array>(this->getArrayDesc(), maxLevel);
-	auto outDimDesc = outArr->getDesc()->getDimDescs();
-	for(dimensionId d = 0; d < outDimDesc->size(); ++d)
-	{
-		(*outArr->getDesc()->getDimDescs())[d]->chunkSize_ = originalChunkDims[d];
-	}
-
+	auto outArr = std::make_shared<wavelet_decode_array>(this->getArrayDesc());
 	auto attrDescs = inArr->getDesc()->getAttrDescs();
 	for (auto attrDesc : *attrDescs)
 	{

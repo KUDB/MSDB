@@ -2,6 +2,7 @@
 #ifndef _MSDB_OP_SE_HUFFMAN_ENCODE_ACTION_H_
 #define _MSDB_OP_SE_HUFFMAN_ENCODE_ACTION_H_
 
+#include <pch_op.h>
 #include <array/arrayMgr.h>
 #include <system/storageMgr.h>
 #include <query/opAction.h>
@@ -63,6 +64,8 @@ private:
 			hasNegative = true;
 		}
 
+		size_t wtLevel = std::stoi(attrDesc->getParam(_STR_PARAM_WAVELET_LEVEL_));
+
 		while (!cit->isEnd())
 		{
 			if (cit->isExist())
@@ -71,17 +74,14 @@ private:
 				auto cDesc = std::make_shared<chunkDesc>(*inChunk->getDesc());
 				auto outChunk = std::static_pointer_cast<seHuffmanChunk<Ty_>>(outArr->makeChunk(cDesc));
 
-				outChunk->setLevel(inChunk->getLevel());
-				//outChunk->setSourceChunkId(inChunk->getSourceChunkId());
 				outChunk->bufferRef(inChunk);
 				outChunk->makeAllBlocks();
 
 				////////////////////////////////////////
 				// 1. Serialize::encodeChunk
 				////////////////////////////////////////
-
 			#ifndef NDEBUG
-				this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId);
+				this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, wtLevel, currentThreadId);
 			#endif
 				//auto attr = outChunk->getDesc()->attrDesc_;
 				//storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
@@ -148,7 +148,7 @@ private:
 					   std::shared_ptr<wtChunk<Ty_>> inChunk,
 					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
 					   dimension& sourceChunkDim, bool hasNegative,
-					   pQuery qry, const size_t parentThreadId)
+					   pQuery qry, const size_t wtLevel, const size_t parentThreadId)
 	{
 		auto threadId = getThreadId() + 1;
 		//========================================//
@@ -160,7 +160,7 @@ private:
 		pBlock outBlock = outChunk->getBlock(0);
 		size_t numBandsInLevel = std::pow(2, dSize) - 1;
 		dimension inBlockDims = inChunk->getDesc()->getBlockDims();
-		dimension bandDims = inBlockDims / std::pow(2, inChunk->getLevel() + 1);
+		dimension bandDims = inBlockDims / std::pow(2, wtLevel + 1);
 
 		// For Level 0
 		this->findRequiredBitsForRootLevel<Ty_>(outChunk, outBlock,
@@ -171,7 +171,7 @@ private:
 		// For child level
 		this->findRequiredBitsForChildLevel<Ty_>(outChunk, outBlock,
 												 mmtIndex,
-												 bandDims, inChunk->getLevel(),
+												 bandDims, wtLevel,
 												 numBandsInLevel, hasNegative);
 
 		//----------------------------------------//

@@ -22,12 +22,10 @@ pAction se_huffman_encode_plan::makeAction()
 se_huffman_encode_array_pset::se_huffman_encode_array_pset(parameters& pSet)
 	: opArrayParamSet(pSet)
 {
-
 }
 se_huffman_encode_plan_pset::se_huffman_encode_plan_pset(parameters& pSet)
 	: opPlanParamSet(pSet)
 {
-
 }
 }		// core
 }		// msdb

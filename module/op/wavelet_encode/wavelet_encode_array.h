@@ -56,25 +56,15 @@ public:
 	 */
 
 public:
-	//virtual pChunk makeChunk(const attributeId attrId, const chunkId cId) override;
-	//virtual pChunk makeChunk(const chunkDesc& desc) override;
-
-public:
-	size_t getMaxLevel();
 	dimension getOrigianlChunkDims();
-	void setLevel(const size_t maxLevel);
 	void setOrigianlChunkDims(const dimension originalChunkDims);
-
-private:
-	bool isMaxLevelAvailable(size_t maxLevel);
 
 public:
 	virtual void initChunkFactories();
 
 protected:
-	size_t maxLevel_;
 	dimension originalChunkDims_;
 };
 }		// core
 }		// msdb
-#endif		// _MSDB_OP_WAVELET_ENCODE_ARRAY_H_
+#endif	// _MSDB_OP_WAVELET_ENCODE_ARRAY_H_

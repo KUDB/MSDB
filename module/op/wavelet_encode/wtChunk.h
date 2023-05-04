@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef _MSDB_WT_CHUNK_H_
 #define _MSDB_WT_CHUNK_H_
 
@@ -10,12 +10,9 @@ namespace msdb
 {
 namespace core
 {
-//class wtChunk;
-//using pWtChunk = std::shared_ptr<wtChunk>;
-
 // TODO:: inherit blocked chunk
 template <typename Ty_>
-class wtChunk : public monoChunk<Ty_>
+class OP_API wtChunk : public monoChunk<Ty_>
 {
 public:
 	wtChunk(pChunkDesc desc)
@@ -28,20 +25,6 @@ public:
 	}
 
 public:
-	inline size_t getLevel()
-	{
-		return this->level_;
-	}
-	//chunkId getBandId();
-	//chunkId getSourceChunkId();
-
-	inline void setLevel(size_t level)
-	{
-		this->level_ = level;
-	}
-	//void setBandId(chunkId bid);
-	//void setSourceChunkId(chunkId cid);
-
 	dimension getTileSpace(dimension sourceChunkDim)
 	{
 		dimension tileSpace(sourceChunkDim);
@@ -54,8 +37,6 @@ public:
 
 protected:
 	size_t level_;
-	//chunkId bandId_;
-	//chunkId sourceChunkId_;
 };
 
 //////////////////////////////
@@ -64,7 +45,7 @@ protected:
 // To make concreteType of wtChunk
 //
 template <typename Ty_>
-class wtChunkFactory : public chunkFactory
+class OP_API wtChunkFactory : public chunkFactory
 {
 public:
 	wtChunkFactory()
@@ -72,13 +53,16 @@ public:
 	{}
 
 protected:
-	virtual pChunk makeChunk(pChunkDesc cDesc);
+	virtual pChunk makeChunk(pChunkDesc cDesc)
+	{
+		return std::make_shared<wtChunk<Ty_>>(cDesc);
+	}
 };
 
 //////////////////////////////
 // Factory constructor for wtChunkFacotry
 //
-class wtChunkFactoryBuilder : public chunkFactoryBuilder
+class OP_API wtChunkFactoryBuilder : public chunkFactoryBuilder
 {
 public:
 	wtChunkFactoryBuilder() = default;
@@ -95,7 +79,7 @@ public:
 //////////////////////////////
 // wtChunkType
 //
-class wtChunkType : public chunkType
+class OP_API wtChunkType : public chunkType
 {
 public:
 	wtChunkType(const dataType& type);
@@ -108,7 +92,4 @@ public:
 };
 }		// core
 }		// msdb
-
-#include "wtChunk.hpp"
-
 #endif	// _MSDB_WT_CHUNK_H_

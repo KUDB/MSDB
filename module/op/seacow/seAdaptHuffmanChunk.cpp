@@ -15,6 +15,5 @@ seAdaptHuffmanChunkType::seAdaptHuffmanChunkType(const dataType& type)
 }
 
 //REGISTER_CHUNK_FACTORY("seAdaptHuffmanChunk", seAdaptHuffmanChunkFactoryBuilder())
-
 }		// core
 }		// msdb
