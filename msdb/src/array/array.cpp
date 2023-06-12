@@ -37,12 +37,17 @@ pArrayDesc array::getDesc()
 	return this->desc_;
 }
 
+const pArrayDesc array::getDesc() const
+{
+	return this->desc_;
+}
+
 pChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMode itMode)
 {
 	if (this->chunks_.find(attrId) != this->chunks_.end())
 	{
 		return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
-											   &(this->chunks_[attrId]), this->attrChunkBitmaps_[attrId],
+											   &(this->chunks_.at(attrId)), this->attrChunkBitmaps_.at(attrId),
 											   itMode);
 	}
 	//_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_QUERY_ERROR, MSDB_ER_NO_ATTRIBUTE, "Fail to get chunkIterator (attrId: " + std::to_string(attrId) + ")"));
@@ -55,7 +60,20 @@ pChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMo
 	return std::make_shared<chunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
 										   nullptr, std::make_shared<bitmap>(this->globalChunkBitmap_->getCapacity(), false),
 										   itMode);
+}
 
+const pConstChunkIterator array::getChunkIterator(const attributeId attrId, const iterateMode itMode) const
+{
+	if (this->chunks_.find(attrId) != this->chunks_.end())
+	{
+		return std::make_shared<constChunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+			&(this->chunks_.at(attrId)), this->attrChunkBitmaps_.at(attrId),
+			itMode);
+	}
+
+	return std::make_shared<constChunkIterator>(this->desc_->dimDescs_->getChunkSpace(),
+		nullptr, std::make_shared<bitmap>(this->globalChunkBitmap_->getCapacity(), false),
+		itMode);
 }
 pChunkFactory array::getChunkFactory(const attributeId& attrId)
 {
@@ -67,7 +85,7 @@ pChunkFactory array::getChunkFactory(const attributeId& attrId)
 //{
 //	return this->chunks_[attrId].size();
 //}
-coor array::itemCoorToChunkCoor(const coor& itemCoor)
+coor array::itemCoorToChunkCoor(const coor& itemCoor) const
 {
 	coor chunkCoor(this->desc_->dimDescs_->size());
 	for (dimensionId d = 0; d < this->desc_->dimDescs_->size(); d++)
@@ -172,7 +190,7 @@ pChunk array::getChunk(const attributeId attrId, const chunkId cId)
 	return this->chunks_[attrId][cId];
 }
 
-arrayId array::getId()
+arrayId array::getId() const
 {
 	return this->desc_->id_;
 }
@@ -182,12 +200,12 @@ void array::setId(const arrayId id)
 	this->desc_->id_ = id;
 }
 
-chunkId array::getChunkId(pChunkDesc cDesc)
+chunkId array::getChunkId(pChunkDesc cDesc) const
 {
 	return this->itemCoorToChunkId(cDesc->sp_);
 }
 
-chunkId array::itemCoorToChunkId(const coor& itemCoor)
+chunkId array::itemCoorToChunkId(const coor& itemCoor) const
 {
 	coor chunkCoor = itemCoor;
 	for (dimensionId d = this->desc_->dimDescs_->size() - 1; d != -1; --d)
@@ -197,7 +215,7 @@ chunkId array::itemCoorToChunkId(const coor& itemCoor)
 	return this->chunkCoorToChunkId(chunkCoor);
 }
 
-chunkId array::chunkCoorToChunkId(const coor& chunkCoor)
+chunkId array::chunkCoorToChunkId(const coor& chunkCoor) const
 {
 	chunkId id = 0;
 	chunkId offset = 1;
@@ -289,7 +307,7 @@ void array::mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap,
 	}
 }
 
-void array::print()
+void array::print() const
 {
 	for (auto attr : *this->getDesc()->attrDescs_)
 	{
@@ -361,6 +379,38 @@ void array::deleteAttribute(const attributeId attrId)
 	this->attrChunkBitmaps_.erase(numAttributes - 1);
 	this->cFactories_.pop_back();
 	attrDescs->pop_back();
+}
+
+// TODO::Array Comparison
+bool operator==(const array& lhs, const array& rhs)
+{
+	auto lArrayDesc = lhs.getDesc();
+	auto rArrayDesc = rhs.getDesc();
+
+	if (*lArrayDesc != *rArrayDesc)	return false;
+
+	auto lAttrDesc = lArrayDesc->getAttrDescs();
+	auto rAttrDesc = rArrayDesc->getAttrDescs();
+	auto attrSize = lAttrDesc->size();
+
+	for (attributeId attrId = 0; attrId <= attrSize; ++attrId)
+	{
+		auto lcit = lhs.getChunkIterator(attrId, iterateMode::ALL);
+		auto rcit = rhs.getChunkIterator(attrId, iterateMode::ALL);
+
+		if (lcit->getCapacity() != rcit->getCapacity())	return false;
+
+		while (true)
+		{
+			if (lcit->isEnd() != rcit->isEnd())	return false;
+			if (lcit->isEnd())	break;
+
+			if (***lcit != ***rcit)	return false;
+
+			++(*lcit);
+			++(*rcit);
+		}
+	}
 }
 }		// core
 }		// msdb

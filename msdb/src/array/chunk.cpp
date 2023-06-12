@@ -105,16 +105,6 @@ pChunkBuffer chunk::getBuffer()
 	return this->cached_;
 }
 
-chunkId chunk::getId() const
-{
-	return this->desc_->id_;
-}
-
-void chunk::setId(chunkId id)
-{
-	this->desc_->id_ = id;
-}
-
 const pChunkDesc chunk::getDesc() const
 {
 	return this->desc_;
@@ -239,7 +229,8 @@ pBlockDesc chunk::getBlockDesc(const blockId bId)
 	coor sp = blockCoor * blockDims;
 	coor ep = sp + blockDims;
 
-	return std::make_shared<blockDesc>(bId, attrDesc->type_,
+	// TODO::attrDesc->type_ is deprecated
+	return std::make_shared<blockDesc>(bId, attrDesc->type_, attrDesc->dataType_,
 									   blockDims,
 									   sp, ep);
 }
@@ -267,8 +258,6 @@ void chunk::updateFromHeader()
 		assert(buf == nullptr || buf->isOwned() == true);
 		this->bufferAlloc();
 	}
-
-
 }
 coor chunk::blockId2blockCoor(const blockId bId)
 {
@@ -293,6 +282,32 @@ pBitmap chunk::getBlockBitmap()
 pChunkBuffer chunkTester::getBuffer(pChunk source)
 {
 	return source->getBuffer();
+}
+
+bool operator== (const chunk& lhs, const chunk& rhs)
+{
+	if (lhs.getDesc() != rhs.getDesc())	return false;
+
+	auto lit = lhs.getBlockIterator();
+	auto rit = rhs.getBlockIterator();
+
+	if (lit->getCapacity() != rit->getCapacity())	return false;
+	if (lit->isEnd() != rit->isEnd())	return false;
+
+	while (lit->isEnd())
+	{
+		if (**lit != **rit)	return false;
+
+		++(*lit);
+		++(*rit);
+
+		if (lit->isEnd() != rit->isEnd())	return false;
+	}
+}
+bool operator!= (const chunk& lhs, const chunk& rhs)
+{
+	if (lhs == rhs)	return false;
+	return true;
 }
 //cpBitmap chunk::getBlockBitmap() const
 //{

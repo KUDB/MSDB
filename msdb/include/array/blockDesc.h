@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BLOCK_DESC_H_
 #define _MSDB_BLOCK_DESC_H_
 
@@ -6,6 +6,7 @@
 #include <array/blockId.h>
 #include <array/dimensionDesc.h>
 #include <util/coordinate.h>
+#include <util/dataType.h>
 
 namespace msdb
 {
@@ -22,40 +23,50 @@ class blockDesc : std::enable_shared_from_this<blockDesc>
 public:
 	blockDesc();
 
-	blockDesc(const blockId id, const eleType eType,
+	blockDesc(const blockId id, const eleType eType, const dataType type,
 			  const dimension& dims,
 			  const coor& sp, const coor& ep, 
 			  const blockSize mSize = INVALID_BLOCK_SIZE,
 			  const blockSize mOffset = INVALID_BLOCK_SIZE);
 
 public:
-	coor getSp();
-	coor getEp();
-	coor getIsp();
-	coor getIep();
+	// Getter //
+	coor getSp() const;
+	coor getEp() const;
+	coor getIsp() const;
+	coor getIep() const;
 
+	inline const dataType& getDataType() const;
+
+	// Setter //
 	void setSp(const coor& coor);
 	void setEp(const coor& coor);
 	void setIsp(const coor& coor);
 	void setIep(const coor& coor);
 
+	// Operator //
+	bool operator== (const blockDesc& rhs) const;
+	bool operator!= (const blockDesc& rhs) const;
+
 protected:
 	void initBlockCoor();
 
 public:
-	blockId id_;				// in chunk
-	blockSize mSize_;			// materialized size
-	blockSize mOffset_;			// memory offset in chunkBuffer
-	eleType eType_;
+	blockId id_;				// Block id in a Chunk
+	blockSize mSize_;			// Materialized size
+	blockSize mOffset_;			// Memory offset in ChunkBuffer
+	eleType eType_;				// TODO::delete eleType [Deprecated]
 
-	dimension dims_;			// dimensions
-	coor blockCoor_;			// in chunk
+	dimension dims_;			// Dimensions
+	coor blockCoor_;			// Block coordinate in a Chunk
 
 private:
-	coor sp_;					// in chunk
-	coor ep_;					// in chunk
-	coor isp_;					// item start point
-	coor iep_;					// item end point
+	dataType _dataType;			// Item data type
+
+	coor sp_;					// Start point in a Chunk
+	coor ep_;					// End point in a Chunk
+	coor isp_;					// Item start point
+	coor iep_;					// Item end point
 };
 }		// core
 }		// msdb

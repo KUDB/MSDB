@@ -68,6 +68,18 @@ pBlockItemIterator flattenBlock<Ty_>::getItemIterator()
 													  this->itemBitmap_);
 }
 
+template<typename Ty_>
+const pBlockItemIterator flattenBlock<Ty_>::getItemIterator() const
+{
+	return std::make_shared<flattenBlockItemIterator>(
+		this->cached_->getData(),
+		this->desc_->eType_,
+		this->desc_->dims_,
+		range(this->desc_->getIsp(), this->desc_->getIep()),
+		this->desc_->getSp(),
+		this->itemBitmap_);
+}
+
 template <typename Ty_>
 pBlockItemRangeIterator flattenBlock<Ty_>::getItemRangeIterator(const range& itRange)
 {
@@ -79,6 +91,19 @@ pBlockItemRangeIterator flattenBlock<Ty_>::getItemRangeIterator(const range& itR
 														   range(sp, ep),
 														   this->desc_->getSp(),
 														   this->itemBitmap_);
+}
+template<typename Ty_>
+const pBlockItemRangeIterator flattenBlock<Ty_>::getItemRangeIterator(const range& itRange) const
+{
+	auto sp = getOutsideCoor(this->desc_->getIsp(), itRange.getSp());
+	auto ep = getInsideCoor(this->desc_->getIep(), itRange.getEp());
+	return std::make_shared<flattenBlockItemRangeIterator>(
+		this->cached_->getData(),
+		this->desc_->eType_,
+		this->desc_->dims_,
+		range(sp, ep),
+		this->desc_->getSp(),
+		this->itemBitmap_);
 }
 template <typename Ty_>
 vpItemIterator flattenBlock<Ty_>::getValueIterator()
@@ -203,6 +228,14 @@ pBlockIterator flattenChunk<Ty_>::getBlockIterator(const iterateMode itMode)
 	return std::make_shared<blockIterator>(this->desc_->getBlockSpace(),
 										   &this->blocks_, this->blockBitmap_,
 										   itMode);
+}
+
+template <typename Ty_>
+pConstBlockIterator flattenChunk<Ty_>::getBlockIterator(const iterateMode itMode) const
+{
+	return std::make_shared<constBlockIterator>(this->desc_->getBlockSpace(),
+		&this->blocks_, this->blockBitmap_,
+		itMode);
 }
 
 template <typename Ty_>

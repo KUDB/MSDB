@@ -21,6 +21,10 @@ namespace test
 TEST(seacow_encode, seacow_afl)
 {
 	msdb::Context ctx;
+
+	dummy::data_star1024x1024::executeBuildArray(
+		core::materializedType::FLATTEN, core::encodingType::SEACOW);
+
 	auto afl = msdb::Between(
 		msdb::Decomp(
 			msdb::Array(ctx, msdb::dummy::data_star1024x1024::arrName + "_SEACOW"),

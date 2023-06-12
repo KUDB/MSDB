@@ -173,6 +173,13 @@ pBlockIterator monoChunk<Ty_>::getBlockIterator(const iterateMode itMode)
 		this->desc_->getBlockSpace(),
 		this->block_, itMode);
 }
+template <typename Ty_>
+pConstBlockIterator monoChunk<Ty_>::getBlockIterator(const iterateMode itMode) const
+{
+	return std::make_shared<constSingleBlockIterator>(
+		this->desc_->getBlockSpace(),
+		this->block_, itMode);
+}
 
 //////////////////////////////
 // flattenChunkFactory

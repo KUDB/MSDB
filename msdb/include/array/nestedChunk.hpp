@@ -76,6 +76,13 @@ pBlockIterator nestedChunk<Ty_>::getBlockIterator(const iterateMode itMode)
 }
 
 template <typename Ty_>
+pConstBlockIterator nestedChunk<Ty_>::getBlockIterator(const iterateMode itMode) const
+{
+	// TODO
+	return nullptr;
+}
+
+template <typename Ty_>
 void nestedChunk<Ty_>::serialize(std::ostream& os)
 {
 	// TODO

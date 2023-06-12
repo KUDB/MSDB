@@ -32,7 +32,9 @@ public:
 	//////////////////////////////
 public:
 	virtual pBlockItemIterator getItemIterator();
+	virtual const pBlockItemIterator getItemIterator() const;
 	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range);
+	virtual const pBlockItemRangeIterator getItemRangeIterator(const range& range) const;
 
 	virtual vpItemIterator getValueIterator();
 	virtual vpItemIterator getValueRangeIterator(const range& range);
@@ -85,6 +87,8 @@ public:
 	//virtual coor itemCoorToBlockCoor(coor& itemCoor);
 	virtual pBlockIterator getBlockIterator(
 		const iterateMode itMode = iterateMode::ALL) override;
+	virtual pConstBlockIterator getBlockIterator(
+		const iterateMode itMode = iterateMode::ALL) const override;
 
 	//////////////////////////////
 	// Setter

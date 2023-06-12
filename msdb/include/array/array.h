@@ -38,19 +38,22 @@ public:
 	//////////////////////////////
 	// Getter
 	//////////////////////////////
-	arrayId getId();
+	arrayId getId() const;
 	pArrayDesc getDesc();
+	const pArrayDesc getDesc() const;
 	//size_type getNumChunks();
 
 	// Chunk
 	pChunkDesc getChunkDesc(const attributeId attrId, const chunkId cId);
 	pChunk getChunk(const attributeId attrId, const chunkId cId);
-	chunkId getChunkId(pChunkDesc cDesc);
-	virtual chunkId itemCoorToChunkId(const coor& itemCoor);
-	virtual chunkId chunkCoorToChunkId(const coor& chunkCoor);
-	virtual coor itemCoorToChunkCoor(const coor& itemCoor);
+	chunkId getChunkId(pChunkDesc cDesc) const;
+	virtual chunkId itemCoorToChunkId(const coor& itemCoor) const;
+	virtual chunkId chunkCoorToChunkId(const coor& chunkCoor) const;
+	virtual coor itemCoorToChunkCoor(const coor& itemCoor) const;
 	virtual pChunkIterator getChunkIterator(const attributeId attrId, 
 		const iterateMode itMode = iterateMode::ALL);
+	virtual const pConstChunkIterator getChunkIterator(const attributeId attrId,
+		const iterateMode itMode = iterateMode::ALL) const;
 
 protected:
 	pChunkFactory getChunkFactory(const attributeId& attrId);
@@ -115,7 +118,7 @@ public:
 	void deleteAttribute(const attributeId attrId);
 
 public:
-	void print();
+	void print() const;
 
 public:
 	void shallowChunkCopy(array& inArr, const bool takeOwnership = false);
@@ -129,6 +132,8 @@ private:
 	bitmapContainer attrChunkBitmaps_;		// std::map<attributeId, pBitmap>;
 	pBitmap globalChunkBitmap_;				// Be initialized to false by default
 };
+
+bool operator==(const array& lhs, const array& rhs);
 }	// core
 }	// msdb
 #endif		// _MSDB_ARRAY_H_

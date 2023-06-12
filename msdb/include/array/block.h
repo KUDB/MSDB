@@ -28,13 +28,14 @@ public:
 // Desc
 //////////////////////////////
 public:
-	blockId getId();
+	blockId getId() const;
 	pBlockDesc getDesc();
-	dimensionId getDSize();
+	const pBlockDesc getDesc() const;
+	dimensionId getDSize() const;
 	//inline void setIsp(coor isp);
 	//inline void setIep(coor iep);
-	range getBlockRange();
-	range getBlockItemRange();
+	range getBlockRange() const;
+	range getBlockItemRange() const;
 	void setBlockDesc(const pBlockDesc inDesc);
 
 	virtual void serialize(bstream& os) = 0;
@@ -56,6 +57,7 @@ public:
 	virtual void refChunkBufferWithoutOwnership(void* data, const bufferSize size) = 0;	// used in chunk
 public:
 	pBlockBuffer getBuffer();
+	virtual bool operator== (const block& rhs) const;
 
 	friend class chunk;
 
@@ -69,9 +71,11 @@ public:
 	// TODO
 	//[[deprecated("")]] 
 	virtual pBlockItemIterator getItemIterator() = 0;
+	virtual const pBlockItemIterator getItemIterator() const = 0;
 	// TODO
 	//[[deprecated("")]] 
 	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range) = 0;
+	virtual const pBlockItemRangeIterator getItemRangeIterator(const range& range) const = 0;
 
 	virtual vpItemIterator getValueIterator() = 0;
 	virtual vpItemIterator getValueRangeIterator(const range& range) = 0;

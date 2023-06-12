@@ -643,7 +643,7 @@ public:
 		return this->eP_;
 	}
 
-	inline size_type getCapacity()
+	inline size_type getCapacity() const
 	{
 		return this->seqCapacity_;
 	}
@@ -653,7 +653,7 @@ public:
 	// Converting
 	//////////////////////////////
 	// pos: basis dim pos
-	inline size_type posToSeq(const size_type pos)
+	inline size_type posToSeq(const size_type pos) const
 	{
 		//size_type absolutePos = this->coor_[this->basisDim_] + pos;
 		//if(absolutePos < this->sP_[this->basisDim_] || this->eP_[this->basisDim_] <= absolutePos)
@@ -682,7 +682,7 @@ public:
 
 		return seq;
 	}
-	inline size_type coorToSeq(const coordinates coor)
+	inline size_type coorToSeq(const coordinates coor) const
 	{
 		size_type seq = 0, offset = 1;
 		for (dimensionId d = (dimensionId)(this->dSize() - 1); d != (dimensionId)-1; d--)
@@ -692,7 +692,7 @@ public:
 		}
 		return seq;
 	}
-	inline coordinates seqToCoor(const size_type seq)
+	inline coordinates seqToCoor(const size_type seq) const
 	{
 		//assert(seq <= this->getCapacity());
 

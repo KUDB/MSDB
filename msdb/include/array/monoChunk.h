@@ -41,6 +41,8 @@ public:
 	virtual coor blockId2blockCoor(const blockId bId);
 	virtual pBlockIterator getBlockIterator(
 		const iterateMode itMode = iterateMode::ALL) override;
+	virtual pConstBlockIterator getBlockIterator(
+		const iterateMode itMode = iterateMode::ALL) const override;
 
 protected:
 	//blockContainer blocks_;

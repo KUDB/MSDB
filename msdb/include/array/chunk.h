@@ -30,8 +30,14 @@ public:
 // Desc
 //////////////////////////////
 public:
-	chunkId getId() const;
-	void setId(chunkId id);	// chunk id can be chnaged in query processing
+	inline chunkId getId() const
+	{
+		return this->desc_->id_;
+	}
+	inline void setId(chunkId id)	// chunk id can be chnaged in query processing
+	{
+		this->desc_->id_ = id;
+	}
 	const pChunkDesc getDesc() const;
 	void setChunkDesc(const pChunkDesc inDesc);
 	size_type getDSize();
@@ -92,6 +98,9 @@ public:
 	virtual coor blockId2blockCoor(const blockId bId);
 	virtual pBlockIterator getBlockIterator(
 		const iterateMode itMode = iterateMode::ALL) = 0;
+	virtual pConstBlockIterator getBlockIterator(
+		const iterateMode itMode = iterateMode::ALL) const = 0;
+
 	void copyBlockBitmap(cpBitmap blockBitmap);
 	void replaceBlockBitmap(pBitmap blockBitmap);
 	void mergeBlockBitmap(pBitmap blockBitmap);
@@ -153,6 +162,9 @@ class chunkTester
 public:
 	static pChunkBuffer getBuffer(pChunk source);
 };
+
+bool operator== (const chunk& lhs, const chunk& rhs);
+bool operator!= (const chunk& lhs, const chunk& rhs);
 }		// core
 }		// msdb
 #endif	// _MSDB_CHUNK_H_

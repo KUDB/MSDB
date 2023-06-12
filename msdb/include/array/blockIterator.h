@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_BLOCKITERATOR_H_
 #define _MSDB_BLOCKITERATOR_H_
 
@@ -11,7 +11,9 @@ namespace msdb
 namespace core
 {
 class blockIterator;
+class constBlockIterator;
 using pBlockIterator = std::shared_ptr<blockIterator>;
+using pConstBlockIterator = std::shared_ptr<constBlockIterator>;
 
 class blockIterator : public mdItr
 {
@@ -30,10 +32,10 @@ public:
 	blockIterator(const self_type& mit);
 
 public:
-	virtual size_type getSeqEnd();
-	virtual bool isExist();
-	virtual bool isExist(blockId cid);
-	iterateMode getIterateMode();
+	virtual size_type getSeqEnd() const;
+	virtual bool isExist() const;
+	virtual bool isExist(const blockId cid) const;
+	iterateMode getIterateMode() const;
 
 	//////////////////////////////
 	// Iterating
@@ -79,6 +81,72 @@ protected:
 	iterateMode itMode_;
 };
 
+class constBlockIterator : public mdItr
+{
+public:
+	using self_type = constBlockIterator;
+	using base_type = mdItr;
+
+	using size_type = mdItr::size_type;
+
+
+public:
+	constBlockIterator(const dimension dims,
+		const blockContainer* blocks, const pBitmap blockBitmap,
+		const iterateMode itMode);
+
+	constBlockIterator(const self_type& mit);
+
+public:
+	virtual size_type getSeqEnd() const;
+	virtual bool isExist() const; 
+	virtual bool isExist(const blockId cid) const;
+	iterateMode getIterateMode() const;
+
+	//////////////////////////////
+	// Iterating
+	//////////////////////////////
+	virtual void next()
+	{
+		// TODO::use STL iterator
+		base_type::next();
+
+		if (this->itMode_ == iterateMode::EXIST)
+		{
+			while (!this->isExist() && !this->isEnd())
+			{
+				base_type::next();
+			}
+		}
+	}
+	virtual void prev()
+	{
+		// TODO::use STL iterator
+		base_type::prev();
+
+		if (this->itMode_ == iterateMode::EXIST)
+		{
+			while (!this->isExist() && !this->isFront())
+			{
+				base_type::prev();
+			}
+		}
+	}
+
+	//////////////////////////////
+	// Operators
+	//////////////////////////////
+	// If 'seqPos_' does not match the key of any block in the container,
+	// the function throws an 'std::out_of_range' exception.
+	virtual pBlock operator*() { return this->blocks_->at(this->seqPos_); }
+	virtual pBlock operator->() { return this->blocks_->at(this->seqPos_); }
+
+protected:
+	const blockContainer* blocks_;
+	const pBitmap blockBitmap_;
+	iterateMode itMode_;
+};
+
 class singleBlockIterator : public blockIterator
 {
 public:
@@ -86,9 +154,9 @@ public:
 	singleBlockIterator(const singleBlockIterator& mit);
 
 public:
-	virtual size_type getSeqEnd() override;
-	virtual bool isExist() override;
-	virtual bool isExist(blockId bid) override;
+	virtual size_type getSeqEnd() const override;
+	virtual bool isExist() const  override;
+	virtual bool isExist(const blockId bid) const override;
 
 	virtual void next() override;
 	virtual void prev() override;
@@ -98,6 +166,27 @@ public:
 
 protected:
 	pBlock block_;
+};
+
+class constSingleBlockIterator : public constBlockIterator
+{
+public:
+	constSingleBlockIterator(const dimension dims, const pBlock blk, const iterateMode itMode);
+	constSingleBlockIterator(const constSingleBlockIterator& mit);
+
+public:
+	virtual size_type getSeqEnd() const override;
+	virtual bool isExist() const  override;
+	virtual bool isExist(const blockId bid) const override;
+
+	virtual void next() override;
+	virtual void prev() override;
+
+	virtual pBlock operator*() { return (this->seqPos_ == 0) ? this->block_ : throw std::out_of_range("blockIterator seq pos > 0"); }
+	virtual pBlock operator->() { return (this->seqPos_ == 0) ? this->block_ : throw std::out_of_range("blockIterator seq pos > 0"); }
+
+protected:
+	const pBlock block_;
 };
 }		// core
 }		// msdb

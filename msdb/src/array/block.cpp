@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/block.h>
 
 namespace msdb
@@ -15,7 +15,7 @@ block::~block()
 	this->cached_ = nullptr;
 	this->itemBitmap_ = nullptr;
 }
-blockId block::getId()
+blockId block::getId() const
 {
 	return this->desc_->id_;
 }
@@ -23,15 +23,19 @@ pBlockDesc block::getDesc()
 {
 	return this->desc_;
 }
-dimensionId block::getDSize()
+const pBlockDesc block::getDesc() const
+{
+	return this->desc_;
+}
+dimensionId block::getDSize() const
 {
 	return this->desc_->dims_.size();
 }
-range block::getBlockRange()
+range block::getBlockRange() const
 {
 	return range(this->desc_->getSp(), this->desc_->getEp());
 }
-range block::getBlockItemRange()
+range block::getBlockItemRange() const
 {
 	return range(this->desc_->getIsp(), this->desc_->getIep());
 }
@@ -62,6 +66,25 @@ bool block::isMaterialized() const
 pBlockBuffer block::getBuffer()
 {
 	return this->cached_;
+}
+// TODO::Block comparison
+bool block::operator==(const block& rhs) const
+{
+	if (*(this->getDesc()) != *rhs.getDesc())	return false;
+
+	auto lit = this->getItemIterator();
+	auto rit = this->getItemIterator();
+
+	if (lit->getCapacity() != rit->getCapacity())	return false;
+	if (lit->isEnd() != rit->isEnd())	return false;
+
+	while (lit->isEnd())
+	{
+		// TODO::Important::Block comparison
+
+		++(*lit);
+		++(*rit);
+	}
 }
 void block::copyBitmap(cpBitmap itemBitmap)
 {
