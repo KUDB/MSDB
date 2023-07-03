@@ -1,4 +1,4 @@
-﻿#include "insert_action.h"
+#include "insert_action.h"
 #include "insert_plan.h"
 
 namespace msdb
@@ -52,7 +52,7 @@ template <typename Ty_>
 void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 {
 	size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getDims(), sizeof(Ty_));
-	Ty_* fileData = new Ty_[bufferSize];
+	Ty_* data = new Ty_[bufferSize];
 
 	_MSDB_TRY_BEGIN
 	{
@@ -64,10 +64,10 @@ void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 		auto memSize = std::get<1>(*tupleMem);
 
 		//std::shared_ptr<void> mem = tupleAttrMemory->first;
-		memcpy(fileData, mem.get(), memSize);
+		memcpy(data, mem.get(), memSize);
 
 		// TODO:: copy memory to temporal buffer
-		this->insertData(inArr, attr, fileData, memSize / sizeof(Ty_));
+		this->insertData(inArr, attr, data, memSize / sizeof(Ty_));
 	}
 	_MSDB_CATCH(const std::out_of_range & e)
 	{
@@ -81,7 +81,7 @@ void insert_action::insertFromMemory(pArray inArr, pAttributeDesc attr)
 	}
 	_MSDB_CATCH_END
 
-	delete[] fileData;
+	delete[] data;
 }
 
 template<typename Ty_>

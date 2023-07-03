@@ -19,6 +19,65 @@ msdb::Array getArrayAFL(std::string arrName, encodingType compType)
 	return Array(ctx, aname);
 }
 
+std::shared_ptr<AFLOperator> getInsertAFL(
+	std::string arrName, std::string filePath,
+	encodingType compType, int paramOne, int paramTwo)
+{
+	switch (compType)
+	{
+	case encodingType::NONE:
+	case encodingType::RAW:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::Save(
+			msdb::Insert(
+				getArrayAFL(arrName), filePath)
+		);
+		return afl;
+	}
+	case encodingType::HUFFMAN:
+	case encodingType::ADAPTHUFFMAN:
+	case encodingType::LZW_HUFFMAN:
+	case encodingType::LZW:
+	case encodingType::ZIP:
+	case encodingType::TTHRESH:
+	case encodingType::ZFP:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::Comp(
+			msdb::Insert(
+				getArrayAFL(arrName, compType), filePath),
+			compType
+		);
+		return afl;
+	}
+	case encodingType::SPIHT:
+	case encodingType::COMPASS:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::Comp(
+			msdb::Insert(
+				getArrayAFL(arrName, compType), filePath),
+			compType, paramOne
+		);
+		return afl;
+	}
+	case encodingType::SEACOW:
+	case encodingType::SEACOW_HUFFMAN:
+	{
+		msdb::Context ctx;
+		auto afl = msdb::Comp(
+			msdb::Insert(
+				getArrayAFL(arrName, compType), filePath),
+			compType, paramOne, paramTwo);
+		return afl;
+	}
+	default:
+		_MSDB_THROW(_MSDB_EXCEPTIONS_MSG(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED, "Invalid EncodingType, getInsertAFL() not supports "));
+		return nullptr;
+	}
+}
+
 std::shared_ptr<AFLOperator> getInsertSaveAFL(
 	std::string arrName, std::string filePath,
 	encodingType compType, int paramOne, int paramTwo)

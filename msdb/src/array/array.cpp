@@ -334,6 +334,26 @@ void array::print() const
 	}
 }
 
+bool array::isEqual(attributeId attrId, const void* rhs, const size_t size)
+{
+	auto dimDesc = this->getDesc()->getDimDescs();
+	auto attrDesc = this->getDesc()->getAttrDescs();
+
+	if (attrDesc->size() <= attrId)	return false;				// Array doesn't has such attribute
+	if (dimDesc->getDims().area() != size)	return false;		// Different size
+
+	bool result = false;
+	std::visit(
+		visitHelper{
+			[this, &attrId, &rhs, &size, &result](const auto& vType)
+			{
+				result = isEqualTy(vType, attrId, rhs, size);
+			}},
+		attrDesc->at(attrId)->getDataType());
+
+	return result;
+}
+
 void array::shallowChunkCopy(array& inArr, const bool takeOwnership)
 {
 	this->copyChunkBitmap(inArr.getChunkBitmap());
@@ -393,24 +413,38 @@ bool operator==(const array& lhs, const array& rhs)
 	auto rAttrDesc = rArrayDesc->getAttrDescs();
 	auto attrSize = lAttrDesc->size();
 
+	if (*lAttrDesc != *rAttrDesc)
+		return false;
+
 	for (attributeId attrId = 0; attrId <= attrSize; ++attrId)
 	{
-		auto lcit = lhs.getChunkIterator(attrId, iterateMode::ALL);
-		auto rcit = rhs.getChunkIterator(attrId, iterateMode::ALL);
-
-		if (lcit->getCapacity() != rcit->getCapacity())	return false;
-
-		while (true)
-		{
-			if (lcit->isEnd() != rcit->isEnd())	return false;
-			if (lcit->isEnd())	break;
-
-			if (***lcit != ***rcit)	return false;
-
-			++(*lcit);
-			++(*rcit);
-		}
+		bool result = false;
+		result = isAttributeEqual(lhs, rhs, attrId);
+		if (!result)	return false;
 	}
+
+	return true;
+}
+
+bool isAttributeEqual(const array& lhs, const array& rhs, const attributeId attrId)
+{
+	auto lcit = lhs.getChunkIterator(attrId, iterateMode::ALL);
+	auto rcit = rhs.getChunkIterator(attrId, iterateMode::ALL);
+
+	if (lcit->getCapacity() != rcit->getCapacity())	return false;
+
+	while (true)
+	{
+		if (lcit->isEnd() != rcit->isEnd())	return false;
+		if (lcit->isEnd())	break;
+
+		if (***lcit != ***rcit)	return false;
+
+		++(*lcit);
+		++(*rcit);
+	}
+
+	return true;
 }
 }		// core
 }		// msdb

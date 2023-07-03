@@ -292,17 +292,19 @@ bool operator== (const chunk& lhs, const chunk& rhs)
 	auto rit = rhs.getBlockIterator();
 
 	if (lit->getCapacity() != rit->getCapacity())	return false;
-	if (lit->isEnd() != rit->isEnd())	return false;
 
-	while (lit->isEnd())
+	while (true)
 	{
-		if (**lit != **rit)	return false;
+		if (lit->isEnd() != rit->isEnd())	return false;
+		if (lit->isEnd())	break;
+
+		if (***lit != ***rit)	return false;
 
 		++(*lit);
 		++(*rit);
-
-		if (lit->isEnd() != rit->isEnd())	return false;
 	}
+
+	return true;
 }
 bool operator!= (const chunk& lhs, const chunk& rhs)
 {

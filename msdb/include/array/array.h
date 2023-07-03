@@ -119,9 +119,69 @@ public:
 
 public:
 	void print() const;
+	bool isEqual(attributeId attrId, const void* rhs, const size_t size);
 
 public:
 	void shallowChunkCopy(array& inArr, const bool takeOwnership = false);
+
+protected:
+
+	//////////////////////////////
+	// attrId: target attribute id.
+	// rhs: a pointer to the first element in the array.
+	// size: the number of elements in the rhs array.
+	template <typename Ty_>
+	bool isEqualTy(const concreteTy<Ty_>& type, const attributeId attrId, const void* rhs, const size_t size) const
+	{
+		auto git = mdItr(this->getDesc()->getDimDescs()->getDims());
+		auto cit = this->getChunkIterator(attrId);
+		const Ty_* data = (const Ty_*)rhs;
+
+		while (!cit->isEnd())
+		{
+			auto chunkCoor = cit->coor();
+			auto chunkGlobalCoor = (**cit)->getDesc()->sp_;
+			auto bit = (*cit)->getBlockIterator();
+
+			while (!bit->isEnd())
+			{
+				auto blockCoor = bit->coor();
+				auto blockGlobalCoor = chunkGlobalCoor + (**bit)->getDesc()->getSp();
+				auto iit = (**bit)->getItemIterator();
+
+				while (!iit->isEnd())
+				{
+					auto globalItemCoor = iit->coor() + blockGlobalCoor;
+					auto seqPos = git.coorToSeq(globalItemCoor);
+
+					if (seqPos > size)
+					{
+						BOOST_LOG_TRIVIAL(warning) << 
+							"Failed in array::isEqualTy(" << attrId << ")." << std::endl 
+							<< "Given rhs array is too short (seqPos : " << seqPos << "size: " << size << ").";
+						return false;
+					}
+
+					auto v = (**iit).get<Ty_>();
+					if (v != data[seqPos])
+					{
+						BOOST_LOG_TRIVIAL(warning) <<
+							"Two arrays have different values in " << globalItemCoor.toString() << "(seqPos: " << seqPos << ")" << std::endl
+							<< "Value : " << v << ", target: " << data[seqPos] << ")";
+						return false;
+					}
+
+					++(*iit);
+				}
+
+				++(*bit);
+			}
+
+			++(*cit);
+		}
+
+		return true;
+	}
 
 protected:
 	pArrayDesc desc_;
@@ -134,6 +194,7 @@ private:
 };
 
 bool operator==(const array& lhs, const array& rhs);
+bool isAttributeEqual(const array& lhs, const array& rhs, const attributeId attrId);
 }	// core
 }	// msdb
 #endif		// _MSDB_ARRAY_H_

@@ -163,5 +163,41 @@ msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const 
 
 	return exeQuery_print_Result_Timer(afl);
 }
+
+////////////////////////////////////////
+// Verify
+////////////////////////////////////////
+bool verify(msdb::Query& qryOut, msdb::Query& qryRef)
+{
+	if (qryRef.getStatus() == msdb::Query::Status::READY)
+	{
+		qryRef.setRawResultOut();
+		qryRef.execute();
+	}
+	else if(!qryRef.isRawResultOut())
+	{
+		// To verify the query result, rawResultOut is required
+		BOOST_LOG_TRIVIAL(warning) << "Verify failed: isRawResultOut=False";
+		return false;
+	}
+
+	if (qryRef.getStatus() == msdb::Query::Status::INPROGRESS)
+	{
+		// Both 'out' and 'ref' queries should be completed.
+		BOOST_LOG_TRIVIAL(warning) << "Verify failed: query status=INPROGRESS";
+		return false;
+	}
+
+	auto outArr = qryOut.getRawResult();
+	auto refArr = qryRef.getRawResult();
+
+	if (*outArr == *refArr)
+	{
+		return true;
+	}
+
+	BOOST_LOG_TRIVIAL(warning) << "Verify failed: out != ref";
+	return false;
+}
 }		// dummy
 }		// msdb

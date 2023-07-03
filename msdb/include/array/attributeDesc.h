@@ -146,8 +146,8 @@ private:
 public:
 	attributeId id_;
 	std::string name_;
-	eleType type_;				// TODO::Deprecated, replace eleType->util/dataType
-	dataType dataType_;			// TODO::make private
+	eleType type_;				// TODO::eleType is now deprecated, replace eleType->util/dataType
+	dataType dataType_;			// TODO::Move the variable to private section
 	//std::list<chunkType> chunkTypeLineage_;		// dependency problem, chunkType->chunkFactory->chunk->attributeDesc
 	paramType optionalParams_;
 	size_t typeSize_;

@@ -57,7 +57,42 @@ public:
 	virtual void refChunkBufferWithoutOwnership(void* data, const bufferSize size) = 0;	// used in chunk
 public:
 	pBlockBuffer getBuffer();
+
+	inline bool operator!=(const block& rhs) const
+	{
+		return !(*this == rhs);
+	}
+
 	virtual bool operator== (const block& rhs) const;
+
+protected:
+	template <typename Ty_>
+	bool isEqualTy(const concreteTy<Ty_>& type, const block& rhs) const
+	{
+		auto liit = this->getItemIterator();
+		auto riit = rhs.getItemIterator();
+
+		if (liit->getCapacity() != riit->getCapacity())	return false;
+
+		while (true)
+		{
+			if (liit->isEnd() != riit->isEnd())	return false;
+			if (liit->isEnd())	break;
+
+			auto lv = (**liit).get<Ty_>();
+			auto rv = (**riit).get<Ty_>();
+
+			if (lv != rv)
+			{
+				BOOST_LOG_TRIVIAL(warning) <<
+					"Two blocks have different values in " << liit->coor().toString() << std::endl
+					<< "Left: " << lv << " / Right: " << rv;
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	friend class chunk;
 
@@ -68,12 +103,8 @@ protected:
 // Item Iterators
 //////////////////////////////
 public:
-	// TODO
-	//[[deprecated("")]] 
 	virtual pBlockItemIterator getItemIterator() = 0;
 	virtual const pBlockItemIterator getItemIterator() const = 0;
-	// TODO
-	//[[deprecated("")]] 
 	virtual pBlockItemRangeIterator getItemRangeIterator(const range& range) = 0;
 	virtual const pBlockItemRangeIterator getItemRangeIterator(const range& range) const = 0;
 
@@ -150,7 +181,6 @@ protected:
 		}
 		BOOST_LOG_TRIVIAL(debug) << ss.str() << "";
 	}
-
 	template<>
 	void printImp<unsigned char>()
 	{

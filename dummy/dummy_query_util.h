@@ -39,6 +39,11 @@ msdb::Query exeRangeIndexFilterQry(const std::string& arrName, const core::encod
 								   const msdb::Domain& range, const int64_t value);
 msdb::Query exeRangeIndexFilterQryPrintResult(const std::string& arrName, const core::encodingType& compType,
 											  const msdb::Domain& range, const int64_t value);
+
+////////////////////////////////////////
+// Verify
+////////////////////////////////////////
+bool verify(const std::string& arrName, msdb::Query& qry);
 }
 }
 #endif	// _MSDB_DUMMY_QUERY_UTIL_H_

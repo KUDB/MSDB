@@ -77,9 +77,12 @@ private:
 	core::parameters params_;
 	InsertOprType type_;
 };
+
+/* ************************ */
+/* CPP API Operator	        */ 
+/* ************************ */
 std::shared_ptr<InsertOpr> OP_API Insert(Array arr, std::string filePath);
 std::shared_ptr<InsertOpr> OP_API Insert(Array arr, core::insert_array_multi_attr_file_pset::containerType attrFiles);
 std::shared_ptr<InsertOpr> OP_API Insert(Array arr, core::insert_array_multi_attr_memory_pset::containerType attrMem);
-
 }		// msdb
 #endif // _MSDB_OP_INSERT_PLAN_H_
