@@ -9,6 +9,11 @@ namespace msdb
 {
 namespace core
 {
+
+std::pair<std::string, std::string> make_attr_param(std::string key, std::string value)
+{
+	return std::make_pair<>(key, value);
+}
 //////////////////////////////
 // attributeDescs
 //

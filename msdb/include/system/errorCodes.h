@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_ERRORCODES_H_
 #define _MSDB_ERRORCODES_H_
 
@@ -6,18 +6,15 @@
 
 namespace msdb
 {
-namespace core
+enum
 {
-	enum
-	{
 #define X(_name, _code, _msg)	_name = _code,
 #include "errorCategories.inc"
 #include "errors.inc"
 #undef X
-	};
+};
 
-	const char* getErrorCategoryMsg(int32_t code);
-	const char* getErrorMsg(int32_t code);
-}		// core
+const char* getErrorCategoryMsg(int32_t code);
+const char* getErrorMsg(int32_t code);
 }		// msdb
 #endif

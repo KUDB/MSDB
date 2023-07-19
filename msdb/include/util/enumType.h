@@ -23,6 +23,9 @@ namespace core
     static const char *name##Strings[] = { BOOST_PP_SEQ_FOR_EACH_I(PROCESS_ONE_ELEMENT, %%, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)) };\
     template<typename T>\
     constexpr const char *name##ToString(T value) { return name##Strings[static_cast<int>(value)]; }
+
+#define ENUM_TO_STRING(name, value) name##ToString(value)
+
 }		// core
 }		// msdb
 #endif	// _MSDB_ENUMTYPE_H_

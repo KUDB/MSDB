@@ -25,6 +25,8 @@ namespace core
 #define _MSDB_STR_ATTR_MAT_TYPE_	"ATTRIBUTE_MATERIALIZED_TYPE"
 #define _MSDB_STR_ATTR_OPTIONAL_PARAMS_	"ATTRIBUTE_OPTIONAL_PARAMS"
 
+std::pair<std::string, std::string> make_attr_param(std::string key, std::string value);
+
 // helper type for the visitor
 template<class... Ts>
 struct variantVisitOperator : Ts...

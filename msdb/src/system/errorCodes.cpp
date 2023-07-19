@@ -3,8 +3,6 @@
 
 namespace msdb
 {
-namespace core
-{
 	const char* getErrorCategoryMsg(int32_t code)
 	{
 		switch (code)
@@ -30,5 +28,4 @@ namespace core
 
 		return "";
 	}
-}		// core
 }		// msdb

@@ -1,6 +1,9 @@
 ﻿#include <pch.h>
+#include <string>
 #include <query/opParam.h>
 #include <system/exceptions.h>
+#include <parse/predicate.h>
+#include <query/opPlan.h>
 
 namespace msdb
 {
@@ -14,10 +17,13 @@ opParam::void_pointer opParamArray::getParam()
 {
 	return this->desc_;
 }
-
-opParamType opParamArray::type()
+opParamType opParamArray::type() const
 {
 	return opParamType::ARRAY;
+}
+std::string opParamArray::toString() const
+{
+	return this->desc_->toString();
 }
 
 //////////////////////////////
@@ -26,15 +32,17 @@ opParamAttr::opParamAttr(pAttributeDesc desc)
 	: desc_(desc)
 {
 }
-
 opParam::void_pointer opParamAttr::getParam()
 {
 	return this->desc_;
 }
-
-opParamType opParamAttr::type()
+opParamType opParamAttr::type() const
 {
 	return opParamType::ATTRIBUTE;
+}
+std::string opParamAttr::toString() const
+{
+	return this->desc_->toString();
 }
 
 //////////////////////////////
@@ -47,9 +55,16 @@ opParam::void_pointer opParamStringList::getParam()
 {
 	return this->strList_;
 }
-opParamType opParamStringList::type()
+opParamType opParamStringList::type() const
 {
 	return opParamType::STRING_LIST;
+}
+std::string opParamStringList::toString() const
+{
+	std::stringstream ss;
+	for (auto& ele : *this->strList_)
+		ss << ele;
+	return ss.str();
 }
 
 //////////////////////////////
@@ -58,15 +73,17 @@ opParamDim::opParamDim(pDimensionDesc desc)
 	: desc_(desc)
 {
 }
-
 opParam::void_pointer opParamDim::getParam()
 {
 	return this->desc_;
 }
-
-opParamType opParamDim::type()
+opParamType opParamDim::type() const
 {
 	return opParamType::DIMENSION;
+}
+std::string opParamDim::toString() const
+{
+	return this->desc_->toString();
 }
 
 //////////////////////////////
@@ -75,14 +92,66 @@ opParamConst::opParamConst(pStableElement ele)
 	: opParam(), ele_(ele)
 {
 }
-
 opParam::void_pointer opParamConst::getParam()
 {
 	return this->ele_;
 }
-opParamType opParamConst::type()
+opParamType opParamConst::type() const
 {
 	return opParamType::CONST_TYPE;
+}
+std::string opParamConst::toString() const
+{
+	switch (this->ele_->getEleType())
+	{
+	case eleType::BOOL:
+		break;
+	case eleType::CHAR:
+	case eleType::INT8:
+		return std::to_string(this->ele_->getChar());
+	case eleType::INT16:
+		return std::to_string(this->ele_->getInt16());
+	case eleType::INT32:
+		return std::to_string(this->ele_->getInt32());
+	case eleType::INT64:
+		return std::to_string(this->ele_->getInt64());
+	case eleType::UINT8:
+		return std::to_string(uint8_t(this->ele_->getChar()));
+	case eleType::UINT16:
+		return std::to_string(uint16_t(this->ele_->getInt16()));
+	case eleType::UINT32:
+		return std::to_string(uint32_t(this->ele_->getInt32()));
+	case eleType::UINT64:
+		return std::to_string(uint64_t(this->ele_->getInt64()));
+	case eleType::FLOAT:
+		return std::to_string(this->ele_->getFloat());
+	case eleType::DOUBLE:
+		return std::to_string(this->ele_->getDouble());
+	}
+
+	return "";
+}
+
+//////////////////////////////
+// opParam IntList
+opParamIntList::opParamIntList(std::shared_ptr<std::vector<int64_t>> myList)
+	: _myList(myList)
+{
+}
+opParam::void_pointer opParamIntList::getParam()
+{
+	return this->_myList;
+}
+opParamType opParamIntList::type() const
+{
+	return opParamType::INTLIST;
+}
+std::string opParamIntList::toString() const
+{
+	std::stringstream ss;
+	for (auto& ele : *this->_myList)
+		ss << ele;
+	return ss.str();
 }
 
 //////////////////////////////
@@ -95,9 +164,13 @@ opParam::void_pointer opParamPredicate::getParam()
 {
 	return this->predicates_;
 }
-opParamType opParamPredicate::type()
+opParamType opParamPredicate::type() const
 {
 	return opParamType::PREDICATE;
+}
+std::string opParamPredicate::toString() const
+{
+	return this->predicates_->toString();
 }
 
 opParam::opParam()
@@ -112,7 +185,7 @@ opParamConstPlaceholder::opParamConstPlaceholder()
 	: opParamPlaceholder(), opParamConst(nullptr)
 {
 }
-opParamType opParamConstPlaceholder::type()
+opParamType opParamConstPlaceholder::type() const
 {
 	return opParamType::CONST_TYPE;
 }
@@ -120,7 +193,7 @@ opParamDimPlaceholder::opParamDimPlaceholder()
 	: opParamPlaceholder(), opParamDim(nullptr)
 {
 }
-opParamType opParamDimPlaceholder::type()
+opParamType opParamDimPlaceholder::type() const
 {
 	return opParamType::DIMENSION;
 }
@@ -128,7 +201,7 @@ opParamAttrPlaceholder::opParamAttrPlaceholder()
 	: opParamPlaceholder(), opParamAttr(nullptr)
 {
 }
-opParamType opParamAttrPlaceholder::type()
+opParamType opParamAttrPlaceholder::type() const
 {
 	return opParamType::ATTRIBUTE;
 }
@@ -136,7 +209,7 @@ opParamArrayPlaceholder::opParamArrayPlaceholder()
 	: opParamPlaceholder(), opParamArray(nullptr)
 {
 }
-opParamType opParamArrayPlaceholder::type()
+opParamType opParamArrayPlaceholder::type() const
 {
 	return opParamType::ARRAY;
 }
@@ -144,19 +217,7 @@ opParamIntListPlaceholder::opParamIntListPlaceholder()
 	: opParamPlaceholder(), opParamIntList(nullptr)
 {
 }
-opParamType opParamIntListPlaceholder::type()
-{
-	return opParamType::INTLIST;
-}
-opParamIntList::opParamIntList(std::shared_ptr<std::vector<int64_t>> eleList)
-	: eleList_(eleList)
-{
-}
-opParam::void_pointer opParamIntList::getParam()
-{
-	return this->eleList_;
-}
-opParamType opParamIntList::type()
+opParamType opParamIntListPlaceholder::type() const
 {
 	return opParamType::INTLIST;
 }
@@ -171,15 +232,19 @@ opParam::void_pointer opParamCoor::getParam()
 {
 	return this->coor_;
 }
-opParamType opParamCoor::type()
+opParamType opParamCoor::type() const
 {
 	return opParamType::COOR;
+}
+std::string opParamCoor::toString() const
+{
+	return this->coor_->toString();
 }
 opParamCoorPlaceholder::opParamCoorPlaceholder()
 	: opParamPlaceholder(), opParamCoor(nullptr)
 {
 }
-opParamType opParamCoorPlaceholder::type()
+opParamType opParamCoorPlaceholder::type() const
 {
 	return opParamType::COOR;
 }
@@ -194,9 +259,13 @@ opParam::void_pointer opParamString::getParam()
 {
 	return this->str_;
 }
-opParamType opParamString::type()
+opParamType opParamString::type() const
 {
 	return opParamType::STRING;
+}
+std::string opParamString::toString() const
+{
+	return *this->str_;
 }
 
 //////////////////////////////
@@ -209,15 +278,19 @@ opParam::void_pointer opParamPlan::getParam()
 {
 	return this->plan_;
 }
-opParamType opParamPlan::type()
+opParamType opParamPlan::type() const
 {
 	return opParamType::PLAN;
+}
+std::string opParamPlan::toString() const
+{
+	return this->plan_->name();
 }
 opParamPlanPlaceholder::opParamPlanPlaceholder()
 	: opParamPlaceholder(), opParamPlan(nullptr)
 {
 }
-opParamType opParamPlanPlaceholder::type()
+opParamType opParamPlanPlaceholder::type() const
 {
 	return opParamType::PLAN;
 }
@@ -237,12 +310,17 @@ opParam::void_pointer opParamMemory::getParam()
 {
 	// TODO:: return tuple
 	return std::make_shared<opParamMemory::paramType>(std::make_tuple(this->mem_, this->size_));
-	//return this->mem_;
-
 }
-opParamType opParamMemory::type()
+opParamType opParamMemory::type() const
 {
 	return opParamType::MEMORY;
+}
+std::string opParamMemory::toString() const
+{
+	std::ostringstream oss;
+	// Convert pointer address to string
+	oss << this->mem_;
+	return oss.str();
 }
 }		// core
 }		// msdb

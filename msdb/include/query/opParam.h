@@ -3,6 +3,7 @@
 #define _MSDB_OPPARAM_H_
 
 #include <pch.h>
+#include <sstream>
 #include <array/arrayDesc.h>
 #include <util/element.h>
 
@@ -50,7 +51,8 @@ public:
 
 public:
 	virtual void_pointer getParam() = 0;
-	virtual opParamType type() = 0;
+	virtual opParamType type() const = 0;
+	virtual std::string toString() const = 0;
 };
 
 class opParamArray : public opParam
@@ -63,7 +65,8 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	pArrayDesc desc_;
@@ -79,26 +82,11 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	pAttributeDesc desc_;
-};
-
-class opParamStringList : public opParam
-{
-public:
-	using paramType = std::vector<std::string>;
-
-public:
-	opParamStringList(std::shared_ptr<std::vector<std::string>> strList);
-
-public:
-	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
-
-private:
-	std::shared_ptr<std::vector<std::string>> strList_;
 };
 
 class opParamDim : public opParam
@@ -111,7 +99,8 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	pDimensionDesc desc_;
@@ -127,7 +116,8 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	pStableElement ele_;
@@ -139,14 +129,15 @@ public:
 	using paramType = std::vector<int64_t>;
 
 public:
-	opParamIntList(std::shared_ptr<std::vector<int64_t>> eleList);
+	opParamIntList(std::shared_ptr<std::vector<int64_t>> myList);
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
-	std::shared_ptr<std::vector<int64_t>> eleList_;
+	std::shared_ptr<std::vector<int64_t>> _myList;
 };
 
 class opParamCoor : public opParam
@@ -159,12 +150,15 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	std::shared_ptr<coor> coor_;
 };
 
+//////////////////////////////
+// String
 class opParamString : public opParam
 {
 public:
@@ -175,10 +169,27 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	std::shared_ptr<std::string> str_;
+};
+class opParamStringList : public opParam
+{
+public:
+	using paramType = std::vector<std::string>;
+
+public:
+	opParamStringList(std::shared_ptr<std::vector<std::string>> strList);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
+
+private:
+	std::shared_ptr<std::vector<std::string>> strList_;
 };
 
 class opParamPredicate : public opParam
@@ -191,7 +202,8 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	std::shared_ptr<predicate> predicates_;
@@ -221,7 +233,8 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 	//inline uint64_t getMemsize()
 	//{
 	//	return this->size_;
@@ -255,7 +268,7 @@ public:
 	opParamArrayPlaceholder();
 
 public:
-	virtual opParamType type();
+	virtual opParamType type() const;
 };
 
 class opParamAttrPlaceholder : public opParamPlaceholder, public opParamAttr
@@ -264,7 +277,7 @@ public:
 	opParamAttrPlaceholder();
 
 public:
-	virtual opParamType type();
+	virtual opParamType type() const;
 };
 
 class opParamDimPlaceholder : public opParamPlaceholder, public opParamDim
@@ -273,7 +286,7 @@ public:
 	opParamDimPlaceholder();
 
 public:
-	virtual opParamType type();
+	virtual opParamType type() const;
 };
 
 class opParamConstPlaceholder : public opParamPlaceholder, public opParamConst
@@ -282,7 +295,7 @@ public:
 	opParamConstPlaceholder();
 
 public:
-	virtual opParamType type();
+	virtual opParamType type() const;
 };
 
 class opParamIntListPlaceholder : public opParamPlaceholder, public opParamIntList
@@ -291,7 +304,7 @@ public:
 	opParamIntListPlaceholder();
 
 public:
-	virtual opParamType type();
+	virtual opParamType type() const;
 };
 
 class opParamCoorPlaceholder : public opParamPlaceholder, public opParamCoor
@@ -300,7 +313,7 @@ public:
 	opParamCoorPlaceholder();
 
 public:
-	virtual opParamType type();
+	virtual opParamType type() const;
 };
 
 //////////////////////////////
@@ -315,7 +328,8 @@ public:
 
 public:
 	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
 
 private:
 	std::shared_ptr<opPlan> plan_;
@@ -327,26 +341,47 @@ public:
 	opParamPlanPlaceholder();
 
 public:
-	virtual opParamType type();
+	virtual opParamType type() const;
 };
+
+//////////////////////////////
+// opParamEnum
 
 template <typename TyEnum_>
 class opParamEnum : public opParam
 {
 public:
 	using paramType = int64_t;
+	using enumType = TyEnum_;
 
 public:
-	opParamEnum(TyEnum_ value);
+	opParamEnum(TyEnum_ value)
+		: opParam()
+	{
+		this->value_ = std::make_shared<TyEnum_>(value);
+	}
 
 public:
-	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParam::void_pointer getParam()
+	{
+		return this->value_;
+	}
+	virtual opParamType type() const
+	{
+		return opParamType::ENUM;
+	}
+	virtual std::string toString() const
+	{
+		// TODO::Enum value to string
+		return std::string(typeid(TyEnum_).name());
+	}
 
 private:
 	std::shared_ptr<TyEnum_> value_;
 };
 
+//////////////////////////////
+// opParamContainer
 template <typename TyKey_, typename TyValue_>
 class opParamContainer : public opParam
 {
@@ -355,18 +390,34 @@ public:
 	using pContainer = std::shared_ptr<paramType>;
 
 public:
-	opParamContainer(pContainer container);
+	opParamContainer(pContainer container)
+		: container_(container)
+	{}
 
 public:
-	virtual opParam::void_pointer getParam();
-	virtual opParamType type();
+	virtual opParam::void_pointer getParam()
+	{
+		return this->container_;
+	}
+	virtual opParamType type() const
+	{
+		return opParamType::CONTAINER;
+	}
+	virtual std::string toString() const
+	{
+		std::ostringstream oss;
+		for (auto& ele : *this->container_)
+		{
+			//auto& key = ele.first;
+			//auto& value = ele.second;
+			//oss << to_string()
+		}
+		return oss.str();
+	}
 
 private:
 	pContainer container_;
 };
 }		// core
 }		// msdb
-
-#include "opParam.hpp"
-
 #endif	// _MSDB_OPPARAM_H_
