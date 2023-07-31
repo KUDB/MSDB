@@ -1,4 +1,5 @@
 ﻿#include <pch.h>
+#include <filesystem>		// C++17
 #include <io/file.h>
 #include <system/exceptions.h>
 
@@ -108,6 +109,37 @@ fileManager::fileEntries fileManager::getFileEntries(const char* strPath)
 
 bool fileManager::init()
 {
+	return false;
+}
+
+std::string getFileExtension(const std::string strFilePath)
+{
+	auto pos = strFilePath.rfind('.');
+
+	if (pos == std::string::npos || strFilePath.length() - pos > 10)
+	{
+		return "";
+	}
+
+	auto out = strFilePath.substr(pos + 1, strFilePath.length() - pos - 1);
+
+	for (int i = 0; i < out.length(); ++i)
+	{
+		out[i] = tolower(out[i]);
+	}
+
+	return out;
+}
+
+bool isImageFile(const std::string strFilePath)
+{
+	auto extension = getFileExtension(strFilePath);
+
+	if (std::find(imageFileExtension.begin(), imageFileExtension.end(), extension) != imageFileExtension.end())
+	{
+		return true;
+	}
+
 	return false;
 }
 }		// core
