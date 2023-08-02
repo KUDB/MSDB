@@ -86,6 +86,24 @@ pArrayDesc storageMgr::loadArrayDesc(const filePath descPath)
 	return arrayDesc::buildDescFromXML(pXmlDoc);
 }
 
+void storageMgr::removeArrayDir(const arrayId arrId)
+{
+	auto path = this->getBasePath() / this->getArrayRelativePath(arrId);
+	this->removeDirs(path);
+}
+
+void storageMgr::removeArrayDesc(const arrayId arrId)
+{
+	auto path = this->getBasePath() / filePath(std::to_string(arrId) + this->extArrayConfig);
+	this->removeFile(path);
+}
+
+void storageMgr::removeArrayFiles(const arrayId arrId)
+{
+	this->removeArrayDesc(arrId);
+	this->removeArrayDir(arrId);
+}
+
 void storageMgr::loadAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj)
 {
 	std::ifstream fs;
@@ -236,17 +254,28 @@ bool storageMgr::createDirs(const filePath& fp)
 
 bool storageMgr::removeFile(const filePath& fp)
 {
-	return std::filesystem::remove(fp);
+	if (storageMgr::isExists(fp))
+	{
+		return std::filesystem::remove(fp);
+	}
+}
+
+bool storageMgr::removeDirs(const filePath& fp)
+{
+	if (storageMgr::isExists(fp))
+	{
+		return std::filesystem::remove_all(fp);
+	}
 }
 
 bool storageMgr::isFile(const filePath& fp)
 {
-	return std::filesystem::is_regular_file(fp);
+	return storageMgr::isExists(fp) && std::filesystem::is_regular_file(fp);
 }
 
 bool storageMgr::isDir(const filePath& fp)
 {
-	return std::filesystem::is_directory(fp);
+	return storageMgr::isExists(fp) && std::filesystem::is_directory(fp);
 }
 
 bool storageMgr::isExists(const filePath& fp)

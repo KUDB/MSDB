@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include <array/arrayMgr.h>
 #include <system/storageMgr.h>
 
@@ -89,6 +89,23 @@ void arrayMgr::registArray(pArrayDesc arrDesc)
 	this->setArrayDesc(arrDesc->id_, arrDesc);
 	this->setArrayName(arrDesc->name_, arrDesc->id_);
 }
+void arrayMgr::removeArray(arrayId arrId)
+{
+	assert(arrId != INVALID_ARRAY_ID);
+
+	if (this->arrDescs_.count(arrId))
+	{
+		auto arrDesc = this->arrDescs_[arrId];
+
+		this->arrNames_.erase(arrDesc->name_);
+		this->attrIndies_.erase(arrId);
+		this->dimIndies_.erase(arrId);
+
+		this->arrDescs_.erase(arrId);
+	}
+
+	storageMgr::instance()->removeArrayFiles(arrId);
+}
 void arrayMgr::setAttributeIndex(arrayId id, attributeId attrId, pAttrIndex aIndex)
 {
 	assert(id != INVALID_ARRAY_ID);
@@ -111,7 +128,7 @@ void arrayMgr::flushDimensionIndex(arrayId arrId, dimensionId dimId)
 }
 void arrayMgr::saveAllArrayDesc()
 {
-	for (auto arr : this->arrDescs_)
+	for (auto& arr : this->arrDescs_)
 	{
 		storageMgr::instance()->saveArrayDesc(arr.second);
 	}
@@ -120,7 +137,7 @@ void arrayMgr::loadAllArrayDesc()
 {
 	auto arrDescList = storageMgr::instance()->loadAllArrayDescs();
 
-	for (auto desc : arrDescList)
+	for (auto& desc : arrDescList)
 	{
 		this->registArray(desc);
 	}

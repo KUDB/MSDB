@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_STORAGEMGR_H_
 #define _MSDB_STORAGEMGR_H_
 
@@ -45,6 +45,10 @@ public:
 	pArrayDesc loadArrayDesc(const filePath descPath);
 	void saveArrayDesc(pArrayDesc arrDesc);
 
+	void removeArrayDir(const arrayId arrId);
+	void removeArrayDesc(const arrayId arrId);
+	void removeArrayFiles(const arrayId arrId);
+
 	void loadAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj);
 	void saveAttrIndex(const arrayId arrId, const attributeId attrId, pSerializable serialObj);
 
@@ -64,6 +68,7 @@ protected:
 	// STD::FILESYSTEM
 	static bool createDirs(const filePath& fp);
 	static bool removeFile(const filePath& fp);
+	static bool removeDirs(const filePath& fp);
 	static bool isFile(const filePath& fp);
 	static bool isDir(const filePath& fp);
 	static bool isExists(const filePath& fp);

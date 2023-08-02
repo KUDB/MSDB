@@ -28,6 +28,7 @@ public:
 	pDimensionIndex getDimensionIndex(arrayId arrId, dimensionId dimId);
 
 	void registArray(pArrayDesc arrDesc);
+	void removeArray(arrayId arrId);
 	void setAttributeIndex(arrayId arrId, attributeId attrId, pAttrIndex aIndex);
 	void setDimensionIndex(arrayId arrId, dimensionId dimId, pDimensionIndex dIndex);
 
