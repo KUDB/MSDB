@@ -1,4 +1,4 @@
-﻿#include <pch_op.h>
+#include <pch_op.h>
 #include <op/insert/insert_plan.h>
 #include <op/insert/insert_action.h>
 
@@ -119,8 +119,6 @@ std::string InsertOpr::toString(int depth)
 
 	}
 	}
-	// TODO:: switch case according to the type of params
-
 
 	ss << "\")";
 
@@ -139,21 +137,18 @@ std::shared_ptr<InsertOpr> Insert(Array arr, std::string filePath)
 // TODO::Insert multi-attribute from file
 std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_file_pset::containerType attrFiles)
 {
-	//core::parameters params = {
-	//	std::make_shared<core::opParamArray>(arr.getDesc()),
-	//	std::make_shared<core::opParamEnum>(std::make_shared<std::string>(core::opInsertTypeToString(core::opInsertType::FILE))),
-	//	std::make_shared<core::opParamContainer<
-	//		core::insert_array_multi_attr_file_pset::keyType, core::insert_array_multi_attr_file_pset::valueType>>(attrFiles)
-	//};
+	auto pFileAttrs = std::make_shared<core::insert_array_multi_attr_file_pset::containerType>(attrFiles);
 
 	core::parameters params = {
 		std::make_shared<core::opParamArray>(arr.getDesc()),
-		std::make_shared<core::opParamEnum<core::opInsertType>>(core::opInsertType::FILE)
+		std::make_shared<core::opParamEnum<core::opInsertType>>(core::opInsertType::FILE),
+		std::make_shared<core::opParamContainer<
+		core::insert_array_multi_attr_file_pset::keyType, core::insert_array_multi_attr_file_pset::valueType>>(pFileAttrs)
 	};
 
 	return std::make_shared<InsertOpr>(arr, params, InsertOprType::multi_from_file);
 }
-// TODO::Insert multi-attribute from memory
+
 std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_memory_pset::containerType attrMem)
 {
 	auto pMemAttrs = std::make_shared<core::insert_array_multi_attr_memory_pset::containerType>(attrMem);
@@ -165,23 +160,6 @@ std::shared_ptr<InsertOpr> Insert(Array arr, core::insert_array_multi_attr_memor
 			core::insert_array_multi_attr_memory_pset::keyType, core::insert_array_multi_attr_memory_pset::valueType>>(pMemAttrs)
 	};
 
-	//std::make_shared<core::opParamMemory>(mem),
-		//std::make_shared<core::opParamConst>(std:k:make_shared<core::stableElement>(&size, _ELE_DEFAULT_TYPE))
-
 	return std::make_shared<InsertOpr>(arr, params, InsertOprType::multi_from_memory);
 }
-//////////
-// Deprecated: OLD Synopsis that can insert only one attribute from memory.
-//
-//std::shared_ptr<InsertOpr> Insert(Array arr, std::shared_ptr<void> mem, int64_t size)
-//{
-//	core::parameters params = {
-//		std::make_shared<core::opParamArray>(arr.getDesc()),
-//		std::make_shared<core::opParamEnum>(std::make_shared<std::string>(core::opInsertTypeToString(core::opInsertType::MEMORY))),
-//		std::make_shared<core::opParamMemory>(mem),
-//		std::make_shared<core::opParamConst>(std::make_shared<core::stableElement>(&size, _ELE_DEFAULT_TYPE))
-//	};
-//
-//	return std::make_shared<InsertOpr>(arr, params);
-//}
 }		// msdb

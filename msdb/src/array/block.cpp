@@ -138,5 +138,13 @@ void block::print()
 		_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_SYSTEM_ERROR, MSDB_ER_NOT_IMPLEMENTED));
 	}
 }
+void* block::getDataPtr() const
+{
+	if (this->isMaterialized())
+	{
+		return this->cached_->getData();
+	}
+	return nullptr;
+}
 }		// core
 }		// msdb

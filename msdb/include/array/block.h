@@ -94,8 +94,9 @@ protected:
 		return true;
 	}
 
-	friend class chunk;
+	void* getDataPtr() const;
 
+	friend class chunk;
 protected:
 	pBlockBuffer cached_;	// hold materialized block
 	

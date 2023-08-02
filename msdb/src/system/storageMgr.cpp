@@ -121,16 +121,19 @@ void storageMgr::loadChunk(const arrayId arrId, const attributeId attrId, const 
 	}
 	_MSDB_CATCH(msdb_exception msex)
 	{
+		BOOST_LOG_TRIVIAL(error) << "Catch MSDB_Exception::" << __FILE__ << " in line " << __LINE__;
 		if(msex._error_category == MSDB_EC_IO_ERROR)
 		{
 			if(msex._error_code == MSDB_ER_CANNOT_OPEN_FILE)
 			{
 				// No chunk file, pass chunk
-				BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << attrId << ":" << chkId << "] : EMPTY";
+				BOOST_LOG_TRIVIAL(error) << "Load Chunk[" << attrId << ":" << chkId << "] : EMPTY";
+				_MSDB_THROW(msex);
 			}
 		}else
 		{
-			BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << attrId << ":" << chkId << "] : MSDB EXCEPTION";
+			BOOST_LOG_TRIVIAL(error) << "Load Chunk[" << attrId << ":" << chkId << "] : MSDB EXCEPTION";
+
 			BOOST_LOG_TRIVIAL(error) << msex.what();
 		}
 
@@ -138,12 +141,14 @@ void storageMgr::loadChunk(const arrayId arrId, const attributeId attrId, const 
 	}
 	_MSDB_CATCH_EXCEPTION(e)
 	{
-		BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << attrId << ":" << chkId << "] : STD::EXCEPTION";
+		BOOST_LOG_TRIVIAL(error) << "Catch Exception::" << __FILE__ << " in line " << __LINE__;
+		BOOST_LOG_TRIVIAL(error) << "Load Chunk[" << attrId << ":" << chkId << "] : STD::EXCEPTION";
 		BOOST_LOG_TRIVIAL(error) << e.what();
 	}
 	_MSDB_CATCH_ALL
 	{
-		BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk[" << attrId << ":" << chkId << "] : EXCEPTION";
+		BOOST_LOG_TRIVIAL(error) << "Catch Exception::" << __FILE__ << " in line " << __LINE__;
+		BOOST_LOG_TRIVIAL(error) << "Load Chunk[" << attrId << ":" << chkId << "] : EXCEPTION";
 	}
 	_MSDB_CATCH_END
 }

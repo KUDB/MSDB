@@ -20,7 +20,7 @@ public:
 	virtual const char* name() override;
 	virtual pArray execute(std::vector<pArray>& inputArrays, pQuery q) override;
 	void loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery qry);
-	void loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId);
+	void loadChunk(pArray outArr, chunkId cId, attributeId attrId, pQuery qry, const size_t parentThreadId);
 };
 }		// core
 }		// msdb

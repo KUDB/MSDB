@@ -1,4 +1,4 @@
-﻿#include <pch_op.h>
+#include <pch_op.h>
 #include <op/load/load_action.h>
 #include <array/flattenArray.h>
 #include <array/flattenChunk.h>
@@ -82,21 +82,8 @@ void load_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery q
 		if (cBitmap->isExist(cid))
 		{
 			chunkId cId = cit->seqPos();
-			auto outChunk = outArr->makeChunk(attrDesc->id_, cId);
 
-			auto blockBitmap = this->getPlanBlockBitmap(cId);
-			if (blockBitmap)
-			{
-				outChunk->copyBlockBitmap(blockBitmap);
-			}
-			else
-			{
-				// If there were no bitmap, set all blocks as true.
-				outChunk->replaceBlockBitmap(std::make_shared<bitmap>(outChunk->getBlockCapacity(), true));
-			}
-			outChunk->makeBlocks();
-
-			this->loadChunk(outArr, outChunk, attrDesc->id_, qry, currentThreadId);
+			this->loadChunk(outArr, cId, attrDesc->id_, qry, currentThreadId);
 			//io_service_->post(boost::bind(&load_action::loadChunk, this,
 			//								outArr, outChunk, attrDesc->id_, qry, currentThreadId));
 		}
@@ -112,7 +99,7 @@ void load_action::loadAttribute(pArray outArr, pAttributeDesc attrDesc, pQuery q
 	//========================================//
 }
 
-void load_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, pQuery qry, const size_t parentThreadId)
+void load_action::loadChunk(pArray outArr, chunkId cId, attributeId attrId, pQuery qry, const size_t parentThreadId)
 {
 	auto threadId = getThreadId();
 
@@ -120,15 +107,38 @@ void load_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, 
 	qry->getTimer()->nextJob(threadId, this->name(), workType::IO);
 	//----------------------------------------//
 
+	pChunk outChunk = nullptr;
 	_MSDB_TRY_BEGIN
 	{
+		outChunk = outArr->makeChunk(attrId, cId);
+
+		auto blockBitmap = this->getPlanBlockBitmap(cId);
+		if (blockBitmap)
+		{
+			outChunk->copyBlockBitmap(blockBitmap);
+		}
+		else
+		{
+			// If there were no bitmap, set all blocks as true.
+			outChunk->replaceBlockBitmap(std::make_shared<bitmap>(outChunk->getBlockCapacity(), true));
+		}
+		outChunk->makeBlocks();
+
 		pSerializable serialChunk
 		= std::static_pointer_cast<serializable>(outChunk);
 		storageMgr::instance()->loadChunk(outArr->getId(), attrId, outChunk->getId(),
 											serialChunk);
 	}
+	_MSDB_CATCH(msdb_exception msex)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Catch MSDB_Exception::" << __FILE__ << " in line " << __LINE__;
+		// If the chunk file fails to read,
+		// the storageMgr thorws an msdb_exception("MSDB_EC_IO_ERROR:MSDB_ER_CANNOT_OPEN_FILE")
+		outArr->freeChunk(attrId, cId);
+	}
 	_MSDB_CATCH_EXCEPTION(e)
 	{
+		BOOST_LOG_TRIVIAL(error) << "Catch exception::" << __FILE__ << " in line " << __LINE__;
 		if (outChunk != nullptr)
 		{
 			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: " << outChunk->getId() << e.what();
@@ -137,9 +147,12 @@ void load_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, 
 		{
 			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: nullptr" << e.what();
 		}
+
+		outArr->freeChunk(attrId, cId);
 	}
 	_MSDB_CATCH_ALL
 	{
+		BOOST_LOG_TRIVIAL(error) << "Catch Exception::" << __FILE__ << " in line " << __LINE__;
 		if (outChunk != nullptr)
 		{
 			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: " << outChunk->getId();
@@ -148,6 +161,8 @@ void load_action::loadChunk(pArray outArr, pChunk outChunk, attributeId attrId, 
 		{
 			BOOST_LOG_TRIVIAL(error) << "Error in 'Load chunk' (attrId: " << attrId << "chunkId: nullptr";
 		}
+
+		outArr->freeChunk(attrId, cId);
 	}
 	_MSDB_CATCH_END
 

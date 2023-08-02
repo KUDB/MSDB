@@ -33,6 +33,15 @@ void chunk::referenceAllBufferToBlock()
 	}
 }
 
+void* chunk::getDataPtr() const
+{
+	if (this->isMaterialized())
+	{
+		return this->cached_->getData();
+	}
+	return nullptr;
+}
+
 void chunk::bufferAlloc()
 {
 	this->freeBuffer();
@@ -60,13 +69,13 @@ void chunk::bufferCopy(void* data, bufferSize size)
 void chunk::bufferCopy(pChunk source)
 {
 	bufferSize size = source->getDesc()->mSize_;
-	this->bufferCopy(source->getBuffer()->getData(), size);
+	this->bufferCopy(source->getDataPtr(), size);
 }
 
 void chunk::bufferCopy(pBlock source)
 {
 	bufferSize size = source->getDesc()->mSize_;
-	this->bufferCopy(source->getBuffer()->getData(), size);
+	this->bufferCopy(source->getDataPtr(), size);
 }
 
 // Copy pointer

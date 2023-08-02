@@ -53,8 +53,18 @@ public:
 	virtual void_pointer getParam() = 0;
 	virtual opParamType type() const = 0;
 	virtual std::string toString() const = 0;
+
+//public:
+//	friend opParam& operator<<(opParam& param, std::ostream& os)
+//	{
+//
+//	}
 };
 
+std::string to_string(const opParam& param);
+
+//////////////////////////////
+// Desc (Array, Attributes, Dimensions)
 class opParamArray : public opParam
 {
 public:
@@ -106,6 +116,8 @@ private:
 	pDimensionDesc desc_;
 };
 
+//////////////////////////////
+// Integer
 class opParamConst : public opParam
 {
 public:
@@ -123,6 +135,7 @@ private:
 	pStableElement ele_;
 };
 
+// Integer List
 class opParamIntList : public opParam
 {
 public:
@@ -140,6 +153,8 @@ private:
 	std::shared_ptr<std::vector<int64_t>> _myList;
 };
 
+//////////////////////////////
+// Coordinates
 class opParamCoor : public opParam
 {
 public:
@@ -147,6 +162,13 @@ public:
 
 public:
 	opParamCoor(std::shared_ptr<coor> coordinate);
+	opParamCoor(const coor& coordinates);
+
+public:
+	static pParameter make(const coor& coordiantes)
+	{
+		return std::make_shared<opParamCoor>(opParamCoor(coordiantes));
+	}
 
 public:
 	virtual opParam::void_pointer getParam();
@@ -166,8 +188,13 @@ public:
 
 public:
 	opParamString(std::shared_ptr<std::string> str);
+	opParamString(const std::string& str);
 
 public:
+	static pParameter make(const std::string& str)
+	{
+		return std::make_shared<opParamString>(opParamString(str));
+	}
 	virtual opParam::void_pointer getParam();
 	virtual opParamType type() const;
 	virtual std::string toString() const;
@@ -175,6 +202,8 @@ public:
 private:
 	std::shared_ptr<std::string> str_;
 };
+
+// String List
 class opParamStringList : public opParam
 {
 public:
@@ -209,6 +238,8 @@ private:
 	std::shared_ptr<predicate> predicates_;
 };
 
+//////////////////////////////
+// Memory
 // Make 
 // std::shared_ptr<Ty> ptr(new Ty[10], std::default_delete<Ty[]>());
 class opParamMemory : public opParam
@@ -250,6 +281,115 @@ std::shared_ptr<Ty_> makeParamMemory(size_t bytes)
 {
 	return std::shared_ptr<Ty_>(new Ty_[bytes / sizeof(Ty_)], std::default_delete<Ty_[]>());
 }
+
+//////////////////////////////
+// opParamPlan
+class opParamPlan : public opParam
+{
+public:
+	using paramType = opPlan;
+
+public:
+	opParamPlan(std::shared_ptr<opPlan> plan);
+
+public:
+	virtual opParam::void_pointer getParam();
+	virtual opParamType type() const;
+	virtual std::string toString() const;
+
+private:
+	std::shared_ptr<opPlan> plan_;
+};
+
+//////////////////////////////
+// opParamEnum
+template <typename TyEnum_>
+class opParamEnum : public opParam
+{
+public:
+	using paramType = int64_t;
+	using enumType = TyEnum_;
+
+public:
+	opParamEnum(TyEnum_ value)
+		: opParam()
+	{
+		this->value_ = std::make_shared<TyEnum_>(value);
+	}
+
+public:
+	virtual opParam::void_pointer getParam()
+	{
+		return this->value_;
+	}
+	virtual opParamType type() const
+	{
+		return opParamType::ENUM;
+	}
+	virtual std::string toString() const
+	{
+		// TODO::Enum value to string
+		return std::string(typeid(TyEnum_).name());
+	}
+
+private:
+	std::shared_ptr<TyEnum_> value_;
+};
+
+//////////////////////////////
+// opParamContainer
+template <typename TyKey_, typename TyValue_>
+class opParamContainer : public opParam
+{
+public:
+	using paramType = std::map<TyKey_, TyValue_>;
+	using pContainer = std::shared_ptr<paramType>;
+
+public:
+	opParamContainer(pContainer container)
+		: container_(container)
+	{}
+
+public:
+	virtual opParam::void_pointer getParam()
+	{
+		return this->container_;
+	}
+	virtual opParamType type() const
+	{
+		return opParamType::CONTAINER;
+	}
+	virtual std::string toString() const
+	{
+		std::ostringstream oss;
+		for (auto& ele : *this->container_)
+		{
+			auto& key = ele.first;
+			auto& value = ele.second;
+
+			if (typeid(key) == typeid(std::string))
+			{
+				//oss << key;
+			}
+			else
+			{
+				//oss << to_string(key);
+			}
+
+			if (typeid(value) == typeid(std::string))
+			{
+				//oss << value;
+			}else
+			{
+				//oss << to_string(value);
+			}
+		}
+		return oss.str();
+	}
+
+private:
+	pContainer container_;
+};
 
 //////////////////////////////
 // Placeholder classes
@@ -315,26 +455,6 @@ public:
 public:
 	virtual opParamType type() const;
 };
-
-//////////////////////////////
-// opParamPlan
-class opParamPlan : public opParam
-{
-public:
-	using paramType = opPlan;
-
-public:
-	opParamPlan(std::shared_ptr<opPlan> plan);
-
-public:
-	virtual opParam::void_pointer getParam();
-	virtual opParamType type() const;
-	virtual std::string toString() const;
-
-private:
-	std::shared_ptr<opPlan> plan_;
-};
-
 class opParamPlanPlaceholder : public opParamPlaceholder, public opParamPlan
 {
 public:
@@ -342,81 +462,6 @@ public:
 
 public:
 	virtual opParamType type() const;
-};
-
-//////////////////////////////
-// opParamEnum
-
-template <typename TyEnum_>
-class opParamEnum : public opParam
-{
-public:
-	using paramType = int64_t;
-	using enumType = TyEnum_;
-
-public:
-	opParamEnum(TyEnum_ value)
-		: opParam()
-	{
-		this->value_ = std::make_shared<TyEnum_>(value);
-	}
-
-public:
-	virtual opParam::void_pointer getParam()
-	{
-		return this->value_;
-	}
-	virtual opParamType type() const
-	{
-		return opParamType::ENUM;
-	}
-	virtual std::string toString() const
-	{
-		// TODO::Enum value to string
-		return std::string(typeid(TyEnum_).name());
-	}
-
-private:
-	std::shared_ptr<TyEnum_> value_;
-};
-
-//////////////////////////////
-// opParamContainer
-template <typename TyKey_, typename TyValue_>
-class opParamContainer : public opParam
-{
-public:
-	using paramType = std::map<TyKey_, TyValue_>;
-	using pContainer = std::shared_ptr<paramType>;
-
-public:
-	opParamContainer(pContainer container)
-		: container_(container)
-	{}
-
-public:
-	virtual opParam::void_pointer getParam()
-	{
-		return this->container_;
-	}
-	virtual opParamType type() const
-	{
-		return opParamType::CONTAINER;
-	}
-	virtual std::string toString() const
-	{
-		std::ostringstream oss;
-		for (auto& ele : *this->container_)
-		{
-			//auto& key = ele.first;
-			//auto& value = ele.second;
-			//oss << to_string()
-		}
-		return oss.str();
-	}
-
-private:
-	pContainer container_;
 };
 }		// core
 }		// msdb

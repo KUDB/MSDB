@@ -9,6 +9,12 @@ namespace msdb
 {
 namespace core
 {
+
+std::string to_string(const opParam& param)
+{
+	return param.toString();
+}
+
 opParamArray::opParamArray(pArrayDesc desc)
 	: desc_(desc)
 {
@@ -226,8 +232,10 @@ opParamType opParamIntListPlaceholder::type() const
 // opParamCoor
 opParamCoor::opParamCoor(std::shared_ptr<coor> coordinate)
 	: opParam(), coor_(coordinate)
-{
-}
+{}
+opParamCoor::opParamCoor(const coor& coordinates)
+	: opParam(), coor_(std::make_shared<coor>(coordinates))
+{}
 opParam::void_pointer opParamCoor::getParam()
 {
 	return this->coor_;
@@ -253,8 +261,10 @@ opParamType opParamCoorPlaceholder::type() const
 // opParamString
 opParamString::opParamString(std::shared_ptr<std::string> str)
 	: opParam(), str_(str)
-{
-}
+{}
+opParamString::opParamString(const std::string& str)
+	: opParam(), str_(std::make_shared<std::string>(str))
+{}
 opParam::void_pointer opParamString::getParam()
 {
 	return this->str_;

@@ -57,6 +57,7 @@ protected:
 	virtual void makeBuffer() = 0;
 	virtual void referenceBufferToBlock(const blockId bId) = 0;
 	virtual void referenceAllBufferToBlock();
+	void* getDataPtr() const;
 
 public:
 	virtual void bufferAlloc();					// allocate new buffer accoring to the 'mSize' described in 'chunkDesc'
