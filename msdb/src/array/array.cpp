@@ -309,6 +309,7 @@ void array::mergeAttrChunkBitmap(const attributeId attrId, cpBitmap chunkBitmap,
 
 void array::print() const
 {
+	BOOST_LOG_TRIVIAL(debug) << "Array " << this->getDesc()->name_ << " Print()\n";
 	for (auto attr : *this->getDesc()->attrDescs_)
 	{
 		auto cit = this->getChunkIterator(attr->id_);
@@ -324,9 +325,9 @@ void array::print() const
 			}
 			else
 			{
-				//BOOST_LOG_TRIVIAL(trace) << "==============================\n";
-				//BOOST_LOG_TRIVIAL(trace) << "Chunk (" << cit->seqPos() << ") is not exist\n";
-				//BOOST_LOG_TRIVIAL(trace) << "==============================\n";
+				BOOST_LOG_TRIVIAL(trace) << "==============================\n";
+				BOOST_LOG_TRIVIAL(trace) << "Chunk (" << cit->seqPos() << ") is not exist\n";
+				BOOST_LOG_TRIVIAL(trace) << "==============================\n";
 			}
 
 			++(*cit);
@@ -401,7 +402,6 @@ void array::deleteAttribute(const attributeId attrId)
 	attrDescs->pop_back();
 }
 
-// TODO::Array Comparison
 bool operator==(const array& lhs, const array& rhs)
 {
 	auto lArrayDesc = lhs.getDesc();

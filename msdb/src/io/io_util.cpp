@@ -23,7 +23,7 @@ std::stringstream::pos_type size_of_stream(const std::stringstream& ss)
 
     return end;
 }
-void readImageFile(const std::string filePath, void** data, size_t& bytes, size_t& length)
+void readImageFile(const std::string& filePath, void** data, size_t& bytes, size_t& length)
 {
     cv::Mat imgMat;
 
@@ -33,9 +33,16 @@ void readImageFile(const std::string filePath, void** data, size_t& bytes, size_
      * IMREAD_UNCHANGED
      */
     imgMat = cv::imread(filePath, cv::IMREAD_UNCHANGED);
+
+    if (imgMat.empty())
+    {
+        _MSDB_THROW(_MSDB_EXCEPTIONS(
+            MSDB_EC_QUERY_ERROR, MSDB_ER_CANNOT_OPEN_FILE, std::string("Filename: ") + filePath));
+    }
+
     int numChannels = imgMat.channels();
-    length = imgMat.rows * imgMat.cols;
-    bytes = length * numChannels;
+    length = imgMat.rows * imgMat.cols * numChannels;
+    bytes = length;     // length * sizeof(Ty_)
 
     *data = (void*)new uchar[bytes];
     memcpy(*data, imgMat.data, bytes);

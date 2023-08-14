@@ -6,6 +6,7 @@
 #include <query/opAction.h>
 #include <util/enumType.h>
 #include <io/file.h>
+#include <io/io_util.h>
 
 namespace msdb
 {
@@ -39,45 +40,55 @@ private:
 	template<typename Ty_>
 	void updateFromFile(const concreteTy<Ty_>& type, pArray outArr, pArray inArr, pAttributeDesc attr, std::string& filePath, pQuery qry)
 	{
-		auto extension = getFileExtension(filePath);
-
-		size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getDims(), sizeof(Ty_));
-		Ty_* fileData = new Ty_[bufferSize / sizeof(Ty_)];
+		Ty_* fileData = nullptr;
 
 		try
 		{
-			std::ifstream input(filePath, std::ios::binary);
+			//size_t bufferSize = this->getBufferSize(inArr->getDesc()->getDimDescs()->getChunkDims(), sizeof(Ty_));
+			auto chunkDim = inArr->getDesc()->getDimDescs()->getChunkDims();
+			auto chunkDimArea = chunkDim.area();
+			size_t bufferSize = chunkDimArea * attr->typeSize_;
+			size_t fileLength = 0;
 
-			if (!input)
+			if (isImageFile(filePath))
 			{
-				_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_CANNOT_OPEN_FILE));
+				size_t numPixel = 0;
+				readImageFile(filePath, (void**)(&fileData), fileLength, numPixel);
 			}
-			// Get file size
-			//input.seekg(0, std::ios::end);
-			std::streampos begin, end;
-			begin = input.tellg();
-			input.seekg(0, std::ios::end);
-			end = input.tellg();
+			else
+			{
+				std::ifstream input(filePath, std::ios::binary);
+				fileData = new Ty_[bufferSize / sizeof(Ty_)];
 
-			size_t fileLength = end - begin;
-			input.seekg(0, std::ios::beg);
+				if (!input)
+					_MSDB_THROW(_MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_CANNOT_OPEN_FILE));
+
+				// Get file size
+				std::streampos begin, end;
+				begin = input.tellg();
+				input.seekg(0, std::ios::end);
+				end = input.tellg();
+				fileLength = end - begin;
+
+				// Init file pointer
+				input.seekg(0, std::ios::beg);
+
+				input.read((char*)(fileData), std::min(fileLength, bufferSize));
+				input.close();
+			}
 
 			if (fileLength < bufferSize)
-			{
 				BOOST_LOG_TRIVIAL(warning) << "File size(" << fileLength << ") is smaller than buffer size(" << bufferSize << ").";
-			}
 
-			input.read((char*)(fileData), std::min(fileLength, bufferSize));
-			input.close();
-
-			this->insertData(inArr, attr, fileData, std::min(fileLength, bufferSize));
+			this->updateData(inArr, attr, fileData, std::min(fileLength, bufferSize));
 		}
 		catch(...)
 		{
-			BOOST_LOG_TRIVIAL(error) << "Error: insertFromFile(" << inArr->getDesc()->name_ << ", " << attr->getName();
+			BOOST_LOG_TRIVIAL(error) << "Error: updateFromFile(" << inArr->getDesc()->name_ << ", " << attr->getName();
 		}
 
-		delete[] fileData;
+		if(fileData)
+			delete[] fileData;
 	}
 
 	/**
@@ -87,7 +98,7 @@ private:
 	 * Just use bufferCopy
 	 */
 	template<typename Ty_>
-	void insertData(pArray inArr, pAttributeDesc attr, Ty_* data, size_t length)
+	void updateData(pArray inArr, pAttributeDesc attr, Ty_* data, size_t length)
 	{
 		auto dims = inArr->getDesc()->getDimDescs()->getDims();
 		auto globalItr = mdItr(dims);

@@ -41,26 +41,27 @@ std::shared_ptr<AFLOperator> array_8x8::getArrayBuildAFL(
 	return Build(this->_aid, this->_arrName, this->getDefDimensions(), this->getDefAttributes());
 }
 //////////////////
-array_1x32x32::array_1x32x32(const std::string arrName, const core::arrayId aid,
+array_1x32x32x3::array_1x32x32x3(const std::string arrName, const core::arrayId aid,
+	const core::dimension& arrDim,
 	const std::vector<std::map<std::string, std::string>>& attrParams)
-	: dummy_array(arrName, aid, core::dimension({ 1, 32, 32 }), core::dimension({ 1, 32, 32 }), core::dimension({ 1, 32, 32 }), 
-		std::vector<std::string>({"id", "y", "x"}), 
+	: dummy_array(arrName, aid, arrDim, core::dimension({ 1, 32, 32, 3 }), core::dimension({ 1, 32, 32, 3 }), 
+		std::vector<std::string>({"id", "y", "x", "channel"}),
 		{ "img" }, { core::concreteTy<uint8_t>() }, { core::materializedType::FLATTEN }, { core::encodingType::NONE }, 
 		attrParams)
 {}
-core::attributeDesc::paramType array_1x32x32::getAttrParam(core::attributeId attrId)
+core::attributeDesc::paramType array_1x32x32x3::getAttrParam(core::attributeId attrId)
 {
 	assert(attrId == 0);
 
 	core::attributeDesc::paramType param = {
-		core::make_attr_param(_STR_PARAM_WAVELET_LEVEL_, std::to_string(data_1x32x32::wtLevel)),
-		core::make_attr_param(_STR_PARAM_SE_LEVEL_, std::to_string(data_1x32x32::wtLevel)),
-		core::make_attr_param(_STR_PARAM_MMT_LEVEL_, std::to_string(data_1x32x32::mmtLevel)),
-		core::make_attr_param(_STR_PARAM_COMPASS_BINS_, std::to_string(data_1x32x32::compassBins))
+		core::make_attr_param(_STR_PARAM_WAVELET_LEVEL_, std::to_string(data_1x32x32x3::wtLevel)),
+		core::make_attr_param(_STR_PARAM_SE_LEVEL_, std::to_string(data_1x32x32x3::wtLevel)),
+		core::make_attr_param(_STR_PARAM_MMT_LEVEL_, std::to_string(data_1x32x32x3::mmtLevel)),
+		core::make_attr_param(_STR_PARAM_COMPASS_BINS_, std::to_string(data_1x32x32x3::compassBins))
 	};
 	return param;
 }
-std::shared_ptr<AFLOperator> array_1x32x32::getArrayBuildAFL(
+std::shared_ptr<AFLOperator> array_1x32x32x3::getArrayBuildAFL(
 	std::vector<materializedType> matTypes, std::vector<encodingType> compType)
 {
 	if (!matTypes.empty())

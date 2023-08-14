@@ -42,15 +42,15 @@ public:
 	);
 };
 //////////////////
-namespace data_1x32x32
+namespace data_1x32x32x3
 {
 const int wtLevel = 3;
 const int mmtLevel = 3;
 const int compassBins = 128;
 
-const int numDims = 3;		// 2-dimensional
+const int numDims = 4;		// 2-dimensional Image with 3 Channel
 }
-class array_1x32x32 : public dummy_array
+class array_1x32x32x3 : public dummy_array
 {
 public:
 	virtual core::attributeDesc::paramType getAttrParam(core::attributeId attrId);
@@ -59,8 +59,8 @@ public:
 		std::vector<materializedType> matTypes = {}, std::vector<encodingType> compType = {});
 
 public:
-	array_1x32x32(const std::string arrName,
-		const core::arrayId aid,
+	array_1x32x32x3(const std::string arrName, const core::arrayId aid,
+		const core::dimension& arrDim,
 		const std::vector<core::attributeDesc::paramType>& attrParams
 	);
 };

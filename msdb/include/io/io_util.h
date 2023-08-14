@@ -11,7 +11,16 @@ namespace core
 {
 std::stringstream::pos_type size_of_stream(const std::stringstream& ss);
 
-void readImageFile(const std::string filePath, void** data, size_t& bytes, size_t& length);
+//////////////////////////////////////////////////
+// Read Image file in 'filePath'
+// 
+// - bytes: returns bytes of image file
+// - length: returns number of pixels in image file 
+//
+// Exceptions:
+//		- _MSDB_EXCEPTIONS(MSDB_EC_QUERY_ERROR, MSDB_ER_CANNOT_OPEN_FILE)
+//
+void readImageFile(const std::string& filePath, void** data, size_t& bytes, size_t& length);
 //void readImageFile(const std::string filePath, std::shared_ptr<void>& data, size_t& bytes, size_t& length);
 }		// core
 }		// msdb
