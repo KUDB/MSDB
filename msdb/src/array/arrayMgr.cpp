@@ -18,7 +18,11 @@ arrayMgr::~arrayMgr()
 
 bool arrayMgr::hasAttributeIndex(arrayId arrId, attributeId attrId)
 {
-	assert(arrId != INVALID_ARRAY_ID);
+	if (arrId == INVALID_ARRAY_ID || !this->attrIndies_.count(arrId))
+	{
+		BOOST_LOG_TRIVIAL(warning) << "Array Mgr doesn't have an attribute index where the array id is " << std::to_string(arrId) << ".";
+		return false;
+	}
 
 	return this->attrIndies_.find(arrId) == this->attrIndies_.end()
 		&& (this->attrIndies_[arrId]).find(attrId) == (this->attrIndies_[arrId]).end();
@@ -26,7 +30,11 @@ bool arrayMgr::hasAttributeIndex(arrayId arrId, attributeId attrId)
 
 bool arrayMgr::hasDimensionIndex(arrayId arrId, dimensionId dimId)
 {
-	assert(arrId != INVALID_ARRAY_ID);
+	if (arrId == INVALID_ARRAY_ID || !this->dimIndies_.count(arrId))
+	{
+		BOOST_LOG_TRIVIAL(warning) << "Array Mgr doesn't have a dimension index where the array id is " << arrId << ".";
+		return false;
+	}
 
 	return this->dimIndies_.find(arrId) != this->dimIndies_.end() &&
 		this->dimIndies_[arrId].find(dimId) != this->dimIndies_[arrId].end();
@@ -34,15 +42,21 @@ bool arrayMgr::hasDimensionIndex(arrayId arrId, dimensionId dimId)
 
 arrayId arrayMgr::getArrayId(std::string arrName)
 {
-	assert(this->arrNames_.find(arrName) != this->arrNames_.end());
+	if (!this->arrNames_.count(arrName))
+	{
+		BOOST_LOG_TRIVIAL(warning) << "Array Mgr doesn't have an array named " << arrName << ".";
+		return INVALID_ARRAY_ID;
+	}
 
 	return this->arrNames_[arrName];
 }
 
 pArrayDesc arrayMgr::getArrayDesc(arrayId arrId)
 {
-	assert(arrId != INVALID_ARRAY_ID);
-	assert(this->arrDescs_.find(arrId) != this->arrDescs_.end());
+	if (arrId == INVALID_ARRAY_ID || !this->arrDescs_.count(arrId))
+	{
+		BOOST_LOG_TRIVIAL(warning) << "Array Mgr doesn't have an array desc where the array id is " << arrId << ".";
+	}
 
 	return this->arrDescs_[arrId];
 }

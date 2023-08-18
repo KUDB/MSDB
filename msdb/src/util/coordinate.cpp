@@ -615,6 +615,19 @@ void multiDimIterator::moveTo(const coordinates& coor)
 	this->setFrontEnd();
 }
 
+void multiDimIterator::moveToSeqPos(const size_type seqPos)
+{
+	if (seqPos >= this->seqCapacity_)
+	{
+		return;
+	}
+
+	this->seqPos_ = seqPos;
+	this->coor_ = this->seqToCoor(seqPos);
+
+	this->setFrontEnd();
+}
+
 void multiDimIterator::moveToStart()
 {
 	this->moveTo(this->sP_);

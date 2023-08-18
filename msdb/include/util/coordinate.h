@@ -718,6 +718,7 @@ public:
 	virtual void prev();
 
 	virtual void moveTo(const coordinates& coor);
+	virtual void moveToSeqPos(const size_type seqPos);
 
 	//virtual void moveTo(const size_type seqPos)
 	//{

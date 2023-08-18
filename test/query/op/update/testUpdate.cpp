@@ -95,9 +95,8 @@ TEST(fast_update, fast_update_1x32x32x3)
 			outArr->print();
 
 
+			BOOST_LOG_TRIVIAL(debug) << "==========COMPARISON==========";
 			//auto attrBuffer = ra.getAttrBuffer<uint8_t>(0);
-
-
 			auto cit = outArr->getChunkIterator(attrId);
 			auto chunkCoor = outArr->itemCoorToChunkCoor({ fid, 0, 0, 0 });
 			cit->moveTo(chunkCoor);
@@ -141,6 +140,8 @@ TEST(fast_update, fast_update_1x32x32x3)
 			ra.close();
 		}
 	}
+
+	core::arrayMgr::instance()->saveAllArrayDesc();
 }
 }		// test
 }		// msdb
