@@ -1,4 +1,4 @@
-﻿#include <pch_op.h>
+#include <pch_op.h>
 #include <op/between/between_action.h>
 #include <array/arrayMgr.h>
 #include <array/flattenChunk.h>
@@ -31,11 +31,20 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 	pArray outArr = std::make_shared<flattenArray>(this->getArrayDesc());
 	pCoor sp = std::static_pointer_cast<coor>(this->params_[1]->getParam());
 	pCoor ep = std::static_pointer_cast<coor>(this->params_[2]->getParam());
-	range betweenRange(*sp, *ep);
+
+	// Adjust domain range
+	coor asp = op::between::adjustDomain(inArr->getDesc()->getDimDescs(), *sp, false);
+	coor aep = op::between::adjustDomain(inArr->getDesc()->getDimDescs(), *ep, true);
+	range betweenRange(asp, aep);
+
+	auto startChunkId = inArr->itemCoorToChunkId(asp);
+	auto lastChunkId = inArr->itemCoorToChunkId(aep);
 
 	for (auto attr : *inArr->getDesc()->attrDescs_)
 	{
 		auto chunkItr = inArr->getChunkIterator(attr->id_);
+		chunkItr->moveToSeqPos(startChunkId);
+
 		while (!chunkItr->isEnd())
 		{
 			if(chunkItr->isExist())
@@ -89,6 +98,7 @@ pArray between_action::execute(std::vector<pArray>& inputArrays, pQuery qry)
 				//	++(*blockItr);
 				//}
 			}
+			if (chunkItr->seqPos() == lastChunkId)	break;
 
 			++(*chunkItr);
 		}
@@ -167,6 +177,45 @@ void between_action::fullyInsideBlock(pBlock outBlock, pBlock inBlock)
 	outDesc->setIsp(inDesc->getIsp());
 	outDesc->setIep(inDesc->getIep());
 	outBlock->copyBitmap(inBlock->getBitmap());
+}
+namespace op
+{
+namespace between
+{
+coordinates adjustDomain(const pDimensionDescs desc, const coordinates& coor, const bool isEp)
+{
+	auto dSize = desc->size();
+	if (coor.size() > dSize)
+	{
+		BOOST_LOG_TRIVIAL(error) << "between_pset::dimension sizes are different: " << dSize << ", " << coor.size();
+		return coor;
+	}
+	else if (coor.size() < dSize)
+	{
+		if (!isEp)
+		{
+			// Start point 일 경우 나머지 값을 모두 0으로 설정
+			auto out = coordinates(dSize, coor);
+			return out;
+		}
+		else
+		{
+			// End point 일 경우 나머지 값을 배열의 최대 값으로 설정
+			auto out = coordinates(dSize, coor);
+			auto arrDim = desc->getDims();
+
+			for (int d = coor.size(); d < dSize; ++d)
+			{
+				out[d] = arrDim[d];
+			}
+
+			return out;
+		}
+	}
+
+	return coor;
+}
+}
 }
 }		// core
 }		// msdb

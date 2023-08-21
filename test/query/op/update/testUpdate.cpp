@@ -5,6 +5,9 @@
 #include <op/update/update_plan.h>
 #include <api_cpp_operator/cpp_io_operators.h>
 #include <io/io_util.h>
+#include <filesystem>
+
+using std::filesystem::directory_iterator;
 
 namespace msdb
 {
@@ -32,12 +35,14 @@ TEST(fast_update, fast_update_1x32x32x3)
 	core::attributeId attrId = 0;
 	msdb::core::arrayMgr::instance()->removeArray(aid);
 
-	std::vector<std::string> filePath = {
-		"C:/Workspace/21_MSDB/x64/datasets/cifar/cifar_x_train_0.jpg",
-		"C:/Workspace/21_MSDB/x64/datasets/cifar/cifar_x_train_1.jpg"
-	};
+	std::string basePath = "E:/Datasets/cifar/test/";
+	std::vector<std::string> filePath;
+	for (const auto& file : directory_iterator(basePath))
+	{
+		filePath.push_back(file.path().string());
+	}
 	
-	dummy::array_1x32x32x3 arr(std::string("1x32x32x3"), aid, { (int)filePath.size(), 32, 32, 3}, {});
+	dummy::array_1x32x32x3 arr(std::string("cifa_10_1x32x32x3"), aid, { (int)filePath.size(), 32, 32, 3}, {});
 
 	{
 		BOOST_LOG_TRIVIAL(debug) << "==========BUILD==========";
@@ -62,16 +67,37 @@ TEST(fast_update, fast_update_1x32x32x3)
 		ra.close();
 	}
 
-
-	for (int fid = 0; fid < 2; ++fid)
+	bool updateOnly = false;
+	//for (int fid = 0; fid < filePath.size(); ++fid)
+	for (int fid = 0; fid < 5; ++fid)
 	{
 		{
 			BOOST_LOG_TRIVIAL(debug) << "==========FAST UPDATE==========";
 			auto updateAfl = msdb::Save(
 				msdb::FastUpdate(
 					msdb::Array(ctx, aid),
-					{ {attrId, filePath[fid]} }, msdb::Coordinates({ fid, 0, 0, 0 }), msdb::Coordinates({ fid+1, 0, 0, 0 })));
+					{ {attrId, filePath[fid]} }, msdb::Coordinates({ fid, 0, 0, 0 }), msdb::Coordinates({ fid+1, 32, 32, 3 })));
 			auto qry = msdb::Query(updateAfl);
+
+			if(!updateOnly)	qry.setRawResultOut();
+
+			auto ra = qry.execute();
+
+			if (!updateOnly)
+			{
+				EXPECT_EQ(qry.getStatus(), msdb::Query::Status::COMPLETE);
+				EXPECT_TRUE(ra.isRawResultOut());
+				auto outArr = ra.getRawResult();
+				outArr->print();
+			}
+			ra.close();
+		}
+
+		if (!updateOnly)
+		{
+			BOOST_LOG_TRIVIAL(debug) << "==========LOAD==========";
+			auto loadAfl = msdb::Load(msdb::Array(ctx, aid));
+			auto qry = msdb::Query(loadAfl);
 			qry.setRawResultOut();
 
 			auto ra = qry.execute();
@@ -79,12 +105,13 @@ TEST(fast_update, fast_update_1x32x32x3)
 			EXPECT_TRUE(ra.isRawResultOut());
 			auto outArr = ra.getRawResult();
 			outArr->print();
-			ra.close();
 		}
 
+		if(!updateOnly)
 		{
 			BOOST_LOG_TRIVIAL(debug) << "==========LOAD==========";
-			auto loadAfl = msdb::Load(msdb::Array(ctx, aid));
+			auto loadAfl = msdb::Between(msdb::Load(msdb::Array(ctx, aid)), msdb::Domain(msdb::core::coordinates({fid, 0, 0, 0}), msdb::core::coordinates({fid+1, 32, 32, 3})));
+			//auto loadAfl = msdb::Load(msdb::Array(ctx, aid));
 			auto qry = msdb::Query(loadAfl);
 			qry.setRawResultOut();
 
@@ -135,7 +162,7 @@ TEST(fast_update, fast_update_1x32x32x3)
 			}
 			catch (...)
 			{
-				
+				EXPECT_TRUE(false);
 			}
 			ra.close();
 		}

@@ -4,14 +4,18 @@
 #define _MSDB_DUMMY_ARRAY_IN_MEMORY_H_
 
 #include <dummy_array_util.h>
+#include <array/attributeId.h>
+
+using namespace msdb::core;
+using namespace msdb::dummy;
 
 namespace msdb
 {
 namespace dummy
 {
-namespace array_mem_twoattr_2d
+namespace array_uint8_2_16x16_4x4
 {
-static const std::string arrName = "array_mem_twoattr_2d";
+static const std::string arrName = "array_uint8_2_16x16_4x4";
 static const core::arrayId aid = 10001;
 
 static const core::dimension dims({ 16, 16 });
@@ -29,11 +33,16 @@ static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
 static const core::dataType typeAttr_1 = core::concreteTy<uint8_t>();
 
 //std::pair<int, int> getParam(encodingType compType);
+
+Query::Status buildArray();
+Query::Status insertTestData();
+std::map<attributeId, msdb::core::opParamMemory> generateTestData();
+
 core::pArrayDesc getDummyArrayDesc();
 std::shared_ptr<AFLOperator> getArrayBuildAFL(
 	materializedType matType = materializedType::FLATTEN,
 	encodingType compType = encodingType::RAW);
-}	// array_mem_twoattr_2d
+}	// array_uint8_2_16x16_4x4
 
 namespace array_mem_char_4x4
 {
@@ -55,6 +64,8 @@ static const std::string nameAttr_2 = "ATTR_2";
 static const core::dataType typeAttr_0 = core::concreteTy<uint8_t>();
 static const core::dataType typeAttr_1 = core::concreteTy<uint8_t>();
 static const core::dataType typeAttr_2 = core::concreteTy<uint8_t>();
+
+Query::Status buildArray();
 
 std::pair<int, int> getParam(encodingType compType);
 core::pArrayDesc getDummyArrayDesc();

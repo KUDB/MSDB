@@ -1,12 +1,52 @@
 #include <dummy_array_in_memory.h>
 #include <api_cpp_operator/cpp_io_operators.h>
+#include <dummy_array_util.h>
+#include <op/insert/insert_plan.h>
+
+using namespace msdb::core;
+using namespace msdb::dummy;
 
 namespace msdb
 {
 namespace dummy
 {
-namespace array_mem_twoattr_2d
+namespace array_uint8_2_16x16_4x4
 {
+Query::Status buildArray()
+{
+	auto qry = msdb::Query(getArrayBuildAFL());
+	qry.unsetVerbose();
+	qry.unsetRawResultOut();
+	qry.execute();
+	return qry.getStatus();
+}
+Query::Status insertTestData()
+{
+	msdb::Context ctx;
+
+	auto attrs = generateTestData();
+	auto insertAfl = msdb::Save(
+		msdb::Insert(
+			msdb::Array(ctx, array_uint8_2_16x16_4x4::arrName),
+			attrs));
+	auto qry = msdb::Query(insertAfl);
+	qry.unsetRawResultOut();
+	qry.execute();
+
+	return qry.getStatus();
+}
+std::map<attributeId, msdb::core::opParamMemory> generateTestData()
+{
+	const uint64_t dataSize = 16 * 16;
+	auto pDataA_0 = generateData<uint8_t, dataSize>([n = 0]() mutable {return n++; });
+	auto pDataA_1 = generateData<uint8_t, dataSize>([n = 0]() mutable {return n++ * 2; });
+
+	std::map<attributeId, msdb::core::opParamMemory> attrs;
+	attrs[0] = msdb::core::opParamMemory(pDataA_0, pDataA_0->size());
+	attrs[1] = msdb::core::opParamMemory(pDataA_1, pDataA_0->size());
+
+	return attrs;
+}
 core::pArrayDesc getDummyArrayDesc()
 {
 	// Build dimension desc
@@ -35,9 +75,18 @@ std::shared_ptr<AFLOperator> getArrayBuildAFL(materializedType matType, encoding
 		});
 	return afl;
 }
-}	// array_mem_twoattr_2d
+}	// array_uint8_2_16x16_4x4
 namespace array_mem_char_4x4
 {
+Query::Status buildArray()
+{
+	auto qry = msdb::Query(getArrayBuildAFL());
+	qry.unsetVerbose();
+	qry.unsetRawResultOut();
+	qry.execute();
+	return qry.getStatus();
+}
+
 std::pair<int, int> getParam(encodingType compType)
 {
 	switch (compType)

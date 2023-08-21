@@ -4,6 +4,7 @@
 
 #include <pch_api_cpp.h>
 #include <api_cpp/cpp_operators.h>
+#include <op/between/between_plan.h>
 
 namespace msdb
 {
@@ -23,28 +24,6 @@ namespace msdb
 		std::shared_ptr<AFLOperator> childQry_;
 	};
 	std::shared_ptr<SaveOpr> API_CPP_DLL_API Save(std::shared_ptr<AFLOperator> qry);
-
-
-
-	/* ************************ */
-	/* Between					*/
-	/* ************************ */
-	class API_CPP_DLL_API BetweenOpr : public AFLOperator
-	{
-	public:
-		BetweenOpr(Array arr, Domain d);
-		BetweenOpr(std::shared_ptr<AFLOperator> qry, Domain d);
-
-	public:
-		virtual std::shared_ptr<core::opPlan> getPlan();
-		virtual std::string toString(int depth);
-
-	private:
-		std::shared_ptr<AFLOperator> childQry_;
-		Domain domain_;
-	};
-	std::shared_ptr<BetweenOpr> API_CPP_DLL_API Between(Array arr, Domain d);
-	std::shared_ptr<BetweenOpr> API_CPP_DLL_API Between(std::shared_ptr<AFLOperator> qry, Domain d);
 
 	/* ************************ */
 	/* Build					*/

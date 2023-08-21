@@ -77,50 +77,6 @@ namespace msdb
 		return std::make_shared<SaveOpr>(qry);
 	}
 
-	/* ************************ */
-	/* Between					*/
-	/* ************************ */
-	BetweenOpr::BetweenOpr(Array arr, Domain d)
-		: domain_(d), childQry_(Load(arr)), AFLOperator(arr.getDesc())
-	{
-	}
-
-	BetweenOpr::BetweenOpr(std::shared_ptr<AFLOperator> qry, Domain d)
-		: childQry_(qry), domain_(d), AFLOperator(qry->getArrayDesc())
-	{
-	}
-
-	std::shared_ptr<core::opPlan> BetweenOpr::getPlan()
-	{
-		auto qryPlan = std::make_shared<core::between_plan>();
-
-		core::parameters params = {
-			std::make_shared<core::opParamPlan>(childQry_->getPlan()),
-			std::make_shared<core::opParamCoor>(std::make_shared<core::coor>(this->domain_.getStart())),
-			std::make_shared<core::opParamCoor>(std::make_shared<core::coor>(this->domain_.getEnd()))
-		};
-		qryPlan->setParamSet(std::make_shared<core::between_plan_pset>(params));
-
-		return qryPlan;
-	}
-	std::string BetweenOpr::toString(int depth)
-	{
-		std::string strIndent = this->getIndentString(depth);
-		std::string strChildIndent = this->getIndentString(depth + 1);
-		std::stringstream ss;
-		ss << AFLOperator::toString(depth) << strIndent << "Between(" << std::endl;
-		ss << this->childQry_->toString(depth + 1) << "," << std::endl;
-		ss << strChildIndent << this->domain_.toString() << ")";
-		return ss.str();
-	}
-	std::shared_ptr<BetweenOpr> Between(Array arr, Domain d)
-	{
-		return std::make_shared<BetweenOpr>(arr, d);
-	}
-	std::shared_ptr<BetweenOpr> Between(std::shared_ptr<AFLOperator> qry, Domain d)
-	{
-		return std::make_shared<BetweenOpr>(qry, d);
-	}
 
 	/* ************************ */
 	/* Build					*/

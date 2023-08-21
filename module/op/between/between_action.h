@@ -9,22 +9,30 @@ namespace msdb
 {
 namespace core
 {
-	class between_action : public opAction
-	{
-	public:
-		between_action();
-		virtual ~between_action();
-		virtual const char* name() override;
+namespace op
+{
+namespace between
+{
+coordinates adjustDomain(const pDimensionDescs desc, const coordinates& coor, const bool isEp);
+}		// between
+}		// op
 
-	public:
-		pArray execute(std::vector<pArray>& inputArrays, pQuery q);
+class between_action : public opAction
+{
+public:
+	between_action();
+	virtual ~between_action();
+	virtual const char* name() override;
 
-	private:
-		void betweenChunk(pChunk outChunk, pChunk inChunk, range& betweenRange);
-		void fullyInsideChunk(pChunk outChunk, pChunk inChunk);
-		void betweenBlock(pBlock outBlock, pBlock inBlock, range& betweenRangeInChunk);
-		void fullyInsideBlock(pBlock outBlock, pBlock inBlock);
-	};
+public:
+	pArray execute(std::vector<pArray>& inputArrays, pQuery q);
+
+private:
+	void betweenChunk(pChunk outChunk, pChunk inChunk, range& betweenRange);
+	void fullyInsideChunk(pChunk outChunk, pChunk inChunk);
+	void betweenBlock(pBlock outBlock, pBlock inBlock, range& betweenRangeInChunk);
+	void fullyInsideBlock(pBlock outBlock, pBlock inBlock);
+};
 }		// core
 }		// msdb
 #endif // _MSDB_OP_BETWEEN_ACTION_H_

@@ -65,6 +65,14 @@ std::pair<core::arrayId, std::string> getArrayIdName(
 	core::arrayId baseId, 
 	std::string baseName
 );
+
+template <class _Ty, size_t _Size, class _Generator>
+std::shared_ptr<std::array<_Ty, _Size>> generateData(_Generator g)
+{
+	auto pData = std::make_shared<std::array<_Ty, _Size>>();
+	std::generate(pData->begin(), pData->end(), g);
+	return pData;
+}
 }		// dummy
 }		// msdb
 #endif	// _MSDB_DUMMY_ARRAY_UTIL_H_

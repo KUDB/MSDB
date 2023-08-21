@@ -55,7 +55,7 @@ public:
 }		// core
 
 /* ************************ */
-/* Update Operator			*/
+/* CPP API Operator	        */
 /* ************************ */
 class OP_API FastUpdateOpr : public AFLOperator
 {
@@ -69,13 +69,11 @@ public:
 private:
 	core::parameters params_;
 };
-
-/* ************************ */
-/* CPP API Operator	        */
-/* ************************ */
-std::shared_ptr<FastUpdateOpr> OP_API FastUpdate(Array arr, const std::string filePath, 
+std::shared_ptr<FastUpdateOpr> OP_API FastUpdate(Array arr, 
+	const std::string filePath, 
 	const Coordinates start, const Coordinates end);
-std::shared_ptr<FastUpdateOpr> OP_API FastUpdate(Array arr, core::op::update::pset_files::containerType attrFiles,
+std::shared_ptr<FastUpdateOpr> OP_API FastUpdate(Array arr, 
+	core::op::update::pset_files::containerType attrFiles,
 	const Coordinates start, const Coordinates end);
 }		// msdb
 #endif // _MSDB_OP_UPDATE_PLAN_H_
