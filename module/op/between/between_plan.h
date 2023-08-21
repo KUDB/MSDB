@@ -5,6 +5,10 @@
 #include <pch_op.h>
 #include <query/opPlan.h>
 #include <query/opParamSet.h>
+#include <api_cpp/cpp_operators.h>
+#include <api_cpp/cpp_array.h>
+#include <api_cpp/cpp_domain.h>
+#include "between_action.h"
 
 namespace msdb
 {
@@ -26,7 +30,10 @@ protected:
 	template<typename Ty_>
 	pBitmapTree inferBottomUpAttrBitmap(pArrayDesc arrDesc, pAttributeDesc attrDesc, pBitmapTree boUpBitmap, pCoor sp, pCoor ep)
 	{
-		auto qRange = range(*sp, *ep);
+		// SP and EP can be smaller than array dimension size.
+		auto asp = op::between::adjustDomain(arrDesc->getDimDescs(), *sp, false);
+		auto aep = op::between::adjustDomain(arrDesc->getDimDescs(), *ep, true);
+		auto qRange = range(asp, aep);
 
 		dimension chunkSpace = arrDesc->getDimDescs()->getChunkSpace();
 		dimension blockSpace = arrDesc->getDimDescs()->getBlockSpace();
@@ -44,7 +51,6 @@ protected:
 		size_t dSize = arrDesc->getDSize();
 
 		auto chunkBitmap = std::make_shared<bitmapTree>(chunkNums, false);
-		auto chunkRange = range(coor(chunkDims.size()), chunkDims);
 
 		for (chunkId cid = 0; cid < chunkNums; ++cid)
 		{
@@ -52,7 +58,7 @@ protected:
 			{
 				auto chunkCoor = cit.seqToCoor(cid);
 				auto chunkSp = chunkCoor * chunkDims;
-				auto chunkEp = chunkSp + chunkDims;
+				auto chunkEp = chunkSp + chunkDims - 1;
 				auto chunkRange = range(chunkSp, chunkEp);
 
 				if(chunkRange.isIntersect(qRange))
@@ -149,5 +155,25 @@ public:
 	virtual pBitmapTree inferBottomUpBitmap() override;
 };
 }		// core
+
+/* ************************ */
+/* CPP API Operator	        */
+/* ************************ */
+class OP_API BetweenOpr : public AFLOperator
+{
+public:
+	BetweenOpr(Array arr, Domain d);
+	BetweenOpr(std::shared_ptr<AFLOperator> qry, Domain d);
+
+public:
+	virtual std::shared_ptr<core::opPlan> getPlan();
+	virtual std::string toString(int depth);
+
+private:
+	std::shared_ptr<AFLOperator> childQry_;
+	Domain domain_;
+};
+std::shared_ptr<BetweenOpr> OP_API Between(Array arr, Domain d);
+std::shared_ptr<BetweenOpr> OP_API Between(std::shared_ptr<AFLOperator> qry, Domain d);
 }		// msdb
 #endif // _MSDB_OP_BETWEEN_PLAN_H_

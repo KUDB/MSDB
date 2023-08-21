@@ -66,7 +66,7 @@ pAction opPlan::getAction()
 	myAction->setPlanInBitmap(this->inArrBitmap_);
 	myAction->setPlanOutBitmap(this->outArrBitmap_);
 
-	BOOST_LOG_TRIVIAL(debug) << "getAction: " << this->name() << " / " << arrDesc->name_ << "(" << arrDesc->id_ << ")";
+	BOOST_LOG_TRIVIAL(debug) << "opPlan \"" << this->name() << "\" returns an action for " << arrDesc->name_ << "(id:" << arrDesc->id_ << ")";
 	return myAction;
 }
 parameters opPlan::getParam()
@@ -90,32 +90,11 @@ pArray opPlan::process(std::shared_ptr<query> qry)
 
 	try
 	{
-		auto outArr = this->getAction()->execute(inArr, qry);
-		
-		if (qry->isVerbose())
-		{
-			// TODO::Remove //
-			for (auto attr : *outArr->getDesc()->attrDescs_)
-			{
-				BOOST_LOG_TRIVIAL(trace) << "ATTR: " << attr->getName() << "(" << attr->getId() << ")";
-				auto cit = outArr->getChunkIterator(attr->id_);
-				if (cit->isExist())
-				{
-					for (int i = 0; i < 0; ++i)
-					{
-						cit->next();
-					}
-					(**cit)->print();
-				}
-			}
-			// TODO::Remove //
-		}
-		
-		return outArr;
+		return this->getAction()->execute(inArr, qry);	
 	}
 	catch (...)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Error in query processing:\n";
+		BOOST_LOG_TRIVIAL(error) << "Error in \"" << this->name() << "\" query processing.";
 		throw;
 	}
 

@@ -59,6 +59,16 @@ coordinates::coordinates(const std::vector<dim_type>& coorVec)
 #endif
 }
 
+coordinates::coordinates(const size_type dSize, const coordinates& src)
+	: coordinates(dSize)
+{
+	memset(this->coor_, 0, sizeof(dim_type) * dSize);
+	memcpy(this->coor_, src.coor_, sizeof(dim_type) * src.dSize_);
+#ifndef NDEBUG
+	this->setXY();
+#endif
+}
+
 coordinates::coordinates(const coordinates& src)
 	: coordinates(src.dSize_)
 {

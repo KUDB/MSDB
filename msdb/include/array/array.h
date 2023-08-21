@@ -128,8 +128,12 @@ protected:
 
 	//////////////////////////////
 	// attrId: target attribute id.
+	// 
 	// rhs: a pointer to the first element in the array.
 	// size: the number of elements in the rhs array.
+	//
+	// Only compare exist items.
+
 	template <typename Ty_>
 	bool isEqualTy(const concreteTy<Ty_>& type, const attributeId attrId, const void* rhs, const size_t size) const
 	{
@@ -139,25 +143,41 @@ protected:
 
 		while (!cit->isEnd())
 		{
+			if (!cit->isExist())
+			{
+				++(*cit);
+				continue;
+			}
+
 			auto chunkCoor = cit->coor();
 			auto chunkGlobalCoor = (**cit)->getDesc()->sp_;
 			auto bit = (*cit)->getBlockIterator();
 
 			while (!bit->isEnd())
 			{
+				if (!bit->isExist())
+				{
+					++(*bit);
+					continue;
+				}
 				auto blockCoor = bit->coor();
 				auto blockGlobalCoor = chunkGlobalCoor + (**bit)->getDesc()->getSp();
 				auto iit = (**bit)->getItemIterator();
 
 				while (!iit->isEnd())
 				{
+					if (!iit->isExist())
+					{
+						++(*iit);
+						continue;
+					}
 					auto globalItemCoor = iit->coor() + blockGlobalCoor;
 					auto seqPos = git.coorToSeq(globalItemCoor);
 
 					if (seqPos > size)
 					{
-						BOOST_LOG_TRIVIAL(warning) << 
-							"Failed in array::isEqualTy(" << attrId << ")." << std::endl 
+						BOOST_LOG_TRIVIAL(warning) <<
+							"Failed in array::isEqualTy(" << attrId << ")." << std::endl
 							<< "Given rhs array is too short (seqPos : " << seqPos << "size: " << size << ").";
 						return false;
 					}
@@ -167,7 +187,7 @@ protected:
 					{
 						BOOST_LOG_TRIVIAL(warning) <<
 							"Two arrays have different values in " << globalItemCoor.toString() << "(seqPos: " << seqPos << ")" << std::endl
-							<< "Value : " << v << ", target: " << data[seqPos] << ")";
+							<< "Value : " << +v << ", target: " << +data[seqPos] << ")";
 						return false;
 					}
 

@@ -42,6 +42,7 @@ public:
 	coordinates(const size_type dSize, dim_const_pointer coor);
 	coordinates(const size_type dSize, const dim_type coor);
 	coordinates(const std::vector<dim_type>& coorVec);
+	coordinates(const size_type dSize, const coordinates& src);
 	coordinates(const coordinates& mit);
 	coordinates(coordinates&& src) noexcept;
 	coordinates(std::initializer_list<dim_type> lst);
@@ -292,15 +293,14 @@ public:
 	// ***************************
 	// Random access
 	_NODISCARD inline _CONSTEXPR17 dim_reference operator[](_In_range_(0, dSize_ - 1) size_type pos)
-		noexcept /* strengthened */
 	{
 		assert(pos < this->dSize_);
 		return this->coor_[pos];
 	}
-	_NODISCARD inline constexpr dim_const_reference operator[](_In_range_(0, dSize_ - 1) size_type pos) const
+	_NODISCARD inline _CONSTEXPR17 dim_const_reference operator[](_In_range_(0, dSize_ - 1) size_type pos) const
 		noexcept /* strengthened */
 	{
-		assert(pos < this->dSize_);
+		if (pos >= this->dSize_)	return 0;
 		return this->coor_[pos];
 	}
 	_NODISCARD inline _CONSTEXPR17 dim_reference at(_In_range_(0, dSize_ - 1) size_type pos)
@@ -308,9 +308,10 @@ public:
 		assert(pos < this->dSize_);
 		return this->coor_[pos];
 	}
-	_NODISCARD inline constexpr dim_const_reference at(_In_range_(0, dSize_ - 1) size_type pos) const
+	_NODISCARD inline _CONSTEXPR17 dim_const_reference at(_In_range_(0, dSize_ - 1) size_type pos) const
+		noexcept /* strengthened */
 	{
-		assert(pos < this->dSize_);
+		if (pos >= this->dSize_)	return 0;
 		return this->coor_[pos];
 	}
 	//////////////////////////////
@@ -459,7 +460,8 @@ public:
 		dimensionId d;
 		for (d = 0; d < rhs.dSize_; ++d)
 		{
-			if (this->sP_[d] >= rhs.eP_[d])
+			// Include end point
+			if (this->sP_[d] > rhs.eP_[d])
 			{
 				break;
 			}
@@ -471,7 +473,8 @@ public:
 
 		for (d = 0; d < rhs.dSize_; ++d)
 		{
-			if (rhs.sP_[d] >= this->eP_[d])
+			// Include end point
+			if (rhs.sP_[d] > this->eP_[d])
 			{
 				break;
 			}
@@ -815,7 +818,8 @@ protected:
 		{
 			this->front_ = false;
 		}
-		if (this->coor_ == this->eP_)
+		// Range include [sP_ - eP_]
+		if (this->coor_ > this->eP_)
 		{
 			this->end_ = true;
 		} else

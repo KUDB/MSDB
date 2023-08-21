@@ -72,6 +72,30 @@ TEST(coor, coordinateBasic)
 		EXPECT_EQ(myCoor[1], 2);
 		EXPECT_EQ(myCoor[2], 3);
 	}
+
+	//////////////////////////////
+	// Constructor 06
+	// coordinates(const size_type dSize, const coordinates& src);
+	{
+		core::coordinates firstCoor({ 1 });
+		core::coordinates secondCoor(4, firstCoor);
+
+		EXPECT_EQ(secondCoor.size(), 4);
+
+		EXPECT_EQ(secondCoor[0], 1);
+		EXPECT_EQ(secondCoor[1], 0);
+		EXPECT_EQ(secondCoor[2], 0);
+		EXPECT_EQ(secondCoor[3], 0);
+	}
+}
+
+TEST(coor, isIntersect)
+{
+	core::coordinates c_sp({0, 0, 0, 0});
+	core::coordinates c_ep({ 0, 0, 0, 0 });
+
+	core::coordinates q_sp({ 0, 0, 0, 0 });
+	core::coordinates q_ep({ 1, 0, 0, 0 });
 }
 
 TEST(multiDimIterator, move_in_4d_space)
