@@ -31,15 +31,12 @@ status query::process()
 	{
 		std::stringstream ss;
 		ss << "* Error (MSDB Exception) in query processing *\n" << e.what() << std::endl;;
-		ss << e._error_category_msg << "(" << std::to_string(e._error_category) << ")" << std::endl;;
-		ss << e._error_msg << "(" << std::to_string(e._error_code) << ")" << std::endl;;
-		ss << "File: " << e._file << " /Line: " << std::to_string(e._line) << "/Func: " << e._function << std::endl;;
 
 		BOOST_LOG_TRIVIAL(error) << ss.str();
 		this->errorMsg_ = ss.str();
 		std::cout << ss.str() << std::endl;
 
-		return status(statusSectionCode::ERR, (statusSubCodeType)e._error_code);
+		return status(statusSectionCode::ERR, (statusSubCodeType)e.error_code());
 	}
 	_MSDB_CATCH(const boost::exception& ex)
 	{

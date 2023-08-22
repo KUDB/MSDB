@@ -67,6 +67,18 @@ public:
     virtual ~msdb_exception() noexcept = default;
 
 public:
+    std::string makeDetailWhat() const;
+    _NODISCARD virtual const char* what() const;
+    _NODISCARD inline int32_t error_category() const
+    {
+        return this->_error_category;
+    }
+    _NODISCARD inline int32_t error_code() const
+    {
+        return this->_error_code;
+    }
+
+protected:
     std::string _file;
     std::string _function;
     int32_t _line;
@@ -78,6 +90,7 @@ public:
     std::string _error_category_msg;
     std::string _error_msg;
     std::string _what;
+    std::string _whatDetail;
 };
 }       // msdb
 #endif

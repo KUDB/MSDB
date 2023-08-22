@@ -36,7 +36,7 @@ void readImageFile(const std::string& filePath, void** data, size_t& bytes, size
 
     if (imgMat.empty())
     {
-        _MSDB_THROW(_MSDB_EXCEPTIONS(
+        _MSDB_THROW(_MSDB_EXCEPTIONS_MSG(
             MSDB_EC_QUERY_ERROR, MSDB_ER_CANNOT_OPEN_FILE, std::string("Filename: ") + filePath));
     }
 

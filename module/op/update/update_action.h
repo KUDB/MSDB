@@ -84,11 +84,12 @@ private:
 		}
 		catch(...)
 		{
-			BOOST_LOG_TRIVIAL(error) << "Error: updateFromFile(" << inArr->getDesc()->name_ << ", " << attr->getName();
+			BOOST_LOG_TRIVIAL(error) << "Unknown Error: updateFromFile(" << inArr->getDesc()->name_ << ", " << attr->getName() << ")";
+			if (fileData) delete[] fileData;
+			throw;
 		}
 
-		if(fileData)
-			delete[] fileData;
+		if (fileData)	delete[] fileData;
 	}
 
 	/**

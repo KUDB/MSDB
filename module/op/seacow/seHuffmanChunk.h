@@ -71,6 +71,7 @@ public:
 		{
 			BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk : STD::EXCEPTION";
 			BOOST_LOG_TRIVIAL(error) << e.what();
+			throw;
 		}
 	}
 
@@ -314,6 +315,7 @@ public:
 				{
 					BOOST_LOG_TRIVIAL(error) << "CATCH:: Load Chunk : STD::EXCEPTION";
 					BOOST_LOG_TRIVIAL(error) << e.what();
+					throw;
 				}
 			}
 		}
