@@ -31,18 +31,18 @@ TEST(fast_update, fast_update_8x8)
 TEST(fast_update, fast_update_1x32x32x3)
 {
 	msdb::Context ctx;
-	core::arrayId aid = 103203203;
+	core::arrayId aid = 132323;
 	core::attributeId attrId = 0;
 	msdb::core::arrayMgr::instance()->removeArray(aid);
 
-	std::string basePath = "E:/Datasets/cifar/test/";
+	std::string basePath = "E:/Datasets/cifar10/test/";
 	std::vector<std::string> filePath;
 	for (const auto& file : directory_iterator(basePath))
 	{
 		filePath.push_back(file.path().string());
 	}
 	
-	dummy::array_1x32x32x3 arr(std::string("cifa_10_1x32x32x3"), aid, { (int)filePath.size(), 32, 32, 3}, {});
+	dummy::array_1x32x32x3 arr(std::string("cifar10_1x32x32x3_test"), aid, { (int)filePath.size(), 32, 32, 3}, {});
 
 	{
 		BOOST_LOG_TRIVIAL(debug) << "==========BUILD==========";
