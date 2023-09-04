@@ -22,12 +22,13 @@ class bufferMgr : public singleton<bufferMgr>
 {
 private:
 	using time_point = std::chrono::system_clock::time_point;
+	static const int INF = 0;
 
 private:
 	bufferMgr();
 	~bufferMgr();
 
-private:
+public:
 	class chunkKey
 	{
 	public:
@@ -51,6 +52,12 @@ private:
 		bool operator ==(const chunkKey& rhs) const
 		{
 			return arrId == rhs.arrId && attrId == rhs.attrId && cid == rhs.cid;
+		}
+
+		friend std::ostream& operator<<(std::ostream& out, const bufferMgr::chunkKey& val)
+		{
+			out << "[arrId: " << val.arrId << ", attrId: " << val.attrId << ", chunkId: " << val.cid << "]";
+			return out;
 		}
 	};
 
@@ -90,35 +97,92 @@ public:
 	{
 		std::lock_guard<std::recursive_mutex> lk(this->getLock());
 		chunkKey key(arrId, attrId, cid);
-		if (this->isExist(key))
+		if (isExist(key))
 		{
-			auto out = _chunkBuffer.at(key);
-			removeChunkBufferState(key);
-			_bufferQueue.push_back(chunkBufferState(now(), key, out->size()));
-
-			return out;
+			auto buf = _chunkBuffer.at(key);
+			_refreshBufferState(key, buf);
+			return buf;
 		}
 		return nullptr;
 	}
 
 	//////////////////////////////
-	// setChunkBuffer
+	// cacheChunkBuffer
 	//////////////////////////////
 	// Thread safe
-	inline pBuffer setChunkBuffer(const arrayId arrId, const attributeId attrId, const chunkId cid, pBuffer buf)
+	inline bool cacheChunkBuffer(const arrayId arrId, const attributeId attrId, const chunkId cid, pBuffer buf)
 	{
 		std::lock_guard<std::recursive_mutex> lk(this->getLock());
 		chunkKey key(arrId, attrId, cid);
-		if (this->isExist(key))
+
+		// Erase the existing buffer state of input buffer.
+		if (isExist(key))
 		{
-			removeChunkBufferState(key);
+			_eraseChunkBufferState(key);
 		}
-		_chunkBuffer[key] = buf;
-		_bufferQueue.push_back(chunkBufferState(now(), key, buf->size()));
+		
+		// Comparison the buffer limit and the input buffer size.
+		if (_bufferLimit && _bufferLimit < buf->size())
+		{
+			// Can't store the input buffer.
+			BOOST_LOG_TRIVIAL(warning) << "Buffer Limit is too small.\n"
+				<< "(Limit: " << _bufferLimit << ", request: " << buf->size() << ")";
+			return false;
+		}
+
+		// Make space to store the input buffer.
+		if (_bufferLimit && _curBufferSize + buf->size() > _bufferLimit)
+		{
+			_reduceCurBufferSizeTo(_bufferLimit - buf->size());
+		}
+		
+		_insertChunkBuffer(key, buf);
+
+		return true;
+	}
+
+	inline bool flushChunkBuffer(const arrayId arrId, const attributeId attrId, const chunkId cid)
+	{
+		std::lock_guard<std::recursive_mutex> lk(this->getLock());
+		chunkKey key(arrId, attrId, cid);
+
+		return _eraseChunkBuffer(key);
+	}
+
+	inline bool flushAll()
+	{
+		return _reduceCurBufferSizeTo(0);
+	}
+
+	//////////////////////////////
+	// setBufferLimit
+	//////////////////////////////
+	// Thread safe
+	// 
+	// Set buffer size in bytes.
+	bool setBufferLimit(const bufferSize bytes)
+	{
+		std::lock_guard<std::recursive_mutex> lk(this->getLock());
+		// INFINATE
+		if (bytes == 0)
+		{
+			this->_bufferLimit = 0;
+			return true;
+		}
+		if (_reduceCurBufferSizeTo(bytes))
+		{
+			this->_bufferLimit = bytes;
+			return true;
+		}
+		return false;
 	}
 
 	//////////////////////////////
 	// ::Not thread safe::
+	inline bool isExist(const arrayId arrId, const attributeId attrId, const chunkId cid) const
+	{
+		return isExist({arrId, attrId, cid});
+	}
 	inline bool isExist(const chunkKey& key) const
 	{
 		return this->_chunkBuffer.count(key);
@@ -129,30 +193,9 @@ public:
 	{
 		return this->_bufferLimit;
 	}
-	//////////////////////////////
-	// setBufferLimit
-	//////////////////////////////
-	// Thread safe
-	// 
-	// Set buffer size in bytes.
-	void setBufferLimit(const bufferSize bytes)
+	inline bufferSize getCurrentBufferSize() const
 	{
-		std::lock_guard<std::recursive_mutex> lk(this->getLock());
-		// INFINATE
-		if (bytes == 0)
-		{
-			this->_bufferLimit = 0;
-			return;
-		}
-
-		while (_curBufferSize > bytes && _bufferQueue.size())
-		{
-			auto& front = _bufferQueue.front();
-			flushChunkBuffer(front._key);
-			_bufferQueue.pop_front();
-		}
-
-		this->_bufferLimit = bytes;
+		return _curBufferSize;
 	}
 
 private:
@@ -162,9 +205,15 @@ private:
 	// ::Not thread safe::
 	// The functions have no lock for buffers.
 	//
-	bool cacheChunkBuffer(const chunkKey& key, pBuffer buf);
-	bool flushChunkBuffer(const chunkKey& key);
-	bool removeChunkBufferState(const chunkKey& key);
+	// Erase buffer state first.
+	bool _insertChunkBuffer(const chunkKey& key, pBuffer buf);
+	bool _eraseChunkBuffer(const chunkKey& key);
+	bool _eraseChunkBufferState(const chunkKey& key);
+	bool _eraseChunkBufferState(const chunkKey& key, const pBuffer buf);
+	bool _insertChunkBufferState(const chunkKey& key);
+	bool _insertChunkBufferState(const chunkKey& key, const pBuffer buf);
+	bool _reduceCurBufferSizeTo(const bufferSize bytes);
+	bool _refreshBufferState(const chunkKey& key, const pBuffer buf);
 	//////////////////////////////////////////////////
 
 private:
@@ -177,8 +226,11 @@ private:
 private:
 	std::deque<chunkBufferState> _bufferQueue;
 	std::map<chunkKey, pBuffer> _chunkBuffer;
-	bufferSize _curBufferSize;
-	bufferSize _bufferLimit;
+	bufferSize _curBufferSize;			// Default: 0 
+	bufferSize _bufferLimit;			// Default: Set as 0 (INF)
+
+	protected:
+		friend singleton<bufferMgr>;
 };
 }		// core
 }		// msdb
