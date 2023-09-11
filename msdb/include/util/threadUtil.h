@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _MSDB_THREADUTIL_
 #define _MSDB_THREADUTIL_
 
@@ -41,6 +41,48 @@ private:
 	std::shared_ptr<boost::asio::io_service> io_service_;
 	std::shared_ptr<boost::asio::io_service::work> work_;
 	boost::thread_group threadpool_;
+};
+
+
+// https://stackoverflow.com/questions/57280865/best-way-to-wait-for-flag-in-thread
+// @Miles Budnek
+class ThreadFlag
+{
+public:
+	ThreadFlag() : _flag{ false } {}
+
+	inline void set()
+	{
+		std::lock_guard g(_mutex);
+		_flag = true;
+		_condVar.notify_all();
+	}
+
+	inline void clear()
+	{
+		std::lock_guard g(_mutex);
+		_flag = false;
+	}
+
+	void wait()
+	{
+		std::unique_lock lock(_mutex);
+		if(!_flag)
+			_condVar.wait(lock, [this]() {return _flag; });
+	}
+
+	void wait_and_clear()
+	{
+		std::unique_lock lock(_mutex);
+		if (!_flag)
+			_condVar.wait(lock, [this]() {return _flag; });
+
+		_flag = false;
+	}
+private:
+	bool _flag;
+	std::mutex _mutex;
+	std::condition_variable _condVar;
 };
 }		// core
 }		// msdb

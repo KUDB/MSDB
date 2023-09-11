@@ -10,4 +10,4 @@
 
 #define EXTERN_C	extern "C"
 
-#endif _MSDB_API_PYTHON_ML_H_
+#endif // _MSDB_API_PYTHON_ML_H_

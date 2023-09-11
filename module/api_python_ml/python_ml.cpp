@@ -13,7 +13,7 @@
 
 #include <util/logger.h>
 
-void* getItem(wchar_t* arrName, unsigned int attrId, long long idx, size_t batchSize)
+unsigned long long getArrayId(wchar_t* arrName)
 {
 	std::wstring wStrArrName(arrName);
 	std::string strArrName(wStrArrName.begin(), wStrArrName.end());
@@ -21,9 +21,16 @@ void* getItem(wchar_t* arrName, unsigned int attrId, long long idx, size_t batch
 	auto arrId = msdb::core::arrayMgr::instance()->getArrayId(strArrName);
 	if (arrId == msdb::core::INVALID_ARRAY_ID)
 	{
-		BOOST_LOG_TRIVIAL(warning) << "PythonML::Invalid array name: " << strArrName;
-		return nullptr;
+		BOOST_LOG_TRIVIAL(warning) << "PythonML::getArrayId - Invalid array name: " << strArrName;
+		return 0;
 	}
+
+	return arrId;
+}
+
+void* getItem(wchar_t* arrName, unsigned int attrId, long long idx, size_t batchSize)
+{
+	auto arrId = getArrayId(arrName);
 
 	msdb::Context ctx;
 	auto loadAfl = msdb::Between(
