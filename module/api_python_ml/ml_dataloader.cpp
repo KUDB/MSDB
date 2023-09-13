@@ -14,13 +14,12 @@ namespace msdb
 {
 namespace api_python_ml
 {
-ml_dataloader::ml_dataloader(const core::arrayId xArrId, const core::arrayId yArrId, 
+ml_dataloader::ml_dataloader(const core::arrayId xArrId, const core::arrayId yArrId, const size_t itemBufferSize,
 	const size_t batchSize, const size_t xBufferSize, const size_t yBufferSize)
-	: _xArrId(xArrId), _yArrId(yArrId), _xAttrId(0), _yAttrId(0),
+	: _xArrId(xArrId), _yArrId(yArrId), _xAttrId(0), _yAttrId(0), _itemBufferSize(itemBufferSize),
 	_batchSize(batchSize), _xBufferSize(xBufferSize), _yBufferSize(yBufferSize), _numItems(0),
-	_isPreloadActive(false)
+	_isPreloadActive(false), _lastGetIdx(0)
 {
-
 	auto xArrDesc = core::arrayMgr::instance()->getArrayDesc(xArrId);
 	auto yArrDesc = core::arrayMgr::instance()->getArrayDesc(yArrId);
 
@@ -69,6 +68,12 @@ ml_dataloader::ml_dataloader(const core::arrayId xArrId, const core::arrayId yAr
 
 ml_dataloader::~ml_dataloader()
 {
+	_vecSeq.clear();
+
+	while (_preloadItemQueue.size())
+	{
+		_preloadItemQueue.pop();
+	}
 }
 
 bool ml_dataloader::suffleSequence(const uint64_t seed)
@@ -76,18 +81,51 @@ bool ml_dataloader::suffleSequence(const uint64_t seed)
 	std::shuffle(_vecSeq.begin(), _vecSeq.end(), std::default_random_engine(seed));
 	return true;
 }
-void ml_dataloader::activePreloaderThread()
+void ml_dataloader::activePreloaderThread(const bool doShuffle)
 {
 	std::lock_guard lock(_preloaderMutex);
 	if (!_isPreloadActive)
 	{
 		// do threadPreloader();
+		BOOST_LOG_TRIVIAL(info) << "Activate preloader thread.";
+		std::thread tPreloader = std::thread(&ml_dataloader::threadPreloader, this, doShuffle);
+	}
+	else
+	{
+		BOOST_LOG_TRIVIAL(warning) << "Preloader is already activated.";
 	}
 }
-std::shared_ptr<ml_item> ml_dataloader::getItem(const unsigned long long idx)
+std::shared_ptr<ml_item> ml_dataloader::getNextItemBatch()
 {
-	// Set preloader Flag true
-	return std::make_shared<ml_item>();
+	uint64_t idxEnd = _numItems / _batchSize;
+	{
+		std::lock_guard lock(_preloaderMutex);
+		if (_lastGetIdx == idxEnd)
+		{
+			return std::make_shared<ml_item>();
+		}
+
+		_lastGetIdx++;
+	}
+
+	if (_preloadItemQueue.size() == 0)
+	{
+		_readyToServeFlag.wait_and_clear();
+	}
+
+	{
+		std::lock_guard lock(_preloaderMutex);
+		if (_preloadItemQueue.size() == 0)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Empty preload Item Queue.";
+			return std::make_shared<ml_item>();
+		}
+
+		auto out = _preloadItemQueue.front();
+		_preloadItemQueue.pop();
+		_loadNextFlag.set();
+		return out;
+	}
 }
 void ml_dataloader::threadPreloader(bool doShuffle)
 {
@@ -96,20 +134,35 @@ void ml_dataloader::threadPreloader(bool doShuffle)
 		suffleSequence();
 	}
 
+	// Wiat next flag and load next items
+	uint64_t idxEnd = _numItems / _batchSize;
+	uint64_t idxNext = 0;
+
 	// Load First Batch Items
 
-	// Wiat next flag and load next items
-	while (true)
+	while (idxNext < idxEnd)
 	{
 		_loadNextFlag.wait_and_clear();
 
-		// check last get item
-		// calculate 
+		uint64_t numBatchSetToLoad = 0;
+		{
+			std::lock_guard lock(_preloaderMutex);
+			numBatchSetToLoad = _itemBufferSize - _preloadItemQueue.size();
+		}
 
+		for (int i = 1; i <= numBatchSetToLoad && idxNext < idxEnd; ++i)
+		{
+			auto item = doGetItemBatch(idxNext++);
+			{
+				std::lock_guard lock(_preloaderMutex);
+				_preloadItemQueue.push(item);
+				_readyToServeFlag.set();
+			}
+		}
 	}
 
 }
-std::shared_ptr<ml_item> ml_dataloader::doGetItem(const unsigned long long batch_idx)
+std::shared_ptr<ml_item> ml_dataloader::doGetItemBatch(const unsigned long long batch_idx)
 {
 	std::vector<uint64_t> itemId;
 	itemId.insert(_vecSeq.begin() + (_batchSize * batch_idx), _batchSize);

@@ -2,12 +2,12 @@
 #ifndef _MSDB_PYTHON_ML_DATALOADER_
 #define _MSDB_PYTHON_ML_DATALOADER_
 
-#include <api_python_ml.h>
 #include <array/arrayId.h>
 #include <array/attributeId.h>
 #include <vector>
 #include <chrono>
 #include <util/threadUtil.h>
+#include <queue>
 
 namespace msdb
 {
@@ -20,6 +20,7 @@ public:
 		: _x(nullptr), _y(nullptr)	{}
 
 	ml_item(size_t xSize, size_t ySize)
+		: _x(nullptr), _y(nullptr)
 	{
 		if (xSize == 0 || ySize == 0)
 		{
@@ -72,18 +73,18 @@ private:
 class ml_dataloader
 {
 public:
-	ml_dataloader(const core::arrayId xArrId, const core::arrayId yArrId, 
+	ml_dataloader(const core::arrayId xArrId, const core::arrayId yArrId, const size_t itemBufferSize,
 		const size_t batchSize, const size_t xBufferSize, const size_t yBufferSize);
 	~ml_dataloader();
 
 public:
 	bool suffleSequence(const uint64_t seed = std::chrono::system_clock::now().time_since_epoch().count());
-	void activePreloaderThread();
-	std::shared_ptr<ml_item> getItem(const unsigned long long idx);
+	void activePreloaderThread(const bool doShuffle = false);
+	std::shared_ptr<ml_item> getNextItemBatch();
 
 private:
 	void threadPreloader(const bool doShuffle = false);
-	std::shared_ptr<ml_item> doGetItem(const unsigned long long batch_idx);
+	std::shared_ptr<ml_item> doGetItemBatch(const unsigned long long batch_idx);
 	bool executeGetItemQuery(void* out, const core::arrayId arrId, const core::attributeId attrId, 
 		const uint64_t idx, const size_t bufferSize);
 
@@ -100,12 +101,15 @@ private:
 	size_t _batchSize;
 	size_t _xBufferSize;
 	size_t _yBufferSize;
+	size_t _itemBufferSize;
 
 	std::mutex _preloaderMutex;
 	bool _isPreloadActive;
 	core::ThreadFlag _loadNextFlag;
-	std::vector<core::ThreadFlag> _itemFlags;
+	core::ThreadFlag _readyToServeFlag;
+	uint64_t _lastGetIdx;
+	std::queue<std::shared_ptr<ml_item>> _preloadItemQueue;
 };
-}		// api_python
+}		// api_python_ml
 }		// msdb
 #endif	// _MSDB_PYTHON_ML_DATALOADER_

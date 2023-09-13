@@ -64,6 +64,32 @@ public:
 		const std::vector<core::attributeDesc::paramType>& attrParams
 	);
 };
+//////////////////
+namespace data_1x1
+{
+const int wtLevel = 3;
+const int mmtLevel = 3;
+const int compassBins = 128;
+
+const int numDims = 2;		// 2-dimensional Image with 3 Channel
+}
+class array_1x1 : public dummy_array
+{
+public:
+	virtual core::attributeDesc::paramType getAttrParam(core::attributeId attrId);
+
+	virtual std::shared_ptr<AFLOperator> getArrayBuildAFL(
+		std::vector<materializedType> matTypes = {}, std::vector<encodingType> compType = {});
+
+public:
+	array_1x1(const std::string arrName, const core::arrayId aid,
+		const core::dimension& arrDim,
+		const std::vector<core::attributeDesc::paramType>& attrParams);
+
+	array_1x1(const std::string arrName, const core::arrayId aid,
+		const core::dimension& arrDim, const core::dimension& chunkDim, const core::dimension& blockDim,
+		const std::vector<core::attributeDesc::paramType>& attrParams);
+};
 }		// dummy
 }		// msdb
 #endif	// _MSDB_DUMMY_SMALL_ARRAY_H_
