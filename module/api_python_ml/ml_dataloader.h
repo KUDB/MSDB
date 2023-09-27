@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _MSDB_PYTHON_ML_DATALOADER_
-#define _MSDB_PYTHON_ML_DATALOADER_
+#ifndef _MSDB_PYTHON_ML_DATALOADER_H_
+#define _MSDB_PYTHON_ML_DATALOADER_H_
 
 #include <array/arrayId.h>
 #include <array/attributeId.h>
@@ -70,9 +70,11 @@ private:
 	void* _y;
 };
 
-class ml_dataloader
+class API_PYTHON_DLL ml_dataloader
 {
 public:
+	// xBufferSize = 0 : INFINITE
+	// yBufferSize = 0 : INFINITE
 	ml_dataloader(const core::arrayId xArrId, const core::arrayId yArrId, const size_t itemBufferSize,
 		const size_t batchSize, const size_t xBufferSize, const size_t yBufferSize);
 	~ml_dataloader();
@@ -81,6 +83,28 @@ public:
 	bool suffleSequence(const uint64_t seed = std::chrono::system_clock::now().time_since_epoch().count());
 	void activePreloaderThread(const bool doShuffle = false);
 	std::shared_ptr<ml_item> getNextItemBatch();
+	inline const std::vector<uint64_t>& getSeq() const
+	{
+		return this->_vecSeq;
+	};
+	inline size_t getNumItems() const
+	{
+		return this->_numItems;
+	}
+	inline bool isPreloadActivated() const
+	{
+		return _isPreloadActive;
+	}
+	inline void initLastGetIdx()
+	{
+		std::lock_guard lock(_preloaderMutex);
+		_lastGetIdx = 0;
+	}
+	inline bool isEnd() const
+	{
+		uint64_t idxEnd = _numItems / _batchSize;
+		return _lastGetIdx == idxEnd;
+	}
 
 private:
 	void threadPreloader(const bool doShuffle = false);
@@ -112,4 +136,4 @@ private:
 };
 }		// api_python_ml
 }		// msdb
-#endif	// _MSDB_PYTHON_ML_DATALOADER_
+#endif	// _MSDB_PYTHON_ML_DATALOADER_H_

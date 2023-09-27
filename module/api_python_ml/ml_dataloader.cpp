@@ -49,8 +49,8 @@ ml_dataloader::ml_dataloader(const core::arrayId xArrId, const core::arrayId yAr
 		return;
 	}
 
-	auto xIdDim = xArrDesc->getDimDescs()->at(xArrDesc->getDimDescs()->size() - 1);
-	auto yIdDim = yArrDesc->getDimDescs()->at(xArrDesc->getDimDescs()->size() - 1);
+	auto xIdDim = xArrDesc->getDimDescs()->at(0);
+	auto yIdDim = yArrDesc->getDimDescs()->at(0);
 
 	if (xIdDim->getLength() != yIdDim->getLength())
 	{
@@ -83,6 +83,8 @@ bool ml_dataloader::suffleSequence(const uint64_t seed)
 }
 void ml_dataloader::activePreloaderThread(const bool doShuffle)
 {
+	initLastGetIdx();
+
 	std::lock_guard lock(_preloaderMutex);
 	if (!_isPreloadActive)
 	{
@@ -97,15 +99,33 @@ void ml_dataloader::activePreloaderThread(const bool doShuffle)
 }
 std::shared_ptr<ml_item> ml_dataloader::getNextItemBatch()
 {
-	uint64_t idxEnd = _numItems / _batchSize;
+	//////////////////////////////
+	// Without Thread
+	if (!_isPreloadActive)
 	{
-		std::lock_guard lock(_preloaderMutex);
-		if (_lastGetIdx == idxEnd)
+		if(isEnd())
 		{
 			return std::make_shared<ml_item>();
 		}
+		auto out = doGetItemBatch(_lastGetIdx);
+		{
+			std::lock_guard lock(_preloaderMutex);
+			++_lastGetIdx;
+		}
 
-		_lastGetIdx++;
+		return out;
+	}
+	//////////////////////////////
+
+	//////////////////////////////
+	// With Thread
+	if (isEnd())
+	{
+		return std::make_shared<ml_item>();
+	}
+	{
+		std::lock_guard lock(_preloaderMutex);
+		++_lastGetIdx;
 	}
 
 	if (_preloadItemQueue.size() == 0)
@@ -126,6 +146,7 @@ std::shared_ptr<ml_item> ml_dataloader::getNextItemBatch()
 		_loadNextFlag.set();
 		return out;
 	}
+	//////////////////////////////
 }
 void ml_dataloader::threadPreloader(bool doShuffle)
 {
@@ -165,9 +186,11 @@ void ml_dataloader::threadPreloader(bool doShuffle)
 std::shared_ptr<ml_item> ml_dataloader::doGetItemBatch(const unsigned long long batch_idx)
 {
 	std::vector<uint64_t> itemId;
-	itemId.insert(_vecSeq.begin() + (_batchSize * batch_idx), _batchSize);
+	itemId.insert(itemId.begin(), _vecSeq.begin() + (_batchSize * batch_idx), _vecSeq.begin() + (_batchSize * (batch_idx + 1)));
 
-	auto ret = std::make_shared<ml_item>(_xBufferSize * _batchSize, _yBufferSize * _batchSize);
+	auto ret = std::make_shared<ml_item>(
+		_xBufferSize ? _xBufferSize * _batchSize : _batchSize, 
+		_yBufferSize ? _yBufferSize * _batchSize : _batchSize);
 
 	if (ret->x() == nullptr || ret->y() == nullptr)
 	{
@@ -213,7 +236,7 @@ bool ml_dataloader::executeGetItemQuery(void* out, const core::arrayId arrId, co
 	msdb::Context ctx;
 	auto loadAfl = msdb::Between(
 		msdb::Load(msdb::Array(ctx, arrId)),
-		msdb::Domain(msdb::core::coordinates({ idx }), msdb::core::coordinates({ idx + 1 })));
+		msdb::Domain(msdb::core::coordinates(1, idx), msdb::core::coordinates(1, idx + 1)));
 	auto qry = msdb::Query(loadAfl);
 	qry.setRawResultOut();
 
@@ -225,7 +248,7 @@ bool ml_dataloader::executeGetItemQuery(void* out, const core::arrayId arrId, co
 	}
 
 	auto outArr = ra.getRawResult();
-	auto cit = outArr->getChunkIterator(arrId);
+	auto cit = outArr->getChunkIterator(_xAttrId);
 
 	// TODO::Batch size, return multiple chunks
 	cit->moveToSeqPos(idx);
@@ -236,18 +259,21 @@ bool ml_dataloader::executeGetItemQuery(void* out, const core::arrayId arrId, co
 	}
 
 	auto bf = (*cit)->getBuffer();
-	if (!bf->size() || bufferSize == 0)
+	if (!bf->size())
 	{
 		BOOST_LOG_TRIVIAL(warning) << "PythonML::Empty chunk buffer: " << idx;
 		return false;
 	}
 
-	if (bf->size() != bufferSize)
+	// BufferSize = 0 : INFINITE
+	if (bufferSize && bf->size() != bufferSize)
 	{
 		BOOST_LOG_TRIVIAL(warning) << "Buffer size is different. (curr: " << bf->size() << ", expect: " << bufferSize << ")";
 	}
 
 	memcpy((char*)out, bf->getReadData(), std::min(bf->size(), bufferSize));
+	
+	outArr->flush();
 
 	return true;
 }
