@@ -90,13 +90,25 @@ void ml_dataloader::activePreloaderThread(const bool doShuffle)
 	{
 		// do threadPreloader();
 		BOOST_LOG_TRIVIAL(info) << "Activate preloader thread.";
-		std::thread tPreloader = std::thread(&ml_dataloader::threadPreloader, this, doShuffle);
+		_isPreloadActive = true;
+
+		if (doShuffle)
+		{
+			suffleSequence();
+		}
+
+		//_def_token = std::stop_token();
+		//_tPreloader = std::jthread(&ml_dataloader::threadPreloader, this, std::stop_token());
+		//_tPreloader = std::jthread(f, 5);
+		_tPreloader = std::make_shared<std::jthread>(std::bind_front(&ml_dataloader::threadPreloader, this));
 	}
 	else
 	{
 		BOOST_LOG_TRIVIAL(warning) << "Preloader is already activated.";
 	}
 }
+
+// WARNING:: The function returns a nullptr if preloader thread ended.
 std::shared_ptr<ml_item> ml_dataloader::getNextItemBatch()
 {
 	//////////////////////////////
@@ -130,7 +142,10 @@ std::shared_ptr<ml_item> ml_dataloader::getNextItemBatch()
 
 	if (_preloadItemQueue.size() == 0)
 	{
-		_readyToServeFlag.wait_and_clear();
+		if (!_readyToServeFlag.wait_and_clear())
+		{
+			return nullptr;
+		}
 	}
 
 	{
@@ -148,37 +163,82 @@ std::shared_ptr<ml_item> ml_dataloader::getNextItemBatch()
 	}
 	//////////////////////////////
 }
-void ml_dataloader::threadPreloader(bool doShuffle)
+bool ml_dataloader::close()
 {
-	if (doShuffle)
+	if (_isPreloadActive)
 	{
-		suffleSequence();
+		if (_tPreloader->joinable())
+		{
+			BOOST_LOG_TRIVIAL(info) << "Request stop to preloader thread.";
+
+			try
+			{
+				BOOST_LOG_TRIVIAL(info) << "Before request_stop to 'ml_dataloader::_tPreloader'.";
+				_tPreloader->request_stop();
+				BOOST_LOG_TRIVIAL(info) << "Before joining 'ml_dataloader::_tPreloader'.";
+				_tPreloader->join();
+				BOOST_LOG_TRIVIAL(info) << "After joining 'ml_dataloader::_tPreloader'.";
+			}
+			catch (...)
+			{
+				BOOST_LOG_TRIVIAL(error) << "'ml_dataloader::_tPreloader' thread join error.";
+			}
+		}
+		else
+		{
+			BOOST_LOG_TRIVIAL(warning) << "Cannot join 'ml_dataloader::_tPreloader' thread";
+		}
 	}
 
+	_loadNextFlag.clear();
+	_readyToServeFlag.clear();
+
+	while (!_preloadItemQueue.empty())
+	{
+		_preloadItemQueue.pop();
+	}
+
+	return true;
+}
+void ml_dataloader::threadPreloader(std::stop_token stoken)
+{
 	// Wiat next flag and load next items
 	uint64_t idxEnd = _numItems / _batchSize;
 	uint64_t idxNext = 0;
 
-	// Load First Batch Items
-
 	while (idxNext < idxEnd)
 	{
-		_loadNextFlag.wait_and_clear();
-
-		uint64_t numBatchSetToLoad = 0;
 		{
 			std::lock_guard lock(_preloaderMutex);
-			numBatchSetToLoad = _itemBufferSize - _preloadItemQueue.size();
+			BOOST_LOG_TRIVIAL(debug) << "Item Buffer Size: " << _itemBufferSize << ", Item Queue Size: " << _preloadItemQueue.size();
+			if (_itemBufferSize > _preloadItemQueue.size())
+			{
+				BOOST_LOG_TRIVIAL(debug) << "Set load next flag";
+				_loadNextFlag.set();
+			}
 		}
 
-		for (int i = 1; i <= numBatchSetToLoad && idxNext < idxEnd; ++i)
+		while (!stoken.stop_requested())
 		{
-			auto item = doGetItemBatch(idxNext++);
+			if (_loadNextFlag.wait_and_clear(threadWaitTimeout))
 			{
-				std::lock_guard lock(_preloaderMutex);
-				_preloadItemQueue.push(item);
-				_readyToServeFlag.set();
+				break;
 			}
+			BOOST_LOG_TRIVIAL(debug) << "preloader::wait() - TIMEOUT";
+		}
+
+		if(stoken.stop_requested())
+		{
+			BOOST_LOG_TRIVIAL(info) << "Preloader thread terminated with stop_requested.";
+			return;
+		}
+
+		BOOST_LOG_TRIVIAL(debug) << "Try to load item: " << idxNext;
+		auto item = doGetItemBatch(idxNext++);
+		{
+			std::lock_guard lock(_preloaderMutex);
+			_preloadItemQueue.push(item);
+			_readyToServeFlag.set();
 		}
 	}
 

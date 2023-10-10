@@ -4,6 +4,8 @@
 
 #include <pch.h>
 
+using namespace std::chrono_literals;
+
 namespace msdb
 {
 namespace core
@@ -64,21 +66,57 @@ public:
 		_flag = false;
 	}
 
-	void wait()
+	bool wait()
 	{
 		std::unique_lock lock(_mutex);
 		if(!_flag)
 			_condVar.wait(lock, [this]() {return _flag; });
+
+		return true;
 	}
 
-	void wait_and_clear()
+	bool wait_and_clear()
+	{
+		wait();
+
+		std::unique_lock lock(_mutex);
+		_flag = false;
+
+		return true;
+	}
+
+	bool wait(const std::chrono::milliseconds duration)
 	{
 		std::unique_lock lock(_mutex);
-		if (!_flag)
-			_condVar.wait(lock, [this]() {return _flag; });
 
-		_flag = false;
+		// 'false' if the predicate stop_waiting still evaluates to false after the rel_time timeout expired, otherwise 'true'.
+		return _condVar.wait_for(lock, duration, [this] {return _flag; });
 	}
+
+	bool wait_and_clear(const std::chrono::milliseconds duration)
+	{
+		auto status = wait(duration);
+
+		if (!status)
+		{
+			return false;
+		}
+		std::unique_lock lock(_mutex);
+		_flag = false;
+
+		return true;
+	}
+
+	bool wait(const int milliseconds)
+	{
+		return wait(std::chrono::milliseconds(milliseconds));
+	}
+
+	bool wait_and_clear(const int milliseconds)
+	{
+		return wait_and_clear(std::chrono::milliseconds(milliseconds));
+	}
+
 private:
 	bool _flag;
 	std::mutex _mutex;

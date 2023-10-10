@@ -105,9 +105,10 @@ public:
 		uint64_t idxEnd = _numItems / _batchSize;
 		return _lastGetIdx == idxEnd;
 	}
+	bool close();
 
 private:
-	void threadPreloader(const bool doShuffle = false);
+	void threadPreloader(std::stop_token stoken);
 	std::shared_ptr<ml_item> doGetItemBatch(const unsigned long long batch_idx);
 	bool executeGetItemQuery(void* out, const core::arrayId arrId, const core::attributeId attrId, 
 		const uint64_t idx, const size_t bufferSize);
@@ -132,8 +133,21 @@ private:
 	core::ThreadFlag _loadNextFlag;
 	core::ThreadFlag _readyToServeFlag;
 	uint64_t _lastGetIdx;
+	std::stop_token _def_token;
 	std::queue<std::shared_ptr<ml_item>> _preloadItemQueue;
+
+	std::shared_ptr<std::jthread> _tPreloader;
+
+	const static int threadWaitTimeout = 500;		// milliseconds
 };
+
+//void f(std::stop_token stop_token, int value)
+//{
+//	while (!stop_token.stop_requested())
+//	{
+//
+//	}
+//}
 }		// api_python_ml
 }		// msdb
 #endif	// _MSDB_PYTHON_ML_DATALOADER_H_
