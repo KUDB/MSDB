@@ -88,7 +88,7 @@ TEST(bitstream, insert_bitset_u32)
 	const char32_t* str = bs.data();
 	for (int i = 0; i < (bs.sizebits() + 31) / 32; i++)
 	{
-		EXPECT_EQ(static_cast<char32_t>(str[i]), u32Expected[i]);
+		EXPECT_TRUE(static_cast<char32_t>(str[i]) == u32Expected[i]);
 	}
 }
 

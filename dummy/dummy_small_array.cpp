@@ -72,5 +72,43 @@ std::shared_ptr<AFLOperator> array_1x32x32x3::getArrayBuildAFL(
 	msdb::Context ctx;
 	return Build(this->_aid, this->_arrName, this->getDefDimensions(), this->getDefAttributes());
 }
+//////////////////
+array_1x1::array_1x1(const std::string arrName, const core::arrayId aid,
+	const core::dimension& arrDim,
+	const std::vector<std::map<std::string, std::string>>& attrParams)
+	: array_1x1(arrName, aid, arrDim, core::dimension({ 1, 1 }), core::dimension({ 1, 1 }),
+		attrParams)
+{}
+array_1x1::array_1x1(const std::string arrName, const core::arrayId aid,
+	const core::dimension& arrDim, const core::dimension& chunkDim, const core::dimension& blockDim,
+	const std::vector<core::attributeDesc::paramType>& attrParams)
+	: dummy_array(arrName, aid, arrDim, chunkDim, blockDim,
+		std::vector<std::string>({ "id", "category" }),
+		{ "label" }, { core::concreteTy<uint8_t>() }, { core::materializedType::FLATTEN }, { core::encodingType::NONE },
+		attrParams)
+{}
+core::attributeDesc::paramType array_1x1::getAttrParam(core::attributeId attrId)
+{
+	assert(attrId == 0);
+
+	core::attributeDesc::paramType param = {
+		core::make_attr_param(_STR_PARAM_WAVELET_LEVEL_, std::to_string(data_1x32x32x3::wtLevel)),
+		core::make_attr_param(_STR_PARAM_SE_LEVEL_, std::to_string(data_1x32x32x3::wtLevel)),
+		core::make_attr_param(_STR_PARAM_MMT_LEVEL_, std::to_string(data_1x32x32x3::mmtLevel)),
+		core::make_attr_param(_STR_PARAM_COMPASS_BINS_, std::to_string(data_1x32x32x3::compassBins))
+	};
+	return param;
+}
+std::shared_ptr<AFLOperator> array_1x1::getArrayBuildAFL(
+	std::vector<materializedType> matTypes, std::vector<encodingType> compType)
+{
+	if (!matTypes.empty())
+		this->_matTypes = matTypes;
+	if (!compType.empty())
+		this->_compTypes = compType;
+
+	msdb::Context ctx;
+	return Build(this->_aid, this->_arrName, this->getDefDimensions(), this->getDefAttributes());
+}
 }		// dummy
 }		// msdb

@@ -52,7 +52,7 @@ void storageMgr::saveArrayDesc(pArrayDesc arrDesc)
 	auto path = this->getBasePath() / filePath(std::to_string(arrDesc->id_) + this->extArrayConfig);
 	auto strPath = path.c_str();
 
-	pXmlDoc->SaveFile(path.u8string().c_str());
+	pXmlDoc->SaveFile((const char*)path.u8string().c_str());
 }
 
 void storageMgr::initSystemConfig()
@@ -81,7 +81,7 @@ std::vector<pArrayDesc> storageMgr::loadAllArrayDescs()
 pArrayDesc storageMgr::loadArrayDesc(const filePath descPath)
 {
 	auto pXmlDoc = std::make_shared<tinyxml2::XMLDocument>();
-	pXmlDoc->LoadFile(descPath.u8string().c_str());
+	pXmlDoc->LoadFile((const char*)descPath.u8string().c_str());
 
 	return arrayDesc::buildDescFromXML(pXmlDoc);
 }
