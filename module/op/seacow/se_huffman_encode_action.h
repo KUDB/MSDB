@@ -23,6 +23,14 @@ public:
 	virtual ~se_huffman_encode_action();
 	virtual const char* name() override;
 
+private:
+	struct compChunkParams
+	{
+		bool hasNegative;
+		size_t wtLevel;
+		size_t parentThreadId;
+	};
+
 public:
 	pArray execute(std::vector<pArray>& inputArrays, pQuery qry);
 
@@ -77,11 +85,13 @@ private:
 				outChunk->bufferRef(inChunk);
 				outChunk->makeAllBlocks();
 
+				compChunkParams p = { hasNegative, wtLevel, currentThreadId };
 				////////////////////////////////////////
 				// 1. Serialize::encodeChunk
 				////////////////////////////////////////
+
 			#ifndef NDEBUG
-				this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, wtLevel, currentThreadId);
+				this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, qry, p);
 			#endif
 				//auto attr = outChunk->getDesc()->attrDesc_;
 				//storageMgr::instance()->saveChunk(arrId, attr->id_, (outChunk)->getId(),
@@ -92,8 +102,9 @@ private:
 				// 2. Parallel::encodeChunk
 				////////////////////////////////////////
 			#ifdef NDEBUG
+				//this->compressChunk<Ty_>(arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, wtLevel, currentThreadId);
 				io_service_->post(boost::bind(&se_huffman_encode_action::compressChunk<Ty_>, this,
-											  arrId, outChunk, inChunk, mmtIndex, chunkDim, hasNegative, qry, currentThreadId));
+											  arrId, outChunk, inChunk, mmtIndex, chunkDim, qry, p));
 			#endif
 				////////////////////////////////////////
 			}
@@ -147,10 +158,15 @@ private:
 					   std::shared_ptr<seHuffmanChunk<Ty_>> outChunk,
 					   std::shared_ptr<wtChunk<Ty_>> inChunk,
 					   std::shared_ptr<MinMaxTreeImpl<Ty_>> mmtIndex,
-					   dimension& sourceChunkDim, bool hasNegative,
-					   pQuery qry, const size_t wtLevel, const size_t parentThreadId)
+					   dimension& sourceChunkDim,
+					   pQuery qry, const compChunkParams p)
 	{
+		bool hasNegative = p.hasNegative;
+		const size_t wtLevel = p.wtLevel;
+		const size_t parentThreadId = p.parentThreadId;
+
 		auto threadId = getThreadId() + 1;
+
 		//========================================//
 		qry->getTimer()->nextJob(threadId, this->name() + std::string("::Thread"), workType::COMPUTING, std::string("chunk::") + std::to_string(outChunk->getId()));
 		//----------------------------------------//

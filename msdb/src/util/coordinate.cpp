@@ -83,7 +83,9 @@ coordinates::coordinates(coordinates&& src) noexcept
 {
 	swap(*this, src);
 }
-
+// Constructing coordinate instance taking single dimensional coordinate with initializer_list doesen't work properly.
+// msdb::core::coordinates({1}) -> coordinates::coordinates(const size_type dSize)
+// msdb::core::coordinates({1, 2}) -> coordinates::coordinates(std::initializer_list<dim_type> lst)
 coordinates::coordinates(std::initializer_list<dim_type> lst)
 {
 	this->dSize_ = lst.size();
