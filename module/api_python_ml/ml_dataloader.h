@@ -47,19 +47,41 @@ public:
 
 		clear();
 
-		_x = new char[xSize];
-		_y = new char[ySize];
-
+		try
+		{
+			_x = new char[xSize];
+			_y = new char[ySize];
+		}
+		catch (...)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Cannot assign memory to _x or _y of ml_item.";
+			return false;
+		}
+		
 		return true;
 	}
 
 	void clear()
 	{
-		if (_x)
-			delete[] _x;
-
-		if (_y)
-			delete[] _y;
+		try
+		{
+			if (_x)
+				delete[] _x;
+		}
+		catch (...)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Cannot clear _x in ml_item class.";
+		}
+		
+		try
+		{
+			if (_y)
+				delete[] _y;
+		}
+		catch (...)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Cannot clear _y in ml_item class.";
+		}
 	}
 
 	inline void* x() { return _x; }
@@ -140,14 +162,6 @@ private:
 
 	const static int threadWaitTimeout = 500;		// milliseconds
 };
-
-//void f(std::stop_token stop_token, int value)
-//{
-//	while (!stop_token.stop_requested())
-//	{
-//
-//	}
-//}
 }		// api_python_ml
 }		// msdb
 #endif	// _MSDB_PYTHON_ML_DATALOADER_H_

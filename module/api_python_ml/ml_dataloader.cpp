@@ -97,9 +97,6 @@ void ml_dataloader::activePreloaderThread(const bool doShuffle)
 			suffleSequence();
 		}
 
-		//_def_token = std::stop_token();
-		//_tPreloader = std::jthread(&ml_dataloader::threadPreloader, this, std::stop_token());
-		//_tPreloader = std::jthread(f, 5);
 		_tPreloader = std::make_shared<std::jthread>(std::bind_front(&ml_dataloader::threadPreloader, this));
 	}
 	else
@@ -308,7 +305,7 @@ bool ml_dataloader::executeGetItemQuery(void* out, const core::arrayId arrId, co
 	}
 
 	auto outArr = ra.getRawResult();
-	auto cit = outArr->getChunkIterator(_xAttrId);
+	auto cit = outArr->getChunkIterator(attrId);
 
 	// TODO::Batch size, return multiple chunks
 	cit->moveToSeqPos(idx);
